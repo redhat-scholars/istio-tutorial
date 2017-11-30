@@ -10,7 +10,7 @@ devtools
 
 3. mvn spring-boot:run and test it localhost:8080
 
-4. eval $(minishift docker-env)
+4. eval $(minishift oc-env)
 
 5. oc login
 
