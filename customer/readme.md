@@ -39,3 +39,19 @@ Note: this step was already executed on this project
 16. curl customer-springistio.$(minishift ip).nip.io
 
 17. Check out your Grafana, Jaeger and Service Graph dashboards
+
+Tips:
+
+* To view logs when there is a sidecar
+
+oc logs customer-3857234246-qtczv -c spring-boot
+
+* To add cpu/memory limits
+
+kubectl run --limits='cpu=200m,memory=512Mi' 
+
+* To change the live or ready probe
+
+oc set-probe
+
+
