@@ -20,6 +20,8 @@ devtools
 
 8. mvn io.fabric8:fabric8-maven-plugin:3.5.28:setup
 
+Note: this step was already executed on this project
+
 9. eval $(minishift docker-env)
 
 10. mvn package fabric8:build -Dfabric8.mode=kubernetes
