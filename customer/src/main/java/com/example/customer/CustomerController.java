@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 // These for adding the tracing headers
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpEntity;
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +17,7 @@ public class CustomerController {
     
     @RequestMapping("/")
     public String getCustomer(HttpServletRequest request) {
-        String url = "http://preferences:8080/";
+        String url = "http://preferences/";
         // add the tracing headers
         HttpHeaders httpHeaders = new HttpHeaders();
         String headerValue = request.getHeader("x-request-id");
@@ -41,7 +42,7 @@ public class CustomerController {
 
         try {
             ResponseEntity<String> response
-            = restTemplate.getForEntity(url, String.class);
+            = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
             responseBody = response.getBody();
         } catch (Exception e) {
             responseBody = e.getMessage();

@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import javax.servlet.http.HttpServletRequest;
-
+import org.springframework.http.HttpMethod;
 
 @RestController
 public class PreferencesController {
@@ -17,7 +17,7 @@ public class PreferencesController {
     
     @RequestMapping("/")
     public String getPreferences(HttpServletRequest request) {
-        String url = "http://recommendations:8080/";
+        String url = "http://recommendations/";
         // add the tracing headers
         HttpHeaders httpHeaders = new HttpHeaders();
         String headerValue = request.getHeader("x-request-id");
@@ -41,7 +41,7 @@ public class PreferencesController {
 
         try {
             ResponseEntity<String> response
-            = restTemplate.getForEntity(url, String.class);
+            = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
             responseBody = response.getBody();
         } catch (Exception e) {            
             responseBody = e.getMessage();
