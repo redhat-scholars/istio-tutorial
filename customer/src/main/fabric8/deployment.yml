@@ -1,0 +1,37 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "${project.artifactId}"
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: "-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true"
+        name: "${project.artifactId}"
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        livenessProbe:
+          exec:
+            command: 
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+        readinessProbe:
+          exec:
+            command: 
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3

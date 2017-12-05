@@ -17,7 +17,7 @@ public class CustomerController {
     
     @RequestMapping("/")
     public String getCustomer(HttpServletRequest request) {
-        String url = "http://preferences/";
+        String url = "http://preferences:8080/";
         // add the tracing headers
         HttpHeaders httpHeaders = new HttpHeaders();
         String headerValue = request.getHeader("x-request-id");

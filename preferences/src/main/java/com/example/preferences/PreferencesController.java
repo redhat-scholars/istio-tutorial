@@ -17,7 +17,7 @@ public class PreferencesController {
     
     @RequestMapping("/")
     public String getPreferences(HttpServletRequest request) {
-        String url = "http://recommendations/";
+        String url = "http://recommendations:8080/";
         // add the tracing headers
         HttpHeaders httpHeaders = new HttpHeaders();
         String headerValue = request.getHeader("x-request-id");
