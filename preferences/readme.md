@@ -1,3 +1,4 @@
+Note: Skip steps 1 to 9 if you already did them for "customer"
 
 1. start.spring.io and select the following:
 ```
@@ -38,15 +39,19 @@ Note: this step was already executed on this project
 
 10. mvn package fabric8:build -Dfabric8.mode=kubernetes
 
-11. Add istioctl to your PATH
+11. docker images | grep preferences
 
-12. oc apply -f <(istioctl kube-inject -f target/classes/META-INF/fabric8/kubernetes/preferences-deployment.yml) -n springistio
+12. Add istioctl to your PATH
 
-13. oc create -f target/classes/META-INF/fabric8/kubernetes/preferences-svc.yml
+13. oc apply -f <(istioctl kube-inject -f target/classes/META-INF/fabric8/kubernetes/preferences-deployment.yml) -n springistio
+
+oc get pods -w (wait to see 2/2 Ready)
+
+14. oc create -f target/classes/META-INF/fabric8/kubernetes/preferences-svc.yml
 
 Note: no route for preferences, it is internally consumed
 
-14. Check out your Grafana, Jaeger and Service Graph dashboards
+15. Check out your Grafana, Jaeger and Service Graph dashboards
 
 Tips:
 

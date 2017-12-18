@@ -38,19 +38,21 @@ Note: this step was already executed on this project
 
 10. mvn package fabric8:build -Dfabric8.mode=kubernetes
 
-11. Add istioctl to your PATH
+11. docker images | grep customer
 
-12. oc apply -f <(istioctl kube-inject -f target/classes/META-INF/fabric8/kubernetes/customer-deployment.yml) -n springistio
+12. Add istioctl to your PATH
 
-13. oc create -f target/classes/META-INF/fabric8/kubernetes/customer-svc.yml
+13. oc apply -f <(istioctl kube-inject -f target/classes/META-INF/fabric8/kubernetes/customer-deployment.yml) -n springistio
 
-14. oc expose service customer
+14. oc create -f target/classes/META-INF/fabric8/kubernetes/customer-svc.yml
 
-15. oc get route
+15. oc expose service customer
 
-16. curl customer-springistio.$(minishift ip).nip.io
+16. oc get route
 
-17. Check out your Grafana, Jaeger and Service Graph dashboards
+17. curl customer-springistio.$(minishift ip).nip.io
+
+18. Check out your Grafana, Jaeger and Service Graph dashboards
 
 Tips:
 
