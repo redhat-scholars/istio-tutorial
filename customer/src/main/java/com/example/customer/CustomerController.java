@@ -34,12 +34,12 @@ public class CustomerController {
         httpHeaders.add("x-b3-flags", headerValue);
         headerValue = request.getHeader("x-ot-span-context");            
         httpHeaders.add("x-ot-span-context", headerValue);
-        HttpEntity<String> httpEntity = new HttpEntity<>("", httpHeaders);
         // end adding the tracing headers
-
         // if you wish to create routing rules on user-agent 
         String useragent = request.getHeader("user-agent");
         httpHeaders.add("user-agent", useragent);
+
+        HttpEntity<String> httpEntity = new HttpEntity<>("", httpHeaders);
         
         String responseBody;
         

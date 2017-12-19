@@ -1,3 +1,8 @@
+customer -> preferences -> recommendations
+
+For now, they have a simple exception handling solution for dealing with 
+a missing dependent service
+
 1. deploy customer
 
 2. deploy preferences
