@@ -77,7 +77,7 @@ devtools
 
 3. mvn spring-boot:run and test it localhost:8080
 
-Note: Watch out for live & ready probes as you might: [customer-2691584122-cs8rz istio-proxy] [2017-11-17 00:35:15.001][12][warning][upstream] external/envoy/source/server/lds_subscription.cc:65] lds: fetch failure: error adding listener: 'http_172.17.0.20_8080' has duplicate address '172.17.0.20:8080' as existing listener
+Note: Watch out for live & ready probes as you might see: [customer-2691584122-cs8rz istio-proxy] [2017-11-17 00:35:15.001][12][warning][upstream] external/envoy/source/server/lds_subscription.cc:65] lds: fetch failure: error adding listener: 'http_172.17.0.20_8080' has duplicate address '172.17.0.20:8080' as existing listener
 
 https://github.com/istio/istio/issues/1194
 

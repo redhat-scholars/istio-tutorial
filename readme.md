@@ -1,0 +1,7 @@
+customer
+
+preferences
+
+recommendations
+
+
