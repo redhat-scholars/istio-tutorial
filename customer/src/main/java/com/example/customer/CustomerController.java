@@ -39,7 +39,7 @@ public class CustomerController {
 
         // if you wish to create routing rules on user-agent 
         String useragent = request.getHeader("user-agent");
-        httpHeaders.add("User-Agent", useragent);
+        httpHeaders.add("user-agent", useragent);
         
         String responseBody;
         
