@@ -38,7 +38,7 @@ public class CustomerController {
         // end adding the tracing headers
 
         // if you wish to create routing rules on user-agent 
-        String useragent = request.getHeader("User-Agent");
+        String useragent = request.getHeader("user-agent");
         httpHeaders.add("User-Agent", useragent);
         
         String responseBody;

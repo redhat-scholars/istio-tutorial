@@ -119,6 +119,8 @@ istioctl version
 
 17. curl customer-springistio.$(minishift ip).nip.io
 
+Note: you may see errors related to preferences being unavailable
+
 18. Check out your Grafana, Jaeger and Service Graph dashboards
 
 Tips:
