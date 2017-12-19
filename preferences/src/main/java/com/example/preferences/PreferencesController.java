@@ -37,6 +37,10 @@ public class PreferencesController {
         HttpEntity<String> httpEntity = new HttpEntity<>("", httpHeaders);
         // end adding the tracing headers
 
+        // if you wish to create routing rules on user-agent 
+        String useragent = request.getHeader("User-Agent");
+        httpHeaders.add("User-Agent", useragent);
+        
         String responseBody;
 
         try {
