@@ -52,4 +52,11 @@ oc delete routerules/recommendations-default
 
 5. Smart routing based on HTTP headers
 
+Note: the "User-Agent" header being forward in the Customer and Preferences controllers
+
+Set recommendations to all v1
+
+oc create -f routerulefiles/route-rule-recommendations-v1.yml 
+
+oc create -f routerulefiles/route-rule-safari-recommendations-v2.yml 
 
