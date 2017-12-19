@@ -34,5 +34,22 @@ you likely see "Clifford v2"
 
 as by default you get random load-balancing when there is more than one Pod behind a Service
 
+oc project springistio (so it does not have to be repeated below)
+
+oc create -f routerulefiles/route-rule-recommendations-v2.yml 
+
+curl customer-springistio.$(minishift ip).nip.io
+
+you should only see v2 being returned
+
+oc replace -f routerulefiles/route-rule-recommendations-v1.yml 
+
+oc get routerules
+
+oc get routerules/recommendations-default -o yaml 
+
+oc delete routerules/recommendations-default
+
+5. Smart routing based on HTTP headers
 
 
