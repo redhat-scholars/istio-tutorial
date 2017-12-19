@@ -92,8 +92,11 @@ oc status
 oc whoami
 ```
 and you have setup the project/namespace
+
 ```
 oc new-project springistio
+oc adm policy add-scc-to-user privileged -z default -n springistio
+
 ```
 
 ```
