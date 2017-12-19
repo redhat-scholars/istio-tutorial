@@ -1,4 +1,3 @@
-Note: Skip steps 1 to 9 if you already did them for "customer"
 
 1. start.spring.io and select the following:
 ```
@@ -11,7 +10,7 @@ devtools
 
 3. mvn spring-boot:run and test it localhost:8080
 
-add fabric8/deployment.yml because you need to override the default live & ready probes otherwise you get: [customer-2691584122-cs8rz istio-proxy] [2017-11-17 00:35:15.001][12][warning][upstream] external/envoy/source/server/lds_subscription.cc:65] lds: fetch failure: error adding listener: 'http_172.17.0.20_8080' has duplicate address '172.17.0.20:8080' as existing listener
+Note: Watch out for live & ready probes as you might see: [customer-2691584122-cs8rz istio-proxy] [2017-11-17 00:35:15.001][12][warning][upstream] external/envoy/source/server/lds_subscription.cc:65] lds: fetch failure: error adding listener: 'http_172.17.0.20_8080' has duplicate address '172.17.0.20:8080' as existing listener
 
 https://github.com/istio/istio/issues/1194
 
@@ -25,36 +24,35 @@ should look like
 
 4. eval $(minishift oc-env)
 
-5. oc login
+5. eval $(minishift docker-env)
 
-6. oc new-project springistio
+6. oc login
 
-7. oc adm policy add-scc-to-user privileged -z default -n springistio
+7. oc new-project springistio
 
-8. mvn io.fabric8:fabric8-maven-plugin:3.5.28:setup
+8. oc adm policy add-scc-to-user privileged -z default -n springistio
 
-Note: this step was already executed on this project
+9. mvn clean package
 
-9. eval $(minishift docker-env)
-
-10. mvn package fabric8:build -Dfabric8.mode=kubernetes
+10. docker build -t example/recommendations .
 
 11. docker images | grep recommendations
 
-12. Add istioctl to your PATH
+12. Add istioctl to your $PATH
 
-13. oc apply -f <(istioctl kube-inject -f target/classes/META-INF/fabric8/kubernetes/recommendations-deployment.yml) -n springistio
+istioctl version
 
-14. oc create -f target/classes/META-INF/fabric8/kubernetes/recommendations-svc.yml
+13. oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
 
-Note: no route for recommendations, it is internally consumed
+14. oc create -f src/main/kubernetes/Service.yml
 
-15. Check out your Grafana, Jaeger and Service Graph dashboards
+15. curl customer-springistio.$(minishift ip).nip.io
+
+16. Check out your Grafana, Jaeger and Service Graph dashboards
 
 Tips:
 
 * To view logs when there is a sidecar
 
 oc logs customer-3857234246-qtczv -c spring-boot
-
 
