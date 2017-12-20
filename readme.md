@@ -162,10 +162,15 @@ Based on the Deployment configuration, Kubernetes/OpenShift will recreate the po
 oc describe deployment recommendations | grep Replicas
 ```
 
-## recommendations:v2 
+## Istio RouteRule Changes
+### recommendations:v2 
 So we can experiment with Istio routing rules by making a change to RecommendationsController.java like
 
 return "Clifford v2";
+
+The "v2" tag during the docker build is significant.
+
+There is also a 2nd deployment.yml file to label things correctly
 
 ```
 cd recommendations
@@ -175,6 +180,8 @@ mvn clean compile package
 docker build -t example/recommendations:v2 .
 
 docker images | grep recommendations
+example/recommendations                  v2                  c31e399a9628        5 seconds ago       438MB
+example/recommendations                  latest              f072978d9cf6        17 minutes ago      438MB
 
 cd ..
 
@@ -191,18 +198,18 @@ you likely see "Clifford v1"
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-you likely see "Clifford v2" as by default you get random oad-balancing when there is more than one Pod behind a Service
+you should see "Clifford v2" as by default you get random load-balancing when there is more than one Pod behind a Service
 
+
+Make sure you have established "springistio" as the namespace/project that you will be working in, allowing you to skip the -n springistio in subsequent commands
 
 ```
 oc project springistio 
 ```
 
-(so it does not have to be repeated below)
-
 ## Istio Route Rules
 
-#### All users to recommendations:v2
+#### Set all users to recommendations:v2
 ```
 oc create -f routerulefiles/route-rule-recommendations-v2.yml 
 
@@ -212,6 +219,8 @@ curl customer-springistio.$(minishift ip).nip.io
 you should only see v2 being returned
 
 #### All users to recommendations:v1
+Note: "replace" instead of "create" since we are overlaying the previous rule
+
 ```
 oc replace -f routerulefiles/route-rule-recommendations-v1.yml 
 
@@ -219,7 +228,9 @@ oc get routerules
 
 oc get routerules/recommendations-default -o yaml 
 ```
-#### All users to recommendations v1 and v2
+#### All users to recommendations v1 and v2 
+By simply removing the rule
+
 ```
 oc delete routerules/recommendations-default
 ```
