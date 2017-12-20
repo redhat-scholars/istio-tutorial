@@ -159,8 +159,13 @@ oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n spr
 oc create -f src/main/kubernetes/Service.yml
 
 curl customer-springistio.$(minishift ip).nip.io
+```
 
-cd ..
+it returns
+
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
+
 ```
 ## Note: Updating & Redeploying Code
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
@@ -209,9 +214,9 @@ example/recommendations                  latest              f072978d9cf6       
 
 cd ..
 
-oc apply -f <(istioctl kube-inject -f zotherfiles/recommendations_v2_deployment.yml) -n springistio
+oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deployment.yml) -n springistio
 
-oc apply -f zotherfiles/recommendations_v2_service.yml
+oc apply -f kubernetesfiles/recommendations_v2_service.yml
 
 oc get pods -w
 
@@ -237,7 +242,7 @@ oc project springistio
 
 #### Set all users to recommendations:v2
 ```
-oc create -f routerulefiles/route-rule-recommendations-v2.yml 
+oc create -f istiofiles/route-rule-recommendations-v2.yml 
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
@@ -248,7 +253,7 @@ you should only see v2 being returned
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
 ```
-oc replace -f routerulefiles/route-rule-recommendations-v1.yml 
+oc replace -f istiofiles/route-rule-recommendations-v1.yml 
 
 oc get routerules
 
@@ -271,11 +276,11 @@ Note: the "user-agent" header being forward in the Customer and Preferences cont
 
 #### Set recommendations to all v1
 ```
-oc create -f routerulefiles/route-rule-recommendations-v1.yml 
+oc create -f istiofiles/route-rule-recommendations-v1.yml 
 ```
 #### Set Safari users to v2
 ```
-oc create -f routerulefiles/route-rule-safari-recommendations-v2.yml 
+oc create -f istiofiles/route-rule-safari-recommendations-v2.yml 
 
 oc get routerules
 ```
@@ -295,7 +300,7 @@ oc delete routerule recommendations-safari
 ```
 #### Set mobile users to v2
 ```
-oc create -f routerulefiles/route-rule-mobile-recommendations-v2.yml
+oc create -f istiofiles/route-rule-mobile-recommendations-v2.yml
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-springistio.192.168.99.102.nip.io/
 ```
@@ -325,7 +330,7 @@ if so "oc delete routerule rulename"
 Make sure you are in the main directory
 
 ```
-oc create -f routerulefiles/route-rule-recommendations-v1-mirror-v2.yml 
+oc create -f istiofiles/route-rule-recommendations-v1-mirror-v2.yml 
 
 curl customer-springistio.$(minishift ip).nip.io
 ```

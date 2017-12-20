@@ -9,16 +9,16 @@ public class RecommendationsController {
     @RequestMapping("/")
     public String getRecommendations() {
         
-        System.out.println("Big Red Dog v2");
+        System.out.println("Big Red Dog v1");
 
-        // begin circuit-breaker example
+        /* begin circuit-breaker example
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		}
         System.out.println("recommendations ready to return");
-        // end circuit-breaker example
-        return "Clifford v2";
+        // end circuit-breaker example */
+        return "Clifford v1";
     }
 }
