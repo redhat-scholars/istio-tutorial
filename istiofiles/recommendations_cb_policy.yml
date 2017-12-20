@@ -1,0 +1,17 @@
+---
+apiVersion: config.istio.io/v1alpha2
+kind: DestinationPolicy
+metadata:
+  name: recommendations-circuitbreaker
+spec:
+  destination: 
+    name: recommendations
+    labels:
+      version: v1
+  circuitBreaker:
+    simpleCb:
+      maxConnections: 2
+      httpMaxRequests: 2
+      httpMaxRequestsPerConnection: 1
+      sleepWindow: 30s
+      httpDetectionInterval: 1m

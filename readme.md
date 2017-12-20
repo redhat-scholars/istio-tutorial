@@ -332,5 +332,45 @@ curl customer-springistio.$(minishift ip).nip.io
 
 ### Circuit Breaker
 
+Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
+
+```
+        System.out.println("Big Red Dog v2");
+
+        // begin circuit-breaker example
+        try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {			
+			e.printStackTrace();
+		}
+        System.out.println("recommendations ready to return");
+        // end circuit-breaker example
+        return "Clifford v2";
+```
+Rebuild, redeploy
+```
+cd recommendations
+
+mvn clean compile package
+
+docker build -t example/recommendations:v2 .
+
+docker images | grep recommendations
+
+oc delete pod -l app=recommendations,version=v2
+
+cd ..
+
+curl customer-springistio.$(minishift ip).nip.io
+
+```        
+Whenever you are hitting v2, you will notice the slowness in the response
+
+Add the circuit breaker
+```
+istioctl create -f istiofiles/recommendations_cb_policy.yml
+```
+
+
 
 
