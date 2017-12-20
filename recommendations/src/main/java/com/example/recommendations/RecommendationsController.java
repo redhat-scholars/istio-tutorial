@@ -9,7 +9,7 @@ public class RecommendationsController {
     @RequestMapping("/")
     public String getRecommendations() {
         
-        System.out.println("Big Red Dog");
+        System.out.println("Big Red Dog v1");
 
         return "Clifford v1";
     }

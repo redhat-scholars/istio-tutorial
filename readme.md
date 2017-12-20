@@ -166,7 +166,11 @@ oc describe deployment recommendations | grep Replicas
 ### recommendations:v2 
 So we can experiment with Istio routing rules by making a change to RecommendationsController.java like
 
+```
+System.out.println("Big Red Dog v2");
+
 return "Clifford v2";
+```
 
 The "v2" tag during the docker build is significant.
 
@@ -274,9 +278,33 @@ oc create -f routerulefiles/route-rule-mobile-recommendations-v2.yml
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-springistio.192.168.99.102.nip.io/
 ```
 
-Clean up
+### Clean up
 ```
 oc delete routerule recommendations-safari
 
 oc delete routerule recommendations-default
 ```
+
+### Mirroring Traffic (Dark Launch)
+
+
+
+```
+oc get pods -l app=recommendations
+```
+You should have 2 pods for recommendations based on the steps above
+
+```
+oc get routerules
+```
+You should have NO routerules
+if so "oc delete routerule rulename"
+
+Make sure you are in the main directory
+
+```
+oc create -f routerulefiles/route-rule-recommendations-v1-mirror-v2.yml 
+
+curl customer-springistio.$(minishift ip).nip.io
+```
+
