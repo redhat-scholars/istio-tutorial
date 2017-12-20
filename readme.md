@@ -142,9 +142,28 @@ oc create -f src/main/kubernetes/Service.yml
 curl customer-springistio.$(minishift ip).nip.io
 cd ..
 ```
+## Note: Updating & Redeploying Code
+When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
+```
+cd {servicename}
+
+vi src/main/java/com/example/{servicename}/{Servicename}
+
+Controller.java
+mvn clean package
+docker build examples/{servicename} .
+oc get pod -l app=recommendations | grep recommendations | awk '{print $1}'
+
+oc delete pod -l app=recommendations,version=v1
+```
+Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image
+
+```
+oc describe deployment recommendations | grep Replicas
+```
 
 ## recommendations:v2 
-so we can experiment with Istio routing rules by making a change to RecommendationsController.java like
+So we can experiment with Istio routing rules by making a change to RecommendationsController.java like
 
 return "Clifford v2";
 

@@ -11,6 +11,6 @@ public class RecommendationsController {
         
         System.out.println("Big Red Dog");
 
-        return "Clifford v2";
+        return "Clifford v1";
     }
 }
