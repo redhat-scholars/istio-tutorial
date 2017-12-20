@@ -111,35 +111,55 @@ Add istioctl to your $PATH
 
 ```
 istioctl version
+
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
+
 oc create -f src/main/kubernetes/Service.yml
+
 oc expose service customer
+
 oc get route
+
 curl customer-springistio.$(minishift ip).nip.io
+
 cd ..
 ```
 
 ## Deploy preferences
 ```
 cd preferences
+
 mvn clean package
+
 docker build -t example/preferences .
+
 docker images | grep preferences
+
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
+
 oc create -f src/main/kubernetes/Service.yml
+
 curl customer-springistio.$(minishift ip).nip.io
+
 cd ..
 ```
 
 ## Deploy recommendations
 ```
 cd recommendations
+
 mvn clean package
+
 docker build -t example/recommendations:v1 .
+
 docker images | grep recommendations
+
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
+
 oc create -f src/main/kubernetes/Service.yml
+
 curl customer-springistio.$(minishift ip).nip.io
+
 cd ..
 ```
 ## Note: Updating & Redeploying Code
@@ -190,6 +210,8 @@ example/recommendations                  latest              f072978d9cf6       
 cd ..
 
 oc apply -f <(istioctl kube-inject -f zotherfiles/recommendations_v2_deployment.yml) -n springistio
+
+oc apply -f zotherfiles/recommendations_v2_service.yml
 
 oc get pods -w
 
@@ -307,4 +329,8 @@ oc create -f routerulefiles/route-rule-recommendations-v1-mirror-v2.yml
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
+
+### Circuit Breaker
+
+
 

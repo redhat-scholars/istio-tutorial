@@ -10,6 +10,6 @@ spec:
   - labels:
       version: v1
   mirror:
-    name: recommendations
-    labels: 
+    name: recommendations-v2
+    labels:
       version: v2
