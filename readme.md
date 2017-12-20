@@ -371,7 +371,23 @@ curl customer-springistio.$(minishift ip).nip.io
 ```        
 Whenever you are hitting v2, you will notice the slowness in the response
 
+Watch the logging output of recommendations
+
+```
+Term 1:
+./kubetail.sh recommendations
+
+Term 2:
+curl customer-springistio.$(minishift ip).nip.io
+```
+
+
+```
+ab -n 10 -c 2 -t 1 http://customer-springistio.$(minishift ip).nip.io/
+```
+
 Add the circuit breaker
+
 ```
 istioctl create -f istiofiles/recommendations_cb_policy.yml
 ```
