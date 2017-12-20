@@ -135,7 +135,7 @@ cd ..
 ```
 cd recommendations
 mvn clean package
-docker build -t example/recommendations .
+docker build -t example/recommendations:v1 .
 docker images | grep recommendations
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
 oc create -f src/main/kubernetes/Service.yml

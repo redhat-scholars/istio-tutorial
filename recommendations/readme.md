@@ -1,7 +1,7 @@
 
 1. mvn clean package
 
-2. docker build -t example/recommendations .
+2. docker build -t example/recommendations:v1 .
 
 3. docker images | grep recommendations
 
