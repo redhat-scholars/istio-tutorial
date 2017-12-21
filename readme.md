@@ -270,6 +270,36 @@ By simply removing the rule
 oc delete routerules/recommendations-default
 ```
 
+### Fault Injection
+Apply some chaos engineering by throwing in some HTTP errors or network delays.  Understanding failure scenarios is a critical aspect of microservices architecture  (aka distributed computing)
+
+#### HTTP Error 503
+By default, recommendations v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift
+
+```
+oc get pods -l app=recommendations
+NAME                                  READY     STATUS    RESTARTS   AGE
+recommendations-v1-3719512284-7mlzw   2/2       Running   6          18h
+recommendations-v2-2815683430-vn77w   2/2       Running   0          3h
+```
+
+You can inject 503's, for approximately 50% of the requests
+```
+oc create -f istiofiles/route-rule-recommendations-503.yml 
+curl customer-springistio.$(minishift ip).nip.io
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
+curl customer-springistio.$(minishift ip).nip.io
+C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable * 
+curl customer-springistio.$(minishift ip).nip.io
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 * 
+```
+
+#### Delay
+```
+
+```
+
+
 ### Retry
 Instead of failing immediately, retry the Service N more times
 
@@ -421,11 +451,6 @@ oc delete routerule recommendations-default
 
 #### Blacklist
 
-### Fault Injection
-
-#### Delay
-
-#### 404/503
 
 ### Rate Limiting
 Nothing so far
