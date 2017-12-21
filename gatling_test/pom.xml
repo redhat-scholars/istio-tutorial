@@ -11,14 +11,7 @@
     <name>Gatling Test</name>
     
 
-    <properties>
-        <skip.gatlingTests>false</skip.gatlingTests>
-        <!-- Modify this to suit your envionment before firing IT cases-->
-        <!--
-          sample command to trigger IT cases
-          ./mvw -Dskip.gatlingTests -Dendpoint.url=<to your url> integration-test        
-        -->
-        
+    <properties>        
         <endpoint.url>http://customer-springistio.192.168.99.104.nip.io</endpoint.url>
     </properties>
     <dependencies>

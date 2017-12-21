@@ -6,7 +6,7 @@ import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 
 class RecordedSimulation extends Simulation {
-
+    // val baseURL = System.getProperty("endpoint.url")
 	val httpProtocol = http
 		.baseURL("http://customer-springistio.192.168.99.104.nip.io")
 		.inferHtmlResources()
