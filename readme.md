@@ -234,12 +234,11 @@ cd ..
 
 oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deployment.yml) -n springistio
 
-BURR: Why do I have a 2nd Service?
-
-oc apply -f kubernetesfiles/recommendations_v2_service.yml
-
 oc get pods -w
+```
+Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
+```
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
@@ -306,7 +305,7 @@ and send in several requests
 while true
 do curl customer-springistio.$(minishift ip).nip.io
 echo
-sleep .5
+sleep .1
 done
 ```
 
@@ -634,13 +633,96 @@ cd gatling_test
 mvn integration-test
 ```
 
-If you wish to update the CB
+If you wish to peer inside the CB
 
 ```
 istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n default
+```
+If you wish to update the CB
+
+```
 istioctl replace -f istiofiles/recommendations_cb_policy_app.yml -n default
 ```
 
+Clean up
+
+```
+istioctl delete destinationpolocies recommendations-circuitbreaker -n springistio
+```
 ### Rate Limiting
+Here we will limit the number of concurrent requests into recommendations v2
 
+Current view of RecommendationsController.java
+```
+package com.example.recommendations;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpStatus;
+
+@RestController
+public class RecommendationsController {
+    
+    @RequestMapping("/")
+    public String getRecommendations() {
+        
+        System.out.println("Big Red Dog v1");
+
+        /* begin timeout and/or circuit-breaker example
+        try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {			
+			e.printStackTrace();
+		}
+        System.out.println("recommendations ready to return");
+        // end circuit-breaker example */
+        // throw new ServiceUnavailableException();
+        return "Clifford v1";
+    }
+
+}
+
+@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+class ServiceUnavailableException extends RuntimeException {
+
+}
+```
+
+Now apply the rate limit handler
+
+```
+istioctl create -f istiofiles/recommendations_rate_limit_handler.yml 
+```
+
+Now setup the requestcount quota
+
+```
+istioctl create -f istiofiles/recommendations_rate_limit_handler.yml 
+```
+
+Throw some requests at customer
+
+```bash
+#!/bin/bash
+
+while true
+do curl customer-springistio.$(minishift ip).nip.io
+echo
+sleep .1
+done
+```
+
+And you should see some 429 Too Many Requests 
+
+```
+C100 *{"P1":"Red", "P2":"Big"} && 429 Too Many Requests *
+```
+
+Clean up
+
+```
+istioctl delete -f istiofiles/rate_limit_rule.yml 
+
+istioctl delete -f istiofiles/recommendations_rate_limit_handler.yml
+```
