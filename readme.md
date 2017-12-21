@@ -295,7 +295,7 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 *
 ```
 Clean up
 ```
-
+oc delete routerule recommendations-503
 ```
 #### Delay
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slow, potentially causing a cascading failure in your network of services.
@@ -311,6 +311,10 @@ If you are monitoring the logs for recommendations v1 and v2, you will also see 
 stern recommendations
 or
 ./kubetail.sh
+```
+Clean up
+```
+oc delete routerule recommendations-delay
 ```
 
 ### Retry
