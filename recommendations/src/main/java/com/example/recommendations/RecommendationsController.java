@@ -11,7 +11,7 @@ public class RecommendationsController {
     @RequestMapping("/")
     public String getRecommendations() {
         
-        System.out.println("Big Red Dog v1");
+        System.out.println("Big Red Dog v2");
 
         /* begin timeout and/or circuit-breaker example
         try {
@@ -21,7 +21,7 @@ public class RecommendationsController {
 		}
         System.out.println("recommendations ready to return");
         // end circuit-breaker example */
-        return "Clifford v1";
+        return "Clifford v2";
     }
 
 }

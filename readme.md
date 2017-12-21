@@ -269,6 +269,41 @@ By simply removing the rule
 ```
 oc delete routerules/recommendations-default
 ```
+#### Split traffic between v1 and v2
+Canary Deployment scenario: push v2 into the cluster but slowing send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
+
+```
+oc get pods -l app=recommendations
+NAME                                  READY     STATUS    RESTARTS   AGE
+recommendations-v1-3719512284-7mlzw   2/2       Running   6          2h
+recommendations-v2-2815683430-vn77w   2/2       Running   0          1h
+```
+Create the routerule that will send 90% of requests to v1 and 10% to v2
+```
+oc create -f istiofiles/route-rule-recommendations-v1_and_v2.yml
+```
+and send in several requests
+
+```bash
+#!/bin/bash
+
+while true
+do curl customer-springistio.$(minishift ip).nip.io
+echo
+sleep .5
+done
+```
+
+In another terminal, change the mixture to be 75/25
+```
+oc replace -f istiofiles/route-rule-recommendations-v1_and_v2_75_25.yml
+```
+
+Clean up
+```
+oc delete routerule recommendations-v1-v2
+```
+
 
 ### Fault Injection
 Apply some chaos engineering by throwing in some HTTP errors or network delays.  Understanding failure scenarios is a critical aspect of microservices architecture  (aka distributed computing)
@@ -455,7 +490,7 @@ oc create -f istiofiles/route-rule-mobile-recommendations-v2.yml
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-springistio.192.168.99.102.nip.io/
 ```
 
-### Clean up
+#### Clean up
 ```
 oc delete routerule recommendations-safari
 
