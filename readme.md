@@ -296,10 +296,72 @@ and you will see it work every time
 curl customer-springistio.$(minishift ip).nip.io
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 * 
 ```
+Now, delete the retry rule and see the old behavior, some random 503s
+```
+oc delete routerule recommendations-v2-retry
+curl customer-springistio.$(minishift ip).nip.io
+```
+Now, delete the 503 rule and back to random load-balancing between v1 and v2
+```
+oc delete routerule recommendations-v2-503
+curl customer-springistio.$(minishift ip).nip.io
+```
 
 ### Timeout
-Wait only N seconds before giving up and failing
+Wait only N seconds before giving up and failing.  At this point, no other route rules should be in effect.  oc get routerules and oc delete routerule rulename if there are some.
 
+First, introduce some wait time in recommendations v2. Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
+
+```
+        System.out.println("Big Red Dog v2");
+
+        // begin circuit-breaker example
+        try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {			
+			e.printStackTrace();
+		}
+        System.out.println("recommendations ready to return");
+        // end circuit-breaker example
+        return "Clifford v2";
+```
+Rebuild, redeploy
+```
+cd recommendations
+
+mvn clean compile package
+
+docker build -t example/recommendations:v2 .
+
+docker images | grep recommendations
+
+oc delete pod -l app=recommendations,version=v2
+
+cd ..
+```
+Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond
+
+```
+curl customer-springistio.$(minishift ip).nip.io
+curl customer-springistio.$(minishift ip).nip.io
+curl customer-springistio.$(minishift ip).nip.io
+
+```        
+
+Then add the timeout rule
+
+```
+oc create -f istiofiles/route-rule-recommendations-timeout.yml
+curl customer-springistio.$(minishift ip).nip.io
+```
+You will see it return v1 OR 504 after waiting about 1 second
+
+```
+curl customer-springistio.$(minishift ip).nip.io
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
+curl customer-springistio.$(minishift ip).nip.io
+C100 *{"P1":"Red", "P2":"Big"} && 504 Gateway Timeout * 
+```
 
 ### Smart routing based on user-agent header (Canary Deployment)
 
