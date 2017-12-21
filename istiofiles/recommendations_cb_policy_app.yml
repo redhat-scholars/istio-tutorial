@@ -7,7 +7,7 @@ spec:
   destination: 
     name: recommendations
     labels:
-      version: v1
+      app: recommendations
   circuitBreaker:
     simpleCb:
       maxConnections: 2

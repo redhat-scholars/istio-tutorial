@@ -187,6 +187,10 @@ Based on the Deployment configuration, Kubernetes/OpenShift will recreate the po
 oc describe deployment recommendations | grep Replicas
 ```
 
+## Tracing
+
+## Monitoring
+
 ## Istio RouteRule Changes
 ### recommendations:v2 
 So we can experiment with Istio routing rules by making a change to RecommendationsController.java like
@@ -266,6 +270,10 @@ By simply removing the rule
 oc delete routerules/recommendations-default
 ```
 
+### Timeout
+
+### Retry
+
 ### Smart routing based on user-agent header
 
 What is your user-agent?
@@ -312,9 +320,24 @@ oc delete routerule recommendations-safari
 oc delete routerule recommendations-default
 ```
 
+### Access Control
+
+#### Whitelist
+
+#### Blacklist
+
+### Fault Injection
+
+#### Delay
+
+#### 404/503
+
+### Rate Limiting
+Nothing so far
+
 ### Mirroring Traffic (Dark Launch)
-
-
+Wiretap, eavesdropping
+Note: does not seem to work in 0.4.0
 
 ```
 oc get pods -l app=recommendations
@@ -376,6 +399,9 @@ Watch the logging output of recommendations
 ```
 Term 1:
 ./kubetail.sh recommendations
+or 
+brew install stern
+stern recommendations
 
 Term 2:
 curl customer-springistio.$(minishift ip).nip.io
@@ -384,7 +410,8 @@ curl customer-springistio.$(minishift ip).nip.io
 Add the circuit breaker
 
 ```
-istioctl create -f istiofiles/recommendations_cb_policy.yml
+istioctl create -f istiofiles/recommendations_cb_policy_version_v2.yml
+istioctl get destinationpolicies
 ```
 
 Add some load
@@ -392,6 +419,13 @@ Add some load
 ```
 cd gatling_test
 mvn integration-test
+```
+
+If you wish to update the CB
+
+```
+istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n default
+istioctl replace -f istiofiles/recommendations_cb_policy_app.yml -n default
 ```
 
 

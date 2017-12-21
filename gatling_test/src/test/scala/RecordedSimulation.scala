@@ -25,6 +25,7 @@ class RecordedSimulation extends Simulation {
 			.headers(headers_0)
 			.resources(http("request_1")
 			.get("/favicon.ico")))
-
-	setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+    
+	// 20 concurrent users, each with a single request
+	setUp(scn.inject(atOnceUsers(20))).protocols(httpProtocol)
 }

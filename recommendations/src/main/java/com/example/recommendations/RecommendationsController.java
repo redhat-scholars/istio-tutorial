@@ -11,7 +11,7 @@ public class RecommendationsController {
         
         System.out.println("Big Red Dog v1");
 
-        /* begin circuit-breaker example
+        /* begin timeout and/or circuit-breaker example
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
