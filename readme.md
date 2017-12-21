@@ -363,6 +363,12 @@ curl customer-springistio.$(minishift ip).nip.io
 C100 *{"P1":"Red", "P2":"Big"} && 504 Gateway Timeout * 
 ```
 
+When completed, delete the timeout rule
+
+```
+oc delete routerule recommendations-timeout
+
+```
 ### Smart routing based on user-agent header (Canary Deployment)
 
 What is your user-agent?
