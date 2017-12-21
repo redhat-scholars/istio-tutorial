@@ -497,16 +497,6 @@ oc delete routerule recommendations-safari
 oc delete routerule recommendations-default
 ```
 
-### Access Control
-
-#### Whitelist
-
-#### Blacklist
-
-
-### Rate Limiting
-Nothing so far
-
 ### Mirroring Traffic (Dark Launch)
 Wiretap, eavesdropping
 Note: does not seem to work in 0.4.0
@@ -529,6 +519,17 @@ oc create -f istiofiles/route-rule-recommendations-v1-mirror-v2.yml
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
+
+### Access Control
+
+#### Whitelist
+
+#### Blacklist
+
+
+### Rate Limiting
+Nothing so far
+
 
 ### Circuit Breaker
 
