@@ -293,12 +293,25 @@ C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
 curl customer-springistio.$(minishift ip).nip.io
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 * 
 ```
+Clean up
+```
 
+```
 #### Delay
-```
+The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slow, potentially causing a cascading failure in your network of services.
 
 ```
+oc create -f istiofiles/route-rule-recommendations-delay.yml
+curl customer-springistio.$(minishift ip).nip.io
+```
+You will notice many requets to the customer endpoint now have a delay.
+If you are monitoring the logs for recommendations v1 and v2, you will also see the delay happens BEFORE the recommendations service is actually called
 
+```
+stern recommendations
+or
+./kubetail.sh
+```
 
 ### Retry
 Instead of failing immediately, retry the Service N more times
