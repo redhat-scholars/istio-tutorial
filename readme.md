@@ -532,6 +532,7 @@ Nothing so far
 
 
 ### Circuit Breaker
+Note: Does not work!
 
 Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
 
@@ -621,5 +622,6 @@ istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n defau
 istioctl replace -f istiofiles/recommendations_cb_policy_app.yml -n default
 ```
 
+### Rate Limiting
 
 
