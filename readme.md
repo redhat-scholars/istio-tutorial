@@ -176,7 +176,7 @@ vi src/main/java/com/example/{servicename}/{Servicename}
 
 Controller.java
 mvn clean package
-docker build examples/{servicename} .
+docker build -t example/{servicename} .
 oc get pod -l app=recommendations | grep recommendations | awk '{print $1}'
 
 oc delete pod -l app=recommendations,version=v1
@@ -580,14 +580,34 @@ Term 2:
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-Add the circuit breaker
+Now add the circuit breaker. Note: as of Dec 2017, you have to use istioctl to manipulate destinationpolicies
 
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_version_v2.yml
 istioctl get destinationpolicies
 ```
+More information on the fields for the simple circuit-breaker
+https://istio.io/docs/reference/config/traffic-rules/destination-policies.html#simplecircuitbreakerpolicy
 
 Add some load
+```bash
+#!/bin/bash
+
+while true
+do curl customer-springistio.$(minishift ip).nip.io
+echo
+sleep .5
+done
+```
+
+or use ab
+
+note: the trailing slash is important
+```
+ab -n 10 -c 2 http://customer-springistio.192.168.99.104.nip.io/
+```
+
+or use gatling
 
 ```
 cd gatling_test

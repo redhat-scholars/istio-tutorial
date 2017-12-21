@@ -10,8 +10,8 @@ spec:
       version: v2
   circuitBreaker:
     simpleCb:
-      maxConnections: 2
-      httpMaxRequests: 2
+      maxConnections: 1
+      httpMaxRequests: 1
       httpMaxRequestsPerConnection: 1
       sleepWindow: 30s
-      httpDetectionInterval: 1m
+      httpDetectionInterval: 1s
