@@ -2,7 +2,7 @@ package com.example.recommendations;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
 @RestController
@@ -21,7 +21,13 @@ public class RecommendationsController {
 		}
         System.out.println("recommendations ready to return");
         // end circuit-breaker example */
+        // throw new ServiceUnavailableException();
         return "Clifford v1";
     }
+
+}
+
+@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+class ServiceUnavailableException extends RuntimeException {
 
 }

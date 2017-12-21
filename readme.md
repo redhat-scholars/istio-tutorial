@@ -234,6 +234,8 @@ cd ..
 
 oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deployment.yml) -n springistio
 
+BURR: Why do I have a 2nd Service?
+
 oc apply -f kubernetesfiles/recommendations_v2_service.yml
 
 oc get pods -w
@@ -335,6 +337,7 @@ recommendations-v2-2815683430-vn77w   2/2       Running   0          3h
 You can inject 503's, for approximately 50% of the requests
 ```
 oc create -f istiofiles/route-rule-recommendations-503.yml 
+
 curl customer-springistio.$(minishift ip).nip.io
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
 curl customer-springistio.$(minishift ip).nip.io
@@ -351,6 +354,7 @@ The most insidious of possible distributed computing faults is not a "down" serv
 
 ```
 oc create -f istiofiles/route-rule-recommendations-delay.yml
+
 curl customer-springistio.$(minishift ip).nip.io
 ```
 You will notice many requets to the customer endpoint now have a delay.
@@ -369,8 +373,7 @@ oc delete routerule recommendations-delay
 ### Retry
 Instead of failing immediately, retry the Service N more times
 
-You could update the RecommendationsController.java to throw out some
- 503's or you could leverage Istio's fault injection capability.   We will use Istio and return 503's about 50% of the time
+We will use Istio and return 503's about 50% of the time.  Send all users to v2 which will throw out some 503's
 
 ```
 oc create -f istiofiles/route-rule-recommendations-v2_503.yml 
@@ -395,6 +398,7 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 *
 Now, delete the retry rule and see the old behavior, some random 503s
 ```
 oc delete routerule recommendations-v2-retry
+
 curl customer-springistio.$(minishift ip).nip.io
 ```
 Now, delete the 503 rule and back to random load-balancing between v1 and v2
@@ -448,6 +452,7 @@ Then add the timeout rule
 
 ```
 oc create -f istiofiles/route-rule-recommendations-timeout.yml
+
 curl customer-springistio.$(minishift ip).nip.io
 ```
 You will see it return v1 OR 504 after waiting about 1 second
