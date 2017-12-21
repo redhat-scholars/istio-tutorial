@@ -381,17 +381,18 @@ Term 2:
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-
-```
-ab -n 10 -c 2 -t 1 http://customer-springistio.$(minishift ip).nip.io/
-```
-
 Add the circuit breaker
 
 ```
 istioctl create -f istiofiles/recommendations_cb_policy.yml
 ```
 
+Add some load
+
+```
+cd gatling_test
+mvn integration-test
+```
 
 
 
