@@ -23,10 +23,5 @@ public class RecommendationsController {
         // end circuit-breaker example */
         return "Clifford v1";
     }
-    /*
-    @RequestMapping("/serviceunavailable")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-    }
-    */
+
 }
