@@ -122,6 +122,12 @@ oc get route
 
 curl customer-springistio.$(minishift ip).nip.io
 
+```
+You should see the following error because preferences is not yet deployed, so you only get a partial response of "C100" plus the error message
+```
+C100 *I/O error on GET request for "http://preferences:8080/"
+```
+```
 cd ..
 ```
 
@@ -140,7 +146,13 @@ oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n spr
 oc create -f src/main/kubernetes/Service.yml
 
 curl customer-springistio.$(minishift ip).nip.io
+```
+Preferences returns a value but also an error message based on the missing recommendations service
+```
+C100 *{"P1":"Red", "P2":"Big"} && I/O error on GET request for "http://recommendations:8080/"
+```
 
+```
 cd ..
 ```
 
@@ -157,6 +169,8 @@ docker images | grep recommendations
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
 
 oc create -f src/main/kubernetes/Service.yml
+
+oc get pods 
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
