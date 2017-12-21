@@ -270,11 +270,38 @@ By simply removing the rule
 oc delete routerules/recommendations-default
 ```
 
-### Timeout
-
 ### Retry
+Instead of failing immediately, retry the Service N more times
 
-### Smart routing based on user-agent header
+You could update the RecommendationsController.java to throw out some
+ 503's or you could leverage Istio's fault injection capability.   We will use Istio and return 503's about 50% of the time
+
+```
+oc create -f istiofiles/route-rule-recommendations-v2_503.yml 
+```
+
+Now, if you hit the customer endpoint several times, you should see some 503's
+
+```
+curl customer-springistio.$(minishift ip).nip.io
+C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable * 
+```
+
+Now add the retry rule
+```
+oc create -f istiofiles/route-rule-recommendations-v2_retry.yml 
+```
+and you will see it work every time
+```
+curl customer-springistio.$(minishift ip).nip.io
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 * 
+```
+
+### Timeout
+Wait only N seconds before giving up and failing
+
+
+### Smart routing based on user-agent header (Canary Deployment)
 
 What is your user-agent?
 

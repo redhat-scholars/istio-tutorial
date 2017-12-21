@@ -2,6 +2,8 @@ package com.example.recommendations;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 @RestController
 public class RecommendationsController {
@@ -21,4 +23,10 @@ public class RecommendationsController {
         // end circuit-breaker example */
         return "Clifford v1";
     }
+    /*
+    @RequestMapping("/serviceunavailable")
+    public ResponseEntity<String> hello() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+    }
+    */
 }
