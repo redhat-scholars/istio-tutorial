@@ -549,6 +549,7 @@ curl customer-springistio.$(minishift ip).nip.io
 ### Circuit Breaker
 Note: Does not work!
 
+#### Fail Fast with Max Connections & Max Pending Requests
 Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
 
 ```java
@@ -575,6 +576,11 @@ docker build -t example/recommendations:v2 .
 docker images | grep recommendations
 
 oc delete pod -l app=recommendations,version=v2
+```
+
+The deletion of the previously running pod will cause Kubernetes/OpenShift to restart it based on the new docker image.
+
+```
 
 cd ..
 
@@ -586,13 +592,13 @@ Whenever you are hitting v2, you will notice the slowness in the response
 Watch the logging output of recommendations
 
 ```
-Term 1:
+Terminal 1:
 ./kubetail.sh recommendations
 or 
 brew install stern
 stern recommendations
 
-Term 2:
+Terminal 2:
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
@@ -635,11 +641,15 @@ If you wish to peer inside the CB
 ```
 istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n default
 ```
-If you wish to update the CB
+
+There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recomennedations v2 to be kicked out and all requests handled by v1.
+
+You can replace the previous destinationpolicy like so
 
 ```
 istioctl replace -f istiofiles/recommendations_cb_policy_app.yml -n default
 ```
+and throw some more load at the customer endpoint
 
 Clean up
 
