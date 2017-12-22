@@ -16,7 +16,7 @@ a missing dependent service, it just returns the error message to the end-user.
 ## Setup minishift
 Assumes minishift, tested with minshift v1.10.0+10461c6
 
-My creation script
+Minishift creation script
 ```bash
 #!/bin/bash
 
@@ -122,6 +122,10 @@ oc expose service customer
 
 oc get route
 
+oc get pods -w
+```
+Waiting for Ready 2/2
+```
 curl customer-springistio.$(minishift ip).nip.io
 
 ```
@@ -172,7 +176,7 @@ oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n spr
 
 oc create -f src/main/kubernetes/Service.yml
 
-oc get pods 
+oc get pods -w
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
@@ -193,19 +197,27 @@ vi src/main/java/com/example/{servicename}/{Servicename}
 Controller.java
 mvn clean package
 docker build -t example/{servicename} .
-oc get pod -l app=recommendations | grep recommendations | awk '{print $1}'
+oc get pod -l app={servicename} | grep {servicename} | awk '{print $1}'
 
-oc delete pod -l app=recommendations,version=v1
+oc delete pod -l app={servicename},version=v1
 ```
-Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image
+Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image as it attempts to keep the desired replicas available
 
 ```
 oc describe deployment recommendations | grep Replicas
 ```
 
 ## Tracing
-
+TODO
+```
+minishift openshift service jaeger-query
+```
 ## Monitoring
+TODO
+```
+minishift openshift service prometheus
+minishift openshift service grafana
+```
 
 ## Istio RouteRule Changes
 ### recommendations:v2 
