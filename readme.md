@@ -413,7 +413,7 @@ Wait only N seconds before giving up and failing.  At this point, no other route
 
 First, introduce some wait time in recommendations v2. Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
 
-```
+```java
         System.out.println("Big Red Dog v2");
 
         // begin circuit-breaker example
@@ -556,7 +556,7 @@ Note: Does not work!
 
 Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
 
-```
+```java
         System.out.println("Big Red Dog v2");
 
         // begin circuit-breaker example
@@ -655,7 +655,7 @@ istioctl delete destinationpolocies recommendations-circuitbreaker -n springisti
 Here we will limit the number of concurrent requests into recommendations v2
 
 Current view of RecommendationsController.java
-```
+```java
 package com.example.recommendations;
 
 import org.springframework.web.bind.annotation.RequestMapping;
