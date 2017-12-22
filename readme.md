@@ -546,11 +546,6 @@ curl customer-springistio.$(minishift ip).nip.io
 
 #### Blacklist
 
-
-### Rate Limiting
-Nothing so far
-
-
 ### Circuit Breaker
 Note: Does not work!
 
