@@ -197,7 +197,8 @@ vi src/main/java/com/example/{servicename}/{Servicename}
 Controller.java
 mvn clean package
 docker build -t example/{servicename} .
-oc get pod -l app={servicename} | grep {servicename} | awk '{print $1}'
+oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
+oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
 
 oc delete pod -l app={servicename},version=v1
 ```
@@ -262,7 +263,7 @@ you likely see "Clifford v1"
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-you should see "Clifford v2" as by default you get random load-balancing when there is more than one Pod behind a Service
+you likely see "Clifford v2" as by default you get random load-balancing when there is more than one Pod behind a Service
 
 
 Make sure you have established "springistio" as the namespace/project that you will be working in, allowing you to skip the -n springistio in subsequent commands
@@ -524,8 +525,6 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 
 #### Clean up
 ```
-oc delete routerule recommendations-safari
-
 oc delete routerule recommendations-default
 ```
 
@@ -747,3 +746,78 @@ istioctl delete -f istiofiles/rate_limit_rule.yml
 
 istioctl delete -f istiofiles/recommendations_rate_limit_handler.yml
 ```
+
+### Tips & Tricks
+
+You have two containers in a pod
+```
+oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer
+```
+From these images
+```
+oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer
+```
+Get the pod ids
+```
+CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer)
+PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preferences)
+RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendations,
+version=v1)
+RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendations,version=v2)
+```
+
+The pods all see each other's services
+```
+oc exec $CPOD -c customer curl http://preferences:8080
+oc exec $CPOD -c customer curl http://recommendations:8080
+oc exec $RPOD2 -c recommendations curl http://customer:8080
+```
+
+```
+oc exec $CPOD -c customer curl http://localhost:15000/routes > afile.json
+```
+Look for "route_config_name": "8080", you should see 3 entries for customer, preferences and recommendations
+https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6
+
+Now add a new routerule 
+```
+oc create -f istiofiles/route-rule-recommendations-v2.yml 
+```
+The review the routes again
+```
+oc exec $CPOD -c customer curl http://localhost:15000/routes > bfile.json
+```
+
+Here is the Before:
+https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L41
+
+and
+
+https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L45
+
+And the After:
+https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L41
+
+and
+
+https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L45
+
+
+If you need the Pod IP 
+```
+oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer
+```
+
+Dive into the istio-proxy container
+
+```
+oc exec -it $CPOD -c istio-proxy /bin/bash
+cd /etc/istio/proxy
+ls
+cat envoy-rev3.json
+```
+
+Snowdrop Troubleshooting
+https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md
+
+
