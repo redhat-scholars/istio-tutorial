@@ -644,12 +644,14 @@ istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n defau
 
 There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recomennedations v2 to be kicked out and all requests handled by v1.
 
+You can also comment out the thread.sleep logic and simply return the 503 to see if that kicks it out of the load-balancing pool.
+
 You can replace the previous destinationpolicy like so
 
 ```
 istioctl replace -f istiofiles/recommendations_cb_policy_app.yml -n default
 ```
-and throw some more load at the customer endpoint
+and throw some more requests at the customer endpoint, while also watching the logs for recommendations to see the behavior change.
 
 Clean up
 
@@ -674,9 +676,9 @@ public class RecommendationsController {
     @RequestMapping("/")
     public String getRecommendations() {
         
-        System.out.println("Big Red Dog v1");
+        System.out.println("Big Red Dog v2");
 
-        /* begin timeout and/or circuit-breaker example
+        // begin timeout and/or circuit-breaker example
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
@@ -685,7 +687,7 @@ public class RecommendationsController {
         System.out.println("recommendations ready to return");
         // end circuit-breaker example */
         // throw new ServiceUnavailableException();
-        return "Clifford v1";
+        return "Clifford v2";
     }
 
 }
