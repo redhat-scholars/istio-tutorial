@@ -79,6 +79,8 @@ oc expose svc servicegraph
 
 oc expose svc grafana
 
+oc expose svc prometheus
+
 oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
 
 oc get pods -w
