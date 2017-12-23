@@ -5,15 +5,19 @@ metadata:
   name: recommendations-circuitbreaker
   namespace: springistio
 spec:
+  source:
+    name: preferences
+    labels:
+      app: preferences # all versions
   destination: 
     name: recommendations
     labels:
-      app: recommendations
+      app: recommendations # all versions
+  loadBalancing:
+    name: LEAST_CONN      
   circuitBreaker:
     simpleCb:
-      maxConnections: 1
-      httpMaxPendingRequests: 1
       httpConsecutiveErrors: 1
-      sleepWindow: 1m
+      sleepWindow: 2m
       httpDetectionInterval: 1s
       httpMaxEjectionPercent: 100

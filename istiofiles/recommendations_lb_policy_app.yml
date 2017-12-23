@@ -1,0 +1,14 @@
+---
+apiVersion: config.istio.io/v1alpha2
+kind: DestinationPolicy
+metadata:
+  name: recommendations-loadbalancer
+  namespace: springistio
+spec:
+  destination: 
+    name: recommendations
+    labels:
+      app: recommendations
+  loadBalancing:
+#    name: ROUND_ROBIN      
+     name: LEAST_CONN
