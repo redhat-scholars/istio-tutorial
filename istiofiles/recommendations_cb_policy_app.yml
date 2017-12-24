@@ -7,14 +7,10 @@ metadata:
 spec:
   source:
     name: preferences
-    labels:
-      app: preferences # all versions
   destination: 
     name: recommendations
-    labels:
-      app: recommendations # all versions
   loadBalancing:
-    name: LEAST_CONN      
+    name: RANDOM      
   circuitBreaker:
     simpleCb:
       httpConsecutiveErrors: 1

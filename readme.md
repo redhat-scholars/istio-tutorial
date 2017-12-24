@@ -443,7 +443,7 @@ Wait only N seconds before giving up and failing.  At this point, no other route
 First, introduce some wait time in recommendations v2. Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
 
 ```java
-        System.out.println("Big Red Dog v2");
+        System.out.println("Big Red Dog v2 " + cnt);
 
         // begin circuit-breaker example
         try {
@@ -453,7 +453,7 @@ First, introduce some wait time in recommendations v2. Update RecommendationsCon
 		}
         System.out.println("recommendations ready to return");
         // end circuit-breaker example
-        return "Clifford v2";
+        return "Clifford v2 " + cnt ;
 ```
 Rebuild, redeploy
 ```
@@ -573,24 +573,136 @@ curl customer-springistio.$(minishift ip).nip.io
 
 #### Blacklist
 
+### Load Balancer
+
+By default, you will see "round-robin" style load-balancing, but you can change it up, with the RANDOM option being fairly visible to the naked eye.
+
+Add another v2 pod to the mix
+
+```
+oc scale deployment recommendations-v2 --replicas=2
+
+```
+Wait a bit (oc get pods -w to watch)
+and curl the customer endpoint many times
+
+```
+curl customer-springistio.$(minishift ip).nip.io
+```
+
+Add a 3rd v2 pod to the mix
+
+```
+oc scale deployment recommendations-v2 --replicas=2
+
+oc get pods
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-1755156816-cjd2z             2/2       Running   0          1h
+preferences-3336288630-2cc6f          2/2       Running   0          1h
+recommendations-v1-3719512284-bn42p   2/2       Running   0          59m
+recommendations-v2-2815683430-97nnf   2/2       Running   0          43m
+recommendations-v2-2815683430-d49n6   2/2       Running   0          51m
+recommendations-v2-2815683430-tptf2   2/2       Running   0          33m
+```
+
+Now poll the customer endpoint
+
+```bash
+#!/bin/bash
+
+while true
+do curl customer-springistio.$(minishift ip).nip.io
+echo
+sleep .1
+done
+```
+The results should follow a fairly norma round-robin distribution pattern
+
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 796 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 796 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 326 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 229 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 797 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 797 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 327 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 230 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 798 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 798 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 328 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 231 *
+```
+
+Now, add the Random LB DestinationPolicy
+
+```
+oc create -f istiofiles/recommendations_lb_policy_app.yml
+```
+
+And you should see a very different pattern of which pod is being selected
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 807 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 808 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 809 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 810 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 343 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 344 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 249 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 811 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 250 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 251 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 809 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 812 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 813 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 814 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 815 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 810 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 811 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 252 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 812 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 813 * 
+```
+
+Clean up
+```
+oc delete  -f istiofiles/recommendations_lb_policy_app.yml
+
+oc scale deployment recommendations-v2 --replicas=1
+```
+
 ### Circuit Breaker
 Note: Does not work!
 
 #### Fail Fast with Max Connections & Max Pending Requests
-Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
+Update RecommendationsController.java to include some logic that throws out some 503s.
 
 ```java
-        System.out.println("Big Red Dog v2");
+        System.out.println("Big Red Dog v2 " + cnt);
 
-        // begin circuit-breaker example
+        /* begin circuit-breaker example
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		}
         System.out.println("recommendations ready to return");
-        // end circuit-breaker example
-        return "Clifford v2";
+        // end circuit-breaker example */
+        // inject some poor behavior
+        if (misbehave) {
+            cnt = 0;
+            misbehave = false;
+            throw new ServiceUnavailableException();            
+        } 
+        // */   
+        return "Clifford v2 " + cnt;
+    }
+
+    @RequestMapping("/misbehave")
+    public HttpStatus misbehave() {
+        this.misbehave = true;
+        return HttpStatus.OK;
+    }
+            
 ```
 Rebuild, redeploy
 ```
@@ -629,7 +741,7 @@ Terminal 2:
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-Now add the circuit breaker. Note: as of Dec 2017, you have to use istioctl to manipulate destinationpolicies
+Now add the circuit breaker. 
 
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_version_v2.yml
@@ -638,7 +750,7 @@ istioctl get destinationpolicies
 More information on the fields for the simple circuit-breaker
 https://istio.io/docs/reference/config/traffic-rules/destination-policies.html#simplecircuitbreakerpolicy
 
-Add some load
+Add some load by polling the customer endpoint
 ```bash
 #!/bin/bash
 
@@ -668,17 +780,49 @@ If you wish to peer inside the CB
 ```
 istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n default
 ```
+Clean up
+```
+istioctl delete -f istiofiles/recommendations_cb_policy_app.yml -n default
+```
 
+#### Pool ejection
 There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recommendations v2 to be kicked out and all requests handled by v1.
 
-You can also comment out the thread.sleep logic and simply return the 503 to see if that kicks it out of the load-balancing pool.
-
-You can replace the previous destinationpolicy like so
+Expos the recommendations via an OpenShift Route
 
 ```
-istioctl replace -f istiofiles/recommendations_cb_policy_app.yml -n default
+oc expose service recommendations
+```
+Up the replica count on v2
+```
+oc scale deployment recommendations-v2 --replicas=2
+```
+Hit the newly exposed Route via its url
+```
+oc get route
+curl recommendations-springistio.$(minishift ip).nip.io 
+```
+By defaul, you will see load-balancing behind that URL, across the 3 pods that are currently in play 
+```
+istioctl create -f istiofiles/recommendations_cb_policy_app.yml
 ```
 and throw some more requests at the customer endpoint, while also watching the logs for recommendations to see the behavior change.
+
+```bash
+#!/bin/bash
+
+while true
+do curl customer-springistio.$(minishift ip).nip.io
+echo
+sleep .1
+done
+```
+
+Now throw in some misbehavior
+```
+curl recommendations-springistio.$(minishift ip).nip.io/misbehave 
+```
+
 
 Clean up
 
