@@ -1,4 +1,3 @@
----
 apiVersion: config.istio.io/v1alpha2
 kind: DestinationPolicy
 metadata:
@@ -9,9 +8,7 @@ spec:
     name: preferences
   destination: 
     name: recommendations
-    labels:
-      app: recommendations
   loadBalancing:
     name: RANDOM     
 #    name: LEAST_CONN
-#    name: ROUND_ROBIN
+#   name: ROUND_ROBIN

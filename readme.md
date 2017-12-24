@@ -669,7 +669,7 @@ If you wish to peer inside the CB
 istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n default
 ```
 
-There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recomennedations v2 to be kicked out and all requests handled by v1.
+There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recommendations v2 to be kicked out and all requests handled by v1.
 
 You can also comment out the thread.sleep logic and simply return the 503 to see if that kicks it out of the load-balancing pool.
 
