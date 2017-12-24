@@ -5,10 +5,13 @@ metadata:
   name: recommendations-loadbalancer
   namespace: springistio
 spec:
+  source:
+    name: preferences
   destination: 
     name: recommendations
     labels:
       app: recommendations
   loadBalancing:
-#    name: ROUND_ROBIN      
-     name: LEAST_CONN
+    name: RANDOM     
+#    name: LEAST_CONN
+#    name: ROUND_ROBIN

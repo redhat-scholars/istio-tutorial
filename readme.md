@@ -1,10 +1,7 @@
 # Java (Spring Boot) + Istio on Kubernetes/OpenShift
 
 Istio capabilities explored:
-* Jaeger tracing
-* Prometheus+Grafana monitoring
-* Smart routing between Services (Canary Deployments) including user-agent based routing
-
+(see below)
 
 There are three different and super simple microservices in this system and they are chained together in the following sequence:
 
@@ -12,6 +9,16 @@ customer -> preferences -> recommendations
 
 For now, they have a simple exception handling solution for dealing with 
 a missing dependent service, it just returns the error message to the end-user.
+
+## CLI tools you will need in this tutorial
+* minishift (Minishift download ...)
+* docker (cli downloaded via Docker for Mac)
+* kubectl (cli downloaded ...)
+* oc (cli downloaded via minishift)
+* mvn (download ...)
+* stern (brew install stern)
+* istioctl (will be installed via the steps below)
+* curl, gunzip, tar are built-in to MacOS or part of your bash shell
 
 ## Setup minishift
 Assumes minishift, tested with minshift v1.10.0+10461c6
@@ -26,20 +33,23 @@ Minishift creation script
 
 export PATH=/Users/burr/minishift_1.10.0/:$PATH
 
-minishift profile set istio2-demo
+minishift profile set istio-work
 minishift config set memory 8GB
 minishift config set cpus 3
 minishift config set vm-driver virtualbox
+minishift config set image-caching true
 minishift addon enable admin-user
 minishift config set openshift-version v3.7.0
 
 MINISHIFT_ENABLE_EXPERIMENTAL=y minishift start --metrics
+
 ```
 ## Setup environment
 
 ```
 eval $(minishift oc-env)
 eval $(minishift docker-env)
+oc login $(minishift ip):8443 -u admin -p admin
 ```
 
 ## Istio installation script
@@ -55,6 +65,7 @@ tar -xvzf istio-0.4.0-osx.tar
 
 cd istio-0.4.0
 
+# make sure we are logged in
 oc login $(minishift ip):8443 -u admin -p admin
 
 oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
@@ -83,8 +94,11 @@ oc expose svc prometheus
 
 oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
 
-oc get pods -w
+```
+Wait for Istio's components to be ready
 
+```
+oc get pods -w
 ```
 ## Deploy Customer
 
@@ -107,6 +121,7 @@ mvn clean package
 docker build -t example/customer .
 docker images | grep customer
 ```
+Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
 Currently using the "manual" way of injecting the Envoy sidecar
 Add istioctl to your $PATH
@@ -150,6 +165,8 @@ docker images | grep preferences
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
 
 oc create -f src/main/kubernetes/Service.yml
+
+oc get pods -w
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
@@ -243,7 +260,7 @@ docker build -t example/recommendations:v2 .
 
 docker images | grep recommendations
 example/recommendations                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendations                  latest              f072978d9cf6        17 minutes ago      438MB
+example/recommendations                  latest              f072978d9cf6        8 minutes ago      438MB
 
 cd ..
 
@@ -264,7 +281,6 @@ curl customer-springistio.$(minishift ip).nip.io
 ```
 
 you likely see "Clifford v2" as by default you get random load-balancing when there is more than one Pod behind a Service
-
 
 Make sure you have established "springistio" as the namespace/project that you will be working in, allowing you to skip the -n springistio in subsequent commands
 
