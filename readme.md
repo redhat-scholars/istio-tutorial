@@ -11,14 +11,15 @@ For now, they have a simple exception handling solution for dealing with
 a missing dependent service, it just returns the error message to the end-user.
 
 ## CLI tools you will need in this tutorial
-* minishift (Minishift download ...)
-* docker (cli downloaded via Docker for Mac)
-* kubectl (cli downloaded ...)
-* oc (cli downloaded via minishift)
-* mvn (download ...)
+* minishift (https://github.com/minishift/minishift/releases)
+* docker (https://www.docker.com/docker-mac)
+* kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl)
+* oc (eval $(minishift oc-env))
+* mvn (https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz)
 * stern (brew install stern)
 * istioctl (will be installed via the steps below)
 * curl, gunzip, tar are built-in to MacOS or part of your bash shell
+* git (everybody needs the git CLI)
 
 ## Setup minishift
 Assumes minishift, tested with minshift v1.10.0+10461c6
@@ -46,7 +47,7 @@ MINISHIFT_ENABLE_EXPERIMENTAL=y minishift start --metrics
 ```
 ## Setup environment
 
-```
+```bash
 eval $(minishift oc-env)
 eval $(minishift docker-env)
 oc login $(minishift ip):8443 -u admin -p admin
