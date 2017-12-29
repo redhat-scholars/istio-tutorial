@@ -98,8 +98,24 @@ oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/m
 Wait for Istio's components to be ready
 
 ```
-oc get pods -w
+oc get pods
+NAME                             READY     STATUS    RESTARTS   AGE
+grafana-3617079618-4qs2b         1/1       Running   0          4m
+istio-ca-1363003450-tfnjp        1/1       Running   0          4m
+istio-ingress-1005666339-vrjln   1/1       Running   0          4m
+istio-mixer-465004155-zn78n      3/3       Running   0          5m
+istio-pilot-1861292947-25hnm     2/2       Running   0          4m
+jaeger-210917857-2w24f           1/1       Running   0          4m
+prometheus-168775884-dr5dm       1/1       Running   0          4m
+servicegraph-1100735962-tdh78    1/1       Running   0          4m
 ```
+
+And if you need quick access to the OpenShift console
+
+```
+minishift console
+```
+
 ## Deploy Customer
 
 Make sure you have are logged in
