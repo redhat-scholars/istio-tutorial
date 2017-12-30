@@ -10,7 +10,53 @@ customer -> preferences -> recommendations
 For now, they have a simple exception handling solution for dealing with 
 a missing dependent service, it just returns the error message to the end-user.
 
-## CLI tools you will need in this tutorial
+
+
+<!-- toc -->
+
+* [Prerequisite CLI tools](#prerequisite-cli-tools)
+* [Setup minishift](#setup-minishift)
+* [Setup environment](#setup-environment)
+* [Istio installation script](#istio-installation-script)
+* [Deploy customer](#deploy-customer)
+* [Deploy preferences](#deploy-preferences)
+* [Deploy recommendations](#deploy-recommendations)
+* [Updating & redeploying code](#updating-redeploying-code)
+* [Tracing](#tracing)
+* [Monitoring](#monitoring)
+* [Istio RouteRule Changes](#istio-routerule-changes)
+  * [recommendations:v2](#recommendationsv2)
+* [Changing Istio RouteRules](#changing-istio-routerules)
+    * [All users to recommendations:v2](#all-users-to-recommendationsv2)
+    * [All users to recommendations:v1](#all-users-to-recommendationsv1)
+    * [All users to recommendations v1 and v2](#all-users-to-recommendations-v1-and-v2)
+    * [Split traffic between v1 and v2](#split-traffic-between-v1-and-v2)
+* [Fault Injection](#fault-injection)
+  * [HTTP Error 503](#http-error-503)
+  * [Delay](#delay)
+* [Retry](#retry)
+* [Timeout](#timeout)
+* [Smart routing based on user-agent header (Canary Deployment)](#smart-routing-based-on-user-agent-header-canary-deployment)
+    * [Set recommendations to all v1](#set-recommendations-to-all-v1)
+    * [Set Safari users to v2](#set-safari-users-to-v2)
+    * [Set mobile users to v2](#set-mobile-users-to-v2)
+    * [Clean up](#clean-up)
+* [Mirroring Traffic (Dark Launch)](#mirroring-traffic-dark-launch)
+* [Access Control](#access-control)
+    * [Whitelist](#whitelist)
+    * [Blacklist](#blacklist)
+* [Load Balancer](#load-balancer)
+* [Circuit Breaker](#circuit-breaker)
+    * [Fail Fast with Max Connections & Max Pending Requests](#fail-fast-with-max-connections-max-pending-requests)
+    * [Pool ejection](#pool-ejection)
+* [Rate Limiting](#rate-limiting)
+* [Tips & Tricks](#tips-tricks)
+
+<!-- toc stop -->
+
+
+## Prerequisite CLI tools 
+You will need in this tutorial
 * minishift (https://github.com/minishift/minishift/releases)
 * docker (https://www.docker.com/docker-mac)
 * kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl)
@@ -117,7 +163,7 @@ And if you need quick access to the OpenShift console
 minishift console
 ```
 
-## Deploy Customer
+## Deploy customer
 
 Make sure you have are logged in
 ```
@@ -221,7 +267,7 @@ it returns
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
 
 ```
-## Note: Updating & Redeploying Code
+## Updating & redeploying code
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 ```
 cd {servicename}
@@ -256,7 +302,7 @@ minishift openshift service grafana
 
 ## Istio RouteRule Changes
 ### recommendations:v2 
-So we can experiment with Istio routing rules by making a change to RecommendationsController.java like
+We can experiment with Istio routing rules by making a change to RecommendationsController.java like
 
 ```
 System.out.println("Big Red Dog v2");
@@ -279,6 +325,9 @@ docker images | grep recommendations
 example/recommendations                  v2                  c31e399a9628        5 seconds ago       438MB
 example/recommendations                  latest              f072978d9cf6        8 minutes ago      438MB
 
+```
+*Important:* back up one directory before applying the deployment yaml
+```
 cd ..
 
 oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deployment.yml) -n springistio
@@ -305,9 +354,9 @@ Make sure you have established "springistio" as the namespace/project that you w
 oc project springistio 
 ```
 
-## Istio Route Rules
+## Changing Istio RouteRules
 
-#### Set all users to recommendations:v2
+#### All users to recommendations:v2
 ```
 oc create -f istiofiles/route-rule-recommendations-v2.yml 
 
@@ -368,10 +417,10 @@ oc delete routerule recommendations-v1-v2
 ```
 
 
-### Fault Injection
+## Fault Injection
 Apply some chaos engineering by throwing in some HTTP errors or network delays.  Understanding failure scenarios is a critical aspect of microservices architecture  (aka distributed computing)
 
-#### HTTP Error 503
+### HTTP Error 503
 By default, recommendations v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift
 
 ```
@@ -396,7 +445,7 @@ Clean up
 ```
 oc delete routerule recommendations-503
 ```
-#### Delay
+### Delay
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slow, potentially causing a cascading failure in your network of services.
 
 ```
@@ -417,7 +466,7 @@ Clean up
 oc delete routerule recommendations-delay
 ```
 
-### Retry
+## Retry
 Instead of failing immediately, retry the Service N more times
 
 We will use Istio and return 503's about 50% of the time.  Send all users to v2 which will throw out some 503's
@@ -454,7 +503,7 @@ oc delete routerule recommendations-v2-503
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-### Timeout
+## Timeout
 Wait only N seconds before giving up and failing.  At this point, no other route rules should be in effect.  oc get routerules and oc delete routerule rulename if there are some.
 
 First, introduce some wait time in recommendations v2. Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
@@ -517,7 +566,7 @@ When completed, delete the timeout rule
 oc delete routerule recommendations-timeout
 
 ```
-### Smart routing based on user-agent header (Canary Deployment)
+## Smart routing based on user-agent header (Canary Deployment)
 
 What is your user-agent?
 
@@ -561,7 +610,7 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 oc delete routerule recommendations-default
 ```
 
-### Mirroring Traffic (Dark Launch)
+## Mirroring Traffic (Dark Launch)
 Wiretap, eavesdropping
 Note: does not seem to work in 0.4.0
 
@@ -584,13 +633,13 @@ oc create -f istiofiles/route-rule-recommendations-v1-mirror-v2.yml
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-### Access Control
+## Access Control
 
 #### Whitelist
 
 #### Blacklist
 
-### Load Balancer
+## Load Balancer
 
 By default, you will see "round-robin" style load-balancing, but you can change it up, with the RANDOM option being fairly visible to the naked eye.
 
@@ -687,7 +736,7 @@ oc delete  -f istiofiles/recommendations_lb_policy_app.yml
 oc scale deployment recommendations-v2 --replicas=1
 ```
 
-### Circuit Breaker
+## Circuit Breaker
 Note: Does not work!
 
 #### Fail Fast with Max Connections & Max Pending Requests
@@ -846,7 +895,7 @@ Clean up
 ```
 istioctl delete destinationpolocies recommendations-circuitbreaker -n springistio
 ```
-### Rate Limiting
+## Rate Limiting
 Here we will limit the number of concurrent requests into recommendations v2
 
 Current view of RecommendationsController.java
@@ -924,7 +973,7 @@ istioctl delete -f istiofiles/rate_limit_rule.yml
 istioctl delete -f istiofiles/recommendations_rate_limit_handler.yml
 ```
 
-### Tips & Tricks
+## Tips & Tricks
 
 You have two containers in a pod
 ```
@@ -996,5 +1045,3 @@ cat envoy-rev3.json
 
 Snowdrop Troubleshooting
 https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md
-
-
