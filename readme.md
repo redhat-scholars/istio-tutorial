@@ -1,8 +1,5 @@
 # Java (Spring Boot) + Istio on Kubernetes/OpenShift
 
-Istio capabilities explored:
-(see below)
-
 There are three different and super simple microservices in this system and they are chained together in the following sequence:
 
 customer -> preferences -> recommendations
@@ -10,7 +7,7 @@ customer -> preferences -> recommendations
 For now, they have a simple exception handling solution for dealing with 
 a missing dependent service, it just returns the error message to the end-user.
 
-
+**Table of Contents**
 
 <!-- toc -->
 
