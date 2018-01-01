@@ -7,6 +7,8 @@ customer -> preferences -> recommendations
 For now, they have a simple exception handling solution for dealing with 
 a missing dependent service, it just returns the error message to the end-user.
 
+There are two more simple apps that illustrate how Istio handles egress routes: egressgithub and egresshttpbin
+
 **Table of Contents**
 
 <!-- toc -->
@@ -894,7 +896,7 @@ istioctl delete destinationpolocies recommendations-circuitbreaker -n springisti
 ```
 
 ## Egress
-There are two examples of egress routing, one for httpbin.org and one for github
+There are two examples of egress routing, one for httpbin.org and one for github.  Egress routes allow you to apply rules to how internal services interact with external APIs/services.
 
 #### Create HTTPBin Java App
 ```
