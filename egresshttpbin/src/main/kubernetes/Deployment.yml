@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: egresshttpbin
+    version: v1
+  name: egresshttpbin-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: egresshttpbin
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: egresshttpbin
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true
+        image: example/egresshttpbin:v1
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+        name: egresshttpbin
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+        securityContext:
+          privileged: false
