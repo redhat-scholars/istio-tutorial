@@ -310,16 +310,24 @@ Based on the Deployment configuration, Kubernetes/OpenShift will recreate the po
 oc describe deployment recommendations | grep Replicas
 ```
 
-## Tracing
-TODO
-```
-minishift openshift service jaeger-query
-```
 ## Monitoring
-TODO
+Out of the box, you get monitoring via Prometheus and Grafana.  
 ```
-minishift openshift service prometheus
-minishift openshift service grafana
+minishift openshift service grafana --in-browser
+```
+Inline-style: 
+![alt text](readme_images/grafana1.png "Grafana Istio Dashboard")
+
+```
+minishift openshift service prometheus --in-browser
+```
+
+## Custom Metrics
+
+## Tracing
+
+```
+minishift openshift service jaeger-query --in-browser
 ```
 
 ## Istio RouteRule Changes
