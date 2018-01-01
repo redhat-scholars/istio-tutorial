@@ -200,12 +200,17 @@ User: root@cc5c34bbd1ee
 GolangVersion: go1.8
 
 ```
+Now let's deploy the customer pod with its sidecar
 
 ```
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
 
 oc create -f src/main/kubernetes/Service.yml
 
+```
+Since customer is the forward most microservice (customer -> preferences -> recommendations), let's add an OpenShift Route that exposes that endpoint.
+ 
+```
 oc expose service customer
 
 oc get route
