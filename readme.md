@@ -11,6 +11,8 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 **Table of Contents**
 
+
+
 <!-- toc -->
 
 * [Prerequisite CLI tools](#prerequisite-cli-tools)
@@ -48,10 +50,15 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Circuit Breaker](#circuit-breaker)
     * [Fail Fast with Max Connections & Max Pending Requests](#fail-fast-with-max-connections-max-pending-requests)
     * [Pool ejection](#pool-ejection)
+* [Egress](#egress)
+    * [Create HTTPBin Java App](#create-httpbin-java-app)
+    * [Create the Github Java App](#create-the-github-java-app)
+    * [Istio-ize Egress](#istio-ize-egress)
 * [Rate Limiting](#rate-limiting)
 * [Tips & Tricks](#tips-tricks)
 
 <!-- toc stop -->
+
 
 
 ## Prerequisite CLI tools 
@@ -209,7 +216,7 @@ oc create -f src/main/kubernetes/Service.yml
 
 ```
 Since customer is the forward most microservice (customer -> preferences -> recommendations), let's add an OpenShift Route that exposes that endpoint.
- 
+
 ```
 oc expose service customer
 
@@ -279,7 +286,7 @@ curl customer-springistio.$(minishift ip).nip.io
 it returns
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1 * 
 
 ```
 ## Updating & redeploying code
