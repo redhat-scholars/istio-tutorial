@@ -315,20 +315,51 @@ Out of the box, you get monitoring via Prometheus and Grafana.
 ```
 minishift openshift service grafana --in-browser
 ```
-Inline-style: 
+Make sure to select "Istio Dashboard" in the Grafana Dashboard
+
 ![alt text](readme_images/grafana1.png "Grafana Istio Dashboard")
+
+Scroll-down to see the stats for customer, preferences and recommendations
+
+![alt text](readme_images/grafana2.png "Customer Preferences")
+
+## Custom Metrics
+Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard
 
 ```
 minishift openshift service prometheus --in-browser
 ```
+Add the custom metric and rule
+```
+oc apply -f istiofiles/recommendations_requestcount.yml -n istio-system
+```
+In the Prometheus dashboard, add the following
+```
+round(increase(istio_recommendations_request_count{destination="recommendations.springistio.svc.cluster.local" }[60m]))
+```
+and select Execute
 
-## Custom Metrics
+![alt text](readme_images/prometheus_custom_metric.png "Prometheus with custom metric")
+
+Then run several requests through the system
+```
+curl customer-springistio.$(minishift ip).nip.io
+```
 
 ## Tracing
 
+Tracing requires a bit of work on the Java side.  Each microservice needs to pass on the headers which are used to enable the traces.
+
+https://github.com/burrsutter/istio_tutorial/blob/master/customer/src/main/java/com/example/customer/CustomerController.java#L21-L42
+
+and
+https://github.com/burrsutter/istio_tutorial/blob/master/customer/src/main/java/com/example/customer/CustomerController.java#L49
+
+To open the Jaeger console, select customer from the list of services and Find Traces
 ```
 minishift openshift service jaeger-query --in-browser
 ```
+![alt text](readme_images/jaegerUI.png "Jaeger with Customer")
 
 ## Istio RouteRule Changes
 ### recommendations:v2 
