@@ -186,11 +186,22 @@ docker images | grep customer
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
 Currently using the "manual" way of injecting the Envoy sidecar
-Add istioctl to your $PATH
 
+Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
 ```
+export PATH=/Users/burr/minishift_1.10.0/istio-0.4.0/bin:$PATH
+
 istioctl version
 
+Version: 0.4.0
+GitRevision: 24089ea97c8d244493c93b499a666ddf4010b547-dirty
+GitBranch: 6401744b90b43901b2aa4a8bced33c7bd54ffc13
+User: root@cc5c34bbd1ee
+GolangVersion: go1.8
+
+```
+
+```
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
 
 oc create -f src/main/kubernetes/Service.yml
