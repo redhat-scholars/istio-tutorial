@@ -20,10 +20,10 @@ spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true
+          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
         image: example/preferences:latest
         imagePullPolicy: IfNotPresent
-        livenessProbe:
+        readinessProbe:
           exec:
             command:
             - curl
