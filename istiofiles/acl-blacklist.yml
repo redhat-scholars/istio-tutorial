@@ -1,0 +1,25 @@
+apiVersion: "config.istio.io/v1alpha2"
+kind: denier
+metadata:
+  name: denycustomerhandler
+spec:
+  status:
+    code: 7
+    message: Not allowed
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: checknothing
+metadata:
+  name: denycustomerrequests
+spec:
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: denycustomer
+spec:
+  match: destination.labels["app"] == "preferences" && source.labels["app"]=="customer"
+  actions:
+  - handler: denycustomerhandler.denier
+    instances: [ denycustomerrequests.checknothing ]
+
