@@ -4,7 +4,7 @@ There are three different and super simple microservices in this system and they
 
 customer -> preferences -> recommendations
 
-For now, they have a simple exception handling solution for dealing with 
+For now, they have a simple exception handling solution for dealing with
 a missing dependent service, it just returns the error message to the end-user.
 
 There are two more simple apps that illustrate how Istio handles egress routes: egressgithub and egresshttpbin
@@ -61,7 +61,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 
 
-## Prerequisite CLI tools 
+## Prerequisite CLI tools
 You will need in this tutorial
 * minishift (https://github.com/minishift/minishift/releases)
 * docker (https://www.docker.com/docker-mac)
@@ -81,7 +81,7 @@ Minishift creation script
 #!/bin/bash
 
 # add the location of minishift execuatable to PATH
-# I also keep other handy tools like kubectl and kubetail.sh 
+# I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
 export PATH=/Users/burr/minishift_1.10.0/:$PATH
@@ -112,7 +112,7 @@ oc login $(minishift ip):8443 -u admin -p admin
 
 curl -LO https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz
 
-gunzip istio-0.4.0-osx.tar.gz 
+gunzip istio-0.4.0-osx.tar.gz
 
 tar -xvzf istio-0.4.0-osx.tar
 
@@ -129,9 +129,9 @@ oc adm policy add-scc-to-user anyuid -z default -n istio-system
 
 oc create -f install/kubernetes/istio.yaml
 
-oc project istio-system 
+oc project istio-system
 
-oc expose svc istio-ingress 
+oc expose svc istio-ingress
 
 oc apply -f install/kubernetes/addons/prometheus.yaml
 
@@ -286,7 +286,7 @@ curl customer-springistio.$(minishift ip).nip.io
 it returns
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1 *
 
 ```
 ## Updating & redeploying code
@@ -362,7 +362,7 @@ minishift openshift service jaeger-query --in-browser
 ![alt text](readme_images/jaegerUI.png "Jaeger with Customer")
 
 ## Istio RouteRule Changes
-### recommendations:v2 
+### recommendations:v2
 We can experiment with Istio routing rules by making a change to RecommendationsController.java like
 
 ```
@@ -412,14 +412,14 @@ you likely see "Clifford v2" as by default you get random load-balancing when th
 Make sure you have established "springistio" as the namespace/project that you will be working in, allowing you to skip the -n springistio in subsequent commands
 
 ```
-oc project springistio 
+oc project springistio
 ```
 
 ## Changing Istio RouteRules
 
 #### All users to recommendations:v2
 ```
-oc create -f istiofiles/route-rule-recommendations-v2.yml 
+oc create -f istiofiles/route-rule-recommendations-v2.yml
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
@@ -430,13 +430,13 @@ you should only see v2 being returned
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
 ```
-oc replace -f istiofiles/route-rule-recommendations-v1.yml 
+oc replace -f istiofiles/route-rule-recommendations-v1.yml
 
 oc get routerules
 
-oc get routerules/recommendations-default -o yaml 
+oc get routerules/recommendations-default -o yaml
 ```
-#### All users to recommendations v1 and v2 
+#### All users to recommendations v1 and v2
 By simply removing the rule
 
 ```
@@ -493,14 +493,14 @@ recommendations-v2-2815683430-vn77w   2/2       Running   0          3h
 
 You can inject 503's, for approximately 50% of the requests
 ```
-oc create -f istiofiles/route-rule-recommendations-503.yml 
+oc create -f istiofiles/route-rule-recommendations-503.yml
 
 curl customer-springistio.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 *
 curl customer-springistio.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable * 
+C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
 curl customer-springistio.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 *
 ```
 Clean up
 ```
@@ -533,24 +533,24 @@ Instead of failing immediately, retry the Service N more times
 We will use Istio and return 503's about 50% of the time.  Send all users to v2 which will throw out some 503's
 
 ```
-oc create -f istiofiles/route-rule-recommendations-v2_503.yml 
+oc create -f istiofiles/route-rule-recommendations-v2_503.yml
 ```
 
 Now, if you hit the customer endpoint several times, you should see some 503's
 
 ```
 curl customer-springistio.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable * 
+C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
 ```
 
 Now add the retry rule
 ```
-oc create -f istiofiles/route-rule-recommendations-v2_retry.yml 
+oc create -f istiofiles/route-rule-recommendations-v2_retry.yml
 ```
 and you will see it work every time
 ```
 curl customer-springistio.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 *
 ```
 Now, delete the retry rule and see the old behavior, some random 503s
 ```
@@ -616,9 +616,9 @@ You will see it return v1 OR 504 after waiting about 1 second
 
 ```
 curl customer-springistio.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 *
 curl customer-springistio.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && 504 Gateway Timeout * 
+C100 *{"P1":"Red", "P2":"Big"} && 504 Gateway Timeout *
 ```
 
 When completed, delete the timeout rule
@@ -633,15 +633,15 @@ What is your user-agent?
 
 https://www.whoishostingthis.com/tools/user-agent/
 
-Note: the "user-agent" header being forward in the Customer and Preferences controllers in order for route rule modications around recommendations 
+Note: the "user-agent" header being forward in the Customer and Preferences controllers in order for route rule modications around recommendations
 
 #### Set recommendations to all v1
 ```
-oc create -f istiofiles/route-rule-recommendations-v1.yml 
+oc create -f istiofiles/route-rule-recommendations-v1.yml
 ```
 #### Set Safari users to v2
 ```
-oc create -f istiofiles/route-rule-safari-recommendations-v2.yml 
+oc create -f istiofiles/route-rule-safari-recommendations-v2.yml
 
 oc get routerules
 ```
@@ -689,7 +689,7 @@ if so "oc delete routerule rulename"
 Make sure you are in the main directory
 
 ```
-oc create -f istiofiles/route-rule-recommendations-v1-mirror-v2.yml 
+oc create -f istiofiles/route-rule-recommendations-v1-mirror-v2.yml
 
 curl customer-springistio.$(minishift ip).nip.io
 ```
@@ -698,7 +698,42 @@ curl customer-springistio.$(minishift ip).nip.io
 
 #### Whitelist
 
+We'll create a whitelist on the preferences service to only allow requests from the recommendations service, which will make the preferences service invisible to the customer service. Requests from the customer service to the preferences service will return a 404 Not Found HTTP error code.
+
+```
+istioctl create -f istiofiles/act-whitelist.yml -n springistio
+```
+
+```
+curl customer-springistio.$(minishift ip).nip.io
+C100 *404 Not Found *
+```
+
+##### To reset the environment:
+
+```
+istioctl delete -f istiofiles/act-whitelist.yml -n springistio
+```
+
 #### Blacklist
+
+We'll create a blacklist making the customer service blacklist to the preferences service. Requests from the customer service to the preferences service will return a 403 Forbidden HTTP error code.
+
+```
+istioctl create -f istiofiles/act-blacklist.yml -n springistio
+```
+
+```
+curl customer-springistio.$(minishift ip).nip.io
+C100 *403 Forbidden * 
+```
+
+##### To reset the environment:
+
+```
+istioctl delete -f istiofiles/act-blacklist.yml -n springistio
+```
+
 
 ## Load Balancer
 
@@ -746,17 +781,17 @@ done
 The results should follow a fairly norma round-robin distribution pattern
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 796 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 796 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 326 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 229 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 797 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 797 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 327 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 230 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 798 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 798 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 328 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 796 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 796 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 326 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 229 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 797 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 797 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 327 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 230 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 798 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 798 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 328 *
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 231 *
 ```
 
@@ -768,26 +803,26 @@ oc create -f istiofiles/recommendations_lb_policy_app.yml
 
 And you should see a very different pattern of which pod is being selected
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 807 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 808 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 809 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 810 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 343 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 344 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 249 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 811 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 250 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 251 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 809 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 812 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 813 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 814 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 815 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 810 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 811 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 252 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 812 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 813 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 807 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 808 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 809 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 810 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 343 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 344 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 249 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 811 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 250 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 251 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 809 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 812 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 813 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 814 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 815 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 810 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 811 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 252 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 812 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 813 *
 ```
 
 Clean up
@@ -819,7 +854,7 @@ Update RecommendationsController.java to include some logic that throws out some
             cnt = 0;
             misbehave = false;
             throw new ServiceUnavailableException();            
-        } 
+        }
         // */   
         return "Clifford v2 " + cnt;
     }
@@ -829,7 +864,7 @@ Update RecommendationsController.java to include some logic that throws out some
         this.misbehave = true;
         return HttpStatus.OK;
     }
-            
+
 ```
 Rebuild, redeploy
 ```
@@ -860,7 +895,7 @@ Watch the logging output of recommendations
 ```
 Terminal 1:
 ./kubetail.sh recommendations
-or 
+or
 brew install stern
 stern recommendations
 
@@ -868,7 +903,7 @@ Terminal 2:
 curl customer-springistio.$(minishift ip).nip.io
 ```
 
-Now add the circuit breaker. 
+Now add the circuit breaker.
 
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_version_v2.yml
@@ -927,9 +962,9 @@ oc scale deployment recommendations-v2 --replicas=2
 Hit the newly exposed Route via its url
 ```
 oc get route
-curl recommendations-springistio.$(minishift ip).nip.io 
+curl recommendations-springistio.$(minishift ip).nip.io
 ```
-By defaul, you will see load-balancing behind that URL, across the 3 pods that are currently in play 
+By defaul, you will see load-balancing behind that URL, across the 3 pods that are currently in play
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_app.yml
 ```
@@ -947,7 +982,7 @@ done
 
 Now throw in some misbehavior
 ```
-curl recommendations-springistio.$(minishift ip).nip.io/misbehave 
+curl recommendations-springistio.$(minishift ip).nip.io/misbehave
 ```
 
 
@@ -1055,7 +1090,7 @@ curl httpbin.org/user-agent
 
 curl httpbin.org/headers
 
-exit 
+exit
 ```
 add a egressrule for google
 ```
@@ -1100,10 +1135,10 @@ import org.springframework.http.HttpStatus;
 
 @RestController
 public class RecommendationsController {
-    
+
     @RequestMapping("/")
     public String getRecommendations() {
-        
+
         System.out.println("Big Red Dog v2");
 
         // begin timeout and/or circuit-breaker example
@@ -1129,13 +1164,13 @@ class ServiceUnavailableException extends RuntimeException {
 Now apply the rate limit handler
 
 ```
-istioctl create -f istiofiles/recommendations_rate_limit_handler.yml 
+istioctl create -f istiofiles/recommendations_rate_limit_handler.yml
 ```
 
 Now setup the requestcount quota
 
 ```
-istioctl create -f istiofiles/recommendations_rate_limit_handler.yml 
+istioctl create -f istiofiles/recommendations_rate_limit_handler.yml
 ```
 
 Throw some requests at customer
@@ -1150,7 +1185,7 @@ sleep .1
 done
 ```
 
-And you should see some 429 Too Many Requests 
+And you should see some 429 Too Many Requests
 
 ```
 C100 *{"P1":"Red", "P2":"Big"} && 429 Too Many Requests *
@@ -1159,7 +1194,7 @@ C100 *{"P1":"Red", "P2":"Big"} && 429 Too Many Requests *
 Clean up
 
 ```
-istioctl delete -f istiofiles/rate_limit_rule.yml 
+istioctl delete -f istiofiles/rate_limit_rule.yml
 
 istioctl delete -f istiofiles/recommendations_rate_limit_handler.yml
 ```
@@ -1196,9 +1231,9 @@ oc exec $CPOD -c customer curl http://localhost:15000/routes > afile.json
 Look for "route_config_name": "8080", you should see 3 entries for customer, preferences and recommendations
 https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6
 
-Now add a new routerule 
+Now add a new routerule
 ```
-oc create -f istiofiles/route-rule-recommendations-v2.yml 
+oc create -f istiofiles/route-rule-recommendations-v2.yml
 ```
 The review the routes again
 ```
@@ -1220,7 +1255,7 @@ and
 https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L45
 
 
-If you need the Pod IP 
+If you need the Pod IP
 ```
 oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer
 ```
