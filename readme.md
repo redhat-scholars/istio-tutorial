@@ -609,13 +609,17 @@ Wait only N seconds before giving up and failing.  At this point, no other route
 First, introduce some wait time in recommendations v2. Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
 
 ```java
+    @RequestMapping("/")
+    public String getRecommendations() {
+        
+        cnt ++;        
         System.out.println("Big Red Dog v2 " + cnt);
 
         // begin circuit-breaker example
         try {
-			Thread.sleep(3000);
+            Thread.sleep(3000);
 		} catch (InterruptedException e) {			
-			e.printStackTrace();
+            e.printStackTrace();
 		}
         System.out.println("recommendations ready to return");
         // end circuit-breaker example
@@ -960,7 +964,7 @@ Now add the circuit breaker.
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_version_v2.yml -n tutorial
 
-istioctl get destinationpolicies 
+istioctl get destinationpolicies -n tutorial
 ```
 More information on the fields for the simple circuit-breaker
 https://istio.io/docs/reference/config/traffic-rules/destination-policies.html#simplecircuitbreakerpolicy
@@ -980,7 +984,7 @@ or use ab
 
 note: the trailing slash is important
 ```
-ab -n 10 -c 2 http://customer-tutorial.192.168.99.102.nip.io/
+ab -n 10 -c 2 http://customer-tutorial.192.168.99.103.nip.io/
 ```
 
 or use gatling
@@ -1017,7 +1021,7 @@ Hit the newly exposed Route via its url
 oc get route
 curl recommendations-tutorial.$(minishift ip).nip.io
 ```
-By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play
+By default, you will see load-balancing behind that URL, across the 3 pods (single v1 and two v2 pods) that are currently in play
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
 ```

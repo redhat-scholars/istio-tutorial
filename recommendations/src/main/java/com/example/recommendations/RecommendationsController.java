@@ -15,9 +15,9 @@ public class RecommendationsController {
     public String getRecommendations() {
         
         cnt ++;
-        System.out.println("Big Red Dog v1 " + cnt);
+        System.out.println("Big Red Dog v2 " + cnt);
         
-        /* begin timeout and/or circuit-breaker example 
+        // begin timeout and/or circuit-breaker example 
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
@@ -25,14 +25,14 @@ public class RecommendationsController {
 		}
         System.out.println("recommendations ready to return");
         // end circuit-breaker example */
-        /* inject some poor behavior
+        // inject some poor behavior
         if (misbehave) {
             cnt = 0;
             misbehave = false;
             throw new ServiceUnavailableException();            
         } 
         // */       
-        return "Clifford v1 " + cnt;
+        return "Clifford v2 " + cnt;
         
     }
 
