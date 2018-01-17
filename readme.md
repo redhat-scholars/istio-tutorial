@@ -320,7 +320,7 @@ Why the delete pod?
 Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image as it attempts to keep the desired replicas available
 
 ```
-oc describe deployment recommendations | grep Replicas
+oc describe deployment {servicename} | grep Replicas
 ```
 
 ## Monitoring
@@ -833,8 +833,7 @@ recommendations-v2-2815683430-97nnf   2/2       Running   0          43m
 recommendations-v2-2815683430-d49n6   2/2       Running   0          51m
 recommendations-v2-2815683430-tptf2   2/2       Running   0          33m
 ```
-
-Now poll the customer endpoint
+Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint
 
 ```bash
 #!/bin/bash
@@ -848,14 +847,14 @@ done
 The results should follow a fairly normal round-robin distribution pattern
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 796 *
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 73 *
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2 *
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 3 *
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 797 *
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 74 *
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 3 *
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 4 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 9 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 7 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 1 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 1 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 10 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 8 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2 * 
 ```
 
 Now, add the Random LB DestinationPolicy
@@ -866,25 +865,21 @@ oc create -f istiofiles/recommendations_lb_policy_app.yml -n tutorial
 
 And you should see a different pattern of which pod is being selected
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 4 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 4 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 744 * 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 5 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 745 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 75 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 76 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 12 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 5 * 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 6 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 77 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 6 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 13 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 14 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 15 * 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 7 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 746 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 747 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 5 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 8 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 14 * 
 ```
 
 Clean up
 ```
-oc delete  -f istiofiles/recommendations_lb_policy_app.yml -n tutorial
+oc delete -f istiofiles/recommendations_lb_policy_app.yml -n tutorial
 
 oc scale deployment recommendations-v2 --replicas=1 -n tutorial
 ```
@@ -1022,9 +1017,9 @@ Hit the newly exposed Route via its url
 oc get route
 curl recommendations-tutorial.$(minishift ip).nip.io
 ```
-By defaul, you will see load-balancing behind that URL, across the 3 pods that are currently in play
+By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play
 ```
-istioctl create -f istiofiles/recommendations_cb_policy_app.yml
+istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
 ```
 and throw some more requests at the customer endpoint, while also watching the logs for recommendations to see the behavior change.
 
