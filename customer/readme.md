@@ -30,9 +30,9 @@ should look like
 
 6. oc login
 
-7. oc new-project springistio
+7. oc new-project tutorial
 
-8. oc adm policy add-scc-to-user privileged -z default -n springistio
+8. oc adm policy add-scc-to-user privileged -z default -n tutorial
 
 9. mvn clean package
 
@@ -44,7 +44,7 @@ should look like
 
 istioctl version
 
-13. oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n springistio
+13. oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
 14. oc create -f src/main/kubernetes/Service.yml
 
@@ -52,7 +52,7 @@ istioctl version
 
 16. oc get route
 
-17. curl customer-springistio.$(minishift ip).nip.io
+17. curl customer-tutorial.$(minishift ip).nip.io
 
 Note: you may see errors related to preferences being unavailable
 

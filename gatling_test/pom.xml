@@ -12,7 +12,7 @@
     
 
     <properties>        
-        <endpoint.url>http://customer-springistio.192.168.99.104.nip.io</endpoint.url>
+        <endpoint.url>http://customer-tutorial.192.168.99.104.nip.io</endpoint.url>
     </properties>
     <dependencies>
         <!-- Gatling Test -->
