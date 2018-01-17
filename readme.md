@@ -798,7 +798,7 @@ oc scale deployment recommendations-v2 --replicas=1
 ```
 
 ## Circuit Breaker
-Note: Does not work!
+<s>Note: Does not work!</s>
 
 #### Fail Fast with Max Connections & Max Pending Requests
 Update RecommendationsController.java to include some logic that throws out some 503s.
@@ -806,14 +806,14 @@ Update RecommendationsController.java to include some logic that throws out some
 ```java
         System.out.println("Big Red Dog v2 " + cnt);
 
-        /* begin circuit-breaker example
+        /* begin circuit-breaker example */
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		}
         System.out.println("recommendations ready to return");
-        // end circuit-breaker example */
+        // end circuit-breaker example
         // inject some poor behavior
         if (misbehave) {
             cnt = 0;
