@@ -4,12 +4,14 @@ metadata:
   name: recommendations-mirror
 spec:
   destination:
+    namespace: tutorial
     name: recommendations
   precedence: 1
   route:
   - labels:
       version: v1
   mirror:
+    namespace: tutorial
     name: recommendations-v2
     labels:
       version: v2

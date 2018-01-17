@@ -3,11 +3,13 @@ apiVersion: config.istio.io/v1alpha2
 kind: DestinationPolicy
 metadata:
   name: recommendations-circuitbreaker
-  namespace: springistio
+  namespace: tutorial
 spec:
   source:
+    namespace: tutorial
     name: preferences
   destination: 
+    namespace: tutorial
     name: recommendations
   loadBalancing:
     name: RANDOM      

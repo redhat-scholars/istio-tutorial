@@ -34,7 +34,7 @@ metadata:
   name: recommendationsrequestcountprom
   namespace: istio-system
 spec:
-  match: destination.service == "recommendations.springistio.svc.cluster.local"
+  match: destination.service == "recommendations.tutorial.svc.cluster.local"
   actions:
   - handler: recommendationsrequestcounthandler.prometheus
     instances:

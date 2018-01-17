@@ -4,6 +4,7 @@ metadata:
   name: recommendations-v2-retry
 spec:
   destination:
+    namespace: tutorial
     name: recommendations
   precedence: 3
   route:

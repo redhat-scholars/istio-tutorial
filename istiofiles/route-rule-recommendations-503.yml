@@ -4,6 +4,7 @@ metadata:
   name: recommendations-503
 spec:
   destination:
+    namespace: tutorial
     name: recommendations
   precedence: 2
   route:

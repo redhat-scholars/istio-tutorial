@@ -4,6 +4,7 @@ metadata:
   name: recommendations-timeout
 spec:
   destination:
+    namespace: tutorial
     name: recommendations
   precedence: 1
   route:

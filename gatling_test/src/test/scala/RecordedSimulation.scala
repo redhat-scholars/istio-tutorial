@@ -8,7 +8,7 @@ import io.gatling.jdbc.Predef._
 class RecordedSimulation extends Simulation {
     // val baseURL = System.getProperty("endpoint.url")
 	val httpProtocol = http
-		.baseURL("http://customer-springistio.192.168.99.104.nip.io")
+		.baseURL("http://customer-tutorial.192.168.99.102.nip.io")
 		.inferHtmlResources()
 		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 		.acceptEncodingHeader("gzip, deflate")

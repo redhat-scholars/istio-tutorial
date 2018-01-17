@@ -5,6 +5,7 @@ metadata:
   name: recommendations-circuitbreaker
 spec:
   destination: 
+    namespace: tutorial
     name: recommendations
     labels:
       version: v2
