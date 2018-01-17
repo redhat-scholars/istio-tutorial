@@ -23,14 +23,14 @@ spec:
           value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
         image: example/preferences:latest
         imagePullPolicy: IfNotPresent
-        readinessProbe:
+        livenessProbe:
           exec:
             command:
             - curl
             - localhost:8080/health
           initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 1
         name: preferences
         ports:
         - containerPort: 8080
@@ -49,6 +49,6 @@ spec:
             - localhost:8080/health
           initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 1
         securityContext:
           privileged: false
