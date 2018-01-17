@@ -86,7 +86,7 @@ Minishift creation script
 
 export PATH=/Users/burr/minishift_1.10.0/:$PATH
 
-minishift profile set istio-work
+minishift profile set tutorial
 minishift config set memory 8GB
 minishift config set cpus 3
 minishift config set vm-driver virtualbox
