@@ -3,9 +3,11 @@ apiVersion: config.istio.io/v1alpha2
 kind: DestinationPolicy
 metadata:
   name: recommendations-circuitbreaker
+  namespace: springistio
 spec:
   destination: 
     name: recommendations
+    namespace: springistio
     labels:
       version: v2
   circuitBreaker:
