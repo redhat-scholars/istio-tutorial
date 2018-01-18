@@ -992,12 +992,16 @@ note: the trailing slash is important
 ab -n 10 -c 2 http://customer-tutorial.192.168.99.103.nip.io/
 ```
 
-or use gatling
+or use gatling, but first modify the URL gatling is pointing at
+https://github.com/redhat-developer-demos/istio-tutorial/blob/master/gatling_test/src/test/scala/RecordedSimulation.scala#L11
 
+then 
 ```
 cd gatling_test
 mvn integration-test
 ```
+and open the generated report
+
 
 If you wish to peer inside the CB
 
