@@ -296,8 +296,13 @@ it returns
 
 ```
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1 *
+```
+Back to the main istio-tutorial directory
 
 ```
+cd ..
+```
+
 ## Updating & redeploying code
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 ```
