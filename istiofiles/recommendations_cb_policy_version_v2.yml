@@ -12,7 +12,13 @@ spec:
   circuitBreaker:
     simpleCb:
       maxConnections: 1
-      httpMaxRequests: 1
-      httpMaxRequestsPerConnection: 1
-      sleepWindow: 30s
+      httpMaxPendingRequests: 1
+      sleepWindow: 2m      
       httpDetectionInterval: 1s
+      httpMaxEjectionPercent: 100      
+      httpConsecutiveErrors: 1
+#      httpMaxRequests: 1
+      httpMaxRequestsPerConnection: 1
+      
+
+
