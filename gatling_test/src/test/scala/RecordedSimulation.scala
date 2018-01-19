@@ -8,7 +8,7 @@ import io.gatling.jdbc.Predef._
 class RecordedSimulation extends Simulation {
     // val baseURL = System.getProperty("endpoint.url")
 	val httpProtocol = http
-		.baseURL("http://customer-tutorial.192.168.99.103.nip.io")
+		.baseURL("http://customer-tutorial.192.168.99.100.nip.io")
 		.inferHtmlResources()
 		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 		.acceptEncodingHeader("gzip, deflate")
@@ -25,7 +25,7 @@ class RecordedSimulation extends Simulation {
     
     // to see it in real action worth adding some Load to the system earlier and then fire this test 
 	// making sure my load gets the response in right expected responseTime
-	setUp(scn.inject(atOnceUsers(4)))
+	setUp(scn.inject(atOnceUsers(2)))
         .assertions(global.responseTime.max.lt(3000))
         .protocols(httpProtocol)
 }
