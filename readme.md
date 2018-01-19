@@ -94,7 +94,7 @@ minishift config set image-caching true
 minishift addon enable admin-user
 minishift config set openshift-version v3.7.0
 
-MINISHIFT_ENABLE_EXPERIMENTAL=y minishift start --metrics
+minishift start
 
 ```
 ## Setup environment
