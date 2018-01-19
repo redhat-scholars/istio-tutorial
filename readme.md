@@ -1123,7 +1123,15 @@ Next establish the Destination Policy
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
 ```
-And now throw in some misbehavior
+
+Simply just delete the v2 pod as that will cause 5xx errors
+
+```
+oc delete pod -l app=recommendations,version=v2
+```
+
+OR throw in some misbehavior
+
 ```
 curl recommendations-tutorial.$(minishift ip).nip.io/misbehave
 ```

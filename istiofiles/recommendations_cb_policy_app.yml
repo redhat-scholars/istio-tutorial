@@ -10,8 +10,8 @@ spec:
   destination: 
     namespace: tutorial
     name: recommendations
-#  loadBalancing:
-#    name: RANDOM      
+  loadBalancing:
+    name: RANDOM      
   circuitBreaker:
     simpleCb:
       httpConsecutiveErrors: 1
