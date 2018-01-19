@@ -168,6 +168,8 @@ And if you need quick access to the OpenShift console
 ```
 minishift console
 ```
+Note: on your first launch of the OpenShift console via minishift, you will like receive a warning with
+"Your connection is not private", it depends on your browser type and settings.  Simply select "Proceed to 192.168.99.100 (unsafe)" to bypass the warning.
 
 ## Deploy customer
 
