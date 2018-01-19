@@ -29,7 +29,7 @@ public class RecommendationsController {
         if (misbehave) {
             cnt = 0;
             misbehave = false;
-            throw new ServiceUnavailableException();            
+            throw new ServiceUnavailableException("Ain't Misbehaving");            
         } 
         // */       
         return "Clifford v1 " + cnt;
@@ -44,8 +44,9 @@ public class RecommendationsController {
     
 }
 
-
 @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
 class ServiceUnavailableException extends RuntimeException {
-
+    public ServiceUnavailableException(String message) {
+        super(message);
+    }
 }
