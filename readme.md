@@ -1151,7 +1151,7 @@ cd egresshttpbin/
 
 mvn spring-boot:run
 
-curl locahost:8080
+curl localhost:8080
 
 ctrl-c
 
