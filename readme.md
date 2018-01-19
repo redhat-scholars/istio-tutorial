@@ -272,7 +272,7 @@ Wait for the Ready 2/2
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 It will resond with an error
-```
+```json
 {"timestamp":1516385503177,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
 ```
 and check out the logs 
@@ -912,12 +912,49 @@ oc scale deployment recommendations-v2 --replicas=1 -n tutorial
 Note: Does not work!
 
 #### Fail Fast with Max Connections & Max Pending Requests
-Update RecommendationsController.java to include some logic that throws out some 503s.
+First, you need to insure you have a routerule in place.  Let's use a 50/50 split of traffic which is more like the default behavior of Kubernetes.  
+
+```
+oc create -f istiofiles/route-rule-recommendations-v1_and_v2_50_50.yml -n tutorial
+```
+
+and if you polling the endpoint repeatedly, you will see the Istio behavior:
+
+```bash
+#!/bin/bash
+
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+echo
+sleep .5
+done
+```
+Output
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 25* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 26* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 27* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 17* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 18* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 19* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 20* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 28* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 29* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 30* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 21*
+```
+With vanilla Kubernetes/OpenShift, the distrubtion of load is more round robin, while with Istio it is 50/50 but more random.
+
+Next, update RecommendationsController.java to include some sleep logic and that throws out some 503s.
 
 ```java
+    @RequestMapping("/")
+    public String getRecommendations() {
+        
+        cnt ++;
         System.out.println("Big Red Dog v2 " + cnt);
-
-        // begin circuit-breaker example
+        
+        // begin timeout and/or circuit-breaker example 
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
@@ -930,9 +967,10 @@ Update RecommendationsController.java to include some logic that throws out some
             cnt = 0;
             misbehave = false;
             throw new ServiceUnavailableException();            
-        }
-        // */   
+        } 
+        // */       
         return "Clifford v2 " + cnt;
+        
     }
 
     @RequestMapping("/misbehave")
@@ -945,13 +983,9 @@ Update RecommendationsController.java to include some logic that throws out some
 Rebuild, redeploy
 ```
 cd recommendations
-
 mvn clean compile package
-
 docker build -t example/recommendations:v2 .
-
 docker images | grep recommendations
-
 oc delete pod -l app=recommendations,version=v2 -n tutorial
 ```
 
@@ -960,10 +994,19 @@ The deletion of the previously running pod will cause Kubernetes/OpenShift to re
 Back to the main directory
 ```
 cd ..
+```
+and test the customer endpoint
 
-curl customer-tutorial.$(minishift ip).nip.io
+```bash
+#!/bin/bash
 
-```        
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+echo
+sleep .5
+done
+```
+
 Whenever you are hitting v2, you will notice the slowness in the response based on the Thread.sleep(3000)
 
 Watch the logging output of recommendations
@@ -973,7 +1016,7 @@ Terminal 1:
 ./kubetail.sh recommendations -n tutorial
 or
 brew install stern
-stern recommendations -n tutorial
+stern recommendations -c recommendations -n tutorial
 
 Terminal 2:
 curl customer-tutorial.$(minishift ip).nip.io
@@ -989,25 +1032,8 @@ istioctl get destinationpolicies -n tutorial
 More information on the fields for the simple circuit-breaker
 https://istio.io/docs/reference/config/traffic-rules/destination-policies.html#simplecircuitbreakerpolicy
 
-Add some load by polling the customer endpoint
-```bash
-#!/bin/bash
 
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-echo
-sleep .5
-done
-```
-
-or use ab
-
-note: the trailing slash is important
-```
-ab -n 10 -c 2 http://customer-tutorial.192.168.99.103.nip.io/
-```
-
-or use gatling, but first modify the URL gatling is pointing at
+Use gatling, but first modify the URL gatling is pointing at
 https://github.com/redhat-developer-demos/istio-tutorial/blob/master/gatling_test/src/test/scala/RecordedSimulation.scala#L11
 
 then 
@@ -1015,17 +1041,51 @@ then
 cd gatling_test
 mvn integration-test
 ```
-and open the generated report
+and open the generated report.  
 
+Note: the file name of the report is output from the "mvn integration-test" execution.
+
+```
+open /Users/burr/minishift_1.10.0/redhat-developer-demos2/istio-tutorial/gatling_test/target/gatling/recordedsimulation-1516395386155/index.html
+```
+
+When using 2 concurrent users, all requests are likely to succeed, there are in fact 2 pods of recommendations available.
+
+Change the atOnceUsers(2) to atOnceUsers(3) and re-run.
+https://github.com/redhat-developer-demos/istio-tutorial/blob/master/gatling_test/src/test/scala/RecordedSimulation.scala#L28
+
+```
+mvn integration-test
+```
+
+It will still likely succeed. Change the atOnceUsers(5), for 5 concurrent requests
+
+```
+mvn integration-test
+```
+
+At this point, that is enough load to have tripped the circuit-breaker and you should see some failures in the report.
 
 If you wish to peer inside the CB
 
 ```
-istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n default
+istioctl get destinationpolicies recommendations-circuitbreaker -o yaml -n tutorial
 ```
+
+Now, delete the Destination Policy 
+```
+istioctl delete destinationpolicy recommendations-circuitbreaker -n tutorial
+```
+and re-run the load test
+```
+mvn integration-test
+```
+Now, even with a load of 5 where there are only two pods, you should see all requests succeed as there is no circuit-breaker in the middle, tripping/opening.
+
+
 Clean up
 ```
-istioctl delete -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
+oc delete routerule recommendations-v1-v2 -n tutorial
 ```
 
 #### Pool ejection
@@ -1071,6 +1131,8 @@ Clean up
 
 ```
 istioctl delete destinationpolocies recommendations-circuitbreaker -n tutorial
+
+oc delete routerule recommendations-v1-v2 -n tutorial
 ```
 
 ## Egress
