@@ -14,7 +14,8 @@ public class RecommendationsController {
     @RequestMapping("/")
     public String getRecommendations() {
         
-        cnt ++;
+        cnt ++;        
+
         System.out.println("Big Red Dog v1 " + cnt);
         
         /* begin timeout and/or circuit-breaker example 
@@ -27,9 +28,10 @@ public class RecommendationsController {
         // end circuit-breaker example */
         /* inject some poor behavior
         if (misbehave) {
-            cnt = 0;
-            misbehave = false;
-            throw new ServiceUnavailableException("Ain't Misbehaving");            
+              misbehave = false;
+              cnt = 0;
+            System.out.println("Misbehaving " + cnt);
+            throw new ServiceUnavailableException("D'oh");
         } 
         // */       
         return "Clifford v1 " + cnt;
@@ -38,7 +40,7 @@ public class RecommendationsController {
 
     @RequestMapping("/misbehave")
     public HttpStatus misbehave() {
-        this.misbehave = true;
+        this.misbehave = true; // set a flag
         return HttpStatus.OK;
     }
     
