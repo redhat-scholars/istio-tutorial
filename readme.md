@@ -896,6 +896,8 @@ oc scale deployment recommendations-v2 --replicas=1 -n tutorial
 ## Circuit Breaker
 Note: Does not work!
 
+TODO: Add details of the scenarios and mandatory RouteRule for Destination Policy to work
+
 #### Fail Fast with Max Connections & Max Pending Requests
 Update RecommendationsController.java to include some logic that throws out some 503s.
 
