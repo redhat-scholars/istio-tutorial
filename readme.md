@@ -234,11 +234,21 @@ Waiting for Ready 2/2, to break out of the waiting use "ctrl-c"
 curl customer-tutorial.$(minishift ip).nip.io
 
 ```
-You should see the following error because preferences is not yet deployed, so you only get a partial response of "C100" plus the error message since preferences and recommendations are not yet deployed.
+You should see the following error because preferences and recommendations are not yet deployed.
 
 ```
-C100 *I/O error on GET request for "http://preferences:8080/"
+{"timestamp":1516383629819,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"I/O error on GET request for \"http://preferences:8080/\": preferences; nested exception is java.net.UnknownHostException: preferences","path":"/"}
+
 ```
+Also review the logs
+```
+stern customer -c customer
+
+Ex:I/O error on GET request for "http://preferences:8080/": preferences; nested exception is java.net.UnknownHostException: preferences
+```
+
+In theory, this code could respond with a more valid and end-user friendly partial response BUT we wish to have the actual HTTP error code flow back.
+
 Back to the main istio-tutorial directory
 
 ```
@@ -265,11 +275,17 @@ Wait for the Ready 2/2
 ```
 curl customer-tutorial.$(minishift ip).nip.io
 ```
-Preferences returns a value but also an error message based on the missing recommendations service
+It will resond with an error
+```
+{"timestamp":1516385503177,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
+```
+and check out the logs 
+```
+stern preferences -c preferences
 
+Ex:I/O error on GET request for "http://recommendations:8080/": recommendations; nested exception is java.net.UnknownHostException: recommendations
 ```
-C100 *{"P1":"Red", "P2":"Big"} && I/O error on GET request for "http://recommendations:8080/"
-```
+Back to the main istio-tutorial directory
 
 ```
 cd ..
@@ -297,7 +313,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 it returns
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1*
 ```
 Back to the main istio-tutorial directory
 

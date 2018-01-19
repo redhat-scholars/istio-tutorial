@@ -48,7 +48,9 @@ public class CustomerController {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-            return response;
+            responseBody = response.getBody();
+            String newBody = "C100 *" + responseBody + "* ";
+            return new ResponseEntity<String>(newBody,HttpStatus.OK);
         } catch (Exception e) {
             responseBody = e.getMessage();
             System.out.println("Ex:" + responseBody);

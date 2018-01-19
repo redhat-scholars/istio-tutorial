@@ -49,7 +49,10 @@ public class PreferencesController {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-            return response;
+            responseBody = response.getBody();
+            String newBody = "{\"P1\":\"Red\", \"P2\":\"Big\"} && " + responseBody;
+            return new ResponseEntity<String>(newBody,HttpStatus.OK);
+
         } catch (Exception e) {
             responseBody = e.getMessage();
             System.out.println("Ex:" + responseBody);
