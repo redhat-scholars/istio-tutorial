@@ -1106,17 +1106,6 @@ sleep .1
 done
 ```
 
-Expose the recommendations via an OpenShift Route
-
-```
-oc expose service recommendations -n tutorial
-```
-
-Hit the newly exposed Recommendations Route via its url
-
-```
-curl recommendations-tutorial.$(minishift ip).nip.io
-```
 By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play.
 
 Next establish the Destination Policy
@@ -1130,11 +1119,22 @@ Simply just delete the v2 pod as that will cause 5xx errors
 oc delete pod -l app=recommendations,version=v2
 ```
 
-OR throw in some misbehavior
+OR throw in some misbehavior by exposing the recommendations via an OpenShift Route
 
+```
+oc expose service recommendations -n tutorial
+```
+
+Hit the newly exposed Recommendations Route via its url to see that it is live
+
+```
+curl recommendations-tutorial.$(minishift ip).nip.io
+```
+and then it its misbehave endpoint a few times to set the flag
 ```
 curl recommendations-tutorial.$(minishift ip).nip.io/misbehave
 ```
+At this point, you should see traffic targeting v1 only, until the sleepWindow expires.
 
 Clean up
 
