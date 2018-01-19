@@ -1090,10 +1090,10 @@ oc delete routerule recommendations-v1-v2 -n tutorial
 #### Pool Ejection
 There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recommendations v2 to be kicked out and all requests handled by v1.  Envoy refers to this as "outlier detection".
 
-First, establish the Route Rule, a 75/25 split should work
+First, establish the Route Rule to distribute load across the various recommendations pods
 
 ```
-oc create -f istiofiles/route-rule-recommendations-v1_and_v2_75_25.yml -n tutorial
+oc create -f istiofiles/route-rule-recommendations-v1_and_v2_50_50.yml -n tutorial
 ```
 and throw some requests at the customer endpoint
 ```bash
@@ -1112,18 +1112,12 @@ Expose the recommendations via an OpenShift Route
 oc expose service recommendations -n tutorial
 ```
 
-Up the replica count on v2
-```
-oc scale deployment recommendations-v2 --replicas=2 -n tutorial
-oc get pods -w
-```
-Wait for the 2/2 on that 2nd recommendations-v2 pod then
-hit the newly exposed Recommendations Route via its url
+Hit the newly exposed Recommendations Route via its url
 
 ```
 curl recommendations-tutorial.$(minishift ip).nip.io
 ```
-By default, you will see load-balancing behind that URL, across the 3 pods (a single v1 and two v2 pods) that are currently in play.
+By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play.
 
 Next establish the Destination Policy
 ```
@@ -1137,7 +1131,7 @@ curl recommendations-tutorial.$(minishift ip).nip.io/misbehave
 Clean up
 
 ```
-istioctl delete destinationpolicies recommendations-circuitbreaker -n tutorial
+istioctl delete destinationpolicies recommendations-poolejector -n tutorial
 
 oc delete routerule recommendations-v1-v2 -n tutorial
 ```
