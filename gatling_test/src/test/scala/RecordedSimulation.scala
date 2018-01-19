@@ -18,18 +18,14 @@ class RecordedSimulation extends Simulation {
 	val headers_0 = Map("Upgrade-Insecure-Requests" -> "1")
 
 
+
 	val scn = scenario("RecordedSimulation")
 		.exec(http("request_0")
 			.get("/")
 			.headers(headers_0)
 			.resources(http("request_1")
-			.get("/favicon.ico")    
-	        .check(status.is(200)))
-
-  
-    // to see it in real action worth adding some Load to the system earlier and then fire this test 
-	// making sure my load gets the response in right expected responseTime
-	setUp(scn.inject(atOnceUsers(4)))
-        .assertions(global.responseTime.max.lt(3000))
-        .protocols(httpProtocol)
+			.get("/favicon.ico")))
+    
+	// 20 concurrent users, each with a single request
+	setUp(scn.inject(atOnceUsers(20))).protocols(httpProtocol)
 }
