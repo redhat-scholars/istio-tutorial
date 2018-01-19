@@ -182,9 +182,8 @@ and you have setup the project/namespace
 ```
 oc new-project tutorial
 oc adm policy add-scc-to-user privileged -z default -n tutorial
-
 ```
-
+Then clone the git repository and start deploying the microservice projects, starting with customer
 ```
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
@@ -211,13 +210,12 @@ GolangVersion: go1.8
 
 ```
 Now let's deploy the customer pod with its sidecar
-
 ```
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml -n tutorial
-
 ```
+
 Since customer is the forward most microservice (customer -> preferences -> recommendations), let's add an OpenShift Route that exposes that endpoint.
 
 ```
@@ -229,16 +227,14 @@ oc get pods -w
 ```
 Waiting for Ready 2/2, to break out of the waiting use "ctrl-c"
 
+Then test the customer endpoint
 ```
-
 curl customer-tutorial.$(minishift ip).nip.io
-
 ```
 You should see the following error because preferences and recommendations are not yet deployed.
 
-```
+```json
 {"timestamp":1516383629819,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"I/O error on GET request for \"http://preferences:8080/\": preferences; nested exception is java.net.UnknownHostException: preferences","path":"/"}
-
 ```
 Also review the logs
 ```
@@ -340,6 +336,7 @@ oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version
 oc delete pod -l app={servicename},version=v1
 ```
 Why the delete pod?
+
 Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image as it attempts to keep the desired replicas available
 
 ```
