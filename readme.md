@@ -1088,14 +1088,9 @@ oc delete routerule recommendations-v1-v2 -n tutorial
 ```
 
 #### Pool Ejection
-There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recommendations v2 to be kicked out and all requests handled by v1.  Envoy refers to this as "outlier detection".
+There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want the slow and misbehaving recommendations v2 to be kicked out and all requests handled by v1.  Envoy refers to this as "outlier detection".
 
-First, establish the Route Rule to distribute load across the various recommendations pods
-
-```
-oc create -f istiofiles/route-rule-recommendations-v1_and_v2_50_50.yml -n tutorial
-```
-and throw some requests at the customer endpoint
+Throw some requests at the customer endpoint
 ```bash
 #!/bin/bash
 
@@ -1106,14 +1101,36 @@ sleep .1
 done
 ```
 
-By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play.
+By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play.  Nicely alternating between v1 and v2
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4386* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 173* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4387* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 174* 
+```
 
-Next establish the Destination Policy
+In another Terminal, setup the Destination Policy
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
 ```
+You should see the Random load-balancing, take effect
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4395* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 181* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 182* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 183* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4396* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4397* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4398* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4399* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4400* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 184* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4401* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 185* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 186* 
+```
 
-Simply just delete the v2 pod as that will cause 5xx errors
+Now, simply just delete the v2 pod as that will cause 5xx errors
 
 ```
 oc delete pod -l app=recommendations,version=v2
@@ -1130,18 +1147,29 @@ Hit the newly exposed Recommendations Route via its url to see that it is live
 ```
 curl recommendations-tutorial.$(minishift ip).nip.io
 ```
-and then it its misbehave endpoint a few times to set the flag
+and then it its misbehave endpoint a couple of times to set the flag
 ```
 curl recommendations-tutorial.$(minishift ip).nip.io/misbehave
 ```
-At this point, you should see traffic targeting v1 only, until the sleepWindow expires.
+At this point, you should see requests/traffic focusing v1 only, until the sleepWindow expires.
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4880* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4881* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4882* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4883* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4884* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4885* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4886* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4887* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4888* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4889* 
+```
+If you wait long enough, you should see v2 reenter the load-balancing pool but at a relatively low percentage of traffic.
 
 Clean up
 
 ```
 istioctl delete destinationpolicies recommendations-poolejector -n tutorial
-
-oc delete routerule recommendations-v1-v2 -n tutorial
 ```
 
 ## Egress
