@@ -49,7 +49,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Load Balancer](#load-balancer)
 * [Circuit Breaker](#circuit-breaker)
     * [Fail Fast with Max Connections & Max Pending Requests](#fail-fast-with-max-connections-max-pending-requests)
-    * [Pool ejection](#pool-ejection)
+    * [Pool Ejection](#pool-ejection)
 * [Egress](#egress)
     * [Create HTTPBin Java App](#create-httpbin-java-app)
     * [Create the Github Java App](#create-the-github-java-app)
@@ -909,7 +909,6 @@ oc scale deployment recommendations-v2 --replicas=1 -n tutorial
 ```
 
 ## Circuit Breaker
-Note: Does not work!
 
 #### Fail Fast with Max Connections & Max Pending Requests
 First, you need to insure you have a routerule in place.  Let's use a 50/50 split of traffic which is more like the default behavior of Kubernetes.  
@@ -1088,29 +1087,15 @@ Clean up
 oc delete routerule recommendations-v1-v2 -n tutorial
 ```
 
-#### Pool ejection
-There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recommendations v2 to be kicked out and all requests handled by v1.
+#### Pool Ejection
+There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want that slow misbehaving recommendations v2 to be kicked out and all requests handled by v1.  Envoy refers to this as "outlier detection".
 
-Expose the recommendations via an OpenShift Route
+First, establish the Route Rule, a 75/25 split should work
 
 ```
-oc expose service recommendations -n tutorial
+oc create -f istiofiles/route-rule-recommendations-v1_and_v2_75_25.yml -n tutorial
 ```
-Up the replica count on v2
-```
-oc scale deployment recommendations-v2 --replicas=2 -n tutorial
-```
-Hit the newly exposed Route via its url
-```
-oc get route
-curl recommendations-tutorial.$(minishift ip).nip.io
-```
-By default, you will see load-balancing behind that URL, across the 3 pods (single v1 and two v2 pods) that are currently in play
-```
-istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
-```
-and throw some more requests at the customer endpoint, while also watching the logs for recommendations to see the behavior change.
-
+and throw some requests at the customer endpoint
 ```bash
 #!/bin/bash
 
@@ -1121,16 +1106,38 @@ sleep .1
 done
 ```
 
-Now throw in some misbehavior
+Expose the recommendations via an OpenShift Route
+
+```
+oc expose service recommendations -n tutorial
+```
+
+Up the replica count on v2
+```
+oc scale deployment recommendations-v2 --replicas=2 -n tutorial
+oc get pods -w
+```
+Wait for the 2/2 on that 2nd recommendations-v2 pod then
+hit the newly exposed Recommendations Route via its url
+
+```
+curl recommendations-tutorial.$(minishift ip).nip.io
+```
+By default, you will see load-balancing behind that URL, across the 3 pods (a single v1 and two v2 pods) that are currently in play.
+
+Next establish the Destination Policy
+```
+istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
+```
+And now throw in some misbehavior
 ```
 curl recommendations-tutorial.$(minishift ip).nip.io/misbehave
 ```
 
-
 Clean up
 
 ```
-istioctl delete destinationpolocies recommendations-circuitbreaker -n tutorial
+istioctl delete destinationpolicies recommendations-circuitbreaker -n tutorial
 
 oc delete routerule recommendations-v1-v2 -n tutorial
 ```
@@ -1174,7 +1181,9 @@ curl egresshttpbin-istioegress.$(minishift ip).nip.io
 
 ```
 
-Note: It does not work...yet
+Note: It does not work...yet, more to come.
+
+Back to the main istio-tutorial directory
 
 ```
 cd ..
