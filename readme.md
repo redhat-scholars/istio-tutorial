@@ -288,6 +288,8 @@ cd ..
 ```
 
 ## Deploy recommendations
+Note: The tag "v1" at the end of the image name is important.  We will be creating a v2 version of recommendations later in this tutorial.   Having both a v1 and v2 version of the recommendations code will allow us to exercise some interesting aspects of Istio's capabilities.
+
 ```
 cd recommendations
 
