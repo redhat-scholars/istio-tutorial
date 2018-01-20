@@ -14,4 +14,4 @@ spec:
       httpConsecutiveErrors: 1
       sleepWindow: 2m
       httpDetectionInterval: 1s
-      httpMaxEjectionPercent: 50
+      httpMaxEjectionPercent: 100
