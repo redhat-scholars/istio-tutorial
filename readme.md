@@ -1462,33 +1462,33 @@ istioctl delete -f istiofiles/recommendations_rate_limit_handler.yml
 ```
 
 ## Tips & Tricks
+Some tips and tricks that you might find handy
 
 You have two containers in a pod
 ```
-oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer
+oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
 ```
 From these images
 ```
-oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer
+oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
 ```
 Get the pod ids
 ```
-CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer)
-PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preferences)
-RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendations,
-version=v1)
-RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendations,version=v2)
+CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
+PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preferences -n tutorial)
+RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendations,version=v1 -n tutorial)
+RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendations,version=v2 -n tutorial)
 ```
 
 The pods all see each other's services
 ```
-oc exec $CPOD -c customer curl http://preferences:8080
-oc exec $CPOD -c customer curl http://recommendations:8080
-oc exec $RPOD2 -c recommendations curl http://customer:8080
+oc exec $CPOD -c customer -n tutorial curl http://preferences:8080 
+oc exec $CPOD -c customer -n tutorial curl http://recommendations:8080
+oc exec $RPOD2 -c recommendations -n tutorial curl http://customer:8080
 ```
 
 ```
-oc exec $CPOD -c customer curl http://localhost:15000/routes > afile.json
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > afile.json
 ```
 Look for "route_config_name": "8080", you should see 3 entries for customer, preferences and recommendations
 https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6
@@ -1499,7 +1499,7 @@ oc create -f istiofiles/route-rule-recommendations-v2.yml
 ```
 The review the routes again
 ```
-oc exec $CPOD -c customer curl http://localhost:15000/routes > bfile.json
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > bfile.json
 ```
 
 Here is the Before:
@@ -1519,13 +1519,13 @@ https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfil
 
 If you need the Pod IP
 ```
-oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer
+oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
 ```
 
 Dive into the istio-proxy container
 
 ```
-oc exec -it $CPOD -c istio-proxy /bin/bash
+oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
 cd /etc/istio/proxy
 ls
 cat envoy-rev3.json
