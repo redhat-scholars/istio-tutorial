@@ -330,13 +330,13 @@ When you wish to change code (e.g. editing the .java files) and wish to "redeplo
 cd {servicename}
 
 vi src/main/java/com/example/{servicename}/{Servicename}Controller.java
-
 ```
 Make your edits and esc-w-q
 
 ```
 mvn clean package
 docker build -t example/{servicename} .
+
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
 
@@ -386,7 +386,7 @@ Then run several requests through the system
 ```
 curl customer-tutorial.$(minishift ip).nip.io
 ```
-Note: you may have to refresh the browser for the Prometheus graph to update.  
+Note: you may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
 
 ## Tracing
 
@@ -405,7 +405,7 @@ minishift openshift service jaeger-query --in-browser
 
 ## Istio RouteRule Changes
 ### recommendations:v2
-We can experiment with Istio routing rules by making a change to RecommendationsController.java like
+We can experiment with Istio routing rules by making a change to RecommendationsController.java like the following and creating a "v2" docker image.
 
 ```
 System.out.println("Big Red Dog v2 " + cnt);
