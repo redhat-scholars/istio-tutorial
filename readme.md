@@ -104,6 +104,7 @@ eval $(minishift oc-env)
 eval $(minishift docker-env)
 oc login $(minishift ip):8443 -u admin -p admin
 ```
+Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl.  Consider using three terminal windows.
 
 ## Istio installation script
 
@@ -1229,6 +1230,8 @@ If you wait long enough, you should see the v2 pod reenter the load-balancing po
 Clean up
 
 ```
+oc scale deployment recommendations-v2 --replicas=1 -n tutorial
+
 istioctl delete destinationpolicies recommendations-poolejector -n tutorial
 ```
 
@@ -1372,7 +1375,7 @@ curl egressgithub-istioegress.$(minishift ip).nip.io
 ## Rate Limiting
 Here we will limit the number of concurrent requests into recommendations v2
 
-Current view of RecommendationsController.java
+Current view of the v2 RecommendationsController.java
 ```java
 package com.example.recommendations;
 
@@ -1429,7 +1432,7 @@ istioctl create -f istiofiles/recommendations_rate_limit_handler.yml
 Now setup the requestcount quota
 
 ```
-istioctl create -f istiofiles/recommendations_rate_limit_handler.yml
+istioctl create -f istiofiles/rate_limit_rule.yml
 ```
 
 Throw some requests at customer
@@ -1444,10 +1447,10 @@ sleep .1
 done
 ```
 
-And you should see some 429 Too Many Requests
+and watch the logs for preferences to see some 429 Too Many Requests errors
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && 429 Too Many Requests *
+stern preferences -c preferences -n tutorial
 ```
 
 Clean up
