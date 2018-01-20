@@ -426,7 +426,7 @@ docker build -t example/recommendations:v2 .
 
 docker images | grep recommendations
 example/recommendations                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendations                  latest              f072978d9cf6        8 minutes ago      438MB
+example/recommendations                  v1              f072978d9cf6        8 minutes ago      438MB
 
 ```
 *Important:* back up one directory before applying the deployment yaml
