@@ -8,15 +8,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class RecommendationsController {
-    int cnt = 0;
-    boolean misbehave = false;
+    int cnt = 0; // helps us see the lifecycle 
+    boolean misbehave = false; // a flag for throwing a 503
+    final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
     
     @RequestMapping("/")
     public String getRecommendations() {
         
         cnt ++;        
-
-        System.out.println("Big Red Dog v1 " + cnt);
+        // hostname.substring(19) to remove "recommendations-v1-"
+        System.out.println("Big Red Dog v1 " + hostname.substring(19) + " " + cnt);
         
         /* begin timeout and/or circuit-breaker example 
         try {
@@ -34,8 +35,7 @@ public class RecommendationsController {
             throw new ServiceUnavailableException("D'oh");
         } 
         // */       
-        return "Clifford v1 " + cnt;
-        
+        return "Clifford v1 " + hostname.substring(19) + " " + cnt;
     }
 
     @RequestMapping("/misbehave")

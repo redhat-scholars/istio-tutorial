@@ -311,7 +311,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 it returns
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1*
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 1*
 ```
 and you can monitor the recommendation logs with
 ```
@@ -407,10 +407,10 @@ minishift openshift service jaeger-query --in-browser
 ### recommendations:v2
 We can experiment with Istio routing rules by making a change to RecommendationsController.java like the following and creating a "v2" docker image.
 
-```
-System.out.println("Big Red Dog v2 " + cnt);
+```java
+System.out.println("Big Red Dog v2 " + hostname.substring(19) + " " + cnt);
 
-return "Clifford v2 " + cnt;
+return "Clifford v2 " + hostname.substring(19) + " " + cnt;
 ```
 
 The "v2" tag during the docker build is significant.
@@ -429,7 +429,7 @@ example/recommendations                  v2                  c31e399a9628       
 example/recommendations                  v1              f072978d9cf6        8 minutes ago      438MB
 
 ```
-*Important:* back up one directory before applying the deployment yaml
+*Important:* back up one directory before applying the deployment yaml.  We have a 2nd Deployment to manage the v2 version of recommendations.  
 ```
 cd ..
 
@@ -438,28 +438,38 @@ oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deploym
 oc get pods -w
 ```
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
+```
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preferences-243057078-8c5hz           2/2       Running   0          15m
+recommendations-v1-60483540-9snd9     2/2       Running   0          12m
+recommendations-v2-2815683430-vpx4p   1/2       Running   0          5s
+recommendations-v2-2815683430-vpx4p   2/2       Running   0         15s
+```
+and test the customer endpoint
+```
+curl customer-tutorial.$(minishift ip).nip.io
+```
+
+you likely see "Clifford v1 {hostname} 5", where the 5 is basically the number of times you hit the endpoint.
 
 ```
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
-you likely see "Clifford v1 5", where the 5 is basically the number of times you hit the endpoint.
+you likely see "Clifford v2 {hostname} 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
-```
-curl customer-tutorial.$(minishift ip).nip.io
+Send several requests to see their responses
+```bash
+#!/bin/bash
+
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+echo
+sleep .1
+done
 ```
 
-you likely see "Clifford v2 1" as by default you get random load-balancing when there is more than one Pod behind a Service
-
-Double-check that you are logged in as admin.
-
-```
-oc whoami
-```
-and login as admin if necessary
-```
-oc login $(minishift ip):8443 -u admin -p admin
-```
 
 ## Changing Istio RouteRules
 
@@ -547,11 +557,11 @@ You can inject 503's, for approximately 50% of the requests
 oc create -f istiofiles/route-rule-recommendations-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 6*
 curl customer-tutorial.$(minishift ip).nip.io
 C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 60483540-2pt4z 6*
 ```
 Clean up
 ```
@@ -611,7 +621,8 @@ oc create -f istiofiles/route-rule-recommendations-v2_retry.yml -n tutorial
 and after a few seconds, things will settle down and you will see it work every time
 ```
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 123*
+
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 60483540-2pt4z 123*
 ```
 You can see the active RouteRules via
 ```
@@ -640,7 +651,7 @@ First, introduce some wait time in recommendations v2. Update RecommendationsCon
     public String getRecommendations() {
         
         cnt ++;        
-        System.out.println("Big Red Dog v2 " + cnt);
+        System.out.println("Big Red Dog v2 " + hostname.substring(19) + " "  + cnt);
 
         // begin circuit-breaker example
         try {
@@ -650,7 +661,7 @@ First, introduce some wait time in recommendations v2. Update RecommendationsCon
 		}
         System.out.println("recommendations ready to return");
         // end circuit-breaker example
-        return "Clifford v2 " + cnt ;
+        return "Clifford v2 "  + hostname.substring(19) + " " + cnt ;
 ```
 Rebuild and redeploy
 ```
@@ -690,7 +701,7 @@ You will see it return v1 OR 504 after waiting about 1 second
 
 ```
 time curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 *
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 6*
 time curl customer-tutorial.$(minishift ip).nip.io
 C100 *{"P1":"Red", "P2":"Big"} && 504 Gateway Timeout *
 ```
@@ -878,14 +889,14 @@ done
 The results should follow a fairly normal round-robin distribution pattern
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 9 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 7 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 1 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 1 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 10 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 8 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 7* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-985tm 2* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 2* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 2* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 8* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-985tm 3* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 3* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 3* 
 ```
 
 Now, add the Random LB DestinationPolicy
@@ -896,16 +907,16 @@ oc create -f istiofiles/recommendations_lb_policy_app.yml -n tutorial
 
 And you should see a different pattern of which pod is being selected
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 5 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 12 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 5 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 6 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 6 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 13 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 14 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 15 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 7 * 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 14 * 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 10* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 5* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 4* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 11* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 5* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 6* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 6* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 7* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 7* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 8* 
 ```
 
 Clean up
@@ -937,17 +948,17 @@ done
 ```
 Output
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 25* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 26* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 27* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 17* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 18* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 19* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 20* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 28* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 29* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 30* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 21*
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 20* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 21* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 16* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 17* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 22* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 23* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 24* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 18* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 25* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 19* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 20* 
 ```
 With vanilla Kubernetes/OpenShift, the distrubtion of load is more round robin, while with Istio it is 50/50 but more random.
 
@@ -958,7 +969,8 @@ Next, update RecommendationsController.java to include some sleep logic and that
     public String getRecommendations() {
         
         cnt ++;
-        System.out.println("Big Red Dog v2 " + cnt);
+        // hostname.substring(19) to remove "recommendations-v1-"
+        System.out.println("Big Red Dog v2 " + hostname.substring(19) + " " + cnt);
         
         // begin timeout and/or circuit-breaker example 
         try {
@@ -975,8 +987,7 @@ Next, update RecommendationsController.java to include some sleep logic and that
             throw new ServiceUnavailableException();            
         } 
         // */       
-        return "Clifford v2 " + cnt;
-        
+        return "Clifford v2 " + hostname.substring(19) + " " + cnt;         
     }
 
     @RequestMapping("/misbehave")
@@ -1110,31 +1121,28 @@ done
 
 By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play.  Nicely alternating between v1 and v2
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4386* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 173* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4387* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 174* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 26* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 22* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 27* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 23* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 28* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 24* 
 ```
 
 In another Terminal, setup the Destination Policy
 ```
 istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
 ```
-You should see the Random load-balancing, take effect
+You should see the Random load-balancing take effect
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4395* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 181* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 182* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 183* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4396* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4397* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4398* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4399* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4400* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 184* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4401* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 185* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 186* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 33* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 29* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 30* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 31* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 34* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 35* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 36* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 32* 
 ```
 
 Now, simply just delete the v2 pod as that will cause 5xx errors
@@ -1160,16 +1168,14 @@ curl recommendations-tutorial.$(minishift ip).nip.io/misbehave
 ```
 At this point, you should see requests/traffic focusing v1 only, until the sleepWindow expires.
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4880* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4881* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4882* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4883* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4884* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4885* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4886* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4887* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4888* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 4889* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 873* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 874* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 875* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 876* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 877* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 878* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 879* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 880* 
 ```
 If you wait long enough, you should see v2 reenter the load-balancing pool but at a relatively low percentage of traffic.
 
@@ -1324,11 +1330,16 @@ import org.springframework.http.HttpStatus;
 
 @RestController
 public class RecommendationsController {
+    int cnt = 0; // helps us see the lifecycle 
+    boolean misbehave = false; // a flag for throwing a 503
+    final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
 
     @RequestMapping("/")
     public String getRecommendations() {
 
-        System.out.println("Big Red Dog v2");
+        cnt ++;        
+        // hostname.substring(19) to remove "recommendations-v1-"
+        System.out.println("Big Red Dog v2 " + hostname.substring(19) + " " + cnt);
 
         // begin timeout and/or circuit-breaker example
         try {
@@ -1339,14 +1350,20 @@ public class RecommendationsController {
         System.out.println("recommendations ready to return");
         // end circuit-breaker example */
         // throw new ServiceUnavailableException();
-        return "Clifford v2";
+        return "Clifford v2 " + hostname.substring(19) + " " + cnt;
     }
-
+    @RequestMapping("/misbehave")
+    public HttpStatus misbehave() {
+        this.misbehave = true; // set a flag
+        return HttpStatus.OK;
+    }
 }
 
 @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
 class ServiceUnavailableException extends RuntimeException {
-
+    public ServiceUnavailableException(String message) {
+        super(message);
+    }
 }
 ```
 

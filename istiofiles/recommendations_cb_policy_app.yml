@@ -4,9 +4,6 @@ metadata:
   name: recommendations-poolejector
   namespace: tutorial
 spec:
-#  source:
-#    namespace: tutorial
-#    name: preferences
   destination: 
     namespace: tutorial
     name: recommendations
@@ -17,4 +14,4 @@ spec:
       httpConsecutiveErrors: 1
       sleepWindow: 2m
       httpDetectionInterval: 1s
-      httpMaxEjectionPercent: 100
+      httpMaxEjectionPercent: 50
