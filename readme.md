@@ -313,6 +313,11 @@ it returns
 ```
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 1*
 ```
+and you can monitor the recommendation logs with
+```
+stern recommendations -c recommendations
+```
+
 Back to the main istio-tutorial directory
 
 ```
