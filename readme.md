@@ -1114,7 +1114,7 @@ oc delete routerule recommendations-v1-v2 -n tutorial
 ```
 
 #### Pool Ejection
-There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want the slow and misbehaving recommendations v2 to be kicked out and all requests handled by v1.  Envoy refers to this as "outlier detection".
+There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want the slow and misbehaving instance of recommendations v2 to be kicked out and more requests to be handled by v1.  Envoy refers to this as "outlier detection".
 
 Throw some requests at the customer endpoint
 ```bash
@@ -1127,7 +1127,7 @@ sleep .1
 done
 ```
 
-By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play.  Nicely alternating between v1 and v2
+By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play. By default Kubernetes/OpenShift will alternative between v1 and v2
 ```
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 8* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 897* 
@@ -1206,7 +1206,7 @@ and then shelling into a v2 pod
 ```
 oc exec -it recommendations-v2-2815683430-xw7qg -c recommendations /bin/bash
 ```
-and then it its misbehave endpoint to set the flag
+and then hit its misbehave endpoint to set the flag
 ```
 curl localhost:8080/misbehave
 ```
@@ -1234,6 +1234,12 @@ istioctl delete destinationpolicies recommendations-poolejector -n tutorial
 
 ## Egress
 There are two examples of egress routing, one for httpbin.org and one for github.  Egress routes allow you to apply rules to how internal services interact with external APIs/services.
+
+Create a namespace/project to hold these egress examples
+```
+oc new-project istioegress
+oc adm policy add-scc-to-user privileged -z default -n istioegress
+```
 
 #### Create HTTPBin Java App
 ```
@@ -1320,11 +1326,9 @@ istioctl get egressrules
 
 curl egresshttpbin-istioegress.$(minishift ip).nip.io
 ```
-or
+or shell into the pod by getting its name and then using that name with oc exec
 ```
-oc get pods
-
-oc exec -it egresshttpbin-v1-1125123520-4599t /bin/bash
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) /bin/bash
 
 curl localhost:8080
 
@@ -1349,14 +1353,16 @@ spec:
       protocol: https
 EOF
 ```
+and shell into it for testing
+
 ```
-oc exec -it egresshttpbin-v1-1125123520-4599t /bin/bash
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin/bash
 
 curl http://www.google.com:443
 
 exit
 ```
-
+Now, execute the Java code that hits api.google.com/users
 ```
 istioctl create -f istiofiles/egress_github.yml
 
