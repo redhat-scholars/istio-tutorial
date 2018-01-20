@@ -171,6 +171,8 @@ minishift console
 Note: on your first launch of the OpenShift console via minishift, you will like receive a warning with
 "Your connection is not private", it depends on your browser type and settings.  Simply select "Proceed to 192.168.99.100 (unsafe)" to bypass the warning.
 
+For minishift, with the admin-user addon, the user is "admin" and the password is "admin"
+
 ## Deploy customer
 
 Make sure you have are logged in
@@ -183,13 +185,19 @@ and you have setup the project/namespace
 oc new-project tutorial
 oc adm policy add-scc-to-user privileged -z default -n tutorial
 ```
-Then clone the git repository and start deploying the microservice projects, starting with customer
+Then clone the git repository
 ```
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
+```
+ Start deploying the microservice projects, starting with customer
+```
 cd customer
+
 mvn clean package
+
 docker build -t example/customer .
+
 docker images | grep customer
 ```
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
