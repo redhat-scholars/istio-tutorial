@@ -1121,12 +1121,36 @@ done
 
 By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play.  Nicely alternating between v1 and v2
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 26* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 22* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 27* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 23* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 28* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 24* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 8* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 897* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 9* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 898* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 10* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 899* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 11* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 900* 
+```
+Add a 2nd pod to recommendations
+```
+oc scale deployment recommendations-v2 --replicas=2 -n tutorial
+
+oc get pods
+
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          2h
+preferences-243057078-8c5hz           2/2       Running   0          2h
+recommendations-v1-60483540-2pt4z     2/2       Running   0          40m
+recommendations-v2-2815683430-t7b9q   2/2       Running   0          21s
+recommendations-v2-2815683430-xw7qg   2/2       Running   0          19m
+```
+and your pattern will change slightly to v1, v2, v2 then repeat
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 901* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 2* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 13* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 902* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 3* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 14*
 ```
 
 In another Terminal, setup the Destination Policy
@@ -1135,49 +1159,64 @@ istioctl create -f istiofiles/recommendations_cb_policy_app.yml -n tutorial
 ```
 You should see the Random load-balancing take effect
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 33* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 29* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 30* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 31* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 34* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 35* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 36* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 32* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 905* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 18* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 906* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 19* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 6* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 20* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 21* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 22* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 23* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 7* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 907* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 908* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 909* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 24* 
 ```
 
-Now, simply just delete the v2 pod as that will cause 5xx errors
+Now, simply just delete a v2 pod as that will cause 5xx errors
 
 ```
-oc delete pod -l app=recommendations,version=v2
+oc delete pod recommendations-v2-2815683430-t7b9q
+```
+you should see a single 503 returned to the end-user
+```
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 30* 
+{"timestamp":1516466806299,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 31* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 32* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 919* 
 ```
 
-OR throw in some misbehavior by exposing the recommendations via an OpenShift Route
+OR throw in some misbehavior by getting the pod identifiers
 
 ```
-oc expose service recommendations -n tutorial
+oc get pods
 ```
-
-Hit the newly exposed Recommendations Route via its url to see that it is live
-
+and then shelling into a v2 pod
 ```
-curl recommendations-tutorial.$(minishift ip).nip.io
+oc exec -it recommendations-v2-2815683430-xw7qg -c recommendations /bin/bash
 ```
-and then it its misbehave endpoint a couple of times to set the flag
+and then it its misbehave endpoint to set the flag
 ```
-curl recommendations-tutorial.$(minishift ip).nip.io/misbehave
+curl localhost:8080/misbehave
 ```
-At this point, you should see requests/traffic focusing v1 only, until the sleepWindow expires.
+At this point, you should get a 503 from the v2 pod that was flagged and 
+you should see requests/traffic focusing on the "good" pods, until the sleepWindow expires.
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 873* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 874* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 875* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 876* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 877* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 878* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 879* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 880* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 5* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 33* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 985* 
+{"timestamp":1516467547342,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 986* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 6* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 7* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 987* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 988* 
+C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 8*
 ```
-If you wait long enough, you should see v2 reenter the load-balancing pool but at a relatively low percentage of traffic.
+If you wait long enough, you should see the v2 pod reenter the load-balancing pool 
 
 Clean up
 
