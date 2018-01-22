@@ -1,52 +1,51 @@
 package com.example.recommendations;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class RecommendationsController {
-    int cnt = 0;
-    boolean misbehave = false;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private int count = 0;
+
+    private boolean misbehave = false;
     
     @RequestMapping("/")
-    public String getRecommendations() {
-        
-        cnt ++;
-        System.out.println("Big Red Dog v1 " + cnt);
-        
-        /* begin timeout and/or circuit-breaker example 
+    public ResponseEntity<String> getRecommendations() {
+        count++;
+        logger.debug(String.format("Big Red Dog v1 %s", count));
+
+        /* begin timeout and/or circuit-breaker example
         try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {			
-			e.printStackTrace();
+			logger.info("Thread interrupted");
 		}
-        System.out.println("recommendations ready to return");
+		logger.debug("recommendations ready to return");
         // end circuit-breaker example */
         /* inject some poor behavior
         if (misbehave) {
-            cnt = 0;
+            count = 0;
             misbehave = false;
-            throw new ServiceUnavailableException("Ain't Misbehaving");            
-        } 
-        // */       
-        return "Clifford v1 " + cnt;
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Ain't Misbehaving");
+        }
+        // */
+        return ResponseEntity.ok(String.format("Clifford v1 %s", count));
         
     }
 
     @RequestMapping("/misbehave")
-    public HttpStatus misbehave() {
+    public ResponseEntity<String> misbehave() {
         this.misbehave = true;
-        return HttpStatus.OK;
+        logger.debug("'misbehave' has been set to 'true'");
+        return ResponseEntity.ok("Next request to / will return a 503");
     }
     
-}
-
-@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-class ServiceUnavailableException extends RuntimeException {
-    public ServiceUnavailableException(String message) {
-        super(message);
-    }
 }
