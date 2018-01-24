@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class CustomerController {
 
-    private static final String REMOTE_URL = "http://localhost:8081";
+    private static final String REMOTE_URL = "http://preferences:8080";
 
     private static final String RESPONSE_STRING_FORMAT = "C100 * %s *";
 
