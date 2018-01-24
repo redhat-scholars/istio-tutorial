@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project 
+    xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>me.snowdrop</groupId>
     <artifactId>justtesting</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
-
     <name>Gatling Test</name>
-    
-
-    <properties>        
+    <properties>
+        <users>5</users>
         <endpoint.url>http://customer-tutorial.192.168.99.103.nip.io</endpoint.url>
     </properties>
     <dependencies>
@@ -23,7 +21,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -31,23 +28,31 @@
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.2</version>
+            </plugin>
+            <plugin>
                 <groupId>io.gatling</groupId>
                 <artifactId>gatling-maven-plugin</artifactId>
                 <version>2.2.4</version>
                 <configuration>
-                <runMultipleSimulations>false</runMultipleSimulations>
-                <skip>${skip.gatlingTests}</skip>
+                    <runMultipleSimulations>false</runMultipleSimulations>
+                    <skip>${skip.gatlingTests}</skip>
+                    <propagateSystemProperties>true</propagateSystemProperties>
+                    <jvmArgs>
+                        <jvmArg>-Dendpoint.url=${endpoint.url}</jvmArg>
+                        <jvmArg>-Dusers=${users}</jvmArg>
+                    </jvmArgs>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                        <goal>integration-test</goal>
+                            <goal>integration-test</goal>
                         </goals>
                     </execution>
                 </executions>
-           </plugin>
+            </plugin>
         </plugins>
     </build>
-
-
 </project>
