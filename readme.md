@@ -106,6 +106,46 @@ oc login $(minishift ip):8443 -u admin -p admin
 ```
 Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl.  Consider using three terminal windows.
 
+## Enable Initializers
+
+TODO: ??Simplify this step ???
+
+Since we will be using the Istio Intializers to inject Istio proxy sidecars into the service, we need to enable the Initializers in OpenShift.
+
+```
+minishift ssh
+```
+Edit /var/lib/minishift/openshift.local.config/master/master-config.yaml to look like 
+
+```
+(...)
+admissionConfig:
+  pluginConfig:
+    GenericAdmissionWebhook:
+      configuration:
+        apiVersion: v1
+        disable: false
+        kind: DefaultAdmissionConfig
+      location: ""
+    Initializers:
+      configuration:
+        apiVersion: v1
+        disable: false
+        kind: DefaultAdmissionConfig
+      location: ""
+(...)
+```
+Once update is done, restart the OpenShift cluster using the command `minishift openshift restart`
+
+To validate the initalizers api availability,
+```
+kubectl api-versions | grep admi
+```
+That should return 
+```
+apis/admissionregistration.k8s.io/v1alpha1=true
+```
+
 ## Istio installation script
 
 ```bash
@@ -133,6 +173,15 @@ oc create -f install/kubernetes/istio.yaml
 oc project istio-system
 
 oc expose svc istio-ingress
+
+oc annotate dc docker-registry sidecar.istio.io/inject='false' -n default
+
+oc annotate dc router 
+sidecar.istio.io/inject='false' -n default
+
+oc apply -f install/kubernetes/istio-initializer.yaml
+
+oc adm policy add-cluster-role-to-user cluster-admin -z istio-initializer-service-account -n istio-system
 
 oc apply -f install/kubernetes/addons/prometheus.yaml
 
@@ -203,7 +252,7 @@ docker images | grep customer
 ```
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
-Currently using the "manual" way of injecting the Envoy sidecar
+We will be using automatic sidecar injections using [Kubernetes Initializers](https://kubernetes.io/docs/admin/extensible-admission-controllers/#overview)
 
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
 ```
@@ -220,7 +269,7 @@ GolangVersion: go1.8
 ```
 Now let's deploy the customer pod with its sidecar
 ```
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f src/main/kubernetes/Deployment.yml -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml -n tutorial
 ```
@@ -270,7 +319,7 @@ docker build -t example/preferences .
 
 docker images | grep preferences
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f src/main/kubernetes/Deployment.yml  -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -308,7 +357,7 @@ docker build -t example/recommendations:v1 .
 
 docker images | grep recommendations
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f src/main/kubernetes/Deployment.yml  -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -442,7 +491,7 @@ example/recommendations                  v1              f072978d9cf6        8 m
 ```
 cd ..
 
-oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deployment.yml) -n tutorial
+oc apply -f kubernetesfiles/recommendations_v2_deployment.yml -n tutorial
 
 oc get pods -w
 ```
@@ -1270,7 +1319,7 @@ docker ps | grep egress
 
 docker ps -a | grep egress
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+oc apply -f src/main/kubernetes/Deployment.yml -n istioegress
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -1310,7 +1359,7 @@ ctrl-c
 
 docker ps | grep egress
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+oc apply -f src/main/kubernetes/Deployment.yml -n istioegress
 
 oc create -f src/main/kubernetes/Service.yml
 
