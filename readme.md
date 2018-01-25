@@ -819,7 +819,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 We'll create a whitelist on the preferences service to only allow requests from the recommendations service, which will make the preferences service invisible to the customer service. Requests from the customer service to the preferences service will return a 404 Not Found HTTP error code.
 
 ```
-istioctl create -f istiofiles/act-whitelist.yml -n tutorial
+istioctl create -f istiofiles/acl-whitelist.yml -n tutorial
 ```
 
 ```
@@ -830,7 +830,7 @@ C100 *404 Not Found *
 ##### To reset the environment:
 
 ```
-istioctl delete -f istiofiles/act-whitelist.yml -n tutorial
+istioctl delete -f istiofiles/acl-whitelist.yml -n tutorial
 ```
 
 #### Blacklist
