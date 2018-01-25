@@ -32,7 +32,7 @@ public class PreferencesController {
 
         } catch (RestClientException ex) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body(String.format(RESPONSE_STRING_FORMAT, ex.getCause()));
+                    .body(String.format(RESPONSE_STRING_FORMAT, ex.getMessage()));
         }
     }
 
