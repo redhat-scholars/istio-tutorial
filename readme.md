@@ -400,10 +400,11 @@ Note: you may have to refresh the browser for the Prometheus graph to update. An
 
 Tracing requires a bit of work on the Java side.  Each microservice needs to pass on the headers which are used to enable the traces.
 
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/example/customer/CustomerController.java#L21-L42
+https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/example/customer/tracing/HttpHeaderForwarderHandlerInterceptor.java
 
 and
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/example/customer/CustomerController.java#L49
+
+https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/example/customer/CustomerApplication.java#L21-L31
 
 To open the Jaeger console, select customer from the list of services and Find Traces
 ```
