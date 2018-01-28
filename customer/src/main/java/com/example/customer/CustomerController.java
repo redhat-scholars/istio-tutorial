@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class CustomerController {
 
-    @Value("${preferences.api.url:http://localhost:8081}")
+    @Value("${preferences.api.url:http://preferences:8080}")    
     private String remoteURL;
 
     private static final String RESPONSE_STRING_FORMAT = "C100 * %s *";
@@ -24,10 +24,11 @@ public class CustomerController {
 
     @RequestMapping("/")
     public ResponseEntity<String> getCustomer() {
-        try {
-            String response = restTemplate.getForObject(remoteURL, String.class);
+        try {            
+            String response = restTemplate.getForObject(remoteURL, String.class);            
             return ResponseEntity.ok(String.format(RESPONSE_STRING_FORMAT, response));
         } catch (RestClientException ex) {
+            System.err.println(ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .body(String.format(RESPONSE_STRING_FORMAT, ex.getMessage()));
         }

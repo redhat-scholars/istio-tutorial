@@ -241,17 +241,16 @@ curl $(minishift openshift service customer --url)
 ```
 You should see the following error because preferences and recommendations are not yet deployed.
 
-```json
-{"timestamp":1516383629819,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"I/O error on GET request for \"http://preferences:8080/\": preferences; nested exception is java.net.UnknownHostException: preferences","path":"/"}
+```
+C100 * I/O error on GET request for "http://preferences:8080": preferences; nested exception is java.net.UnknownHostException: preferences *
 ```
 Also review the logs
 ```
 stern customer -c customer
 
-Ex:I/O error on GET request for "http://preferences:8080/": preferences; nested exception is java.net.UnknownHostException: preferences
-```
+customer-3600192384-4g8h8 customer org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preferences:8080": preferences; nested exception is java.net.UnknownHostException: preferences
 
-In theory, this code could respond with a more valid and end-user friendly partial response BUT we wish to have the actual HTTP error code flow back.
+```
 
 Back to the main istio-tutorial directory
 
@@ -279,15 +278,16 @@ Wait for the Ready 2/2
 ```
 curl $(minishift openshift service customer --url)
 ```
-It will respond with an error
-```json
-{"timestamp":1516385503177,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
+It will respond with an error since recommendations is not yet deployed. 
+Note: We could make this a bit more resilent in a future iteration of this tutorial
+```
+C100 * 503 Service Unavailable *
 ```
 and check out the logs 
 ```
 stern preferences -c preferences
 
-Ex:I/O error on GET request for "http://recommendations:8080/": recommendations; nested exception is java.net.UnknownHostException: recommendations
+preferences-243057078-rwvds preferences org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendations:8080": recommendations; nested exception is java.net.UnknownHostException: recommendations
 ```
 Back to the main istio-tutorial directory
 
@@ -319,7 +319,7 @@ curl $(minishift openshift service customer --url)
 it returns
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 1*
+C100 * {"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 1 *
 ```
 and you can monitor the recommendation logs with
 ```
