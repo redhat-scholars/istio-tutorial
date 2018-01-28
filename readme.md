@@ -89,7 +89,7 @@ export PATH=/Users/burr/minishift_1.10.0/:$PATH
 minishift profile set tutorial
 minishift config set memory 8GB
 minishift config set cpus 3
-minishift config set vm-driver virtualbox
+minishift config set vm-driver virtualbox (optional)
 minishift config set image-caching true
 minishift addon enable admin-user
 minishift config set openshift-version v3.7.0
@@ -105,6 +105,47 @@ eval $(minishift docker-env)
 oc login $(minishift ip):8443 -u admin -p admin
 ```
 Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl.  Consider using three terminal windows.
+
+## Enable Initializers
+
+TODO: ??Simplify this step ???
+
+Since we will be using the Istio Initializers to inject Istio proxy sidecars into the service, we need to enable the Initializers in OpenShift.
+
+```
+minishift ssh
+```
+
+Edit /var/lib/minishift/openshift.local.config/master/master-config.yaml to look like:
+
+```
+(...)
+admissionConfig:
+  pluginConfig:
+    GenericAdmissionWebhook:
+      configuration:
+        apiVersion: v1
+        disable: false
+        kind: DefaultAdmissionConfig
+      location: ""
+    Initializers:
+      configuration:
+        apiVersion: v1
+        disable: false
+        kind: DefaultAdmissionConfig
+      location: ""
+(...)
+```
+Once update is done, restart the OpenShift cluster using the command `minishift openshift restart`
+
+To validate the initializers api availability,
+```
+kubectl api-versions | grep admi
+```
+That should return 
+```
+apis/admissionregistration.k8s.io/v1alpha1=true
+```
 
 ## Istio installation script
 
@@ -133,6 +174,15 @@ oc create -f install/kubernetes/istio.yaml
 oc project istio-system
 
 oc expose svc istio-ingress
+
+oc annotate dc docker-registry sidecar.istio.io/inject='false' -n default
+
+oc annotate dc router 
+sidecar.istio.io/inject='false' -n default
+
+oc apply -f install/kubernetes/istio-initializer.yaml
+
+oc adm policy add-cluster-role-to-user cluster-admin -z istio-initializer-service-account -n istio-system
 
 oc apply -f install/kubernetes/addons/prometheus.yaml
 
@@ -203,7 +253,7 @@ docker images | grep customer
 ```
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
-Currently using the "manual" way of injecting the Envoy sidecar
+We will be using automatic sidecar injections using [Kubernetes Initializers](https://kubernetes.io/docs/admin/extensible-admission-controllers/#overview)
 
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
 ```
@@ -220,7 +270,7 @@ GolangVersion: go1.8
 ```
 Now let's deploy the customer pod with its sidecar
 ```
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f src/main/kubernetes/Deployment.yml -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml -n tutorial
 ```
@@ -238,7 +288,7 @@ Waiting for Ready 2/2, to break out of the waiting use "ctrl-c"
 
 Then test the customer endpoint
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 You should see the following error because preferences and recommendations are not yet deployed.
 
@@ -270,7 +320,7 @@ docker build -t example/preferences .
 
 docker images | grep preferences
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f src/main/kubernetes/Deployment.yml  -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -278,9 +328,9 @@ oc get pods -w
 ```
 Wait for the Ready 2/2
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
-It will resond with an error
+It will respond with an error
 ```json
 {"timestamp":1516385503177,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
 ```
@@ -308,13 +358,13 @@ docker build -t example/recommendations:v1 .
 
 docker images | grep recommendations
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f src/main/kubernetes/Deployment.yml  -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml
 
 oc get pods -w
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 it returns
@@ -393,7 +443,7 @@ and select Execute
 
 Then run several requests through the system
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 Note: you may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
 
@@ -429,7 +479,7 @@ There is also a 2nd deployment.yml file to label things correctly
 ```
 cd recommendations
 
-mvn clean compile package
+mvn clean package
 
 docker build -t example/recommendations:v2 .
 
@@ -442,7 +492,7 @@ example/recommendations                  v1              f072978d9cf6        8 m
 ```
 cd ..
 
-oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deployment.yml) -n tutorial
+oc apply -f kubernetesfiles/recommendations_v2_deployment.yml -n tutorial
 
 oc get pods -w
 ```
@@ -457,13 +507,13 @@ recommendations-v2-2815683430-vpx4p   2/2       Running   0         15s
 ```
 and test the customer endpoint
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 you likely see "Clifford v1 {hostname} 5", where the 5 is basically the number of times you hit the endpoint.
 
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 you likely see "Clifford v2 {hostname} 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
@@ -473,12 +523,11 @@ Send several requests to see their responses
 #!/bin/bash
 
 while true
-do curl customer-tutorial.$(minishift ip).nip.io
+do curl $(minishift openshift service customer --url)
 echo
 sleep .1
 done
 ```
-
 
 ## Changing Istio RouteRules
 
@@ -487,7 +536,7 @@ From the istio-tutorial directory,
 ```
 oc create -f istiofiles/route-rule-recommendations-v2.yml -n tutorial
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 you should only see v2 being returned
@@ -510,7 +559,7 @@ oc delete routerules/recommendations-default -n tutorial
 ```
 and you should see the default behavior of load-balancing between v1 and v2
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 #### Split traffic between v1 and v2
 Canary Deployment scenario: push v2 into the cluster but slowing send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
@@ -531,7 +580,7 @@ and send in several requests
 #!/bin/bash
 
 while true
-do curl customer-tutorial.$(minishift ip).nip.io
+do curl $(minishift openshift service customer --url)
 echo
 sleep .1
 done
@@ -565,11 +614,11 @@ You can inject 503's, for approximately 50% of the requests
 ```
 oc create -f istiofiles/route-rule-recommendations-503.yml -n tutorial
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 6*
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 60483540-2pt4z 6*
 ```
 Clean up
@@ -589,7 +638,7 @@ And hit the customer endpoint
   
 while true
 do
-time curl customer-tutorial.$(minishift ip).nip.io
+time curl $(minishift openshift service customer --url)
 echo
 sleep .1
 done
@@ -619,7 +668,7 @@ oc create -f istiofiles/route-rule-recommendations-v2_503.yml -n tutorial
 Now, if you hit the customer endpoint several times, you should see some 503's
 
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
 ```
 
@@ -629,7 +678,7 @@ oc create -f istiofiles/route-rule-recommendations-v2_retry.yml -n tutorial
 ```
 and after a few seconds, things will settle down and you will see it work every time
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 60483540-2pt4z 123*
 ```
@@ -641,13 +690,13 @@ Now, delete the retry rule and see the old behavior, some random 503s
 ```
 oc delete routerule recommendations-v2-retry -n tutorial
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 Now, delete the 503 rule and back to random load-balancing between v1 and v2
 ```
 oc delete routerule recommendations-v2-503 -n tutorial
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 ## Timeout
@@ -676,7 +725,7 @@ Rebuild and redeploy
 ```
 cd recommendations
 
-mvn clean compile package
+mvn clean package
 
 docker build -t example/recommendations:v2 .
 
@@ -693,7 +742,7 @@ Hit the customer endpoint a few times, to see the load-balancing between v1 and 
   
 while true
 do
-time curl customer-tutorial.$(minishift ip).nip.io
+time curl $(minishift openshift service customer --url)
 echo
 sleep .1
 done
@@ -704,14 +753,14 @@ Then add the timeout rule
 ```
 oc create -f istiofiles/route-rule-recommendations-timeout.yml -n tutorial
 
-time curl customer-tutorial.$(minishift ip).nip.io
+time curl $(minishift openshift service customer --url)
 ```
 You will see it return v1 OR 504 after waiting about 1 second
 
 ```
-time curl customer-tutorial.$(minishift ip).nip.io
+time curl $(minishift openshift service customer --url)
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 6*
-time curl customer-tutorial.$(minishift ip).nip.io
+time curl $(minishift openshift service customer --url)
 C100 *{"P1":"Red", "P2":"Big"} && 504 Gateway Timeout *
 ```
 
@@ -747,13 +796,14 @@ and test with a Firefox browser, it should only see v1 responses from recommenda
 There are two ways to get the URL for your browser:
 
 ```
-echo customer-tutorial.$(minishift ip).nip.io
+minishift openshift service customer --in-browser
 
-customer-tutorial.192.168.99.102.nip.io
 ```
-That will expand the IP address to something you can copy & paste into your browser's location field.
+That will open the openshift service `customer` in browser
 
 Or
+
+if you need just the url alone:
 
 ```
 minishift openshift service customer --url
@@ -762,8 +812,8 @@ http://customer-tutorial.192.168.99.102.nip.io
 You can also attempt to use the curl -A command to test with different user-agent strings.  
 
 ```
-curl -A Safari customer-tutorial.$(minishift ip).nip.io
-curl -A Firefox customer-tutorial.$(minishift ip).nip.io
+curl -A Safari $(minishift openshift service customer --url)
+curl -A Firefox $(minishift openshift service customer --url)
 ```
 
 You can describe the routerule to see its configuration
@@ -781,7 +831,7 @@ oc delete routerule recommendations-safari -n tutorial
 ```
 oc create -f istiofiles/route-rule-mobile-recommendations-v2.yml -n tutorial
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-tutorial.$(minishift ip).nip.io/
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" $(minishift openshift service customer --url)
 ```
 
 #### Clean up
@@ -809,7 +859,7 @@ Make sure you are in the main directory of "istio-tutorial"
 ```
 oc create -f istiofiles/route-rule-recommendations-v1-mirror-v2.yml -n tutorial
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 ## Access Control
@@ -823,7 +873,7 @@ istioctl create -f istiofiles/acl-whitelist.yml -n tutorial
 ```
 
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 C100 *404 Not Found *
 ```
 
@@ -838,18 +888,18 @@ istioctl delete -f istiofiles/acl-whitelist.yml -n tutorial
 We'll create a blacklist making the customer service blacklist to the preferences service. Requests from the customer service to the preferences service will return a 403 Forbidden HTTP error code.
 
 ```
-istioctl create -f istiofiles/act-blacklist.yml -n tutorial
+istioctl create -f istiofiles/acl-blacklist.yml -n tutorial
 ```
 
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 C100 *403 Forbidden * 
 ```
 
 ##### To reset the environment:
 
 ```
-istioctl delete -f istiofiles/act-blacklist.yml -n tutorial
+istioctl delete -f istiofiles/acl-blacklist.yml -n tutorial
 ```
 
 
@@ -867,7 +917,7 @@ Wait a bit (oc get pods -w to watch)
 and curl the customer endpoint many times
 
 ```
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 Add a 3rd v2 pod to the mix
@@ -890,7 +940,7 @@ Wait for those 2/2 (two containers in each pod) and then poll the customer endpo
 #!/bin/bash
 
 while true
-do curl customer-tutorial.$(minishift ip).nip.io
+do curl $(minishift openshift service customer --url)
 echo
 sleep .1
 done
@@ -950,7 +1000,7 @@ and if you polling the endpoint repeatedly, you will see the Istio behavior:
 #!/bin/bash
 
 while true
-do curl customer-tutorial.$(minishift ip).nip.io
+do curl $(minishift openshift service customer --url)
 echo
 sleep .5
 done
@@ -1009,7 +1059,7 @@ Next, update RecommendationsController.java to include some sleep logic and that
 Rebuild, redeploy
 ```
 cd recommendations
-mvn clean compile package
+mvn clean package
 docker build -t example/recommendations:v2 .
 docker images | grep recommendations
 oc delete pod -l app=recommendations,version=v2 -n tutorial
@@ -1027,7 +1077,7 @@ and test the customer endpoint
 #!/bin/bash
 
 while true
-do curl customer-tutorial.$(minishift ip).nip.io
+do curl $(minishift openshift service customer --url)
 echo
 sleep .5
 done
@@ -1045,7 +1095,7 @@ brew install stern
 stern recommendations -c recommendations -n tutorial
 
 Terminal 2:
-curl customer-tutorial.$(minishift ip).nip.io
+curl $(minishift openshift service customer --url)
 ```
 
 Now add the circuit breaker.
@@ -1065,7 +1115,7 @@ https://github.com/redhat-developer-demos/istio-tutorial/blob/master/gatling_tes
 then 
 ```
 cd gatling_test
-mvn integration-test
+mvn integration-test -Dusers=2 -Dendpoint.url=$(minishift openshift service customer --url)
 ```
 and open the generated report.  
 
@@ -1075,20 +1125,13 @@ Note: the file name of the report is output from the "mvn integration-test" exec
 open /Users/burr/minishift_1.10.0/redhat-developer-demos2/istio-tutorial/gatling_test/target/gatling/recordedsimulation-1516395386155/index.html
 ```
 
-When using 2 concurrent users, all requests are likely to succeed, there are in fact 2 pods of recommendations available.
-
-Change the atOnceUsers(2) to atOnceUsers(3) and re-run.
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/gatling_test/src/test/scala/RecordedSimulation.scala#L28
+When using 2 concurrent users, all requests are likely to succeed, there are in fact 2 pods of recommendations available. But build reports a failure as we had set the reponse time to be less than 3 seconds
 
 ```
-mvn integration-test
+mvn integration-test -Dendpoint.url=$(minishift openshift service customer --url)
 ```
 
-It will still likely succeed. Change the atOnceUsers(5), for 5 concurrent requests
-
-```
-mvn integration-test
-```
+It will still likely succeed, as by default the number of concurrent users is 5
 
 At this point, that is enough load to have tripped the circuit-breaker and you should see some failures in the report.
 
@@ -1106,7 +1149,7 @@ and re-run the load test
 ```
 mvn integration-test
 ```
-Now, even with a load of 5 where there are only two pods, you should see all requests succeed as there is no circuit-breaker in the middle, tripping/opening.
+Now, even with a load of 5 where there are only two pods, you should see all requests succeed as there is no circuit-breaker in the middle, tripping/opening, but you will notice maven build reporting failure because of the SLA in reponse time which is set at 3 seconds
 
 
 Clean up
@@ -1122,7 +1165,7 @@ Throw some requests at the customer endpoint
 #!/bin/bash
 
 while true
-do curl customer-tutorial.$(minishift ip).nip.io
+do curl $(minishift openshift service customer --url)
 echo
 sleep .1
 done
@@ -1270,7 +1313,7 @@ docker ps | grep egress
 
 docker ps -a | grep egress
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+oc apply -f src/main/kubernetes/Deployment.yml -n istioegress
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -1310,7 +1353,7 @@ ctrl-c
 
 docker ps | grep egress
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+oc apply -f src/main/kubernetes/Deployment.yml -n istioegress
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -1441,7 +1484,7 @@ Throw some requests at customer
 #!/bin/bash
 
 while true
-do curl customer-tutorial.$(minishift ip).nip.io
+do curl $(minishift openshift service customer --url)
 echo
 sleep .1
 done
