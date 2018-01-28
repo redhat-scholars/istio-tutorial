@@ -417,9 +417,9 @@ minishift openshift service jaeger-query --in-browser
 We can experiment with Istio routing rules by making a change to RecommendationsController.java like the following and creating a "v2" docker image.
 
 ```java
-System.out.println("Big Red Dog v2 " + hostname.substring(19) + " " + cnt);
+logger.debug(String.format("Big Red Dog v2 %s %d", HOSTNAME, count));
 
-return "Clifford v2 " + hostname.substring(19) + " " + cnt;
+return ResponseEntity.ok(String.format("Clifford v2 %s %d", HOSTNAME, count));
 ```
 
 The "v2" tag during the docker build is significant.
@@ -452,7 +452,6 @@ NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preferences-243057078-8c5hz           2/2       Running   0          15m
 recommendations-v1-60483540-9snd9     2/2       Running   0          12m
-recommendations-v2-2815683430-vpx4p   1/2       Running   0          5s
 recommendations-v2-2815683430-vpx4p   2/2       Running   0         15s
 ```
 and test the customer endpoint
@@ -479,10 +478,32 @@ sleep .1
 done
 ```
 
+The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service.  Add another replica of recommendations-v2 Deployment.
+
+```
+oc scale --replicas=2 deployment/recommendations-v2
+```
+
+Now, you will see two requests into the v2 and one for v1.
+```
+C100 * {"P1":"Red", "P2":"Big"} && Clifford v1 60483540-mlv48 302 *
+C100 * {"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-hqfz7 293 *
+C100 * {"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-hqfz7 294 *
+```
+Scale back to a single replica of the recommendations-v2 Deployment
+
+```
+oc scale --replicas=1 deployment/recommendations-v2
+```
+and back to the main directory
+```
+cd ..
+```
+
 ## Changing Istio RouteRules
 
 #### All users to recommendations:v2
-From the istio-tutorial directory,
+From the main istio-tutorial directory,
 ```
 oc create -f istiofiles/route-rule-recommendations-v2.yml -n tutorial
 
@@ -509,10 +530,10 @@ oc delete routerules/recommendations-default -n tutorial
 ```
 and you should see the default behavior of load-balancing between v1 and v2
 ```
-curl $(minishift openshift service customer --url)
+curl customer-tutorial.$(minishift ip).nip.io
 ```
 #### Split traffic between v1 and v2
-Canary Deployment scenario: push v2 into the cluster but slowing send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
+Canary Deployment scenario: push v2 into the cluster but slowly send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
 
 ```
 oc get pods -l app=recommendations -n tutorial
