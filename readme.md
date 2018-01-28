@@ -204,8 +204,6 @@ docker images | grep customer
 ```
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
-We will be using automatic sidecar injections using [Kubernetes Initializers](https://kubernetes.io/docs/admin/extensible-admission-controllers/#overview)
-
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
 ```
 export PATH=/Users/burr/minishift_1.10.0/istio-0.4.0/bin:$PATH
@@ -221,7 +219,7 @@ GolangVersion: go1.8
 ```
 Now let's deploy the customer pod with its sidecar
 ```
-oc apply -f src/main/kubernetes/Deployment.yml -n tutorial
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml -n tutorial
 ```
@@ -271,7 +269,7 @@ docker build -t example/preferences .
 
 docker images | grep preferences
 
-oc apply -f src/main/kubernetes/Deployment.yml  -n tutorial
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -309,7 +307,7 @@ docker build -t example/recommendations:v1 .
 
 docker images | grep recommendations
 
-oc apply -f src/main/kubernetes/Deployment.yml  -n tutorial
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -443,7 +441,7 @@ example/recommendations                  v1              f072978d9cf6        8 m
 ```
 cd ..
 
-oc apply -f kubernetesfiles/recommendations_v2_deployment.yml -n tutorial
+oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendations_v2_deployment.yml) -n tutorial
 
 oc get pods -w
 ```
