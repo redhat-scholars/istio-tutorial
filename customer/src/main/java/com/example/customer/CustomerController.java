@@ -14,7 +14,7 @@ public class CustomerController {
     @Value("${preferences.api.url:http://preferences:8080}")    
     private String remoteURL;
 
-    private static final String RESPONSE_STRING_FORMAT = "C100 * %s *";
+    private static final String RESPONSE_STRING_FORMAT = "C100 * %s *\n";
 
     private final RestTemplate restTemplate;
 

@@ -473,7 +473,6 @@ Send several requests to see their responses
 
 while true
 do curl $(minishift openshift service customer --url)
-echo
 sleep .1
 done
 ```
@@ -552,7 +551,6 @@ and send in several requests
 
 while true
 do curl $(minishift openshift service customer --url)
-echo
 sleep .1
 done
 ```
@@ -610,7 +608,6 @@ And hit the customer endpoint
 while true
 do
 time curl $(minishift openshift service customer --url)
-echo
 sleep .1
 done
 ```
@@ -714,7 +711,6 @@ Hit the customer endpoint a few times, to see the load-balancing between v1 and 
 while true
 do
 time curl $(minishift openshift service customer --url)
-echo
 sleep .1
 done
 ``` 
@@ -912,7 +908,6 @@ Wait for those 2/2 (two containers in each pod) and then poll the customer endpo
 
 while true
 do curl $(minishift openshift service customer --url)
-echo
 sleep .1
 done
 ```
@@ -972,7 +967,6 @@ and if you polling the endpoint repeatedly, you will see the Istio behavior:
 
 while true
 do curl $(minishift openshift service customer --url)
-echo
 sleep .5
 done
 ```
@@ -1049,7 +1043,6 @@ and test the customer endpoint
 
 while true
 do curl $(minishift openshift service customer --url)
-echo
 sleep .5
 done
 ```
@@ -1137,7 +1130,6 @@ Throw some requests at the customer endpoint
 
 while true
 do curl $(minishift openshift service customer --url)
-echo
 sleep .1
 done
 ```
@@ -1456,7 +1448,6 @@ Throw some requests at customer
 
 while true
 do curl $(minishift openshift service customer --url)
-echo
 sleep .1
 done
 ```
