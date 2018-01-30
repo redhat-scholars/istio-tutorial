@@ -670,24 +670,22 @@ curl $(minishift openshift service customer --url)
 ## Timeout
 Wait only N seconds before giving up and failing.  At this point, no other route rules should be in effect.  oc get routerules and oc delete routerule rulename if there are some.
 
-First, introduce some wait time in recommendations v2. Update RecommendationsController.java to include a Thread.sleep, making it a slow perfomer
+First, introduce some wait time in recommendations v2 by uncommenting the line that call the timeout method. Update RecommendationsController.java making it a slow perfomer
 
 ```java
-    @RequestMapping("/")
-    public String getRecommendations() {
-        
-        cnt ++;        
-        System.out.println("Big Red Dog v2 " + hostname.substring(19) + " "  + cnt);
+@RequestMapping("/")
+    public ResponseEntity<String> getRecommendations() {
+        count++;
+        logger.debug(String.format("Big Red Dog v1 %s %d", HOSTNAME, count));
 
-        // begin circuit-breaker example
-        try {
-            Thread.sleep(3000);
-		} catch (InterruptedException e) {			
-            e.printStackTrace();
-		}
-        System.out.println("recommendations ready to return");
-        // end circuit-breaker example
-        return "Clifford v2 "  + hostname.substring(19) + " " + cnt ;
+        timeout();
+
+        logger.debug("recommendations ready to return");
+        if (misbehave) {
+            return doMisbehavior();
+        }
+        return ResponseEntity.ok(String.format("Clifford v1 %s %d", HOSTNAME, count));
+    }
 ```
 Rebuild and redeploy
 ```
