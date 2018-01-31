@@ -673,7 +673,7 @@ Wait only N seconds before giving up and failing.  At this point, no other route
 First, introduce some wait time in recommendations v2 by uncommenting the line that call the timeout method. Update RecommendationsController.java making it a slow perfomer
 
 ```java
-@RequestMapping("/")
+    @RequestMapping("/")
     public ResponseEntity<String> getRecommendations() {
         count++;
         logger.debug(String.format("Big Red Dog v1 %s %d", HOSTNAME, count));
@@ -984,40 +984,29 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 20*
 ```
 With vanilla Kubernetes/OpenShift, the distrubtion of load is more round robin, while with Istio it is 50/50 but more random.
 
-Next, update RecommendationsController.java to include some sleep logic and that throws out some 503s.
+Next, update RecommendationsController.java by uncommenting the line that call the timeout method, and changing the flag `misbehave` to `true`. These modifications will make it a slow perfomer and throw somes 503s.
 
 ```java
+    /**
+     * Flag for throwing a 503 when enabled
+     */
+    private boolean misbehave = true;
+    
+    // ...
+
     @RequestMapping("/")
-    public String getRecommendations() {
-        
-        cnt ++;
-        // hostname.substring(19) to remove "recommendations-v1-"
-        System.out.println("Big Red Dog v2 " + hostname.substring(19) + " " + cnt);
-        
-        // begin timeout and/or circuit-breaker example 
-        try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {			
-			e.printStackTrace();
-		}
-        System.out.println("recommendations ready to return");
-        // end circuit-breaker example */
-        // inject some poor behavior
+    public ResponseEntity<String> getRecommendations() {
+        count++;
+        logger.debug(String.format("Big Red Dog v1 %s %d", HOSTNAME, count));
+
+        timeout();
+
+        logger.debug("recommendations ready to return");
         if (misbehave) {
-            cnt = 0;
-            misbehave = false;
-            throw new ServiceUnavailableException();            
-        } 
-        // */       
-        return "Clifford v2 " + hostname.substring(19) + " " + cnt;         
+            return doMisbehavior();
+        }
+        return ResponseEntity.ok(String.format("Clifford v1 %s %d", HOSTNAME, count));
     }
-
-    @RequestMapping("/misbehave")
-    public HttpStatus misbehave() {
-        this.misbehave = true;
-        return HttpStatus.OK;
-    }
-
 ```
 Rebuild, redeploy
 ```
