@@ -78,7 +78,7 @@ Assumes minishift, tested with minshift v1.10.0+10461c6
 
 Minishift creation script
 ```bash
-#!/bin/bash
+#!/bin
 
 # add the location of minishift execuatable to PATH
 # I also keep other handy tools like kubectl and kubetail.sh
@@ -110,7 +110,7 @@ Note: In this tutorial, you will often be polling the customer endpoint with cur
 ## Istio installation script
 
 ```bash
-#!/bin/bash
+#!/bin
 
 curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz | tar xz
 
@@ -1051,7 +1051,6 @@ and if you polling the endpoint repeatedly, you will see the Istio behavior:
 
 ```bash
 #!/bin/bash
-
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
@@ -1312,7 +1311,7 @@ oc get pods
 and then shelling into a v2 pod
 
 ```bash
-oc exec -it recommendation-v2-2815683430-xw7qg -c recommendation /bin/bash
+oc exec -it recommendation-v2-2815683430-xw7qg -c recommendation /bin
 ```
 
 and then hit its misbehave endpoint to set the flag
@@ -1450,7 +1449,7 @@ curl egresshttpbin-istioegress.$(minishift ip).nip.io
 or shell into the pod by getting its name and then using that name with oc exec
 
 ```bash
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) /bin/bash
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) /bin
 
 curl localhost:8080
 
@@ -1481,7 +1480,7 @@ EOF
 and shell into it for testing
 
 ```bash
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin/bash
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin
 
 curl http://www.google.com:443
 
@@ -1662,7 +1661,7 @@ oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
 Dive into the istio-proxy container
 
 ```bash
-oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
+oc exec -it $CPOD -c istio-proxy -n tutorial /bin
 cd /etc/istio/proxy
 ls
 cat envoy-rev3.json
