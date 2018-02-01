@@ -285,6 +285,7 @@ and check out the logs
 stern preference -c preference
 ```
 You should see a stacktrace containing this cause:
+```
 org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
 ```
 Back to the main istio-tutorial directory
