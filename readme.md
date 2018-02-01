@@ -1158,7 +1158,7 @@ then
 
 ```bash
 cd gatling_test
-mvn integration-test -Dusers=2 -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
+mvn clean integration-test -Dusers=2 -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
 ```
 
 and open the generated report.  
@@ -1170,7 +1170,7 @@ find target -name index.html | xargs open
 When using 2 concurrent users, all requests are likely to succeed, there are in fact 2 pods of recommendation available. But build reports a failure as we had set the reponse time to be less than 3 seconds
 
 ```bash
-mvn integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
+mvn clean integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
 ```
 
 It will still likely succeed, as by default the number of concurrent users is 5
@@ -1192,7 +1192,7 @@ istioctl delete destinationpolicy recommendation-circuitbreaker -n tutorial
 and re-run the load test
 
 ```bash
-mvn integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
+mvn clean integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
 ```
 
 Now, even with a load of 5 where there are only two pods, you should see all requests succeed as there is no circuit-breaker in the middle, tripping/opening, but you will notice maven build reporting failure because of the SLA in reponse time which is set at 3 seconds
