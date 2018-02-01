@@ -238,14 +238,15 @@ curl customer-tutorial.$(minishift ip).nip.io
 You should see the following error because preference and recommendation are not yet deployed.
 
 ```
-C100 * I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference *
+customer => java.net.UnknownHostException: preference
 ```
 Also review the logs
 ```
 stern customer -c customer
-
-customer-3600192384-4g8h8 customer org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
-
+```
+You should see a stacktrace containing this cause:
+```
+org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
 ```
 
 Back to the main istio-tutorial directory
@@ -277,13 +278,14 @@ curl customer-tutorial.$(minishift ip).nip.io
 It will respond with an error since recommendation is not yet deployed. 
 Note: We could make this a bit more resilent in a future iteration of this tutorial
 ```
-C100 * 503 Service Unavailable *
+customer => preference => java.net.UnknownHostException: recommendation
 ```
 and check out the logs 
 ```
 stern preference -c preference
-
-preference-243057078-rwvds preference org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
+```
+You should see a stacktrace containing this cause:
+org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
 ```
 Back to the main istio-tutorial directory
 
@@ -315,7 +317,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 it returns
 
 ```
-C100 * {"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 1 *
+customer => preference => recommendation v2 from '99634814-sf4cl': 1
 ```
 and you can monitor the recommendation logs with
 ```
@@ -333,7 +335,7 @@ When you wish to change code (e.g. editing the .java files) and wish to "redeplo
 ```
 cd {servicename}
 
-vi src/main/java/com/example/{servicename}/{Servicename}Controller.java
+vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}Controller.java
 ```
 Make your edits and esc-w-q
 
@@ -396,11 +398,11 @@ Note: you may have to refresh the browser for the Prometheus graph to update. An
 
 Tracing requires a bit of work on the Java side.  Each microservice needs to pass on the headers which are used to enable the traces.
 
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/example/customer/tracing/HttpHeaderForwarderHandlerInterceptor.java
+https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/redhat/developer/demos/customer/tracing/HttpHeaderForwarderHandlerInterceptor.java
 
 and
 
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/example/customer/CustomerApplication.java#L21-L31
+https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/redhat/developer/demos/customer/CustomerApplication.java#L21-L31
 
 To open the Jaeger console, select customer from the list of services and Find Traces
 ```
@@ -413,9 +415,7 @@ minishift openshift service jaeger-query --in-browser
 We can experiment with Istio routing rules by making a change to RecommendationsController.java like the following and creating a "v2" docker image.
 
 ```java
-logger.debug(String.format("Big Red Dog v2 %s %d", HOSTNAME, count));
-
-return ResponseEntity.ok(String.format("Clifford v2 %s %d", HOSTNAME, count));
+    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
 ```
 
 The "v2" tag during the docker build is significant.
@@ -481,9 +481,9 @@ oc scale --replicas=2 deployment/recommendation-v2
 
 Now, you will see two requests into the v2 and one for v1.
 ```
-C100 * {"P1":"Red", "P2":"Big"} && Clifford v1 60483540-mlv48 302 *
-C100 * {"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-hqfz7 293 *
-C100 * {"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-hqfz7 294 *
+customer => preference => recommendation v1 from '2819441432-qsp25': 29
+customer => preference => recommendation v2 from '99634814-sf4cl': 37
+customer => preference => recommendation v2 from '99634814-sf4cl': 38
 ```
 Scale back to a single replica of the recommendation-v2 Deployment
 
@@ -580,11 +580,11 @@ You can inject 503's, for approximately 50% of the requests
 oc create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 6*
+customer => preference => recommendation v1 from '99634814-sf4cl': 88
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
+customer => preference => fault filter abort
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 60483540-2pt4z 6*
+customer => preference => recommendation v2 from '2819441432-qsp25': 51
 ```
 Clean up
 ```
@@ -633,7 +633,7 @@ Now, if you hit the customer endpoint several times, you should see some 503's
 
 ```
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && 503 Service Unavailable *
+customer => preference => fault filter abort
 ```
 
 Now add the retry rule
@@ -644,7 +644,7 @@ and after a few seconds, things will settle down and you will see it work every 
 ```
 curl customer-tutorial.$(minishift ip).nip.io
 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 60483540-2pt4z 123*
+customer => preference => recommendation v2 from '2819441432-qsp25': 56
 ```
 You can see the active RouteRules via
 ```
