@@ -2,26 +2,26 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: recommendation
-    version: v2
-  name: recommendation-v2
+    app: preference
+    version: v1
+  name: preference
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: recommendation
-      version: v2
+      app: preference
+      version: v1
   template:
     metadata:
       labels:
-        app: recommendation
-        version: v2
+        app: preference
+        version: v1
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true
-        image: example/recommendation:v2
+          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
+        image: example/preference:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
@@ -30,8 +30,8 @@ spec:
             - localhost:8080/health
           initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 3
-        name: recommendation
+          timeoutSeconds: 1
+        name: preference
         ports:
         - containerPort: 8080
           name: http
@@ -49,6 +49,6 @@ spec:
             - localhost:8080/health
           initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 1
         securityContext:
           privileged: false

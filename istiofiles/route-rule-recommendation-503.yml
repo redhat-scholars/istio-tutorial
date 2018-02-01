@@ -1,0 +1,16 @@
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: recommendation-503
+spec:
+  destination:
+    namespace: tutorial
+    name: recommendation
+  precedence: 2
+  route:
+  - labels:
+      app: recommendation
+  httpFault:
+    abort:
+      percent: 50
+      httpStatus: 503

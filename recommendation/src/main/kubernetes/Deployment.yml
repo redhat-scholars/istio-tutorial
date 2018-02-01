@@ -3,25 +3,25 @@ kind: Deployment
 metadata:
   labels:
     app: recommendation
-    version: v2
-  name: recommendation-v2
+    version: v1
+  name: recommendation-v1
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: recommendation
-      version: v2
+      version: v1
   template:
     metadata:
       labels:
         app: recommendation
-        version: v2
+        version: v1
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true
-        image: example/recommendation:v2
+          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
+        image: example/recommendation:v1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
@@ -30,7 +30,7 @@ spec:
             - localhost:8080/health
           initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 1
         name: recommendation
         ports:
         - containerPort: 8080
@@ -49,6 +49,6 @@ spec:
             - localhost:8080/health
           initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 1
         securityContext:
           privileged: false

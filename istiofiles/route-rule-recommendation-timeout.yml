@@ -1,0 +1,15 @@
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: recommendation-timeout
+spec:
+  destination:
+    namespace: tutorial
+    name: recommendation
+  precedence: 1
+  route:
+  - labels:
+      app: recommendation
+  httpReqTimeout:
+    simpleTimeout:
+      timeout: 1s

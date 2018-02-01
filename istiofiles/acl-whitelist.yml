@@ -1,15 +1,15 @@
 apiVersion: "config.istio.io/v1alpha2"
 kind: listchecker
 metadata:
-  name: preferenceswhitelist
+  name: preferencewhitelist
 spec:
-  overrides: ["recommendations"]
+  overrides: ["recommendation"]
   blacklist: false
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: listentry
 metadata:
-  name: preferencessource
+  name: preferencesource
 spec:
   value: source.labels["app"]
 ---
@@ -18,8 +18,8 @@ kind: rule
 metadata:
   name: checkfromcustomer
 spec:
-  match: destination.labels["app"] == "preferences"
+  match: destination.labels["app"] == "preference"
   actions:
-  - handler: preferenceswhitelist.listchecker
+  - handler: preferencewhitelist.listchecker
     instances:
-    - preferencessource.listentry
+    - preferencesource.listentry

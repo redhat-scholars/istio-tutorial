@@ -18,7 +18,7 @@ kind: rule
 metadata:
   name: denycustomer
 spec:
-  match: destination.labels["app"] == "preferences" && source.labels["app"]=="customer"
+  match: destination.labels["app"] == "preference" && source.labels["app"]=="customer"
   actions:
   - handler: denycustomerhandler.denier
     instances: [ denycustomerrequests.checknothing ]

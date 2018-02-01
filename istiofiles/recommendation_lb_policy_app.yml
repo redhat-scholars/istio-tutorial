@@ -1,0 +1,14 @@
+apiVersion: config.istio.io/v1alpha2
+kind: DestinationPolicy
+metadata:
+  name: recommendation-loadbalancer
+  namespace: tutorial
+spec:
+  source:
+    name: preference
+  destination: 
+    name: recommendation
+  loadBalancing:
+    name: RANDOM     
+#    name: LEAST_CONN
+#   name: ROUND_ROBIN
