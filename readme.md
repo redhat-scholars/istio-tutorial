@@ -112,11 +112,7 @@ Note: In this tutorial, you will often be polling the customer endpoint with cur
 ```bash
 #!/bin/bash
 
-curl -LO https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz
-
-gunzip istio-0.4.0-osx.tar.gz
-
-tar -xvzf istio-0.4.0-osx.tar
+curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz | tar xz
 
 cd istio-0.4.0
 
