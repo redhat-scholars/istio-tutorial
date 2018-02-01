@@ -148,7 +148,7 @@ oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/m
 ```
 Wait for Istio's components to be ready
 
-```
+```bash
 oc get pods
 NAME                             READY     STATUS    RESTARTS   AGE
 grafana-3617079618-4qs2b         1/1       Running   0          4m
@@ -163,7 +163,7 @@ servicegraph-1100735962-tdh78    1/1       Running   0          4m
 
 And if you need quick access to the OpenShift console
 
-```
+```bash
 minishift console
 ```
 Note: on your first launch of the OpenShift console via minishift, you will like receive a warning with
@@ -174,22 +174,22 @@ For minishift, with the admin-user addon, the user is "admin" and the password i
 ## Deploy customer
 
 Make sure you have are logged in
-```
+```bash
 oc whoami
 ```
 and you have setup the project/namespace
 
-```
+```bash
 oc new-project tutorial
 oc adm policy add-scc-to-user privileged -z default -n tutorial
 ```
 Then clone the git repository
-```
+```bash
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
 ```
  Start deploying the microservice projects, starting with customer
-```
+```bash
 cd customer
 
 mvn clean package
@@ -201,7 +201,7 @@ docker images | grep customer
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
-```
+```bash
 export PATH=/Users/burr/minishift_1.10.0/istio-0.4.0/bin:$PATH
 
 istioctl version
@@ -214,7 +214,7 @@ GolangVersion: go1.8
 
 ```
 Now let's deploy the customer pod with its sidecar
-```
+```bash
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
 oc create -f src/main/kubernetes/Service.yml -n tutorial
@@ -222,7 +222,7 @@ oc create -f src/main/kubernetes/Service.yml -n tutorial
 
 Since customer is the forward most microservice (customer -> preference -> recommendation), let's add an OpenShift Route that exposes that endpoint.
 
-```
+```bash
 oc expose service customer
 
 oc get route
@@ -232,31 +232,32 @@ oc get pods -w
 Waiting for Ready 2/2, to break out of the waiting use "ctrl-c"
 
 Then test the customer endpoint
-```
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 You should see the following error because preference and recommendation are not yet deployed.
 
-```
+```bash
 customer => java.net.UnknownHostException: preference
 ```
 Also review the logs
-```
+```bash
 stern customer -c customer
 ```
 You should see a stacktrace containing this cause:
-```
+```bash
 org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
 ```
 
 Back to the main istio-tutorial directory
 
-```
+```bash
 cd ..
 ```
 
 ## Deploy preference
-```
+
+```bash
 cd preference
 
 mvn clean package
@@ -271,33 +272,43 @@ oc create -f src/main/kubernetes/Service.yml
 
 oc get pods -w
 ```
+
 Wait for the Ready 2/2
-```
+
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
+
 It will respond with an error since recommendation is not yet deployed. 
 Note: We could make this a bit more resilent in a future iteration of this tutorial
-```
+
+```bash
 customer => preference => java.net.UnknownHostException: recommendation
 ```
+
 and check out the logs 
-```
+
+```bash
 stern preference -c preference
 ```
+
 You should see a stacktrace containing this cause:
-```
+
+```bash
 org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
 ```
+
 Back to the main istio-tutorial directory
 
-```
+```bash
 cd ..
 ```
 
 ## Deploy recommendation
+
 Note: The tag "v1" at the end of the image name is important.  We will be creating a v2 version of recommendation later in this tutorial.   Having both a v1 and v2 version of the recommendation code will allow us to exercise some interesting aspects of Istio's capabilities.
 
-```
+```bash
 cd recommendation
 
 mvn clean package
@@ -317,30 +328,35 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 it returns
 
-```
+```bash
 customer => preference => recommendation v2 from '99634814-sf4cl': 1
 ```
+
 and you can monitor the recommendation logs with
-```
+
+```bash
 stern recommendation -c recommendation
 ```
 
 Back to the main istio-tutorial directory
 
-```
+```bash
 cd ..
 ```
 
 ## Updating & redeploying code
+
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
-```
+
+```bash
 cd {servicename}
 
 vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}Controller.java
 ```
+
 Make your edits and esc-w-q
 
-```
+```bash
 mvn clean package
 docker build -t example/{servicename} .
 
@@ -349,19 +365,23 @@ oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version
 
 oc delete pod -l app={servicename},version=v1
 ```
+
 Why the delete pod?
 
 Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image as it attempts to keep the desired replicas available
 
-```
+```bash
 oc describe deployment {servicename} | grep Replicas
 ```
 
 ## Monitoring
+
 Out of the box, you get monitoring via Prometheus and Grafana.  
-```
+
+```bash
 minishift openshift service grafana --in-browser
 ```
+
 Make sure to select "Istio Dashboard" in the Grafana Dashboard
 
 ![alt text](readme_images/grafana1.png "Grafana Istio Dashboard")
@@ -371,28 +391,35 @@ Scroll-down to see the stats for customer, preference and recommendation
 ![alt text](readme_images/grafana2.png "Customer Preferences")
 
 ## Custom Metrics
+
 Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard
 
-```
+```bash
 minishift openshift service prometheus --in-browser
 ```
+
 Add the custom metric and rule.  First make sure you are in the "istio-tutorial" directory and then
 
-```
+```bash
 oc apply -f istiofiles/recommendation_requestcount.yml -n istio-system
 ```
+
 In the Prometheus dashboard, add the following
-```
+
+```bash
 round(increase(istio_recommendation_request_count{destination="recommendation.tutorial.svc.cluster.local" }[60m]))
 ```
+
 and select Execute
 
 ![alt text](readme_images/prometheus_custom_metric.png "Prometheus with custom metric")
 
 Then run several requests through the system
-```
+
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
+
 Note: you may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
 
 ## Tracing
@@ -406,13 +433,17 @@ and
 https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/src/main/java/com/redhat/developer/demos/customer/CustomerApplication.java#L21-L31
 
 To open the Jaeger console, select customer from the list of services and Find Traces
-```
+
+```bash
 minishift openshift service jaeger-query --in-browser
 ```
+
 ![alt text](readme_images/jaegerUI.png "Jaeger with Customer")
 
 ## Istio RouteRule Changes
+
 ### recommendation:v2
+
 We can experiment with Istio routing rules by making a change to RecommendationsController.java like the following and creating a "v2" docker image.
 
 ```java
@@ -423,7 +454,7 @@ The "v2" tag during the docker build is significant.
 
 There is also a 2nd deployment.yml file to label things correctly
 
-```
+```bash
 cd recommendation
 
 mvn clean package
@@ -433,26 +464,31 @@ docker build -t example/recommendation:v2 .
 docker images | grep recommendation
 example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
 example/recommendation                  v1              f072978d9cf6        8 minutes ago      438MB
+```
 
-```
 *Important:* back up one directory before applying the deployment yaml.  We have a 2nd Deployment to manage the v2 version of recommendation.  
-```
+
+```bash
 cd ..
 
 oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendation_v2_deployment.yml) -n tutorial
 
 oc get pods -w
 ```
+
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
-```
+
+```bash
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preference-243057078-8c5hz           2/2       Running   0          15m
 recommendation-v1-60483540-9snd9     2/2       Running   0          12m
 recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
 ```
+
 and test the customer endpoint
-```
+
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
@@ -465,9 +501,9 @@ curl customer-tutorial.$(minishift ip).nip.io
 you likely see "Clifford v2 {hostname} 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
 Send several requests to see their responses
+
 ```bash
 #!/bin/bash
-
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
 sleep .1
@@ -476,31 +512,37 @@ done
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service.  Add another replica of recommendation-v2 Deployment.
 
-```
+```bash
 oc scale --replicas=2 deployment/recommendation-v2
 ```
 
 Now, you will see two requests into the v2 and one for v1.
-```
+
+```bash
 customer => preference => recommendation v1 from '2819441432-qsp25': 29
 customer => preference => recommendation v2 from '99634814-sf4cl': 37
 customer => preference => recommendation v2 from '99634814-sf4cl': 38
 ```
+
 Scale back to a single replica of the recommendation-v2 Deployment
 
-```
+```bash
 oc scale --replicas=1 deployment/recommendation-v2
 ```
+
 and back to the main directory
-```
+
+```bash
 cd ..
 ```
 
 ## Changing Istio RouteRules
 
 #### All users to recommendation:v2
+
 From the main istio-tutorial directory,
-```
+
+```bash
 oc create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
@@ -509,43 +551,52 @@ curl customer-tutorial.$(minishift ip).nip.io
 you should only see v2 being returned
 
 #### All users to recommendation:v1
+
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
-```
+```bash
 oc replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 
 oc get routerules -n tutorial
 
 oc get routerules/recommendation-default -o yaml -n tutorial
 ```
+
 #### All users to recommendation v1 and v2
+
 By simply removing the rule
 
-```
+```bash
 oc delete routerules/recommendation-default -n tutorial
 ```
+
 and you should see the default behavior of load-balancing between v1 and v2
-```
+
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
+
 #### Split traffic between v1 and v2
+
 Canary Deployment scenario: push v2 into the cluster but slowly send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
 
-```
+```bash
 oc get pods -l app=recommendation -n tutorial
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 ```
+
 Create the routerule that will send 90% of requests to v1 and 10% to v2
-```
+
+```bash
 oc create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
 ```
+
 and send in several requests
 
 ```bash
 #!/bin/bash
-
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
 sleep .1
@@ -553,23 +604,26 @@ done
 ```
 
 In another terminal, change the mixture to be 75/25
-```
+
+```bash
 oc replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
 ```
 
 Clean up
-```
+
+```bash
 oc delete routerule recommendation-v1-v2 -n tutorial
 ```
 
-
 ## Fault Injection
+
 Apply some chaos engineering by throwing in some HTTP errors or network delays.  Understanding failure scenarios is a critical aspect of microservices architecture  (aka distributed computing)
 
 ### HTTP Error 503
+
 By default, recommendation v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift
 
-```
+```bash
 oc get pods -l app=recommendation -n tutorial
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          18h
@@ -577,7 +631,8 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
 ```
 
 You can inject 503's, for approximately 50% of the requests
-```
+
+```bash
 oc create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
@@ -587,84 +642,104 @@ customer => preference => fault filter abort
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v2 from '2819441432-qsp25': 51
 ```
+
 Clean up
-```
+
+```bash
 oc delete routerule recommendation-503 -n tutorial
 ```
+
 ### Delay
+
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slowly, potentially causing a cascading failure in your network of services.
 
-```
+```bash
 oc create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
 ```
+
 And hit the customer endpoint
 
 ```bash
 #!/bin/bash
-  
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
 sleep .1
 done
 ```
+
 You will notice many requets to the customer endpoint now have a delay.
 If you are monitoring the logs for recommendation v1 and v2, you will also see the delay happens BEFORE the recommendation service is actually called
 
-```
+```bash
 stern recommendation -n tutorial
+```
 or
+```bash
 ./kubetail.sh recommendation -n tutorial
 ```
+
 Clean up
+
 ```
 oc delete routerule recommendation-delay -n tutorial
 ```
 
 ## Retry
+
 Instead of failing immediately, retry the Service N more times
 
 We will use Istio and return 503's about 50% of the time.  Send all users to v2 which will throw out some 503's
 
-```
+```bash
 oc create -f istiofiles/route-rule-recommendation-v2_503.yml -n tutorial
 ```
 
 Now, if you hit the customer endpoint several times, you should see some 503's
 
-```
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => fault filter abort
 ```
 
 Now add the retry rule
-```
+
+```bash
 oc create -f istiofiles/route-rule-recommendation-v2_retry.yml -n tutorial
 ```
+
 and after a few seconds, things will settle down and you will see it work every time
-```
+
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 
 customer => preference => recommendation v2 from '2819441432-qsp25': 56
 ```
+
 You can see the active RouteRules via
-```
+
+```bash
 oc get routerules -n tutorial
 ```
+
 Now, delete the retry rule and see the old behavior, some random 503s
-```
+
+```bash
 oc delete routerule recommendation-v2-retry -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ```
+
 Now, delete the 503 rule and back to random load-balancing between v1 and v2
-```
+
+```bash
 oc delete routerule recommendation-v2-503 -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
 ## Timeout
+
 Wait only N seconds before giving up and failing.  At this point, no other route rules should be in effect.  oc get routerules and oc delete routerule rulename if there are some.
 
 First, introduce some wait time in recommendation v2 by uncommenting the line that call the timeout method. Update RecommendationsController.java making it a slow perfomer
@@ -684,8 +759,10 @@ First, introduce some wait time in recommendation v2 by uncommenting the line th
         return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
     }
 ```
+
 Rebuild and redeploy
-```
+
+```bash
 cd recommendation
 
 mvn clean package
@@ -698,11 +775,11 @@ oc delete pod -l app=recommendation,version=v2 -n tutorial
 
 cd ..
 ```
+
 Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond
 
 ```bash
 #!/bin/bash
-  
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
@@ -712,14 +789,15 @@ done
 
 Then add the timeout rule
 
-```
+```bash
 oc create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
 
 time curl customer-tutorial.$(minishift ip).nip.io
 ```
+
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second
 
-```
+```bash
 time curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 133
 time curl customer-tutorial.$(minishift ip).nip.io
@@ -728,10 +806,10 @@ customer => preference => upstream request timeout
 
 Clean up, delete the timeout rule
 
-```
+```bash
 oc delete routerule recommendation-timeout -n tutorial
-
 ```
+
 ## Smart routing based on user-agent header (Canary Deployment)
 
 What is your user-agent?
@@ -741,11 +819,14 @@ https://www.whoishostingthis.com/tools/user-agent/
 Note: the "user-agent" header being forwarded in the Customer and Preferences controllers in order for route rule modications around recommendation
 
 #### Set recommendation to all v1
-```
+
+```bash
 oc create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 ```
+
 #### Set Safari users to v2
-```
+
+```bash
 oc create -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
 
 oc get routerules -n tutorial
@@ -757,68 +838,75 @@ and test with a Firefox browser, it should only see v1 responses from recommenda
 
 There are two ways to get the URL for your browser:
 
-```
+```bash
 minishift openshift service customer --in-browser
-
 ```
+
 That will open the openshift service `customer` in browser
 
 Or
 
 if you need just the url alone:
 
-```
+```bash
 minishift openshift service customer --url
 http://customer-tutorial.192.168.99.102.nip.io
 ```
+
 You can also attempt to use the curl -A command to test with different user-agent strings.  
 
-```
+```bash
 curl -A Safari $(minishift openshift service customer --url)
 curl -A Firefox $(minishift openshift service customer --url)
 ```
 
 You can describe the routerule to see its configuration
-```
+
+```bash
 oc describe routerule recommendation-safari -n tutorial
 ```
 
-
 Remove the Safari rule
 
-```
+```bash
 oc delete routerule recommendation-safari -n tutorial
 ```
+
 #### Set mobile users to v2
-```
+
+```bash
 oc create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" $(minishift openshift service customer --url)
 ```
 
 #### Clean up
-```
+
+```bash
 oc delete routerule recommendation-mobile -n tutorial
 ```
 
 ## Mirroring Traffic (Dark Launch)
+
 Wiretap, eavesdropping
 Note: does not seem to work in 0.4.0
 
-```
+```bash
 oc get pods -l app=recommendation -n tutorial
 ```
+
 You should have 2 pods for recommendation based on the steps above
 
-```
+```bash
 oc get routerules -n tutorial
 ```
+
 You should have NO routerules
 if so "oc delete routerule rulename -n tutorial"
 
 Make sure you are in the main directory of "istio-tutorial"
 
-```
+```bash
 oc create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
@@ -830,18 +918,18 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 We'll create a whitelist on the preference service to only allow requests from the recommendation service, which will make the preference service invisible to the customer service. Requests from the customer service to the preference service will return a 404 Not Found HTTP error code.
 
-```
+```bash
 istioctl create -f istiofiles/acl-whitelist.yml -n tutorial
 ```
 
-```
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 C100 *404 Not Found *
 ```
 
 ##### To reset the environment:
 
-```
+```bash
 istioctl delete -f istiofiles/acl-whitelist.yml -n tutorial
 ```
 
@@ -849,18 +937,18 @@ istioctl delete -f istiofiles/acl-whitelist.yml -n tutorial
 
 We'll create a blacklist making the customer service blacklist to the preference service. Requests from the customer service to the preference service will return a 403 Forbidden HTTP error code.
 
-```
+```bash
 istioctl create -f istiofiles/acl-blacklist.yml -n tutorial
 ```
 
-```
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 C100 *403 Forbidden * 
 ```
 
 ##### To reset the environment:
 
-```
+```bash
 istioctl delete -f istiofiles/acl-blacklist.yml -n tutorial
 ```
 
@@ -871,20 +959,20 @@ By default, you will see "round-robin" style load-balancing, but you can change 
 
 Add another v2 pod to the mix
 
-```
+```bash
 oc scale deployment recommendation-v2 --replicas=2 -n tutorial
-
 ```
+
 Wait a bit (oc get pods -w to watch)
 and curl the customer endpoint many times
 
-```
+```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
 Add a 3rd v2 pod to the mix
 
-```
+```bash
 oc scale deployment recommendation-v2 --replicas=3 -n tutorial
 
 oc get pods -n tutorial
@@ -896,19 +984,20 @@ recommendation-v2-2815683430-97nnf   2/2       Running   0          43m
 recommendation-v2-2815683430-d49n6   2/2       Running   0          51m
 recommendation-v2-2815683430-tptf2   2/2       Running   0          33m
 ```
+
 Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint
 
 ```bash
 #!/bin/bash
-
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
 sleep .1
 done
 ```
+
 The results should follow a fairly normal round-robin distribution pattern
 
-```
+```bash
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 7* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-985tm 2* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 2* 
@@ -921,12 +1010,13 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 3*
 
 Now, add the Random LB DestinationPolicy
 
-```
+```bash
 oc create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 ```
 
 And you should see a different pattern of which pod is being selected
-```
+
+```bash
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 10* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 5* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 4* 
@@ -940,7 +1030,8 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 8*
 ```
 
 Clean up
-```
+
+```bash
 oc delete -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
@@ -949,9 +1040,10 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 ## Circuit Breaker
 
 #### Fail Fast with Max Connections & Max Pending Requests
+
 First, you need to insure you have a routerule in place.  Let's use a 50/50 split of traffic which is more like the default behavior of Kubernetes.  
 
-```
+```bash
 oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
 ```
 
@@ -965,7 +1057,9 @@ do curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
 done
 ```
+
 Output
+
 ```
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 20* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 21* 
@@ -979,6 +1073,7 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 25*
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 19* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 20* 
 ```
+
 With vanilla Kubernetes/OpenShift, the distrubtion of load is more round robin, while with Istio it is 50/50 but more random.
 
 Next, update RecommendationsController.java by uncommenting the line that call the timeout method, and changing the flag `misbehave` to `true`. These modifications will make it a slow perfomer and throw somes 503s.
@@ -1005,7 +1100,9 @@ Next, update RecommendationsController.java by uncommenting the line that call t
         return ResponseEntity.ok(String.format("Clifford v1 %s %d", HOSTNAME, count));
     }
 ```
+
 Rebuild, redeploy
+
 ```
 cd recommendation
 mvn clean package
@@ -1017,14 +1114,15 @@ oc delete pod -l app=recommendation,version=v2 -n tutorial
 The deletion of the previously running pod will cause Kubernetes/OpenShift to restart it based on the new docker image.
 
 Back to the main directory
-```
+
+```bash
 cd ..
 ```
+
 and test the customer endpoint
 
 ```bash
 #!/bin/bash
-
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
@@ -1035,7 +1133,7 @@ Whenever you are hitting v2, you will notice the slowness in the response based 
 
 Watch the logging output of recommendation
 
-```
+```bash
 Terminal 1:
 ./kubetail.sh recommendation -n tutorial
 or
@@ -1048,34 +1146,36 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 Now add the circuit breaker.
 
-```
+```bash
 istioctl create -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
 
 istioctl get destinationpolicies -n tutorial
 ```
+
 More information on the fields for the simple circuit-breaker
 https://istio.io/docs/reference/config/traffic-rules/destination-policies.html#simplecircuitbreakerpolicy
-
 
 Use gatling, but first modify the URL gatling is pointing at
 https://github.com/redhat-developer-demos/istio-tutorial/blob/master/gatling_test/src/test/scala/RecordedSimulation.scala#L11
 
 then 
-```
+
+```bash
 cd gatling_test
 mvn integration-test -Dusers=2 -Dendpoint.url=$(minishift openshift service customer --url)
 ```
+
 and open the generated report.  
 
 Note: the file name of the report is output from the "mvn integration-test" execution.
 
-```
+```bash
 open /Users/burr/minishift_1.10.0/redhat-developer-demos2/istio-tutorial/gatling_test/target/gatling/recordedsimulation-1516395386155/index.html
 ```
 
 When using 2 concurrent users, all requests are likely to succeed, there are in fact 2 pods of recommendation available. But build reports a failure as we had set the reponse time to be less than 3 seconds
 
-```
+```bash
 mvn integration-test -Dendpoint.url=$(minishift openshift service customer --url)
 ```
 
@@ -1085,33 +1185,38 @@ At this point, that is enough load to have tripped the circuit-breaker and you s
 
 If you wish to peer inside the CB
 
-```
+```bash
 istioctl get destinationpolicies recommendation-circuitbreaker -o yaml -n tutorial
 ```
 
 Now, delete the Destination Policy 
-```
+
+```bash
 istioctl delete destinationpolicy recommendation-circuitbreaker -n tutorial
 ```
+
 and re-run the load test
-```
+
+```bash
 mvn integration-test
 ```
+
 Now, even with a load of 5 where there are only two pods, you should see all requests succeed as there is no circuit-breaker in the middle, tripping/opening, but you will notice maven build reporting failure because of the SLA in reponse time which is set at 3 seconds
 
-
 Clean up
-```
+
+```bash
 oc delete routerule recommendation-v1-v2 -n tutorial
 ```
 
 #### Pool Ejection
+
 There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want the slow and misbehaving instance of recommendation v2 to be kicked out and more requests to be handled by v1.  Envoy refers to this as "outlier detection".
 
 Throw some requests at the customer endpoint
+
 ```bash
 #!/bin/bash
-
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
 sleep .1
@@ -1119,7 +1224,8 @@ done
 ```
 
 By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play. By default Kubernetes/OpenShift will alternative between v1 and v2
-```
+
+```bash
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 8* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 897* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 9* 
@@ -1129,8 +1235,10 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 899*
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 11* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 900* 
 ```
+
 Add a 2nd pod to recommendation
-```
+
+```bash
 oc scale deployment recommendation-v2 --replicas=2 -n tutorial
 
 oc get pods
@@ -1142,8 +1250,10 @@ recommendation-v1-60483540-2pt4z     2/2       Running   0          40m
 recommendation-v2-2815683430-t7b9q   2/2       Running   0          21s
 recommendation-v2-2815683430-xw7qg   2/2       Running   0          19m
 ```
+
 and your pattern will change slightly to v1, v2, v2 then repeat
-```
+
+```bash
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 901* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 2* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 13* 
@@ -1153,11 +1263,14 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 14*
 ```
 
 In another Terminal, setup the Destination Policy
-```
+
+```bash
 istioctl create -f istiofiles/recommendation_cb_policy_app.yml -n tutorial
 ```
+
 You should see the Random load-balancing take effect
-```
+
+```bash
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 905* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 18* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 906* 
@@ -1176,11 +1289,13 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 24*
 
 Now, simply just delete a v2 pod as that will cause 5xx errors
 
-```
+```bash
 oc delete pod recommendation-v2-2815683430-t7b9q
 ```
+
 you should see a single 503 returned to the end-user
-```
+
+```bash
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 30* 
 {"timestamp":1516466806299,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 31* 
@@ -1190,20 +1305,26 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 919*
 
 OR throw in some misbehavior by getting the pod identifiers
 
-```
+```bash
 oc get pods
 ```
+
 and then shelling into a v2 pod
-```
+
+```bash
 oc exec -it recommendation-v2-2815683430-xw7qg -c recommendation /bin/bash
 ```
+
 and then hit its misbehave endpoint to set the flag
-```
+
+```bash
 curl localhost:8080/misbehave
 ```
+
 At this point, you should get a 503 from the v2 pod that was flagged and 
 you should see requests/traffic focusing on the "good" pods, until the sleepWindow expires.
-```
+
+```bash
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 5* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 33* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 985* 
@@ -1215,27 +1336,31 @@ C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 987*
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 988* 
 C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 8*
 ```
+
 If you wait long enough, you should see the v2 pod reenter the load-balancing pool 
 
 Clean up
 
-```
+```bash
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 
 istioctl delete destinationpolicies recommendation-poolejector -n tutorial
 ```
 
 ## Egress
+
 There are two examples of egress routing, one for httpbin.org and one for github.  Egress routes allow you to apply rules to how internal services interact with external APIs/services.
 
 Create a namespace/project to hold these egress examples
-```
+
+```bash
 oc new-project istioegress
 oc adm policy add-scc-to-user privileged -z default -n istioegress
 ```
 
 #### Create HTTPBin Java App
-```
+
+```bash
 cd egresshttpbin/
 
 mvn spring-boot:run
@@ -1274,12 +1399,13 @@ Note: It does not work...yet, more to come.
 
 Back to the main istio-tutorial directory
 
-```
+```bash
 cd ..
 ```
 
 #### Create the Github Java App
-```
+
+```bash
 cd egressgithub/
 
 mvn clean package
@@ -1295,7 +1421,7 @@ curl $(minishift ip):8080
 
 Note: it will not work now but it will once Istio-ized
 
-```
+```bash
 ctrl-c
 
 docker ps | grep egress
@@ -1312,15 +1438,18 @@ cd ..
 ```
 
 #### Istio-ize Egress
-```
+
+```bash
 istioctl create -f istiofiles/egress_httpbin.yml
 
 istioctl get egressrules
 
 curl egresshttpbin-istioegress.$(minishift ip).nip.io
 ```
+
 or shell into the pod by getting its name and then using that name with oc exec
-```
+
+```bash
 oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) /bin/bash
 
 curl localhost:8080
@@ -1331,8 +1460,10 @@ curl httpbin.org/headers
 
 exit
 ```
+
 add a egressrule for google
-```
+
+```bash
 cat <<EOF | istioctl create -f -
 apiVersion: config.istio.io/v1alpha2
 kind: EgressRule
@@ -1346,26 +1477,31 @@ spec:
       protocol: https
 EOF
 ```
+
 and shell into it for testing
 
-```
+```bash
 oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin/bash
 
 curl http://www.google.com:443
 
 exit
 ```
+
 Now, execute the Java code that hits api.google.com/users
-```
+
+```bash
 istioctl create -f istiofiles/egress_github.yml
 
 curl egressgithub-istioegress.$(minishift ip).nip.io
 ```
 
 ## Rate Limiting
+
 Here we will limit the number of concurrent requests into recommendation v2
 
 Current view of the v2 RecommendationsController.java
+
 ```java
 package com.example.recommendation;
 
@@ -1415,13 +1551,13 @@ class ServiceUnavailableException extends RuntimeException {
 
 Now apply the rate limit handler
 
-```
+```bash
 istioctl create -f istiofiles/recommendation_rate_limit_handler.yml
 ```
 
 Now setup the requestcount quota
 
-```
+```bash
 istioctl create -f istiofiles/rate_limit_rule.yml
 ```
 
@@ -1429,7 +1565,6 @@ Throw some requests at customer
 
 ```bash
 #!/bin/bash
-
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
 sleep .1
@@ -1438,31 +1573,37 @@ done
 
 and watch the logs for preference to see some 429 Too Many Requests errors
 
-```
+```bash
 stern preference -c preference -n tutorial
 ```
 
 Clean up
 
-```
+```bash
 istioctl delete -f istiofiles/rate_limit_rule.yml
 
 istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 ```
 
 ## Tips & Tricks
+
 Some tips and tricks that you might find handy
 
 You have two containers in a pod
-```
+
+```bash
 oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
 ```
+
 From these images
-```
+
+```bash
 oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
 ```
+
 Get the pod ids
-```
+
+```bash
 CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
 PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
 RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
@@ -1470,28 +1611,34 @@ RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendatio
 ```
 
 The pods all see each other's services
-```
+
+```bash
 oc exec $CPOD -c customer -n tutorial curl http://preference:8080 
 oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
 oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
 ```
 
-```
+```bash
 oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > afile.json
 ```
+
 Look for "route_config_name": "8080", you should see 3 entries for customer, preference and recommendation
 https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6
 
 Now add a new routerule
-```
+
+```bash
 oc create -f istiofiles/route-rule-recommendation-v2.yml
 ```
+
 The review the routes again
-```
+
+```bash
 oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > bfile.json
 ```
 
 Here is the Before:
+
 https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L41
 
 and
@@ -1499,21 +1646,22 @@ and
 https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L45
 
 And the After:
+
 https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L41
 
 and
 
 https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L45
 
-
 If you need the Pod IP
-```
+
+```bash
 oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
 ```
 
 Dive into the istio-proxy container
 
-```
+```bash
 oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
 cd /etc/istio/proxy
 ls
@@ -1521,4 +1669,5 @@ cat envoy-rev3.json
 ```
 
 Snowdrop Troubleshooting
+
 https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md
