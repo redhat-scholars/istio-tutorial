@@ -78,7 +78,7 @@ Assumes minishift, tested with minshift v1.10.0+10461c6
 
 Minishift creation script
 ```bash
-#!/bin
+#!/bin/bash
 
 # add the location of minishift execuatable to PATH
 # I also keep other handy tools like kubectl and kubetail.sh
@@ -110,7 +110,7 @@ Note: In this tutorial, you will often be polling the customer endpoint with cur
 ## Istio installation script
 
 ```bash
-#!/bin
+#!/bin/bash
 
 curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz | tar xz
 
@@ -1154,28 +1154,23 @@ istioctl get destinationpolicies -n tutorial
 More information on the fields for the simple circuit-breaker
 https://istio.io/docs/reference/config/traffic-rules/destination-policies.html#simplecircuitbreakerpolicy
 
-Use gatling, but first modify the URL gatling is pointing at
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/gatling_test/src/test/scala/RecordedSimulation.scala#L11
-
 then 
 
 ```bash
 cd gatling_test
-mvn integration-test -Dusers=2 -Dendpoint.url=$(minishift openshift service customer --url)
+mvn integration-test -Dusers=2 -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
 ```
 
 and open the generated report.  
 
-Note: the file name of the report is output from the "mvn integration-test" execution.
-
 ```bash
-open /Users/burr/minishift_1.10.0/redhat-developer-demos2/istio-tutorial/gatling_test/target/gatling/recordedsimulation-1516395386155/index.html
+find target -name index.html | xargs open
 ```
 
 When using 2 concurrent users, all requests are likely to succeed, there are in fact 2 pods of recommendation available. But build reports a failure as we had set the reponse time to be less than 3 seconds
 
 ```bash
-mvn integration-test -Dendpoint.url=$(minishift openshift service customer --url)
+mvn integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
 ```
 
 It will still likely succeed, as by default the number of concurrent users is 5
@@ -1197,7 +1192,7 @@ istioctl delete destinationpolicy recommendation-circuitbreaker -n tutorial
 and re-run the load test
 
 ```bash
-mvn integration-test
+mvn integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
 ```
 
 Now, even with a load of 5 where there are only two pods, you should see all requests succeed as there is no circuit-breaker in the middle, tripping/opening, but you will notice maven build reporting failure because of the SLA in reponse time which is set at 3 seconds
@@ -1311,7 +1306,7 @@ oc get pods
 and then shelling into a v2 pod
 
 ```bash
-oc exec -it recommendation-v2-2815683430-xw7qg -c recommendation /bin
+oc exec -it recommendation-v2-2815683430-xw7qg -c recommendation /bin/bash
 ```
 
 and then hit its misbehave endpoint to set the flag
@@ -1449,7 +1444,7 @@ curl egresshttpbin-istioegress.$(minishift ip).nip.io
 or shell into the pod by getting its name and then using that name with oc exec
 
 ```bash
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) /bin
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) /bin/bash
 
 curl localhost:8080
 
@@ -1480,7 +1475,7 @@ EOF
 and shell into it for testing
 
 ```bash
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin/bash
 
 curl http://www.google.com:443
 
@@ -1661,7 +1656,7 @@ oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
 Dive into the istio-proxy container
 
 ```bash
-oc exec -it $CPOD -c istio-proxy -n tutorial /bin
+oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
 cd /etc/istio/proxy
 ls
 cat envoy-rev3.json
