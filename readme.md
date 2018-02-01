@@ -672,15 +672,15 @@ First, introduce some wait time in recommendation v2 by uncommenting the line th
     @RequestMapping("/")
     public ResponseEntity<String> getRecommendations() {
         count++;
-        logger.debug(String.format("Big Red Dog v1 %s %d", HOSTNAME, count));
+        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
 
         timeout();
 
-        logger.debug("recommendations ready to return");
+        logger.debug("recommendation service ready to return");
         if (misbehave) {
             return doMisbehavior();
         }
-        return ResponseEntity.ok(String.format("Clifford v1 %s %d", HOSTNAME, count));
+        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
     }
 ```
 Rebuild and redeploy
@@ -716,13 +716,13 @@ oc create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
 
 time curl customer-tutorial.$(minishift ip).nip.io
 ```
-You will see it return v1 OR 504 after waiting about 1 second
+You will see it return v1 OR "upstream request timeout" after waiting about 1 second
 
 ```
 time curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 6*
+customer => preference => recommendation v1 from '99634814-sf4cl': 133
 time curl customer-tutorial.$(minishift ip).nip.io
-C100 *{"P1":"Red", "P2":"Big"} && 504 Gateway Timeout *
+customer => preference => upstream request timeout
 ```
 
 Clean up, delete the timeout rule
