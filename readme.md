@@ -235,7 +235,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 You should see the following error because preference and recommendation are not yet deployed.
 
 ```bash
-customer => java.net.UnknownHostException: preference
+customer => I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
 ```
 
 Also review the logs
@@ -284,7 +284,7 @@ It will respond with an error since recommendation is not yet deployed.
 Note: We could make this a bit more resilent in a future iteration of this tutorial
 
 ```bash
-customer => preference => java.net.UnknownHostException: recommendation
+customer => 503 preference => I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
 ```
 
 and check out the logs 
