@@ -1062,17 +1062,22 @@ done
 Output
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 20* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 21* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 16* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 17* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 22* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 23* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 24* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 18* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 25* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 19* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 20* 
+customer => preference => recommendation v2 from '2819441432-bs5ck': 215
+customer => preference => recommendation v2 from '2819441432-bs5ck': 216
+customer => preference => recommendation v2 from '2819441432-bs5ck': 217
+customer => preference => recommendation v1 from '99634814-d2z2t': 1184
+customer => preference => recommendation v2 from '2819441432-bs5ck': 218
+customer => preference => recommendation v1 from '99634814-d2z2t': 1185
+customer => preference => recommendation v2 from '2819441432-bs5ck': 219
+customer => preference => recommendation v1 from '99634814-d2z2t': 1186
+customer => preference => recommendation v2 from '2819441432-bs5ck': 220
+customer => preference => recommendation v1 from '99634814-d2z2t': 1187
+customer => preference => recommendation v2 from '2819441432-bs5ck': 221
+customer => preference => recommendation v1 from '99634814-d2z2t': 1188
+customer => preference => recommendation v2 from '2819441432-bs5ck': 222
+customer => preference => recommendation v2 from '2819441432-bs5ck': 223
+customer => preference => recommendation v2 from '2819441432-bs5ck': 224
+customer => preference => recommendation v2 from '2819441432-bs5ck': 225
 ```
 
 With vanilla Kubernetes/OpenShift, the distrubtion of load is more round robin, while with Istio it is 50/50 but more random.
@@ -1222,14 +1227,16 @@ done
 By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play. By default Kubernetes/OpenShift will alternative between v1 and v2
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 8* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 897* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 9* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 898* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 10* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 899* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 11* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 900* 
+customer => preference => recommendation v1 from '99634814-d2z2t': 1809
+customer => preference => recommendation v2 from '2819441432-bs5ck': 832
+customer => preference => recommendation v1 from '99634814-d2z2t': 1810
+customer => preference => recommendation v2 from '2819441432-bs5ck': 833
+customer => preference => recommendation v1 from '99634814-d2z2t': 1811
+customer => preference => recommendation v2 from '2819441432-bs5ck': 834
+customer => preference => recommendation v1 from '99634814-d2z2t': 1812
+customer => preference => recommendation v2 from '2819441432-bs5ck': 835
+customer => preference => recommendation v1 from '99634814-d2z2t': 1813
+customer => preference => recommendation v2 from '2819441432-bs5ck': 836
 ```
 
 Add a 2nd pod to recommendation
@@ -1250,12 +1257,15 @@ recommendation-v2-2815683430-xw7qg   2/2       Running   0          19m
 and your pattern will change slightly to v1, v2, v2 then repeat
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 901* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 13* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 902* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 3* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 14*
+customer => preference => recommendation v1 from '99634814-d2z2t': 1830
+customer => preference => recommendation v2 from '2819441432-f4ls5': 3
+customer => preference => recommendation v2 from '2819441432-bs5ck': 854
+customer => preference => recommendation v1 from '99634814-d2z2t': 1831
+customer => preference => recommendation v2 from '2819441432-f4ls5': 4
+customer => preference => recommendation v2 from '2819441432-bs5ck': 855
+customer => preference => recommendation v1 from '99634814-d2z2t': 1832
+customer => preference => recommendation v2 from '2819441432-f4ls5': 5
+customer => preference => recommendation v2 from '2819441432-bs5ck': 856
 ```
 
 In another Terminal, setup the Destination Policy
@@ -1267,20 +1277,19 @@ istioctl create -f istiofiles/recommendation_cb_policy_app.yml -n tutorial
 You should see the Random load-balancing take effect
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 905* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 18* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 906* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 19* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 20* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 21* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 22* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 23* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 907* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 908* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 909* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 24* 
+customer => preference => recommendation v1 from '99634814-d2z2t': 1837
+customer => preference => recommendation v2 from '2819441432-f4ls5': 10
+customer => preference => recommendation v2 from '2819441432-bs5ck': 861
+customer => preference => recommendation v2 from '2819441432-f4ls5': 11
+customer => preference => recommendation v1 from '99634814-d2z2t': 1838
+customer => preference => recommendation v1 from '99634814-d2z2t': 1839
+customer => preference => recommendation v1 from '99634814-d2z2t': 1840
+customer => preference => recommendation v2 from '2819441432-bs5ck': 862
+customer => preference => recommendation v2 from '2819441432-bs5ck': 863
+customer => preference => recommendation v1 from '99634814-d2z2t': 1841
+customer => preference => recommendation v2 from '2819441432-f4ls5': 12
+customer => preference => recommendation v2 from '2819441432-f4ls5': 13
+customer => preference => recommendation v2 from '2819441432-bs5ck': 864
 ```
 
 Now, simply just delete a v2 pod as that will cause 5xx errors
@@ -1292,11 +1301,11 @@ oc delete pod recommendation-v2-2815683430-t7b9q
 you should see a single 503 returned to the end-user
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 30* 
-{"timestamp":1516466806299,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 31* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 32* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 919* 
+customer => preference => recommendation v2 from '2819441432-f4ls5': 22
+customer => preference => recommendation v2 from '2819441432-f4ls5': 23
+customer => 503 preference => 503 upstream connect error or disconnect/reset before headers
+customer => preference => recommendation v1 from '99634814-d2z2t': 1845
+customer => preference => recommendation v2 from '2819441432-f4ls5': 24
 ```
 
 OR throw in some misbehavior by getting the pod identifiers
@@ -1321,16 +1330,11 @@ At this point, you should get a 503 from the v2 pod that was flagged and
 you should see requests/traffic focusing on the "good" pods, until the sleepWindow expires.
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 5* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 33* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 985* 
-{"timestamp":1516467547342,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 986* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 987* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 988* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 8*
+customer => preference => recommendation v1 from '99634814-d2z2t': 1866
+customer => preference => recommendation v2 from '2819441432-f4ls5': 41
+customer => 503 preference => 503 recommendation misbehavior from '2819441432-55n9f'
+customer => preference => recommendation v1 from '99634814-d2z2t': 1867
+customer => preference => recommendation v2 from '2819441432-f4ls5': 42
 ```
 
 If you wait long enough, you should see the v2 pod reenter the load-balancing pool 
@@ -1499,49 +1503,75 @@ Here we will limit the number of concurrent requests into recommendation v2
 Current view of the v2 RecommendationsController.java
 
 ```java
-package com.example.recommendation;
+package com.redhat.developer.demos.recommendation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.http.HttpStatus;
 
 @RestController
-public class RecommendationsController {
-    int cnt = 0; // helps us see the lifecycle 
-    boolean misbehave = false; // a flag for throwing a 503
-    final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
+public class RecommendationController {
+
+    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Counter to help us see the lifecycle
+     */
+    private int count = 0;
+
+    /**
+     * Flag for throwing a 503 when enabled
+     */
+    private boolean misbehave = false;
+
+    private static final String HOSTNAME =
+            parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+
+    static String parseContainerIdFromHostname(String hostname) {
+        return hostname.replaceAll("recommendation-v\\d+-", "");
+    }
 
     @RequestMapping("/")
-    public String getRecommendations() {
+    public ResponseEntity<String> getRecommendations() {
+        count++;
+        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
 
-        cnt ++;        
-        // hostname.substring(19) to remove "recommendation-v1-"
-        System.out.println("Big Red Dog v2 " + hostname.substring(19) + " " + cnt);
+        timeout();
 
-        // begin timeout and/or circuit-breaker example
+        logger.debug("recommendation service ready to return");
+        if (misbehave) {
+            return doMisbehavior();
+        }
+        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
+    }
+
+    private void timeout() {
         try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {			
-			e.printStackTrace();
-		}
-        System.out.println("recommendation ready to return");
-        // end circuit-breaker example */
-        // throw new ServiceUnavailableException();
-        return "Clifford v2 " + hostname.substring(19) + " " + cnt;
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            logger.info("Thread interrupted");
+        }
     }
-    @RequestMapping("/misbehave")
-    public HttpStatus misbehave() {
-        this.misbehave = true; // set a flag
-        return HttpStatus.OK;
-    }
-}
 
-@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-class ServiceUnavailableException extends RuntimeException {
-    public ServiceUnavailableException(String message) {
-        super(message);
+    private ResponseEntity<String> doMisbehavior() {
+        count = 0;
+        misbehave = false;
+        logger.debug(String.format("Misbehaving %d", count));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
     }
+
+    @RequestMapping("/misbehave")
+    public ResponseEntity<String> flagMisbehave() {
+        this.misbehave = true;
+        logger.debug("'misbehave' has been set to 'true'");
+        return ResponseEntity.ok("Next request to / will return a 503\n");
+    }
+
 }
 ```
 
@@ -1567,10 +1597,24 @@ sleep .1
 done
 ```
 
-and watch the logs for preference to see some 429 Too Many Requests errors
+You should see some 429 errors:
 
 ```bash
-stern preference -c preference -n tutorial
+customer => preference => recommendation v2 from '2819441432-f4ls5': 108
+customer => preference => recommendation v1 from '99634814-d2z2t': 1932
+customer => preference => recommendation v2 from '2819441432-f4ls5': 109
+customer => preference => recommendation v1 from '99634814-d2z2t': 1933
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1934
+customer => preference => recommendation v2 from '2819441432-f4ls5': 110
+customer => preference => recommendation v1 from '99634814-d2z2t': 1935
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1936
+customer => preference => recommendation v2 from '2819441432-f4ls5': 111
+customer => preference => recommendation v1 from '99634814-d2z2t': 1937
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1938
+customer => preference => recommendation v2 from '2819441432-f4ls5': 112
 ```
 
 Clean up
