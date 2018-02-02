@@ -98,6 +98,7 @@ minishift config set openshift-version v3.7.0
 minishift start
 
 ```
+
 ## Setup environment
 
 ```bash
@@ -105,48 +106,34 @@ eval $(minishift oc-env)
 eval $(minishift docker-env)
 oc login $(minishift ip):8443 -u admin -p admin
 ```
-Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl.  Consider using three terminal windows.
 
+Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl.  Consider using three terminal windows.
 
 ## Istio installation script
 
 ```bash
 #!/bin/bash
-
 curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz | tar xz
-
 cd istio-0.4.0
-
-# make sure we are logged in
-oc login $(minishift ip):8443 -u admin -p admin
-
-oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
-
-oc adm policy add-scc-to-user anyuid -z istio-egress-service-account -n istio-system
-
-oc adm policy add-scc-to-user anyuid -z default -n istio-system
-
-oc create -f install/kubernetes/istio.yaml
-
-oc project istio-system
-
-oc expose svc istio-ingress
-
-oc apply -f install/kubernetes/addons/prometheus.yaml
-
-oc apply -f install/kubernetes/addons/grafana.yaml
-
-oc apply -f install/kubernetes/addons/servicegraph.yaml
-
-oc expose svc servicegraph
-
-oc expose svc grafana
-
-oc expose svc prometheus
-
-oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
-
 ```
+
+```bash
+oc login $(minishift ip):8443 -u admin -p admin
+oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
+oc adm policy add-scc-to-user anyuid -z istio-egress-service-account -n istio-system
+oc adm policy add-scc-to-user anyuid -z default -n istio-system
+oc create -f install/kubernetes/istio.yaml
+oc project istio-system
+oc expose svc istio-ingress
+oc apply -f install/kubernetes/addons/prometheus.yaml
+oc apply -f install/kubernetes/addons/grafana.yaml
+oc apply -f install/kubernetes/addons/servicegraph.yaml
+oc expose svc servicegraph
+oc expose svc grafana
+oc expose svc prometheus
+oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
+```
+
 Wait for Istio's components to be ready
 
 ```bash
@@ -167,6 +154,7 @@ And if you need quick access to the OpenShift console
 ```bash
 minishift console
 ```
+
 Note: on your first launch of the OpenShift console via minishift, you will like receive a warning with
 "Your connection is not private", it depends on your browser type and settings.  Simply select "Proceed to 192.168.99.100 (unsafe)" to bypass the warning.
 
@@ -175,21 +163,27 @@ For minishift, with the admin-user addon, the user is "admin" and the password i
 ## Deploy customer
 
 Make sure you have are logged in
+
 ```bash
 oc whoami
 ```
+
 and you have setup the project/namespace
 
 ```bash
 oc new-project tutorial
 oc adm policy add-scc-to-user privileged -z default -n tutorial
 ```
+
 Then clone the git repository
+
 ```bash
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
 ```
+
  Start deploying the microservice projects, starting with customer
+
 ```bash
 cd customer
 
@@ -199,9 +193,11 @@ docker build -t example/customer .
 
 docker images | grep customer
 ```
+
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
+
 ```bash
 export ISTIO_HOME=~/istio-0.4.0
 export PATH=$ISTIO_HOME/bin:$PATH
@@ -213,9 +209,10 @@ GitRevision: 24089ea97c8d244493c93b499a666ddf4010b547-dirty
 GitBranch: 6401744b90b43901b2aa4a8bced33c7bd54ffc13
 User: root@cc5c34bbd1ee
 GolangVersion: go1.8
-
 ```
+
 Now let's deploy the customer pod with its sidecar
+
 ```bash
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
@@ -231,22 +228,29 @@ oc get route
 
 oc get pods -w
 ```
+
 Waiting for Ready 2/2, to break out of the waiting use "ctrl-c"
 
 Then test the customer endpoint
+
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
+
 You should see the following error because preference and recommendation are not yet deployed.
 
 ```bash
 customer => java.net.UnknownHostException: preference
 ```
+
 Also review the logs
+
 ```bash
 stern customer -c customer
 ```
+
 You should see a stacktrace containing this cause:
+
 ```bash
 org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
 ```
