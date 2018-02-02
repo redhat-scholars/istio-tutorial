@@ -84,7 +84,8 @@ Minishift creation script
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
-export PATH=/Users/burr/minishift_1.10.0/:$PATH
+export MINISHIFT_HOME=~/minishift_1.10.0
+export PATH=$MINISHIFT_HOME:$PATH
 
 minishift profile set tutorial
 minishift config set memory 8GB
@@ -202,7 +203,8 @@ Note: Your very first docker build will take a bit of time as it downloads all t
 
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
 ```bash
-export PATH=/Users/burr/minishift_1.10.0/istio-0.4.0/bin:$PATH
+export ISTIO_HOME=~/istio-0.4.0
+export PATH=$ISTIO_HOME/bin:$PATH
 
 istioctl version
 
@@ -1617,7 +1619,58 @@ oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > afile
 ```
 
 Look for "route_config_name": "8080", you should see 3 entries for customer, preference and recommendation
-https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6
+
+```json
+{
+	"name": "8080",
+	"virtual_hosts": [{
+		"name": "customer.springistio.svc.cluster.local|http",
+		"domains": ["customer:8080", "customer", "customer.springistio:8080", "customer.springistio", "customer.springistio.svc:8080", "customer.springistio.svc", "customer.springistio.svc.cluster:8080", "customer.springistio.svc.cluster", "customer.springistio.svc.cluster.local:8080", "customer.springistio.svc.cluster.local", "172.30.176.159:8080", "172.30.176.159"],
+		"routes": [{
+			"match": {
+				"prefix": "/"
+			},
+			"route": {
+				"cluster": "out.customer.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+			"decorator": {
+				"operation": "default-route"
+			}
+		}]
+	}, {
+		"name": "preferences.springistio.svc.cluster.local|http",
+		"domains": ["preferences:8080", "preferences", "preferences.springistio:8080", "preferences.springistio", "preferences.springistio.svc:8080", "preferences.springistio.svc", "preferences.springistio.svc.cluster:8080", "preferences.springistio.svc.cluster", "preferences.springistio.svc.cluster.local:8080", "preferences.springistio.svc.cluster.local", "172.30.249.133:8080", "172.30.249.133"],
+		"routes": [{
+			"match": {
+				"prefix": "/"
+			},
+			"route": {
+				"cluster": "out.preferences.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+			"decorator": {
+				"operation": "default-route"
+			}
+		}]
+	}, {
+		"name": "recommendations.springistio.svc.cluster.local|http",
+		"domains": ["recommendations:8080", "recommendations", "recommendations.springistio:8080", "recommendations.springistio", "recommendations.springistio.svc:8080", "recommendations.springistio.svc", "recommendations.springistio.svc.cluster:8080", "recommendations.springistio.svc.cluster", "recommendations.springistio.svc.cluster.local:8080", "recommendations.springistio.svc.cluster.local", "172.30.209.113:8080", "172.30.209.113"],
+		"routes": [{
+			"match": {
+				"prefix": "/"
+			},
+			"route": {
+				"cluster": "out.recommendations.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+			"decorator": {
+				"operation": "default-route"
+			}
+		}]
+	}]
+}
+```
 
 Now add a new routerule
 
@@ -1633,19 +1686,37 @@ oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > bfile
 
 Here is the Before:
 
-https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L41
+```json
+			"route": {
+				"cluster": "out.recommendations.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+```
 
 and
 
-https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L45
+```json
+			"decorator": {
+				"operation": "default-route"
+			}
+```
 
 And the After:
 
-https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L41
+```json
+			"route": {
+				"cluster": "out.recommendations.springistio.svc.cluster.local|http|version=v2",
+				"timeout": "0s"
+			},
+```
 
 and
 
-https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L45
+```json
+			"decorator": {
+				"operation": "recommendations-default"
+			}
+```
 
 If you need the Pod IP
 
