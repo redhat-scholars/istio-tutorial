@@ -37,12 +37,21 @@ public class PreferencesController {
         } catch (HttpServerErrorException ex) {
             logger.warn("Exception trying to get the response from recommendation service.", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body(String.format(RESPONSE_STRING_FORMAT, ex.getResponseBodyAsString().trim()));
+                    .body(String.format(RESPONSE_STRING_FORMAT,
+                            String.format("%d %s", ex.getRawStatusCode(), createHttpErrorResponseString(ex))));
         } catch (RestClientException ex) {
             logger.warn("Exception trying to get the response from recommendation service.", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .body(String.format(RESPONSE_STRING_FORMAT, ex.getCause()));
         }
+    }
+
+    private String createHttpErrorResponseString(HttpServerErrorException ex) {
+        String responseBody = ex.getResponseBodyAsString().trim();
+        if ("null".equals(responseBody)) {
+            return ex.getStatusCode().getReasonPhrase();
+        }
+        return responseBody;
     }
 
 }
