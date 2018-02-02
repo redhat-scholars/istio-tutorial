@@ -1055,7 +1055,7 @@ and if you polling the endpoint repeatedly, you will see the Istio behavior:
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
+sleep .1
 done
 ```
 
@@ -1131,7 +1131,7 @@ and test the customer endpoint
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
+sleep .1
 done
 ```
 
