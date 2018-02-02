@@ -11,8 +11,6 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 **Table of Contents**
 
-
-
 <!-- toc -->
 
 * [Prerequisite CLI tools](#prerequisite-cli-tools)
@@ -59,8 +57,6 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 <!-- toc stop -->
 
-
-
 ## Prerequisite CLI tools
 You will need in this tutorial
 * minishift (https://github.com/minishift/minishift/releases)
@@ -84,7 +80,8 @@ Minishift creation script
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
-export PATH=/Users/burr/minishift_1.10.0/:$PATH
+export MINISHIFT_HOME=~/minishift_1.10.0
+export PATH=$MINISHIFT_HOME:$PATH
 
 minishift profile set tutorial
 minishift config set memory 8GB
@@ -95,8 +92,8 @@ minishift addon enable admin-user
 minishift config set openshift-version v3.7.0
 
 minishift start
-
 ```
+
 ## Setup environment
 
 ```bash
@@ -104,48 +101,34 @@ eval $(minishift oc-env)
 eval $(minishift docker-env)
 oc login $(minishift ip):8443 -u admin -p admin
 ```
-Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl.  Consider using three terminal windows.
 
+Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl.  Consider using three terminal windows.
 
 ## Istio installation script
 
 ```bash
 #!/bin/bash
-
 curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz | tar xz
-
 cd istio-0.4.0
-
-# make sure we are logged in
-oc login $(minishift ip):8443 -u admin -p admin
-
-oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
-
-oc adm policy add-scc-to-user anyuid -z istio-egress-service-account -n istio-system
-
-oc adm policy add-scc-to-user anyuid -z default -n istio-system
-
-oc create -f install/kubernetes/istio.yaml
-
-oc project istio-system
-
-oc expose svc istio-ingress
-
-oc apply -f install/kubernetes/addons/prometheus.yaml
-
-oc apply -f install/kubernetes/addons/grafana.yaml
-
-oc apply -f install/kubernetes/addons/servicegraph.yaml
-
-oc expose svc servicegraph
-
-oc expose svc grafana
-
-oc expose svc prometheus
-
-oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
-
 ```
+
+```bash
+oc login $(minishift ip):8443 -u admin -p admin
+oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
+oc adm policy add-scc-to-user anyuid -z istio-egress-service-account -n istio-system
+oc adm policy add-scc-to-user anyuid -z default -n istio-system
+oc create -f install/kubernetes/istio.yaml
+oc project istio-system
+oc expose svc istio-ingress
+oc apply -f install/kubernetes/addons/prometheus.yaml
+oc apply -f install/kubernetes/addons/grafana.yaml
+oc apply -f install/kubernetes/addons/servicegraph.yaml
+oc expose svc servicegraph
+oc expose svc grafana
+oc expose svc prometheus
+oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
+```
+
 Wait for Istio's components to be ready
 
 ```bash
@@ -166,6 +149,7 @@ And if you need quick access to the OpenShift console
 ```bash
 minishift console
 ```
+
 Note: on your first launch of the OpenShift console via minishift, you will like receive a warning with
 "Your connection is not private", it depends on your browser type and settings.  Simply select "Proceed to 192.168.99.100 (unsafe)" to bypass the warning.
 
@@ -174,21 +158,27 @@ For minishift, with the admin-user addon, the user is "admin" and the password i
 ## Deploy customer
 
 Make sure you have are logged in
+
 ```bash
 oc whoami
 ```
+
 and you have setup the project/namespace
 
 ```bash
 oc new-project tutorial
 oc adm policy add-scc-to-user privileged -z default -n tutorial
 ```
+
 Then clone the git repository
+
 ```bash
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
 ```
+
  Start deploying the microservice projects, starting with customer
+
 ```bash
 cd customer
 
@@ -198,11 +188,14 @@ docker build -t example/customer .
 
 docker images | grep customer
 ```
+
 Note: Your very first docker build will take a bit of time as it downloads all the layers.  Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
 
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
+
 ```bash
-export PATH=/Users/burr/minishift_1.10.0/istio-0.4.0/bin:$PATH
+export ISTIO_HOME=~/istio-0.4.0
+export PATH=$ISTIO_HOME/bin:$PATH
 
 istioctl version
 
@@ -211,9 +204,10 @@ GitRevision: 24089ea97c8d244493c93b499a666ddf4010b547-dirty
 GitBranch: 6401744b90b43901b2aa4a8bced33c7bd54ffc13
 User: root@cc5c34bbd1ee
 GolangVersion: go1.8
-
 ```
+
 Now let's deploy the customer pod with its sidecar
+
 ```bash
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
 
@@ -229,22 +223,29 @@ oc get route
 
 oc get pods -w
 ```
+
 Waiting for Ready 2/2, to break out of the waiting use "ctrl-c"
 
 Then test the customer endpoint
+
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
 ```
+
 You should see the following error because preference and recommendation are not yet deployed.
 
 ```bash
 customer => java.net.UnknownHostException: preference
 ```
+
 Also review the logs
+
 ```bash
 stern customer -c customer
 ```
+
 You should see a stacktrace containing this cause:
+
 ```bash
 org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
 ```
@@ -329,7 +330,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 it returns
 
 ```bash
-customer => preference => recommendation v2 from '99634814-sf4cl': 1
+customer => preference => recommendation v1 from '99634814-sf4cl': 1
 ```
 
 and you can monitor the recommendation logs with
@@ -492,13 +493,13 @@ and test the customer endpoint
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
-you likely see "Clifford v1 {hostname} 5", where the 5 is basically the number of times you hit the endpoint.
+you likely see "customer => preference => recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
 
 ```
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
-you likely see "Clifford v2 {hostname} 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
+you likely see "customer => preference => recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
 Send several requests to see their responses
 
@@ -638,7 +639,7 @@ oc create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
 curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => fault filter abort
+customer => 503 preference => 503 fault filter abort
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v2 from '2819441432-qsp25': 51
 ```
@@ -699,7 +700,7 @@ Now, if you hit the customer endpoint several times, you should see some 503's
 
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => fault filter abort
+customer => 503 preference => 503 fault filter abort
 ```
 
 Now add the retry rule
@@ -801,7 +802,7 @@ You will see it return v1 OR "upstream request timeout" after waiting about 1 se
 time curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 133
 time curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => upstream request timeout
+customer => 503 preference => 504 upstream request timeout
 ```
 
 Clean up, delete the timeout rule
@@ -856,8 +857,8 @@ http://customer-tutorial.192.168.99.102.nip.io
 You can also attempt to use the curl -A command to test with different user-agent strings.  
 
 ```bash
-curl -A Safari $(minishift openshift service customer --url)
-curl -A Firefox $(minishift openshift service customer --url)
+curl -A Safari customer-tutorial.$(minishift ip).nip.io
+curl -A Firefox customer-tutorial.$(minishift ip).nip.io
 ```
 
 You can describe the routerule to see its configuration
@@ -877,7 +878,7 @@ oc delete routerule recommendation-safari -n tutorial
 ```bash
 oc create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" $(minishift openshift service customer --url)
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
 ```
 
 #### Clean up
@@ -924,7 +925,7 @@ istioctl create -f istiofiles/acl-whitelist.yml -n tutorial
 
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *404 Not Found *
+customer => 404 NOT_FOUND:preferencewhitelist.listchecker.tutorial:customer is not whitelisted
 ```
 
 ##### To reset the environment:
@@ -943,7 +944,7 @@ istioctl create -f istiofiles/acl-blacklist.yml -n tutorial
 
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *403 Forbidden * 
+customer => 403 PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
 ```
 
 ##### To reset the environment:
@@ -998,14 +999,14 @@ done
 The results should follow a fairly normal round-robin distribution pattern
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-985tm 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 8* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-985tm 3* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 3* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 3* 
+customer => preference => recommendation v1 from '99634814-d2z2t': 1145
+customer => preference => recommendation v2 from '2819441432-525lh': 1
+customer => preference => recommendation v2 from '2819441432-rg45q': 2
+customer => preference => recommendation v2 from '2819441432-bs5ck': 181
+customer => preference => recommendation v1 from '99634814-d2z2t': 1146
+customer => preference => recommendation v2 from '2819441432-rg45q': 3
+customer => preference => recommendation v2 from '2819441432-rg45q': 4
+customer => preference => recommendation v2 from '2819441432-bs5ck': 182
 ```
 
 Now, add the Random LB DestinationPolicy
@@ -1017,16 +1018,17 @@ oc create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 And you should see a different pattern of which pod is being selected
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 10* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 5* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 4* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 11* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 5* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 8* 
+customer => preference => recommendation v2 from '2819441432-rg45q': 10
+customer => preference => recommendation v2 from '2819441432-525lh': 3
+customer => preference => recommendation v2 from '2819441432-rg45q': 11
+customer => preference => recommendation v1 from '99634814-d2z2t': 1153
+customer => preference => recommendation v1 from '99634814-d2z2t': 1154
+customer => preference => recommendation v1 from '99634814-d2z2t': 1155
+customer => preference => recommendation v2 from '2819441432-rg45q': 12
+customer => preference => recommendation v2 from '2819441432-525lh': 4
+customer => preference => recommendation v2 from '2819441432-525lh': 5
+customer => preference => recommendation v2 from '2819441432-rg45q': 13
+customer => preference => recommendation v2 from '2819441432-rg45q': 14
 ```
 
 Clean up
@@ -1060,17 +1062,22 @@ done
 Output
 
 ```
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 20* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 21* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 16* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 17* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 22* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 23* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 24* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 18* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 25* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 19* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 20* 
+customer => preference => recommendation v2 from '2819441432-bs5ck': 215
+customer => preference => recommendation v2 from '2819441432-bs5ck': 216
+customer => preference => recommendation v2 from '2819441432-bs5ck': 217
+customer => preference => recommendation v1 from '99634814-d2z2t': 1184
+customer => preference => recommendation v2 from '2819441432-bs5ck': 218
+customer => preference => recommendation v1 from '99634814-d2z2t': 1185
+customer => preference => recommendation v2 from '2819441432-bs5ck': 219
+customer => preference => recommendation v1 from '99634814-d2z2t': 1186
+customer => preference => recommendation v2 from '2819441432-bs5ck': 220
+customer => preference => recommendation v1 from '99634814-d2z2t': 1187
+customer => preference => recommendation v2 from '2819441432-bs5ck': 221
+customer => preference => recommendation v1 from '99634814-d2z2t': 1188
+customer => preference => recommendation v2 from '2819441432-bs5ck': 222
+customer => preference => recommendation v2 from '2819441432-bs5ck': 223
+customer => preference => recommendation v2 from '2819441432-bs5ck': 224
+customer => preference => recommendation v2 from '2819441432-bs5ck': 225
 ```
 
 With vanilla Kubernetes/OpenShift, the distrubtion of load is more round robin, while with Istio it is 50/50 but more random.
@@ -1220,14 +1227,16 @@ done
 By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play. By default Kubernetes/OpenShift will alternative between v1 and v2
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 8* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 897* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 9* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 898* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 10* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 899* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 11* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 900* 
+customer => preference => recommendation v1 from '99634814-d2z2t': 1809
+customer => preference => recommendation v2 from '2819441432-bs5ck': 832
+customer => preference => recommendation v1 from '99634814-d2z2t': 1810
+customer => preference => recommendation v2 from '2819441432-bs5ck': 833
+customer => preference => recommendation v1 from '99634814-d2z2t': 1811
+customer => preference => recommendation v2 from '2819441432-bs5ck': 834
+customer => preference => recommendation v1 from '99634814-d2z2t': 1812
+customer => preference => recommendation v2 from '2819441432-bs5ck': 835
+customer => preference => recommendation v1 from '99634814-d2z2t': 1813
+customer => preference => recommendation v2 from '2819441432-bs5ck': 836
 ```
 
 Add a 2nd pod to recommendation
@@ -1248,12 +1257,15 @@ recommendation-v2-2815683430-xw7qg   2/2       Running   0          19m
 and your pattern will change slightly to v1, v2, v2 then repeat
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 901* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 13* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 902* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 3* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 14*
+customer => preference => recommendation v1 from '99634814-d2z2t': 1830
+customer => preference => recommendation v2 from '2819441432-f4ls5': 3
+customer => preference => recommendation v2 from '2819441432-bs5ck': 854
+customer => preference => recommendation v1 from '99634814-d2z2t': 1831
+customer => preference => recommendation v2 from '2819441432-f4ls5': 4
+customer => preference => recommendation v2 from '2819441432-bs5ck': 855
+customer => preference => recommendation v1 from '99634814-d2z2t': 1832
+customer => preference => recommendation v2 from '2819441432-f4ls5': 5
+customer => preference => recommendation v2 from '2819441432-bs5ck': 856
 ```
 
 In another Terminal, setup the Destination Policy
@@ -1265,20 +1277,19 @@ istioctl create -f istiofiles/recommendation_cb_policy_app.yml -n tutorial
 You should see the Random load-balancing take effect
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 905* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 18* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 906* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 19* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 20* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 21* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 22* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 23* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-t7b9q 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 907* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 908* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 909* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 24* 
+customer => preference => recommendation v1 from '99634814-d2z2t': 1837
+customer => preference => recommendation v2 from '2819441432-f4ls5': 10
+customer => preference => recommendation v2 from '2819441432-bs5ck': 861
+customer => preference => recommendation v2 from '2819441432-f4ls5': 11
+customer => preference => recommendation v1 from '99634814-d2z2t': 1838
+customer => preference => recommendation v1 from '99634814-d2z2t': 1839
+customer => preference => recommendation v1 from '99634814-d2z2t': 1840
+customer => preference => recommendation v2 from '2819441432-bs5ck': 862
+customer => preference => recommendation v2 from '2819441432-bs5ck': 863
+customer => preference => recommendation v1 from '99634814-d2z2t': 1841
+customer => preference => recommendation v2 from '2819441432-f4ls5': 12
+customer => preference => recommendation v2 from '2819441432-f4ls5': 13
+customer => preference => recommendation v2 from '2819441432-bs5ck': 864
 ```
 
 Now, simply just delete a v2 pod as that will cause 5xx errors
@@ -1290,11 +1301,11 @@ oc delete pod recommendation-v2-2815683430-t7b9q
 you should see a single 503 returned to the end-user
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 30* 
-{"timestamp":1516466806299,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 31* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 32* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 919* 
+customer => preference => recommendation v2 from '2819441432-f4ls5': 22
+customer => preference => recommendation v2 from '2819441432-f4ls5': 23
+customer => 503 preference => 503 upstream connect error or disconnect/reset before headers
+customer => preference => recommendation v1 from '99634814-d2z2t': 1845
+customer => preference => recommendation v2 from '2819441432-f4ls5': 24
 ```
 
 OR throw in some misbehavior by getting the pod identifiers
@@ -1319,16 +1330,11 @@ At this point, you should get a 503 from the v2 pod that was flagged and
 you should see requests/traffic focusing on the "good" pods, until the sleepWindow expires.
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 5* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-xw7qg 33* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 985* 
-{"timestamp":1516467547342,"status":503,"error":"Service Unavailable","exception":"com.example.customer.CustomerController$ServiceUnavailableException","message":"503 Service Unavailable","path":"/"}
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 986* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 987* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 988* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-gltbm 8*
+customer => preference => recommendation v1 from '99634814-d2z2t': 1866
+customer => preference => recommendation v2 from '2819441432-f4ls5': 41
+customer => 503 preference => 503 recommendation misbehavior from '2819441432-55n9f'
+customer => preference => recommendation v1 from '99634814-d2z2t': 1867
+customer => preference => recommendation v2 from '2819441432-f4ls5': 42
 ```
 
 If you wait long enough, you should see the v2 pod reenter the load-balancing pool 
@@ -1497,49 +1503,75 @@ Here we will limit the number of concurrent requests into recommendation v2
 Current view of the v2 RecommendationsController.java
 
 ```java
-package com.example.recommendation;
+package com.redhat.developer.demos.recommendation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.http.HttpStatus;
 
 @RestController
-public class RecommendationsController {
-    int cnt = 0; // helps us see the lifecycle 
-    boolean misbehave = false; // a flag for throwing a 503
-    final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
+public class RecommendationController {
+
+    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Counter to help us see the lifecycle
+     */
+    private int count = 0;
+
+    /**
+     * Flag for throwing a 503 when enabled
+     */
+    private boolean misbehave = false;
+
+    private static final String HOSTNAME =
+            parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+
+    static String parseContainerIdFromHostname(String hostname) {
+        return hostname.replaceAll("recommendation-v\\d+-", "");
+    }
 
     @RequestMapping("/")
-    public String getRecommendations() {
+    public ResponseEntity<String> getRecommendations() {
+        count++;
+        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
 
-        cnt ++;        
-        // hostname.substring(19) to remove "recommendation-v1-"
-        System.out.println("Big Red Dog v2 " + hostname.substring(19) + " " + cnt);
+        timeout();
 
-        // begin timeout and/or circuit-breaker example
+        logger.debug("recommendation service ready to return");
+        if (misbehave) {
+            return doMisbehavior();
+        }
+        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
+    }
+
+    private void timeout() {
         try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {			
-			e.printStackTrace();
-		}
-        System.out.println("recommendation ready to return");
-        // end circuit-breaker example */
-        // throw new ServiceUnavailableException();
-        return "Clifford v2 " + hostname.substring(19) + " " + cnt;
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            logger.info("Thread interrupted");
+        }
     }
-    @RequestMapping("/misbehave")
-    public HttpStatus misbehave() {
-        this.misbehave = true; // set a flag
-        return HttpStatus.OK;
-    }
-}
 
-@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-class ServiceUnavailableException extends RuntimeException {
-    public ServiceUnavailableException(String message) {
-        super(message);
+    private ResponseEntity<String> doMisbehavior() {
+        count = 0;
+        misbehave = false;
+        logger.debug(String.format("Misbehaving %d", count));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
     }
+
+    @RequestMapping("/misbehave")
+    public ResponseEntity<String> flagMisbehave() {
+        this.misbehave = true;
+        logger.debug("'misbehave' has been set to 'true'");
+        return ResponseEntity.ok("Next request to / will return a 503\n");
+    }
+
 }
 ```
 
@@ -1565,10 +1597,24 @@ sleep .1
 done
 ```
 
-and watch the logs for preference to see some 429 Too Many Requests errors
+You should see some 429 errors:
 
 ```bash
-stern preference -c preference -n tutorial
+customer => preference => recommendation v2 from '2819441432-f4ls5': 108
+customer => preference => recommendation v1 from '99634814-d2z2t': 1932
+customer => preference => recommendation v2 from '2819441432-f4ls5': 109
+customer => preference => recommendation v1 from '99634814-d2z2t': 1933
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1934
+customer => preference => recommendation v2 from '2819441432-f4ls5': 110
+customer => preference => recommendation v1 from '99634814-d2z2t': 1935
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1936
+customer => preference => recommendation v2 from '2819441432-f4ls5': 111
+customer => preference => recommendation v1 from '99634814-d2z2t': 1937
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1938
+customer => preference => recommendation v2 from '2819441432-f4ls5': 112
 ```
 
 Clean up
@@ -1617,7 +1663,58 @@ oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > afile
 ```
 
 Look for "route_config_name": "8080", you should see 3 entries for customer, preference and recommendation
-https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6
+
+```json
+{
+	"name": "8080",
+	"virtual_hosts": [{
+		"name": "customer.springistio.svc.cluster.local|http",
+		"domains": ["customer:8080", "customer", "customer.springistio:8080", "customer.springistio", "customer.springistio.svc:8080", "customer.springistio.svc", "customer.springistio.svc.cluster:8080", "customer.springistio.svc.cluster", "customer.springistio.svc.cluster.local:8080", "customer.springistio.svc.cluster.local", "172.30.176.159:8080", "172.30.176.159"],
+		"routes": [{
+			"match": {
+				"prefix": "/"
+			},
+			"route": {
+				"cluster": "out.customer.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+			"decorator": {
+				"operation": "default-route"
+			}
+		}]
+	}, {
+		"name": "preferences.springistio.svc.cluster.local|http",
+		"domains": ["preferences:8080", "preferences", "preferences.springistio:8080", "preferences.springistio", "preferences.springistio.svc:8080", "preferences.springistio.svc", "preferences.springistio.svc.cluster:8080", "preferences.springistio.svc.cluster", "preferences.springistio.svc.cluster.local:8080", "preferences.springistio.svc.cluster.local", "172.30.249.133:8080", "172.30.249.133"],
+		"routes": [{
+			"match": {
+				"prefix": "/"
+			},
+			"route": {
+				"cluster": "out.preferences.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+			"decorator": {
+				"operation": "default-route"
+			}
+		}]
+	}, {
+		"name": "recommendations.springistio.svc.cluster.local|http",
+		"domains": ["recommendations:8080", "recommendations", "recommendations.springistio:8080", "recommendations.springistio", "recommendations.springistio.svc:8080", "recommendations.springistio.svc", "recommendations.springistio.svc.cluster:8080", "recommendations.springistio.svc.cluster", "recommendations.springistio.svc.cluster.local:8080", "recommendations.springistio.svc.cluster.local", "172.30.209.113:8080", "172.30.209.113"],
+		"routes": [{
+			"match": {
+				"prefix": "/"
+			},
+			"route": {
+				"cluster": "out.recommendations.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+			"decorator": {
+				"operation": "default-route"
+			}
+		}]
+	}]
+}
+```
 
 Now add a new routerule
 
@@ -1633,19 +1730,37 @@ oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > bfile
 
 Here is the Before:
 
-https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L41
+```javascript
+			"route": {
+				"cluster": "out.recommendations.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+```
 
 and
 
-https://gist.github.com/burrsutter/9117266f84efe124590e9014793c10f6#file-gistfile1-txt-L45
+```javascript
+			"decorator": {
+				"operation": "default-route"
+			}
+```
 
 And the After:
 
-https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L41
+```javascript
+			"route": {
+				"cluster": "out.recommendations.springistio.svc.cluster.local|http|version=v2",
+				"timeout": "0s"
+			},
+```
 
 and
 
-https://gist.github.com/burrsutter/8b92da2ad0a8ec1b975f5dfa6ddc17f8#file-gistfile1-txt-L45
+```javascript
+			"decorator": {
+				"operation": "recommendations-default"
+			}
+```
 
 If you need the Pod IP
 
