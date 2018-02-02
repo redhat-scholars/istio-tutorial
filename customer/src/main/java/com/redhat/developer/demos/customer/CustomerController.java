@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,7 +32,7 @@ public class CustomerController {
         try {
             String response = restTemplate.getForObject(remoteURL, String.class);
             return ResponseEntity.ok(String.format(RESPONSE_STRING_FORMAT, response.trim()));
-        } catch (HttpServerErrorException ex) {
+        } catch (HttpStatusCodeException ex) {
             logger.warn("Exception trying to get the response from preference service.", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .body(String.format(RESPONSE_STRING_FORMAT,
@@ -44,9 +44,8 @@ public class CustomerController {
         }
     }
 
-    private String createHttpErrorResponseString(HttpServerErrorException ex) {
+    private String createHttpErrorResponseString(HttpStatusCodeException ex) {
         String responseBody = ex.getResponseBodyAsString().trim();
-        System.out.println(responseBody);
         if (responseBody.startsWith("null")) {
             return ex.getStatusCode().getReasonPhrase();
         }

@@ -11,8 +11,6 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 **Table of Contents**
 
-
-
 <!-- toc -->
 
 * [Prerequisite CLI tools](#prerequisite-cli-tools)
@@ -59,8 +57,6 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 <!-- toc stop -->
 
-
-
 ## Prerequisite CLI tools
 You will need in this tutorial
 * minishift (https://github.com/minishift/minishift/releases)
@@ -96,7 +92,6 @@ minishift addon enable admin-user
 minishift config set openshift-version v3.7.0
 
 minishift start
-
 ```
 
 ## Setup environment
@@ -335,7 +330,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 it returns
 
 ```bash
-customer => preference => recommendation v2 from '99634814-sf4cl': 1
+customer => preference => recommendation v1 from '99634814-sf4cl': 1
 ```
 
 and you can monitor the recommendation logs with
@@ -498,13 +493,13 @@ and test the customer endpoint
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
-you likely see "Clifford v1 {hostname} 5", where the 5 is basically the number of times you hit the endpoint.
+you likely see "customer => preference => recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
 
 ```
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
-you likely see "Clifford v2 {hostname} 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
+you likely see "customer => preference => recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
 Send several requests to see their responses
 
@@ -644,7 +639,7 @@ oc create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
 curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => fault filter abort
+customer => 503 preference => 503 fault filter abort
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v2 from '2819441432-qsp25': 51
 ```
@@ -705,7 +700,7 @@ Now, if you hit the customer endpoint several times, you should see some 503's
 
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => fault filter abort
+customer => 503 preference => 503 fault filter abort
 ```
 
 Now add the retry rule
@@ -807,7 +802,7 @@ You will see it return v1 OR "upstream request timeout" after waiting about 1 se
 time curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 133
 time curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => upstream request timeout
+customer => 503 preference => 504 upstream request timeout
 ```
 
 Clean up, delete the timeout rule
@@ -862,8 +857,8 @@ http://customer-tutorial.192.168.99.102.nip.io
 You can also attempt to use the curl -A command to test with different user-agent strings.  
 
 ```bash
-curl -A Safari $(minishift openshift service customer --url)
-curl -A Firefox $(minishift openshift service customer --url)
+curl -A Safari customer-tutorial.$(minishift ip).nip.io
+curl -A Firefox customer-tutorial.$(minishift ip).nip.io
 ```
 
 You can describe the routerule to see its configuration
@@ -883,7 +878,7 @@ oc delete routerule recommendation-safari -n tutorial
 ```bash
 oc create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" $(minishift openshift service customer --url)
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
 ```
 
 #### Clean up
@@ -930,7 +925,7 @@ istioctl create -f istiofiles/acl-whitelist.yml -n tutorial
 
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *404 Not Found *
+customer => 404 NOT_FOUND:preferencewhitelist.listchecker.tutorial:customer is not whitelisted
 ```
 
 ##### To reset the environment:
@@ -949,7 +944,7 @@ istioctl create -f istiofiles/acl-blacklist.yml -n tutorial
 
 ```bash
 curl customer-tutorial.$(minishift ip).nip.io
-C100 *403 Forbidden * 
+customer => 403 PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
 ```
 
 ##### To reset the environment:
@@ -1004,14 +999,14 @@ done
 The results should follow a fairly normal round-robin distribution pattern
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-985tm 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 2* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 8* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-985tm 3* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 3* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 3* 
+customer => preference => recommendation v1 from '99634814-d2z2t': 1145
+customer => preference => recommendation v2 from '2819441432-525lh': 1
+customer => preference => recommendation v2 from '2819441432-rg45q': 2
+customer => preference => recommendation v2 from '2819441432-bs5ck': 181
+customer => preference => recommendation v1 from '99634814-d2z2t': 1146
+customer => preference => recommendation v2 from '2819441432-rg45q': 3
+customer => preference => recommendation v2 from '2819441432-rg45q': 4
+customer => preference => recommendation v2 from '2819441432-bs5ck': 182
 ```
 
 Now, add the Random LB DestinationPolicy
@@ -1023,16 +1018,17 @@ oc create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 And you should see a different pattern of which pod is being selected
 
 ```bash
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 10* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 5* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 4* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v1 60483540-2pt4z 11* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 5* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 6* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-glw97 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 7* 
-C100 *{"P1":"Red", "P2":"Big"} && Clifford v2 2815683430-8hjsd 8* 
+customer => preference => recommendation v2 from '2819441432-rg45q': 10
+customer => preference => recommendation v2 from '2819441432-525lh': 3
+customer => preference => recommendation v2 from '2819441432-rg45q': 11
+customer => preference => recommendation v1 from '99634814-d2z2t': 1153
+customer => preference => recommendation v1 from '99634814-d2z2t': 1154
+customer => preference => recommendation v1 from '99634814-d2z2t': 1155
+customer => preference => recommendation v2 from '2819441432-rg45q': 12
+customer => preference => recommendation v2 from '2819441432-525lh': 4
+customer => preference => recommendation v2 from '2819441432-525lh': 5
+customer => preference => recommendation v2 from '2819441432-rg45q': 13
+customer => preference => recommendation v2 from '2819441432-rg45q': 14
 ```
 
 Clean up
