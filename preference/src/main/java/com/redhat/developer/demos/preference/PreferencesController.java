@@ -42,13 +42,13 @@ public class PreferencesController {
         } catch (RestClientException ex) {
             logger.warn("Exception trying to get the response from recommendation service.", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body(String.format(RESPONSE_STRING_FORMAT, ex.getCause()));
+                    .body(String.format(RESPONSE_STRING_FORMAT, ex.getMessage()));
         }
     }
 
     private String createHttpErrorResponseString(HttpServerErrorException ex) {
         String responseBody = ex.getResponseBodyAsString().trim();
-        if ("null".equals(responseBody)) {
+        if (responseBody.startsWith("null")) {
             return ex.getStatusCode().getReasonPhrase();
         }
         return responseBody;
