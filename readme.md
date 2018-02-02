@@ -1686,7 +1686,7 @@ oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > bfile
 
 Here is the Before:
 
-```json
+```javascript
 			"route": {
 				"cluster": "out.recommendations.springistio.svc.cluster.local|http",
 				"timeout": "0s"
@@ -1695,7 +1695,7 @@ Here is the Before:
 
 and
 
-```json
+```javascript
 			"decorator": {
 				"operation": "default-route"
 			}
@@ -1703,7 +1703,7 @@ and
 
 And the After:
 
-```json
+```javascript
 			"route": {
 				"cluster": "out.recommendations.springistio.svc.cluster.local|http|version=v2",
 				"timeout": "0s"
@@ -1712,7 +1712,7 @@ And the After:
 
 and
 
-```json
+```javascript
 			"decorator": {
 				"operation": "recommendations-default"
 			}
