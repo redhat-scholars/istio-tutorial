@@ -80,7 +80,7 @@ Minishift creation script
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
-export MINISHIFT_HOME=~/minishift_1.10.0
+export MINISHIFT_HOME=~/minishift_1.12.0
 export PATH=$MINISHIFT_HOME:$PATH
 
 minishift profile set tutorial
@@ -108,8 +108,8 @@ Note: In this tutorial, you will often be polling the customer endpoint with cur
 
 ```bash
 #!/bin/bash
-curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-osx.tar.gz | tar xz
-cd istio-0.4.0
+curl -L https://github.com/istio/istio/releases/download/0.5.0/istio-0.5.0-osx.tar.gz | tar xz
+cd istio-0.5.0
 ```
 
 ```bash
@@ -123,6 +123,8 @@ oc expose svc istio-ingress
 oc apply -f install/kubernetes/addons/prometheus.yaml
 oc apply -f install/kubernetes/addons/grafana.yaml
 oc apply -f install/kubernetes/addons/servicegraph.yaml
+## Workaround for servicegraph bug https://github.com/istio/issues/issues/179
+oc set image deploy/servicegraph servicegraph="docker.io/istio/servicegraph:0.4.0"
 oc expose svc servicegraph
 oc expose svc grafana
 oc expose svc prometheus
@@ -194,16 +196,17 @@ Note: Your very first docker build will take a bit of time as it downloads all t
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
 
 ```bash
-export ISTIO_HOME=~/istio-0.4.0
+export ISTIO_HOME=~/istio-0.5.0
 export PATH=$ISTIO_HOME/bin:$PATH
 
 istioctl version
 
-Version: 0.4.0
-GitRevision: 24089ea97c8d244493c93b499a666ddf4010b547-dirty
-GitBranch: 6401744b90b43901b2aa4a8bced33c7bd54ffc13
-User: root@cc5c34bbd1ee
-GolangVersion: go1.8
+Version: 0.5.0
+GitRevision: c9debceacb63a14a9ae24df433e2ec3ce1f16fc7
+User: root@211b132eb7f1
+Hub: docker.io/istio
+GolangVersion: go1.9
+BuildStatus: Clean
 ```
 
 Now let's deploy the customer pod with its sidecar
@@ -699,7 +702,22 @@ oc create -f istiofiles/route-rule-recommendation-v2_503.yml -n tutorial
 Now, if you hit the customer endpoint several times, you should see some 503's
 
 ```bash
+#!/bin/bash
+while true
+do
 curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+
+customer => preference => recommendation v2 from '2036617847-m9glz': 190
+customer => preference => recommendation v2 from '2036617847-m9glz': 191
+customer => preference => recommendation v2 from '2036617847-m9glz': 192
+customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v2 from '2036617847-m9glz': 193
+customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v2 from '2036617847-m9glz': 194
+customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v2 from '2036617847-m9glz': 195
 customer => 503 preference => 503 fault filter abort
 ```
 
@@ -712,9 +730,16 @@ oc create -f istiofiles/route-rule-recommendation-v2_retry.yml -n tutorial
 and after a few seconds, things will settle down and you will see it work every time
 
 ```bash
+#!/bin/bash
+while true
+do
 curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
 
-customer => preference => recommendation v2 from '2819441432-qsp25': 56
+customer => preference => recommendation v2 from '2036617847-m9glz': 196
+customer => preference => recommendation v2 from '2036617847-m9glz': 197
+customer => preference => recommendation v2 from '2036617847-m9glz': 198
 ```
 
 You can see the active RouteRules via
@@ -728,7 +753,23 @@ Now, delete the retry rule and see the old behavior, some random 503s
 ```bash
 oc delete routerule recommendation-v2-retry -n tutorial
 
+while true
+do
 curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+
+customer => preference => recommendation v2 from '2036617847-m9glz': 190
+customer => preference => recommendation v2 from '2036617847-m9glz': 191
+customer => preference => recommendation v2 from '2036617847-m9glz': 192
+customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v2 from '2036617847-m9glz': 193
+customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v2 from '2036617847-m9glz': 194
+customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v2 from '2036617847-m9glz': 195
+customer => 503 preference => 503 fault filter abort
+```
 ```
 
 Now, delete the 503 rule and back to random load-balancing between v1 and v2
@@ -736,7 +777,14 @@ Now, delete the 503 rule and back to random load-balancing between v1 and v2
 ```bash
 oc delete routerule recommendation-v2-503 -n tutorial
 
+while true
+do
 curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+customer => preference => recommendation v1 from '2039379827-h58vw': 129
+customer => preference => recommendation v2 from '2036617847-m9glz': 207
+customer => preference => recommendation v1 from '2039379827-h58vw': 130
 ```
 
 ## Timeout
@@ -792,17 +840,24 @@ Then add the timeout rule
 
 ```bash
 oc create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
-
-time curl customer-tutorial.$(minishift ip).nip.io
 ```
 
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second
 
 ```bash
+#!/bin/bash
+while true
+do
 time curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => recommendation v1 from '99634814-sf4cl': 133
-time curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+
 customer => 503 preference => 504 upstream request timeout
+curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.035 total
+customer => preference => recommendation v1 from '2039379827-h58vw': 210
+curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 36% cpu 0.025 total
+customer => 503 preference => 504 upstream request timeout
+curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.034 total
 ```
 
 Clean up, delete the timeout rule
@@ -889,8 +944,7 @@ oc delete routerule recommendation-mobile -n tutorial
 
 ## Mirroring Traffic (Dark Launch)
 
-Wiretap, eavesdropping
-Note: does not seem to work in 0.4.0
+Note: does not seem to work in 0.4.0 and 0.5.0
 
 ```bash
 oc get pods -l app=recommendation -n tutorial
@@ -1159,7 +1213,7 @@ istioctl get destinationpolicies -n tutorial
 ```
 
 More information on the fields for the simple circuit-breaker
-https://istio.io/docs/reference/config/traffic-rules/destination-policies.html#simplecircuitbreakerpolicy
+https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy
 
 then 
 
