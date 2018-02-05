@@ -12,6 +12,6 @@ spec:
   circuitBreaker:
     simpleCb:
       httpConsecutiveErrors: 1
-      sleepWindow: 2m
-      httpDetectionInterval: 1s
+      sleepWindow: 1m
+      httpDetectionInterval: 5s
       httpMaxEjectionPercent: 100
