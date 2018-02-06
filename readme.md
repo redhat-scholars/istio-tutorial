@@ -405,7 +405,7 @@ minishift openshift service prometheus --in-browser
 Add the custom metric and rule.  First make sure you are in the "istio-tutorial" directory and then
 
 ```bash
-oc apply -f istiofiles/recommendation_requestcount.yml -n istio-system
+istioctl create -f istiofiles/recommendation_requestcount.yml -n istio-system
 ```
 
 In the Prometheus dashboard, add the following
@@ -547,7 +547,7 @@ cd ..
 From the main istio-tutorial directory,
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ```
@@ -559,7 +559,7 @@ you should only see v2 being returned
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
 ```bash
-oc replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 
 oc get routerules -n tutorial
 
@@ -594,7 +594,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 Create the routerule that will send 90% of requests to v1 and 10% to v2
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
 ```
 
 and send in several requests
@@ -610,7 +610,7 @@ done
 In another terminal, change the mixture to be 75/25
 
 ```bash
-oc replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
 ```
 
 Clean up
@@ -637,7 +637,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
 You can inject 503's, for approximately 50% of the requests
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
@@ -658,7 +658,7 @@ oc delete routerule recommendation-503 -n tutorial
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slowly, potentially causing a cascading failure in your network of services.
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
 ```
 
 And hit the customer endpoint
@@ -696,7 +696,7 @@ Instead of failing immediately, retry the Service N more times
 We will use Istio and return 503's about 50% of the time.  Send all users to v2 which will throw out some 503's
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v2_503.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2_503.yml -n tutorial
 ```
 
 Now, if you hit the customer endpoint several times, you should see some 503's
@@ -724,7 +724,7 @@ customer => 503 preference => 503 fault filter abort
 Now add the retry rule
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v2_retry.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2_retry.yml -n tutorial
 ```
 
 and after a few seconds, things will settle down and you will see it work every time
@@ -839,7 +839,7 @@ done
 Then add the timeout rule
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
 ```
 
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second
@@ -877,15 +877,15 @@ Note: the "user-agent" header being forwarded in the Customer and Preferences co
 #### Set recommendation to all v1
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 ```
 
 #### Set Safari users to v2
 
 ```bash
-oc create -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
 
-oc get routerules -n tutorial
+istioctl get routerules -n tutorial
 ```
 
 and test with a Safari (or even Chrome on Mac since it includes Safari in the string).  Safari only sees v2 responses from recommendation
@@ -931,7 +931,7 @@ oc delete routerule recommendation-safari -n tutorial
 #### Set mobile users to v2
 
 ```bash
-oc create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
 ```
@@ -962,7 +962,7 @@ if so "oc delete routerule rulename -n tutorial"
 Make sure you are in the main directory of "istio-tutorial"
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ```
@@ -1066,7 +1066,7 @@ customer => preference => recommendation v2 from '2819441432-bs5ck': 182
 Now, add the Random LB DestinationPolicy
 
 ```bash
-oc create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
+istioctl create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 ```
 
 And you should see a different pattern of which pod is being selected
@@ -1100,7 +1100,7 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 First, you need to insure you have a routerule in place.  Let's use a 50/50 split of traffic which is more like the default behavior of Kubernetes.  
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
 ```
 
 and if you polling the endpoint repeatedly, you will see the Istio behavior:
@@ -1773,7 +1773,7 @@ Look for "route_config_name": "8080", you should see 3 entries for customer, pre
 Now add a new routerule
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v2.yml
+istioctl create -f istiofiles/route-rule-recommendation-v2.yml
 ```
 
 The review the routes again
