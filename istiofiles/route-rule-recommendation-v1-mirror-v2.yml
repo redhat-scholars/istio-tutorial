@@ -10,8 +10,12 @@ spec:
   route:
   - labels:
       version: v1
+    weight: 100
+  - labels:
+      version: v2
+    weight: 0
   mirror:
     namespace: tutorial
-    name: recommendation-v2
+    name: recommendation
     labels:
       version: v2

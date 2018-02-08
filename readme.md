@@ -944,7 +944,7 @@ oc delete routerule recommendation-mobile -n tutorial
 
 ## Mirroring Traffic (Dark Launch)
 
-Note: does not seem to work in 0.4.0 and 0.5.0
+Note: Not working
 
 ```bash
 oc get pods -l app=recommendation -n tutorial
@@ -966,6 +966,20 @@ oc create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ```
+
+Check the logs of recommendation-v2
+
+```bash
+oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation
+```
+
+
+#### Clean up
+
+```bash
+oc delete routerule recommendation-mirror -n tutorial
+```
+
 
 ## Access Control
 
