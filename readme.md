@@ -68,7 +68,6 @@ You will need in this tutorial
 * istioctl (will be installed via the steps below)
 * curl, gunzip, tar are built-in to MacOS or part of your bash shell
 * git (everybody needs the git CLI)
-* siege (brew install siege)
 
 ## Setup minishift
 Assumes minishift, tested with minshift v1.10.0+10461c6
@@ -1474,8 +1473,6 @@ Even with pool ejection your application doesn't *look* that resilient. That's p
 - **Circuit Breaker** to avoid multiple concurrent requests to an instance;
 - **Pool Ejection** to remove failing instances from the pool of responding instances;
 - **Retries** to forward the request to another instance just in case we get an open circuit breaker and/or pool ejection;
-
-#### Adding retries to circuit breaker and pool ejection
 
 By simply adding a **retry** configuration to our current `routerule`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
 
