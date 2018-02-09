@@ -68,6 +68,7 @@ You will need in this tutorial
 * istioctl (will be installed via the steps below)
 * curl, gunzip, tar are built-in to MacOS or part of your bash shell
 * git (everybody needs the git CLI)
+* siege (brew install siege)
 
 ## Setup minishift
 Assumes minishift, tested with minshift v1.10.0+10461c6
