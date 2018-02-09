@@ -473,9 +473,7 @@ example/recommendation                  v1              f072978d9cf6        8 mi
 *Important:* back up one directory before applying the deployment yaml.  We have a 2nd Deployment to manage the v2 version of recommendation.  
 
 ```bash
-cd ..
-
-oc apply -f <(istioctl kube-inject -f kubernetesfiles/recommendation_v2_deployment.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment-v2.yml) -n tutorial
 
 oc get pods -w
 ```
@@ -1551,7 +1549,7 @@ oc adm policy add-scc-to-user privileged -z default -n istioegress
 #### Create HTTPBin Java App
 
 ```bash
-cd egresshttpbin/
+cd egress/egresshttpbin/
 
 mvn spring-boot:run
 
@@ -1590,13 +1588,13 @@ Note: It does not work...yet, more to come.
 Back to the main istio-tutorial directory
 
 ```bash
-cd ..
+cd ../..
 ```
 
 #### Create the Github Java App
 
 ```bash
-cd egressgithub/
+cd egress/egressgithub/
 
 mvn clean package
 
@@ -1624,7 +1622,7 @@ oc expose service egressgithub
 
 curl egressgithub-istioegress.$(minishift ip).nip.io
 
-cd ..
+cd ../..
 ```
 
 #### Istio-ize Egress
