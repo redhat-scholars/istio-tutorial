@@ -4,7 +4,7 @@ kind: DestinationPolicy
 metadata:
   name: recommendation-circuitbreaker
 spec:
-  destination: 
+  destination:
     namespace: tutorial
     name: recommendation
     labels:
@@ -13,12 +13,8 @@ spec:
     simpleCb:
       maxConnections: 1
       httpMaxPendingRequests: 1
-      sleepWindow: 2m      
+      sleepWindow: 2m
       httpDetectionInterval: 1s
-      httpMaxEjectionPercent: 100      
+      httpMaxEjectionPercent: 100
       httpConsecutiveErrors: 1
-#      httpMaxRequests: 1
       httpMaxRequestsPerConnection: 1
-      
-
-

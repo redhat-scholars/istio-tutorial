@@ -283,14 +283,14 @@ Wait for the Ready 2/2
 curl customer-tutorial.$(minishift ip).nip.io
 ```
 
-It will respond with an error since recommendation is not yet deployed. 
+It will respond with an error since recommendation is not yet deployed.
 Note: We could make this a bit more resilent in a future iteration of this tutorial
 
 ```bash
 customer => 503 preference => I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
 ```
 
-and check out the logs 
+and check out the logs
 
 ```bash
 stern preference -c preference
@@ -791,7 +791,7 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 
 Wait only N seconds before giving up and failing.  At this point, no other route rules should be in effect.  oc get routerules and oc delete routerule rulename if there are some.
 
-First, introduce some wait time in recommendation v2 by uncommenting the line that call the timeout method. Update RecommendationsController.java making it a slow perfomer
+First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationsController.java` making it a slow perfomer with a 3 second delay.
 
 ```java
     @RequestMapping("/")
@@ -834,7 +834,7 @@ do
 time curl customer-tutorial.$(minishift ip).nip.io
 sleep .1
 done
-``` 
+```
 
 Then add the timeout rule
 
@@ -1109,116 +1109,29 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 
 ## Circuit Breaker
 
-#### Fail Fast with Max Connections & Max Pending Requests
+### Fail Fast with Max Connections & Max Pending Requests
 
-First, you need to insure you have a routerule in place.  Let's use a 50/50 split of traffic which is more like the default behavior of Kubernetes.  
+First, you need to insure you have a routerule in place. Let's use a 50/50 split of traffic:
 
 ```bash
 oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
 ```
 
-and if you polling the endpoint repeatedly, you will see the Istio behavior:
+#### Load test without circuit breaker
+
+Let's perform a load test in our system with `siege`. We'll have 20 clients sending 2 concurrent requests each:
 
 ```bash
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
-done
+siege -r 2 -c 20 -v customer-tutorial.$(minishift ip).nip.io
 ```
 
-Output
+You should see an output similar to this:
 
-```
-customer => preference => recommendation v2 from '2819441432-bs5ck': 215
-customer => preference => recommendation v2 from '2819441432-bs5ck': 216
-customer => preference => recommendation v2 from '2819441432-bs5ck': 217
-customer => preference => recommendation v1 from '99634814-d2z2t': 1184
-customer => preference => recommendation v2 from '2819441432-bs5ck': 218
-customer => preference => recommendation v1 from '99634814-d2z2t': 1185
-customer => preference => recommendation v2 from '2819441432-bs5ck': 219
-customer => preference => recommendation v1 from '99634814-d2z2t': 1186
-customer => preference => recommendation v2 from '2819441432-bs5ck': 220
-customer => preference => recommendation v1 from '99634814-d2z2t': 1187
-customer => preference => recommendation v2 from '2819441432-bs5ck': 221
-customer => preference => recommendation v1 from '99634814-d2z2t': 1188
-customer => preference => recommendation v2 from '2819441432-bs5ck': 222
-customer => preference => recommendation v2 from '2819441432-bs5ck': 223
-customer => preference => recommendation v2 from '2819441432-bs5ck': 224
-customer => preference => recommendation v2 from '2819441432-bs5ck': 225
-```
+![siege output with all successful requests](images/siege_ok.png)
 
-With vanilla Kubernetes/OpenShift, the distrubtion of load is more round robin, while with Istio it is 50/50 but more random.
+All of the requests to our system were successful, but it took some time to run the test, as the `v2` deployment was a slow performer.
 
-Next, update RecommendationsController.java by uncommenting the line that call the timeout method, and changing the flag `misbehave` to `true`. These modifications will make it a slow perfomer and throw somes 503s.
-
-```java
-    /**
-     * Flag for throwing a 503 when enabled
-     */
-    private boolean misbehave = true;
-    
-    // ...
-
-    @RequestMapping("/")
-    public ResponseEntity<String> getRecommendations() {
-        count++;
-        logger.debug(String.format("Big Red Dog v1 %s %d", HOSTNAME, count));
-
-        timeout();
-
-        logger.debug("recommendations ready to return");
-        if (misbehave) {
-            return doMisbehavior();
-        }
-        return ResponseEntity.ok(String.format("Clifford v1 %s %d", HOSTNAME, count));
-    }
-```
-
-Rebuild, redeploy
-
-```
-cd recommendation
-mvn clean package
-docker build -t example/recommendation:v2 .
-docker images | grep recommendation
-oc delete pod -l app=recommendation,version=v2 -n tutorial
-```
-
-The deletion of the previously running pod will cause Kubernetes/OpenShift to restart it based on the new docker image.
-
-Back to the main directory
-
-```bash
-cd ..
-```
-
-and test the customer endpoint
-
-```bash
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
-done
-```
-
-Whenever you are hitting v2, you will notice the slowness in the response based on the Thread.sleep(3000)
-
-Watch the logging output of recommendation
-
-```bash
-Terminal 1:
-./kubetail.sh recommendation -n tutorial
-or
-brew install stern
-stern recommendation -c recommendation -n tutorial
-
-Terminal 2:
-curl customer-tutorial.$(minishift ip).nip.io
-```
-
-Now add the circuit breaker.
+But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same deployment. We don't want multiple requests getting queued or making the deployment even slower. So we'll add a circuit breaker that will *open* whenever we have more than 1 request being handled by any deployment.
 
 ```bash
 istioctl create -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
@@ -1229,56 +1142,26 @@ istioctl get destinationpolicies -n tutorial
 More information on the fields for the simple circuit-breaker
 https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy
 
-then 
+#### Load test with circuit breaker
+
+Now let's see what is the behavior of the system running `siege` again:
 
 ```bash
-cd gatling_test
-mvn clean integration-test -Dusers=2 -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
+siege -r 2 -c 20 -v customer-tutorial.$(minishift ip).nip.io
 ```
 
-and open the generated report.  
+![siege output with some 503 requests due to open circuit breaker](images/siege_cb_503.png)
 
-```bash
-find target -name index.html | xargs open
-```
+You can run siege multiple times, but in all of the executions you should see some `503` errors being displayed in the results. That's the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the deployment.
 
-When using 2 concurrent users, all requests are likely to succeed, there are in fact 2 pods of recommendation available. But build reports a failure as we had set the reponse time to be less than 3 seconds
-
-```bash
-mvn clean integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
-```
-
-It will still likely succeed, as by default the number of concurrent users is 5
-
-At this point, that is enough load to have tripped the circuit-breaker and you should see some failures in the report.
-
-If you wish to peer inside the CB
-
-```bash
-istioctl get destinationpolicies recommendation-circuitbreaker -o yaml -n tutorial
-```
-
-Now, delete the Destination Policy 
-
-```bash
-istioctl delete destinationpolicy recommendation-circuitbreaker -n tutorial
-```
-
-and re-run the load test
-
-```bash
-mvn clean integration-test -Dendpoint.url=http://customer-tutorial.$(minishift ip).nip.io
-```
-
-Now, even with a load of 5 where there are only two pods, you should see all requests succeed as there is no circuit-breaker in the middle, tripping/opening, but you will notice maven build reporting failure because of the SLA in reponse time which is set at 3 seconds
-
-Clean up
+#### Clean up
 
 ```bash
 oc delete routerule recommendation-v1-v2 -n tutorial
+istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml
 ```
 
-#### Pool Ejection
+### Pool Ejection
 
 There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want the slow and misbehaving instance of recommendation v2 to be kicked out and more requests to be handled by v1.  Envoy refers to this as "outlier detection".
 
@@ -1394,7 +1277,7 @@ and then hit its misbehave endpoint to set the flag
 curl localhost:8080/misbehave
 ```
 
-At this point, you should get a 503 from the v2 pod that was flagged and 
+At this point, you should get a 503 from the v2 pod that was flagged and
 you should see requests/traffic focusing on the "good" pods, until the sleepWindow expires.
 
 ```bash
@@ -1405,7 +1288,7 @@ customer => preference => recommendation v1 from '99634814-d2z2t': 1867
 customer => preference => recommendation v2 from '2819441432-f4ls5': 42
 ```
 
-If you wait long enough, you should see the v2 pod reenter the load-balancing pool 
+If you wait long enough, you should see the v2 pod reenter the load-balancing pool
 
 Clean up
 
@@ -1721,7 +1604,7 @@ RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendatio
 The pods all see each other's services
 
 ```bash
-oc exec $CPOD -c customer -n tutorial curl http://preference:8080 
+oc exec $CPOD -c customer -n tutorial curl http://preference:8080
 oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
 oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
 ```
