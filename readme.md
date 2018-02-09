@@ -45,6 +45,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
     * [Whitelist](#whitelist)
     * [Blacklist](#blacklist)
 * [Load Balancer](#load-balancer)
+* [Rate Limiting](#rate-limiting)
 * [Circuit Breaker](#circuit-breaker)
     * [Fail Fast with Max Connections & Max Pending Requests](#fail-fast-with-max-connections-max-pending-requests)
     * [Pool Ejection](#pool-ejection)
@@ -52,7 +53,6 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
     * [Create HTTPBin Java App](#create-httpbin-java-app)
     * [Create the Github Java App](#create-the-github-java-app)
     * [Istio-ize Egress](#istio-ize-egress)
-* [Rate Limiting](#rate-limiting)
 * [Tips & Tricks](#tips-tricks)
 
 <!-- toc stop -->
