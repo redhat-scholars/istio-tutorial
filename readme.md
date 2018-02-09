@@ -980,7 +980,6 @@ oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommenda
 oc delete routerule recommendation-mirror -n tutorial
 ```
 
-
 ## Access Control
 
 #### Whitelist
@@ -1020,7 +1019,6 @@ customer => 403 PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowe
 ```bash
 istioctl delete -f istiofiles/acl-blacklist.yml -n tutorial
 ```
-
 
 ## Load Balancer
 
@@ -1105,6 +1103,135 @@ Clean up
 oc delete -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
+```
+
+## Rate Limiting
+
+Here we will limit the number of concurrent requests into recommendation v2
+
+Current view of the v2 RecommendationsController.java
+
+```java
+package com.redhat.developer.demos.recommendation;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class RecommendationController {
+
+    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Counter to help us see the lifecycle
+     */
+    private int count = 0;
+
+    /**
+     * Flag for throwing a 503 when enabled
+     */
+    private boolean misbehave = false;
+
+    private static final String HOSTNAME =
+            parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+
+    static String parseContainerIdFromHostname(String hostname) {
+        return hostname.replaceAll("recommendation-v\\d+-", "");
+    }
+
+    @RequestMapping("/")
+    public ResponseEntity<String> getRecommendations() {
+        count++;
+        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+        timeout();
+
+        logger.debug("recommendation service ready to return");
+        if (misbehave) {
+            return doMisbehavior();
+        }
+        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
+    }
+
+    private void timeout() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            logger.info("Thread interrupted");
+        }
+    }
+
+    private ResponseEntity<String> doMisbehavior() {
+        count = 0;
+        misbehave = false;
+        logger.debug(String.format("Misbehaving %d", count));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
+    }
+
+    @RequestMapping("/misbehave")
+    public ResponseEntity<String> flagMisbehave() {
+        this.misbehave = true;
+        logger.debug("'misbehave' has been set to 'true'");
+        return ResponseEntity.ok("Next request to / will return a 503\n");
+    }
+
+}
+```
+
+Now apply the rate limit handler
+
+```bash
+istioctl create -f istiofiles/recommendation_rate_limit_handler.yml
+```
+
+Now setup the requestcount quota
+
+```bash
+istioctl create -f istiofiles/rate_limit_rule.yml
+```
+
+Throw some requests at customer
+
+```bash
+#!/bin/bash
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+```
+
+You should see some 429 errors:
+
+```bash
+customer => preference => recommendation v2 from '2819441432-f4ls5': 108
+customer => preference => recommendation v1 from '99634814-d2z2t': 1932
+customer => preference => recommendation v2 from '2819441432-f4ls5': 109
+customer => preference => recommendation v1 from '99634814-d2z2t': 1933
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1934
+customer => preference => recommendation v2 from '2819441432-f4ls5': 110
+customer => preference => recommendation v1 from '99634814-d2z2t': 1935
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1936
+customer => preference => recommendation v2 from '2819441432-f4ls5': 111
+customer => preference => recommendation v1 from '99634814-d2z2t': 1937
+customer => 503 preference => 429 Too Many Requests
+customer => preference => recommendation v1 from '99634814-d2z2t': 1938
+customer => preference => recommendation v2 from '2819441432-f4ls5': 112
+```
+
+Clean up
+
+```bash
+istioctl delete -f istiofiles/rate_limit_rule.yml
+
+istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 ```
 
 ## Circuit Breaker
@@ -1340,11 +1467,75 @@ customer => preference => recommendation v1 from '2039379827-jmm6x': 529
 customer => preference => recommendation v2 from '2036617847-hdjv2': 270
 ```
 
-Clean up
+#### Ultimate resilience with retries, circuit breaker, and pool ejection
+
+Even with pool ejection your application doesn't *look* that resilient. That's probably because we're still letting some errors to be propagated to our clients. But we can improve this. If we have enough instances and/or versions of a specific service running into our system, we can combine multiple Istio capabilities to achieve the ultimate backend resilience:
+- **Circuit Breaker** to avoid multiple concurrent requests to an instance;
+- **Pool Ejection** to remove failing instances from the pool of responding instances;
+- **Retries** to forward the request to another instance just in case we get an open circuit breaker and/or pool ejection;
+
+#### Adding retries to circuit breaker and pool ejection
+
+By simply adding a **retry** configuration to our current `routerule`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
+
+```bash
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry.yml
+```
+
+Throw some requests at the customer endpoint:
+
+```bash
+#!/bin/bash
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+```
+
+You won't receive `503`s anymore. But the requests from recommendation `v2` are still taking more time to get a response:
+
+```bash
+customer => preference => recommendation v1 from '2039379827-jmm6x': 538
+customer => preference => recommendation v1 from '2039379827-jmm6x': 539
+customer => preference => recommendation v1 from '2039379827-jmm6x': 540
+customer => preference => recommendation v2 from '2036617847-hdjv2': 281
+customer => preference => recommendation v1 from '2039379827-jmm6x': 541
+customer => preference => recommendation v2 from '2036617847-hdjv2': 282
+customer => preference => recommendation v1 from '2039379827-jmm6x': 542
+customer => preference => recommendation v1 from '2039379827-jmm6x': 543
+customer => preference => recommendation v1 from '2039379827-jmm6x': 544
+customer => preference => recommendation v2 from '2036617847-hdjv2': 283
+customer => preference => recommendation v2 from '2036617847-hdjv2': 284
+customer => preference => recommendation v1 from '2039379827-jmm6x': 545
+customer => preference => recommendation v1 from '2039379827-jmm6x': 546
+customer => preference => recommendation v1 from '2039379827-jmm6x': 547
+customer => preference => recommendation v2 from '2036617847-hdjv2': 285
+customer => preference => recommendation v2 from '2036617847-hdjv2': 286
+customer => preference => recommendation v1 from '2039379827-jmm6x': 548
+customer => preference => recommendation v2 from '2036617847-hdjv2': 287
+customer => preference => recommendation v2 from '2036617847-hdjv2': 288
+customer => preference => recommendation v1 from '2039379827-jmm6x': 549
+customer => preference => recommendation v2 from '2036617847-hdjv2': 289
+customer => preference => recommendation v2 from '2036617847-hdjv2': 290
+customer => preference => recommendation v2 from '2036617847-hdjv2': 291
+customer => preference => recommendation v2 from '2036617847-hdjv2': 292
+customer => preference => recommendation v1 from '2039379827-jmm6x': 550
+customer => preference => recommendation v1 from '2039379827-jmm6x': 551
+customer => preference => recommendation v1 from '2039379827-jmm6x': 552
+customer => preference => recommendation v1 from '2039379827-jmm6x': 553
+customer => preference => recommendation v2 from '2036617847-hdjv2': 293
+customer => preference => recommendation v2 from '2036617847-hdjv2': 294
+customer => preference => recommendation v1 from '2039379827-jmm6x': 554
+```
+
+Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the console, thanks to pool ejection and retry.
+
+#### Clean up
 
 ```bash
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 oc delete pod -l app=recommendation,version=v2
+oc delete routerule recommendation-v1-v2 -n tutorial
 istioctl delete -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
 ```
 
@@ -1497,134 +1688,6 @@ istioctl create -f istiofiles/egress_github.yml
 curl egressgithub-istioegress.$(minishift ip).nip.io
 ```
 
-## Rate Limiting
-
-Here we will limit the number of concurrent requests into recommendation v2
-
-Current view of the v2 RecommendationsController.java
-
-```java
-package com.redhat.developer.demos.recommendation;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class RecommendationController {
-
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    /**
-     * Counter to help us see the lifecycle
-     */
-    private int count = 0;
-
-    /**
-     * Flag for throwing a 503 when enabled
-     */
-    private boolean misbehave = false;
-
-    private static final String HOSTNAME =
-            parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
-
-    static String parseContainerIdFromHostname(String hostname) {
-        return hostname.replaceAll("recommendation-v\\d+-", "");
-    }
-
-    @RequestMapping("/")
-    public ResponseEntity<String> getRecommendations() {
-        count++;
-        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
-
-        timeout();
-
-        logger.debug("recommendation service ready to return");
-        if (misbehave) {
-            return doMisbehavior();
-        }
-        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
-    }
-
-    private void timeout() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            logger.info("Thread interrupted");
-        }
-    }
-
-    private ResponseEntity<String> doMisbehavior() {
-        count = 0;
-        misbehave = false;
-        logger.debug(String.format("Misbehaving %d", count));
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
-    }
-
-    @RequestMapping("/misbehave")
-    public ResponseEntity<String> flagMisbehave() {
-        this.misbehave = true;
-        logger.debug("'misbehave' has been set to 'true'");
-        return ResponseEntity.ok("Next request to / will return a 503\n");
-    }
-
-}
-```
-
-Now apply the rate limit handler
-
-```bash
-istioctl create -f istiofiles/recommendation_rate_limit_handler.yml
-```
-
-Now setup the requestcount quota
-
-```bash
-istioctl create -f istiofiles/rate_limit_rule.yml
-```
-
-Throw some requests at customer
-
-```bash
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
-done
-```
-
-You should see some 429 errors:
-
-```bash
-customer => preference => recommendation v2 from '2819441432-f4ls5': 108
-customer => preference => recommendation v1 from '99634814-d2z2t': 1932
-customer => preference => recommendation v2 from '2819441432-f4ls5': 109
-customer => preference => recommendation v1 from '99634814-d2z2t': 1933
-customer => 503 preference => 429 Too Many Requests
-customer => preference => recommendation v1 from '99634814-d2z2t': 1934
-customer => preference => recommendation v2 from '2819441432-f4ls5': 110
-customer => preference => recommendation v1 from '99634814-d2z2t': 1935
-customer => 503 preference => 429 Too Many Requests
-customer => preference => recommendation v1 from '99634814-d2z2t': 1936
-customer => preference => recommendation v2 from '2819441432-f4ls5': 111
-customer => preference => recommendation v1 from '99634814-d2z2t': 1937
-customer => 503 preference => 429 Too Many Requests
-customer => preference => recommendation v1 from '99634814-d2z2t': 1938
-customer => preference => recommendation v2 from '2819441432-f4ls5': 112
-```
-
-Clean up
-
-```bash
-istioctl delete -f istiofiles/rate_limit_rule.yml
-
-istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
-```
 
 ## Tips & Tricks
 

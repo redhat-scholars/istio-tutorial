@@ -1,0 +1,20 @@
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: recommendation-v1-v2
+spec:
+  destination:
+    namespace: tutorial
+    name: recommendation
+  precedence: 1
+  route:
+  - labels:
+      version: v1
+    weight: 50
+  - labels:
+      version: v2
+    weight: 50
+  httpReqRetries:
+    simpleRetry:
+      perTryTimeout: 1s
+      attempts: 3
