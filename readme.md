@@ -1111,7 +1111,7 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 
 ### Fail Fast with Max Connections & Max Pending Requests
 
-First, you need to insure you have a routerule in place. Let's use a 50/50 split of traffic:
+First, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
 
 ```bash
 oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
@@ -1131,7 +1131,7 @@ You should see an output similar to this:
 
 All of the requests to our system were successful, but it took some time to run the test, as the `v2` deployment was a slow performer.
 
-But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same deployment. We don't want multiple requests getting queued or making the deployment even slower. So we'll add a circuit breaker that will *open* whenever we have more than 1 request being handled by any deployment.
+But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same deployment. We don't want multiple requests getting queued or making the deployment even slower. So we'll add a circuit breaker that will **open** whenever we have more than 1 request being handled by any deployment.
 
 ```bash
 istioctl create -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
@@ -1163,9 +1163,26 @@ istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml
 
 ### Pool Ejection
 
-There is a 2nd circuit-breaker policy yaml file. In this case, we are attempting load-balancing pool ejection.  We want the slow and misbehaving instance of recommendation v2 to be kicked out and more requests to be handled by v1.  Envoy refers to this as "outlier detection".
+Pool ejection or *outlier detection* is a resilience strategy that takes place whenever we have a pool of instances to serve a client request. If the request is forwarded to a certain instance and it fails (e.g. returns a 50x error code), then Istio will eject this instance from the pool for a certain *sleep window*. In our example the sleep window is configured to be 15s. This increases the overall availability by making sure that only healthy requests participate in the pool of instances.
 
-Throw some requests at the customer endpoint
+First, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
+
+```bash
+oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+```
+
+#### Scale number of instances of `v2` deployment
+
+```bash
+oc scale deployment recommendation-v2 --replicas=2 -n tutorial
+oc get pods -w
+```
+
+Wait for all the pods to be in the ready state.
+
+#### Test behavior without failing instances
+
+Throw some requests at the customer endpoint:
 
 ```bash
 #!/bin/bash
@@ -1175,127 +1192,160 @@ sleep .1
 done
 ```
 
-By default, you will see load-balancing behind that URL, across the 2 pods that are currently in play. By default Kubernetes/OpenShift will alternative between v1 and v2
+You will see the load balancing 50/50 between the two different versions of the `recommendation` service. And within version `v2`, you will also see that some requests are handled by one pod and some requests are handled by the other pod.
 
 ```bash
-customer => preference => recommendation v1 from '99634814-d2z2t': 1809
-customer => preference => recommendation v2 from '2819441432-bs5ck': 832
-customer => preference => recommendation v1 from '99634814-d2z2t': 1810
-customer => preference => recommendation v2 from '2819441432-bs5ck': 833
-customer => preference => recommendation v1 from '99634814-d2z2t': 1811
-customer => preference => recommendation v2 from '2819441432-bs5ck': 834
-customer => preference => recommendation v1 from '99634814-d2z2t': 1812
-customer => preference => recommendation v2 from '2819441432-bs5ck': 835
-customer => preference => recommendation v1 from '99634814-d2z2t': 1813
-customer => preference => recommendation v2 from '2819441432-bs5ck': 836
+customer => preference => recommendation v1 from '2039379827-jmm6x': 447
+customer => preference => recommendation v2 from '2036617847-spdrb': 26
+customer => preference => recommendation v1 from '2039379827-jmm6x': 448
+customer => preference => recommendation v2 from '2036617847-spdrb': 27
+customer => preference => recommendation v1 from '2039379827-jmm6x': 449
+customer => preference => recommendation v1 from '2039379827-jmm6x': 450
+customer => preference => recommendation v2 from '2036617847-spdrb': 28
+customer => preference => recommendation v1 from '2039379827-jmm6x': 451
+customer => preference => recommendation v1 from '2039379827-jmm6x': 452
+customer => preference => recommendation v2 from '2036617847-spdrb': 29
+customer => preference => recommendation v2 from '2036617847-spdrb': 30
+customer => preference => recommendation v2 from '2036617847-hdjv2': 216
+customer => preference => recommendation v1 from '2039379827-jmm6x': 453
+customer => preference => recommendation v2 from '2036617847-spdrb': 31
+customer => preference => recommendation v2 from '2036617847-hdjv2': 217
+customer => preference => recommendation v2 from '2036617847-hdjv2': 218
+customer => preference => recommendation v1 from '2039379827-jmm6x': 454
+customer => preference => recommendation v1 from '2039379827-jmm6x': 455
+customer => preference => recommendation v2 from '2036617847-hdjv2': 219
+customer => preference => recommendation v2 from '2036617847-hdjv2': 220
 ```
 
-Add a 2nd pod to recommendation
+#### Test behavior with failing instance and without pool ejection
+
+Let's get the name of the pods from recommendation `v2`:
 
 ```bash
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial
-
-oc get pods
-
-NAME                                  READY     STATUS    RESTARTS   AGE
-customer-3600192384-fpljb             2/2       Running   0          2h
-preference-243057078-8c5hz           2/2       Running   0          2h
-recommendation-v1-60483540-2pt4z     2/2       Running   0          40m
-recommendation-v2-2815683430-t7b9q   2/2       Running   0          21s
-recommendation-v2-2815683430-xw7qg   2/2       Running   0          19m
+oc get pods -l app=recommendation,version=v2
 ```
 
-and your pattern will change slightly to v1, v2, v2 then repeat
+You should see something like this:
 
 ```bash
-customer => preference => recommendation v1 from '99634814-d2z2t': 1830
-customer => preference => recommendation v2 from '2819441432-f4ls5': 3
-customer => preference => recommendation v2 from '2819441432-bs5ck': 854
-customer => preference => recommendation v1 from '99634814-d2z2t': 1831
-customer => preference => recommendation v2 from '2819441432-f4ls5': 4
-customer => preference => recommendation v2 from '2819441432-bs5ck': 855
-customer => preference => recommendation v1 from '99634814-d2z2t': 1832
-customer => preference => recommendation v2 from '2819441432-f4ls5': 5
-customer => preference => recommendation v2 from '2819441432-bs5ck': 856
+recommendation-v2-2036617847-hdjv2   2/2       Running   0          1h
+recommendation-v2-2036617847-spdrb   2/2       Running   0          7m
 ```
 
-In another Terminal, setup the Destination Policy
+Now we'll get into one the pods and add some erratic behavior on it. Get one of the pod names from your system and replace on the following command accordingly:
 
 ```bash
-istioctl create -f istiofiles/recommendation_cb_policy_app.yml -n tutorial
+oc exec -it recommendation-v2-2036617847-spdrb -c recommendation /bin/bash
 ```
 
-You should see the Random load-balancing take effect
-
-```bash
-customer => preference => recommendation v1 from '99634814-d2z2t': 1837
-customer => preference => recommendation v2 from '2819441432-f4ls5': 10
-customer => preference => recommendation v2 from '2819441432-bs5ck': 861
-customer => preference => recommendation v2 from '2819441432-f4ls5': 11
-customer => preference => recommendation v1 from '99634814-d2z2t': 1838
-customer => preference => recommendation v1 from '99634814-d2z2t': 1839
-customer => preference => recommendation v1 from '99634814-d2z2t': 1840
-customer => preference => recommendation v2 from '2819441432-bs5ck': 862
-customer => preference => recommendation v2 from '2819441432-bs5ck': 863
-customer => preference => recommendation v1 from '99634814-d2z2t': 1841
-customer => preference => recommendation v2 from '2819441432-f4ls5': 12
-customer => preference => recommendation v2 from '2819441432-f4ls5': 13
-customer => preference => recommendation v2 from '2819441432-bs5ck': 864
-```
-
-Now, simply just delete a v2 pod as that will cause 5xx errors
-
-```bash
-oc delete pod recommendation-v2-2815683430-t7b9q
-```
-
-you should see a single 503 returned to the end-user
-
-```bash
-customer => preference => recommendation v2 from '2819441432-f4ls5': 22
-customer => preference => recommendation v2 from '2819441432-f4ls5': 23
-customer => 503 preference => 503 upstream connect error or disconnect/reset before headers
-customer => preference => recommendation v1 from '99634814-d2z2t': 1845
-customer => preference => recommendation v2 from '2819441432-f4ls5': 24
-```
-
-OR throw in some misbehavior by getting the pod identifiers
-
-```bash
-oc get pods
-```
-
-and then shelling into a v2 pod
-
-```bash
-oc exec -it recommendation-v2-2815683430-xw7qg -c recommendation /bin/bash
-```
-
-and then hit its misbehave endpoint to set the flag
+You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
 ```bash
 curl localhost:8080/misbehave
+exit
 ```
 
-At this point, you should get a 503 from the v2 pod that was flagged and
-you should see requests/traffic focusing on the "good" pods, until the sleepWindow expires.
+This is a special endpoint that will make our application return only `503`s.
+
+Throw some requests at the customer endpoint:
 
 ```bash
-customer => preference => recommendation v1 from '99634814-d2z2t': 1866
-customer => preference => recommendation v2 from '2819441432-f4ls5': 41
-customer => 503 preference => 503 recommendation misbehavior from '2819441432-55n9f'
-customer => preference => recommendation v1 from '99634814-d2z2t': 1867
-customer => preference => recommendation v2 from '2819441432-f4ls5': 42
+#!/bin/bash
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
 ```
 
-If you wait long enough, you should see the v2 pod reenter the load-balancing pool
+You'll see that whenever the pod `recommendation-v2-2036617847-spdrb` receives a request, you get a `503` error:
+
+```bash
+customer => preference => recommendation v1 from '2039379827-jmm6x': 494
+customer => preference => recommendation v1 from '2039379827-jmm6x': 495
+customer => preference => recommendation v2 from '2036617847-hdjv2': 248
+customer => preference => recommendation v1 from '2039379827-jmm6x': 496
+customer => preference => recommendation v1 from '2039379827-jmm6x': 497
+customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
+customer => preference => recommendation v2 from '2036617847-hdjv2': 249
+customer => preference => recommendation v1 from '2039379827-jmm6x': 498
+customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
+customer => preference => recommendation v2 from '2036617847-hdjv2': 250
+customer => preference => recommendation v1 from '2039379827-jmm6x': 499
+customer => preference => recommendation v1 from '2039379827-jmm6x': 500
+customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
+customer => preference => recommendation v1 from '2039379827-jmm6x': 501
+customer => preference => recommendation v2 from '2036617847-hdjv2': 251
+customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
+```
+
+#### Test behavior with failing instance and with pool ejection
+
+Now let's add the pool ejection behavior:
+
+```bash
+istioctl create -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
+```
+
+Throw some requests at the customer endpoint:
+
+```bash
+#!/bin/bash
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+```
+
+You will see that whenever you get a failing request with `503` from the pod `recommendation-v2-2036617847-spdrb`, it gets ejected from the pool, and it doesn't receive any more requests until the sleep window expires - which takes at least 15s.
+
+```bash
+customer => preference => recommendation v1 from '2039379827-jmm6x': 509
+customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
+customer => preference => recommendation v1 from '2039379827-jmm6x': 510
+customer => preference => recommendation v1 from '2039379827-jmm6x': 511
+customer => preference => recommendation v1 from '2039379827-jmm6x': 512
+customer => preference => recommendation v1 from '2039379827-jmm6x': 513
+customer => preference => recommendation v1 from '2039379827-jmm6x': 514
+customer => preference => recommendation v2 from '2036617847-hdjv2': 256
+customer => preference => recommendation v2 from '2036617847-hdjv2': 257
+customer => preference => recommendation v1 from '2039379827-jmm6x': 515
+customer => preference => recommendation v2 from '2036617847-hdjv2': 258
+customer => preference => recommendation v2 from '2036617847-hdjv2': 259
+customer => preference => recommendation v2 from '2036617847-hdjv2': 260
+customer => preference => recommendation v1 from '2039379827-jmm6x': 516
+customer => preference => recommendation v1 from '2039379827-jmm6x': 517
+customer => preference => recommendation v1 from '2039379827-jmm6x': 518
+customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
+customer => preference => recommendation v1 from '2039379827-jmm6x': 519
+customer => preference => recommendation v1 from '2039379827-jmm6x': 520
+customer => preference => recommendation v1 from '2039379827-jmm6x': 521
+customer => preference => recommendation v2 from '2036617847-hdjv2': 261
+customer => preference => recommendation v2 from '2036617847-hdjv2': 262
+customer => preference => recommendation v2 from '2036617847-hdjv2': 263
+customer => preference => recommendation v1 from '2039379827-jmm6x': 522
+customer => preference => recommendation v1 from '2039379827-jmm6x': 523
+customer => preference => recommendation v2 from '2036617847-hdjv2': 264
+customer => preference => recommendation v1 from '2039379827-jmm6x': 524
+customer => preference => recommendation v1 from '2039379827-jmm6x': 525
+customer => preference => recommendation v1 from '2039379827-jmm6x': 526
+customer => preference => recommendation v1 from '2039379827-jmm6x': 527
+customer => preference => recommendation v2 from '2036617847-hdjv2': 265
+customer => preference => recommendation v2 from '2036617847-hdjv2': 266
+customer => preference => recommendation v1 from '2039379827-jmm6x': 528
+customer => preference => recommendation v2 from '2036617847-hdjv2': 267
+customer => preference => recommendation v2 from '2036617847-hdjv2': 268
+customer => preference => recommendation v2 from '2036617847-hdjv2': 269
+customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
+customer => preference => recommendation v1 from '2039379827-jmm6x': 529
+customer => preference => recommendation v2 from '2036617847-hdjv2': 270
+```
 
 Clean up
 
 ```bash
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
-
-istioctl delete destinationpolicies recommendation-poolejector -n tutorial
+oc delete pod -l app=recommendation,version=v2
+istioctl delete -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
 ```
 
 ## Egress
