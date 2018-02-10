@@ -70,7 +70,7 @@ You will need in this tutorial
 * git (everybody needs the git CLI)
 
 ## Setup minishift
-Assumes minishift, tested with minshift v1.10.0+10461c6
+Assumes minishift, tested with minishift v1.12.0+daa0943
 
 Minishift creation script
 ```bash
