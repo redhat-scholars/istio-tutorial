@@ -13,6 +13,8 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 
 
+
+
 <!-- toc -->
 
 * [Prerequisite CLI tools](#prerequisite-cli-tools)
@@ -60,7 +62,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
     * [Test behavior without failing instances](#test-behavior-without-failing-instances)
     * [Test behavior with failing instance and without pool ejection](#test-behavior-with-failing-instance-and-without-pool-ejection)
     * [Test behavior with failing instance and with pool ejection](#test-behavior-with-failing-instance-and-with-pool-ejection)
-    * [Ultimate resilience with retries, circuit breaker, and pool ejection](#ultimate-resilience-with-retries-circuit-breaker-and-pool-ejection)
+  * [Ultimate resilience with retries, circuit breaker, and pool ejection](#ultimate-resilience-with-retries-circuit-breaker-and-pool-ejection)
     * [Clean up](#clean-up)
 * [Egress](#egress)
     * [Create HTTPBin Java App](#create-httpbin-java-app)
@@ -69,6 +71,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Tips & Tricks](#tips-tricks)
 
 <!-- toc stop -->
+
 
 
 ## Prerequisite CLI tools
