@@ -470,7 +470,7 @@ example/recommendation                  v2                  c31e399a9628        
 example/recommendation                  v1              f072978d9cf6        8 minutes ago      438MB
 ```
 
-*Important:* back up one directory before applying the deployment yaml.  We have a 2nd Deployment to manage the v2 version of recommendation.  
+*Important:* We have a 2nd Deployment to manage the v2 version of recommendation.  
 
 ```bash
 oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment-v2.yml) -n tutorial
