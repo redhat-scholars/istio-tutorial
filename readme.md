@@ -1603,7 +1603,7 @@ docker ps | grep egress
 
 docker ps -a | grep egress
 
-oc apply -f src/main/kubernetes/Deployment.yml -n istioegress
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -1644,7 +1644,7 @@ ctrl-c
 
 docker ps | grep egress
 
-oc apply -f src/main/kubernetes/Deployment.yml -n istioegress
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
 
 oc create -f src/main/kubernetes/Service.yml
 
@@ -1713,7 +1713,18 @@ istioctl create -f istiofiles/egress_github.yml
 
 curl egressgithub-istioegress.$(minishift ip).nip.io
 ```
+#### Clean up
 
+```bash
+oc delete egressrule httpbin-egress-rule
+oc delete egressrule google-egress-rule
+oc delete egressrule github-egress-rule
+```
+and if you need some memory back, just delete the project
+
+```bash
+oc delete project istioegress
+```
 
 ## Tips & Tricks
 
