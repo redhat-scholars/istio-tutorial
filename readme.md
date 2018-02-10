@@ -13,6 +13,8 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 
 
+
+
 <!-- toc -->
 
 * [Prerequisite CLI tools](#prerequisite-cli-tools)
@@ -51,7 +53,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Load Balancer](#load-balancer)
 * [Rate Limiting](#rate-limiting)
 * [Circuit Breaker](#circuit-breaker)
-  * [Fail Fast with Max Connections & Max Pending Requests](#fail-fast-with-max-connections-max-pending-requests)
+  * [Fail Fast with Max Connections and Max Pending Requests](#fail-fast-with-max-connections-and-max-pending-requests)
     * [Load test without circuit breaker](#load-test-without-circuit-breaker)
     * [Load test with circuit breaker](#load-test-with-circuit-breaker)
     * [Clean up](#clean-up)
@@ -69,6 +71,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Tips & Tricks](#tips-tricks)
 
 <!-- toc stop -->
+
 
 
 ## Prerequisite CLI tools
