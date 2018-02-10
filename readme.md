@@ -1248,7 +1248,7 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 
 ## Circuit Breaker
 
-### Fail Fast with Max Connections & Max Pending Requests
+### Fail Fast with Max Connections and Max Pending Requests
 
 First, make sure to uncomment "timeout();" in the RecommendationController.java
 
@@ -1281,9 +1281,9 @@ You should see an output similar to this:
 
 ![siege output with all successful requests](readme_images/siege_ok.png)
 
-All of the requests to our system were successful, but it took some time to run the test, as the `v2` deployment was a slow performer.
+All of the requests to our system were successful, but it took some time to run the test, as the `v2` instance/pod was a slow performer.
 
-But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same deployment. We don't want multiple requests getting queued or making the deployment even slower. So we'll add a circuit breaker that will **open** whenever we have more than 1 request being handled by any deployment.
+But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same instance/pod. We don't want multiple requests getting queued or making the instance/pod even slower. So we'll add a circuit breaker that will **open** whenever we have more than 1 request being handled by any instance/pod.
 
 ```bash
 istioctl create -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
@@ -1304,7 +1304,7 @@ siege -r 2 -c 20 -v customer-tutorial.$(minishift ip).nip.io
 
 ![siege output with some 503 requests due to open circuit breaker](readme_images/siege_cb_503.png)
 
-You can run siege multiple times, but in all of the executions you should see some `503` errors being displayed in the results. That's the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the deployment.
+You can run siege multiple times, but in all of the executions you should see some `503` errors being displayed in the results. That's the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the instance/pod.
 
 #### Clean up
 
