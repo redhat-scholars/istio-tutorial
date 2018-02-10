@@ -1696,7 +1696,7 @@ spec:
 EOF
 ```
 
-and shell into it for testing
+and shell into the github pod for testing google access
 
 ```bash
 oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin/bash
@@ -1706,7 +1706,7 @@ curl http://www.google.com:443
 exit
 ```
 
-Now, execute the Java code that hits api.google.com/users
+Now, apply the egressrule for github and execute the Java code that hits api.github.com/users
 
 ```bash
 istioctl create -f istiofiles/egress_github.yml
