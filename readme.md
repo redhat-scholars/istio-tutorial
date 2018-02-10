@@ -13,8 +13,6 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 
 
-
-
 <!-- toc -->
 
 * [Prerequisite CLI tools](#prerequisite-cli-tools)
@@ -71,7 +69,6 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Tips & Tricks](#tips-tricks)
 
 <!-- toc stop -->
-
 
 
 ## Prerequisite CLI tools
@@ -1318,7 +1315,7 @@ istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml
 
 ### Pool Ejection
 
-Pool ejection or *outlier detection* is a resilience strategy that takes place whenever we have a pool of instances to serve a client request. If the request is forwarded to a certain instance and it fails (e.g. returns a 50x error code), then Istio will eject this instance from the pool for a certain *sleep window*. In our example the sleep window is configured to be 15s. This increases the overall availability by making sure that only healthy requests participate in the pool of instances.
+Pool ejection or *outlier detection* is a resilience strategy that takes place whenever we have a pool of instances/pods to serve a client request. If the request is forwarded to a certain instance and it fails (e.g. returns a 50x error code), then Istio will eject this instance from the pool for a certain *sleep window*. In our example the sleep window is configured to be 15s. This increases the overall availability by making sure that only healthy pods participate in the pool of instances.
 
 First, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
 
@@ -1495,7 +1492,7 @@ customer => preference => recommendation v1 from '2039379827-jmm6x': 529
 customer => preference => recommendation v2 from '2036617847-hdjv2': 270
 ```
 
-#### Ultimate resilience with retries, circuit breaker, and pool ejection
+### Ultimate resilience with retries, circuit breaker, and pool ejection
 
 Even with pool ejection your application doesn't *look* that resilient. That's probably because we're still letting some errors to be propagated to our clients. But we can improve this. If we have enough instances and/or versions of a specific service running into our system, we can combine multiple Istio capabilities to achieve the ultimate backend resilience:
 - **Circuit Breaker** to avoid multiple concurrent requests to an instance;
