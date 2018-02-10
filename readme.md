@@ -11,6 +11,8 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 **Table of Contents**
 
+
+
 <!-- toc -->
 
 * [Prerequisite CLI tools](#prerequisite-cli-tools)
@@ -20,9 +22,10 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Deploy customer](#deploy-customer)
 * [Deploy preference](#deploy-preference)
 * [Deploy recommendation](#deploy-recommendation)
-* [Updating & redeploying code](#updating-redeploying-code)
-* [Tracing](#tracing)
+* [Updating Redeploying Code](#updating-redeploying-code)
 * [Monitoring](#monitoring)
+* [Custom Metrics](#custom-metrics)
+* [Tracing](#tracing)
 * [Istio RouteRule Changes](#istio-routerule-changes)
   * [recommendation:v2](#recommendationv2)
 * [Changing Istio RouteRules](#changing-istio-routerules)
@@ -41,14 +44,24 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
     * [Set mobile users to v2](#set-mobile-users-to-v2)
     * [Clean up](#clean-up)
 * [Mirroring Traffic (Dark Launch)](#mirroring-traffic-dark-launch)
+    * [Clean up](#clean-up)
 * [Access Control](#access-control)
     * [Whitelist](#whitelist)
     * [Blacklist](#blacklist)
 * [Load Balancer](#load-balancer)
 * [Rate Limiting](#rate-limiting)
 * [Circuit Breaker](#circuit-breaker)
-    * [Fail Fast with Max Connections & Max Pending Requests](#fail-fast-with-max-connections-max-pending-requests)
-    * [Pool Ejection](#pool-ejection)
+  * [Fail Fast with Max Connections & Max Pending Requests](#fail-fast-with-max-connections-max-pending-requests)
+    * [Load test without circuit breaker](#load-test-without-circuit-breaker)
+    * [Load test with circuit breaker](#load-test-with-circuit-breaker)
+    * [Clean up](#clean-up)
+  * [Pool Ejection](#pool-ejection)
+    * [Scale number of instances of `v2` deployment](#scale-number-of-instances-of-v2-deployment)
+    * [Test behavior without failing instances](#test-behavior-without-failing-instances)
+    * [Test behavior with failing instance and without pool ejection](#test-behavior-with-failing-instance-and-without-pool-ejection)
+    * [Test behavior with failing instance and with pool ejection](#test-behavior-with-failing-instance-and-with-pool-ejection)
+    * [Ultimate resilience with retries, circuit breaker, and pool ejection](#ultimate-resilience-with-retries-circuit-breaker-and-pool-ejection)
+    * [Clean up](#clean-up)
 * [Egress](#egress)
     * [Create HTTPBin Java App](#create-httpbin-java-app)
     * [Create the Github Java App](#create-the-github-java-app)
@@ -56,6 +69,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * [Tips & Tricks](#tips-tricks)
 
 <!-- toc stop -->
+
 
 ## Prerequisite CLI tools
 You will need in this tutorial
@@ -348,7 +362,7 @@ Back to the main istio-tutorial directory
 cd ..
 ```
 
-## Updating & redeploying code
+## Updating Redeploying Code
 
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 
@@ -1236,7 +1250,20 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 
 ### Fail Fast with Max Connections & Max Pending Requests
 
-First, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
+First, make sure to uncomment "timeout();" in the RecommendationController.java
+
+```java
+        count++;
+        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+        timeout();
+
+        logger.debug("recommendation service ready to return");
+```
+
+And follow the Updating & redeploying code steps to get this slower v2 deployed.
+
+Second, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
 
 ```bash
 oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
