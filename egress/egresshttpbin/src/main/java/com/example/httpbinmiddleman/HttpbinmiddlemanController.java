@@ -29,7 +29,7 @@ public class HttpbinmiddlemanController {
         } catch (Exception e) {            
             responseBody = e.getMessage();
         }
-            return responseBody;
+            return responseBody + "\n";
     } // headers
         
 }

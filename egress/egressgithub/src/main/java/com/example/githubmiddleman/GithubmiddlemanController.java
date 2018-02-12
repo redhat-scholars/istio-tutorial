@@ -31,6 +31,6 @@ public class GithubmiddlemanController {
         } catch (Exception e) {            
             responseBody = e.getMessage();
         }
-        return responseBody;
+        return responseBody + "\n";
    } // users
 }
