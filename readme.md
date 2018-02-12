@@ -1668,7 +1668,7 @@ curl egresshttpbin-istioegress.$(minishift ip).nip.io
 or shell into the pod by getting its name and then using that name with oc exec
 
 ```bash
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) /bin/bash
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) -c egresshttpbin /bin/bash
 
 curl localhost:8080
 
@@ -1699,7 +1699,7 @@ EOF
 and shell into the github pod for testing google access
 
 ```bash
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) /bin/bash
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) -c egressgithub /bin/bash
 
 curl http://www.google.com:443
 
