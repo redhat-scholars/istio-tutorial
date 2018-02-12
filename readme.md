@@ -959,8 +959,6 @@ oc delete routerule recommendation-mobile -n tutorial
 
 ## Mirroring Traffic (Dark Launch)
 
-Note: Not working
-
 ```bash
 oc get pods -l app=recommendation -n tutorial
 ```
