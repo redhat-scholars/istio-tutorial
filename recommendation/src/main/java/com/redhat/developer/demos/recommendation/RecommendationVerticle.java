@@ -10,7 +10,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 
-public class MainVerticle extends AbstractVerticle {
+public class RecommendationVerticle extends AbstractVerticle {
 
     private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
 
@@ -82,7 +82,7 @@ public class MainVerticle extends AbstractVerticle {
     }
 
     public static void main(String[] args) {
-        Vertx.vertx().deployVerticle(new MainVerticle());
+        Vertx.vertx().deployVerticle(new RecommendationVerticle());
     }
 
 }
