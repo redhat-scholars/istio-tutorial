@@ -1,4 +1,4 @@
-# Java (Spring Boot) + Istio on Kubernetes/OpenShift
+# Java (Spring Boot and Vert.x) + Istio on Kubernetes/OpenShift
 
 There are three different and super simple microservices in this system and they are chained together in the following sequence:
 
@@ -10,10 +10,6 @@ a missing dependent service, it just returns the error message to the end-user.
 There are two more simple apps that illustrate how Istio handles egress routes: egressgithub and egresshttpbin
 
 **Table of Contents**
-
-
-
-
 
 <!-- toc -->
 
@@ -372,7 +368,7 @@ When you wish to change code (e.g. editing the .java files) and wish to "redeplo
 ```bash
 cd {servicename}
 
-vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}Controller.java
+vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controller|Verticle}.java
 ```
 
 Make your edits and esc-w-q
@@ -465,7 +461,7 @@ minishift openshift service jaeger-query --in-browser
 
 ### recommendation:v2
 
-We can experiment with Istio routing rules by making a change to RecommendationsController.java like the following and creating a "v2" docker image.
+We can experiment with Istio routing rules by making a change to RecommendationVerticle.java like the following and creating a "v2" docker image.
 
 ```java
     private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
@@ -804,23 +800,25 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 
 ## Timeout
 
-Wait only N seconds before giving up and failing.  At this point, no other route rules should be in effect.  oc get routerules and oc delete routerule rulename if there are some.
+Wait only N seconds before giving up and failing.  At this point, no other route rules should be in effect.  `oc get routerules` and `oc delete routerule <rulename>` if there are some.
 
-First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationsController.java` making it a slow perfomer with a 3 second delay.
+First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationVerticle.java` making it a slow performer with a 3 second delay.
 
 ```java
-    @RequestMapping("/")
-    public ResponseEntity<String> getRecommendations() {
-        count++;
-        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+    @Override
+    public void start() throws Exception {
+        Router router = Router.router(vertx);
+        router.get("/").handler(this::logging);
+        router.get("/").handler(this::timeout);
+        router.get("/").handler(this::getRecommendations);
+        router.get("/misbehave").handler(this::misbehave);
+        router.get("/behave").handler(this::behave);
 
-        timeout();
+        HealthCheckHandler hc = HealthCheckHandler.create(vertx);
+        hc.register("dummy-health-check", future -> future.complete(Status.OK()));
+        router.get("/health").handler(hc);
 
-        logger.debug("recommendation service ready to return");
-        if (misbehave) {
-            return doMisbehavior();
-        }
-        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
+        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
     }
 ```
 
@@ -1122,22 +1120,30 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 
 Here we will limit the number of concurrent requests into recommendation v2
 
-Current view of the v2 RecommendationsController.java
+Current view of the v2 RecommendationVerticle.java
 
 ```java
 package com.redhat.developer.demos.recommendation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Vertx;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.healthchecks.HealthCheckHandler;
+import io.vertx.ext.healthchecks.Status;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
-@RestController
-public class RecommendationController {
+public class RecommendationVerticle extends AbstractVerticle {
 
     private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+
+    private static final String HOSTNAME =
+        parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+
+    static String parseContainerIdFromHostname(String hostname) {
+        return hostname.replaceAll("recommendation-v\\d+-", "");
+    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -1151,47 +1157,56 @@ public class RecommendationController {
      */
     private boolean misbehave = false;
 
-    private static final String HOSTNAME =
-            parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+    @Override
+    public void start() throws Exception {
+        Router router = Router.router(vertx);
+        router.get("/").handler(this::logging);
+        router.get("/").handler(this::timeout);
+        router.get("/").handler(this::getRecommendations);
+        router.get("/misbehave").handler(this::misbehave);
+        router.get("/behave").handler(this::behave);
 
-    static String parseContainerIdFromHostname(String hostname) {
-        return hostname.replaceAll("recommendation-v\\d+-", "");
+        HealthCheckHandler hc = HealthCheckHandler.create(vertx);
+        hc.register("dummy-health-check", future -> future.complete(Status.OK()));
+        router.get("/health").handler(hc);
+
+        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
     }
 
-    @RequestMapping("/")
-    public ResponseEntity<String> getRecommendations() {
-        count++;
-        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+    private void logging(RoutingContext ctx) {
+        logger.info(String.format("recommendation request from %s: %d", HOSTNAME, count));
+        ctx.next();
+    }
 
-        timeout();
+    private void timeout(RoutingContext ctx) {
+        ctx.vertx().setTimer(3000, handler -> ctx.next());
+    }
 
-        logger.debug("recommendation service ready to return");
+    private void getRecommendations(RoutingContext ctx) {
         if (misbehave) {
-            return doMisbehavior();
-        }
-        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
-    }
-
-    private void timeout() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            logger.info("Thread interrupted");
+            count = 0;
+            logger.info(String.format("Misbehaving %d", count));
+            ctx.response().setStatusCode(503).end(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
+        } else {
+            count++;
+            ctx.response().end(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
         }
     }
 
-    private ResponseEntity<String> doMisbehavior() {
-        count = 0;
-        misbehave = false;
-        logger.debug(String.format("Misbehaving %d", count));
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
-    }
-
-    @RequestMapping("/misbehave")
-    public ResponseEntity<String> flagMisbehave() {
+    private void misbehave(RoutingContext ctx) {
         this.misbehave = true;
-        logger.debug("'misbehave' has been set to 'true'");
-        return ResponseEntity.ok("Next request to / will return a 503\n");
+        logger.info("'misbehave' has been set to 'true'");
+        ctx.response().end("Following requests to '/' will return a 503\n");
+    }
+
+    private void behave(RoutingContext ctx) {
+        this.misbehave = false;
+        logger.info("'misbehave' has been set to 'false'");
+        ctx.response().end("Following requests to '/' will return a 200\n");
+    }
+
+    public static void main(String[] args) {
+        Vertx.vertx().deployVerticle(new RecommendationVerticle());
     }
 
 }
@@ -1251,15 +1266,15 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 
 ### Fail Fast with Max Connections and Max Pending Requests
 
-First, make sure to uncomment "timeout();" in the RecommendationController.java
+First, make sure to uncomment `router.get("/").handler(this::timeout);` in the RecommendationVerticle.java:
 
 ```java
-        count++;
-        logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
-
-        timeout();
-
-        logger.debug("recommendation service ready to return");
+    Router router = Router.router(vertx);
+    router.get("/").handler(this::logging);
+    router.get("/").handler(this::timeout);
+    router.get("/").handler(this::getRecommendations);
+    router.get("/misbehave").handler(this::misbehave);
+    router.get("/behave").handler(this::behave);
 ```
 
 And follow the Updating & redeploying code steps to get this slower v2 deployed.
@@ -1782,14 +1797,14 @@ Look for "route_config_name": "8080", you should see 3 entries for customer, pre
 			}
 		}]
 	}, {
-		"name": "preferences.springistio.svc.cluster.local|http",
-		"domains": ["preferences:8080", "preferences", "preferences.springistio:8080", "preferences.springistio", "preferences.springistio.svc:8080", "preferences.springistio.svc", "preferences.springistio.svc.cluster:8080", "preferences.springistio.svc.cluster", "preferences.springistio.svc.cluster.local:8080", "preferences.springistio.svc.cluster.local", "172.30.249.133:8080", "172.30.249.133"],
+		"name": "preference.springistio.svc.cluster.local|http",
+		"domains": ["preference:8080", "preference", "preference.springistio:8080", "preference.springistio", "preference.springistio.svc:8080", "preference.springistio.svc", "preference.springistio.svc.cluster:8080", "preference.springistio.svc.cluster", "preference.springistio.svc.cluster.local:8080", "preference.springistio.svc.cluster.local", "172.30.249.133:8080", "172.30.249.133"],
 		"routes": [{
 			"match": {
 				"prefix": "/"
 			},
 			"route": {
-				"cluster": "out.preferences.springistio.svc.cluster.local|http",
+				"cluster": "out.preference.springistio.svc.cluster.local|http",
 				"timeout": "0s"
 			},
 			"decorator": {
@@ -1797,14 +1812,14 @@ Look for "route_config_name": "8080", you should see 3 entries for customer, pre
 			}
 		}]
 	}, {
-		"name": "recommendations.springistio.svc.cluster.local|http",
-		"domains": ["recommendations:8080", "recommendations", "recommendations.springistio:8080", "recommendations.springistio", "recommendations.springistio.svc:8080", "recommendations.springistio.svc", "recommendations.springistio.svc.cluster:8080", "recommendations.springistio.svc.cluster", "recommendations.springistio.svc.cluster.local:8080", "recommendations.springistio.svc.cluster.local", "172.30.209.113:8080", "172.30.209.113"],
+		"name": "recommendation.springistio.svc.cluster.local|http",
+		"domains": ["recommendation:8080", "recommendation", "recommendation.springistio:8080", "recommendation.springistio", "recommendation.springistio.svc:8080", "recommendation.springistio.svc", "recommendation.springistio.svc.cluster:8080", "recommendation.springistio.svc.cluster", "recommendation.springistio.svc.cluster.local:8080", "recommendation.springistio.svc.cluster.local", "172.30.209.113:8080", "172.30.209.113"],
 		"routes": [{
 			"match": {
 				"prefix": "/"
 			},
 			"route": {
-				"cluster": "out.recommendations.springistio.svc.cluster.local|http",
+				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
 				"timeout": "0s"
 			},
 			"decorator": {
@@ -1831,7 +1846,7 @@ Here is the Before:
 
 ```javascript
 			"route": {
-				"cluster": "out.recommendations.springistio.svc.cluster.local|http",
+				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
 				"timeout": "0s"
 			},
 ```
@@ -1848,7 +1863,7 @@ And the After:
 
 ```javascript
 			"route": {
-				"cluster": "out.recommendations.springistio.svc.cluster.local|http|version=v2",
+				"cluster": "out.recommendation.springistio.svc.cluster.local|http|version=v2",
 				"timeout": "0s"
 			},
 ```
@@ -1857,7 +1872,7 @@ and
 
 ```javascript
 			"decorator": {
-				"operation": "recommendations-default"
+				"operation": "recommendation-default"
 			}
 ```
 
