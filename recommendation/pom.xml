@@ -11,9 +11,11 @@
     <properties>
         <java.version>1.8</java.version>
         <vertx.version>3.5.0</vertx.version>
+        <vertx.maven.plugin.version>1.0.13</vertx.maven.plugin.version>
     </properties>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -24,45 +26,21 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
+                <groupId>io.fabric8</groupId>
+                <artifactId>vertx-maven-plugin</artifactId>
+                <version>${vertx.maven.plugin.version}</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>vmp</id>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>initialize</goal>
+                            <goal>package</goal>
                         </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>com.redhat.developer.demos.recommendation.RecommendationVerticle</Main-Class>
-                                    </manifestEntries>
-                                </transformer>
-                                <transformer
-                                    implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
-                                </transformer>
-                            </transformers>
-                            <artifactSet>
-                            </artifactSet>
-                            <outputFile>${project.build.directory}/${project.artifactId}.jar
-                            </outputFile>
-                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.5.0</version>
                 <configuration>
-                    <mainClass>com.redhat.developer.demos.recommendation.RecommendationVerticle</mainClass>
+                    <verticle>com.redhat.developer.demos.recommendation.RecommendationVerticle</verticle>
                 </configuration>
             </plugin>
 
