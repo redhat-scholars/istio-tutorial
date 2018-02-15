@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: diffy-recommendations
+    version: v1
+  name: recommendation-diffy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation-diffy
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: recommendation-diffy
+        version: v1
+    spec:
+      containers:
+      - image: lordofthejars/diffy:1.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8888
+          initialDelaySeconds: 10
+          periodSeconds: 60
+          timeoutSeconds: 1
+        name: recommendation-diffy
+        args: ["-candidate=recommendation-candidate:8080", "-master.primary=recommendation-master:8080", "-master.secondary=recommendation-master:8080", "-service.protocol=http", "-serviceName=recommendation", "-proxy.port=:8880", "-admin.port=:8881", "-http.port=:8888", "-rootUrl='localhost:8888'"]
+        ports:
+        - containerPort: 8888
+          name: http-console
+          protocol: TCP
+        - containerPort: 8880
+          name: http-proxy
+          protocol: TCP
+        - containerPort: 8881
+          name: http-admin
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8888
+          initialDelaySeconds: 10
+          periodSeconds: 60
+          timeoutSeconds: 1
+        securityContext:
+          privileged: false

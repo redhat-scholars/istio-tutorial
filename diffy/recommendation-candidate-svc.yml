@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendation-candidate
+  labels:
+    app: recommendation-candidate
+spec:
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: recommendation
+    version: v2
