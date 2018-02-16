@@ -1118,6 +1118,8 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 
 ## Rate Limiting
 
+**Note**: currently not working as of `istio-0.5.1`
+
 Here we will limit the number of concurrent requests into recommendation v2
 
 Current view of the v2 RecommendationVerticle.java
