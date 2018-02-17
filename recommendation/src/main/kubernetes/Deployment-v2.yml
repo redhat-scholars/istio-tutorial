@@ -30,7 +30,7 @@ spec:
             - localhost:8080/health
           initialDelaySeconds: 5
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 10
         name: recommendation
         ports:
         - containerPort: 8080
@@ -49,6 +49,6 @@ spec:
             - localhost:8080/health
           initialDelaySeconds: 5
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 10
         securityContext:
           privileged: false
