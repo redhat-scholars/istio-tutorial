@@ -20,7 +20,7 @@ spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
+          value: -Xmx256m
         image: example/recommendation:v1
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -28,7 +28,7 @@ spec:
             command:
             - curl
             - localhost:8080/health
-          initialDelaySeconds: 10
+          initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 1
         name: recommendation
@@ -47,7 +47,7 @@ spec:
             command:
             - curl
             - localhost:8080/health
-          initialDelaySeconds: 10
+          initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 1
         securityContext:
