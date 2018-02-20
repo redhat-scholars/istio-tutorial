@@ -36,7 +36,7 @@ public class RecommendationVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Router router = Router.router(vertx);
-        //        router.get("/").handler(this::timeout);
+//        router.get("/").handler(this::timeout);
         router.get("/").handler(this::logging);
         router.get("/").handler(this::getRecommendations);
         router.get("/misbehave").handler(this::misbehave);
