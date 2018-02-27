@@ -93,7 +93,7 @@ Minishift creation script
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
-export MINISHIFT_HOME=~/minishift_1.12.0
+export MINISHIFT_HOME=~/minishift_1.13.1
 export PATH=$MINISHIFT_HOME:$PATH
 
 minishift profile set tutorial
@@ -102,7 +102,6 @@ minishift config set cpus 3
 minishift config set vm-driver virtualbox
 minishift config set image-caching true
 minishift addon enable admin-user
-minishift config set openshift-version v3.7.0
 
 minishift start
 ```
