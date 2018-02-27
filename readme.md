@@ -394,7 +394,7 @@ oc describe deployment {servicename} | grep Replicas
 Out of the box, you get monitoring via Prometheus and Grafana.  
 
 ```bash
-minishift openshift service grafana --in-browser
+open "$(minishift openshift service grafana -u)/dashboard/db/istio-dashboard?var-source=All"
 ```
 
 Make sure to select "Istio Dashboard" in the Grafana Dashboard
