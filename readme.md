@@ -128,7 +128,6 @@ cd istio-0.5.0
 ```bash
 oc login $(minishift ip):8443 -u admin -p admin
 oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
-oc adm policy add-scc-to-user anyuid -z istio-egress-service-account -n istio-system
 oc adm policy add-scc-to-user anyuid -z default -n istio-system
 oc create -f install/kubernetes/istio.yaml
 oc project istio-system
