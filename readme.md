@@ -416,7 +416,7 @@ minishift openshift service prometheus --in-browser
 Add the custom metric and rule.  First make sure you are in the "istio-tutorial" directory and then
 
 ```bash
-oc apply -f istiofiles/recommendation_requestcount.yml -n istio-system
+istioctl create -f istiofiles/recommendation_requestcount.yml -n istio-system
 ```
 
 In the Prometheus dashboard, add the following
@@ -556,7 +556,7 @@ cd ..
 From the main istio-tutorial directory,
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ```
@@ -568,11 +568,11 @@ you should only see v2 being returned
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
 ```bash
-oc replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 
-oc get routerules -n tutorial
+istioctl get routerules -n tutorial
 
-oc get routerules/recommendation-default -o yaml -n tutorial
+istioctl get routerule recommendation-default -o yaml -n tutorial
 ```
 
 #### All users to recommendation v1 and v2
@@ -580,7 +580,7 @@ oc get routerules/recommendation-default -o yaml -n tutorial
 By simply removing the rule
 
 ```bash
-oc delete routerules/recommendation-default -n tutorial
+istioctl delete routerule recommendation-default -n tutorial
 ```
 
 and you should see the default behavior of load-balancing between v1 and v2
@@ -603,7 +603,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 Create the routerule that will send 90% of requests to v1 and 10% to v2
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
 ```
 
 and send in several requests
@@ -619,13 +619,13 @@ done
 In another terminal, change the mixture to be 75/25
 
 ```bash
-oc replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
 ```
 
 Clean up
 
 ```bash
-oc delete routerule recommendation-v1-v2 -n tutorial
+istioctl delete routerule recommendation-v1-v2 -n tutorial
 ```
 
 ## Fault Injection
@@ -646,7 +646,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
 You can inject 503's, for approximately 50% of the requests
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
@@ -659,7 +659,7 @@ customer => preference => recommendation v2 from '2819441432-qsp25': 51
 Clean up
 
 ```bash
-oc delete routerule recommendation-503 -n tutorial
+istioctl delete routerule recommendation-503 -n tutorial
 ```
 
 ### Delay
@@ -667,7 +667,7 @@ oc delete routerule recommendation-503 -n tutorial
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slowly, potentially causing a cascading failure in your network of services.
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
 ```
 
 And hit the customer endpoint
@@ -695,7 +695,7 @@ or
 Clean up
 
 ```
-oc delete routerule recommendation-delay -n tutorial
+istioctl delete routerule recommendation-delay -n tutorial
 ```
 
 ## Retry
@@ -705,7 +705,7 @@ Instead of failing immediately, retry the Service N more times
 We will use Istio and return 503's about 50% of the time.  Send all users to v2 which will throw out some 503's
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v2_503.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2_503.yml -n tutorial
 ```
 
 Now, if you hit the customer endpoint several times, you should see some 503's
@@ -733,7 +733,7 @@ customer => 503 preference => 503 fault filter abort
 Now add the retry rule
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v2_retry.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2_retry.yml -n tutorial
 ```
 
 and after a few seconds, things will settle down and you will see it work every time
@@ -754,13 +754,13 @@ customer => preference => recommendation v2 from '2036617847-m9glz': 198
 You can see the active RouteRules via
 
 ```bash
-oc get routerules -n tutorial
+istioctl get routerules -n tutorial
 ```
 
 Now, delete the retry rule and see the old behavior, some random 503s
 
 ```bash
-oc delete routerule recommendation-v2-retry -n tutorial
+istioctl delete routerule recommendation-v2-retry -n tutorial
 
 while true
 do
@@ -784,7 +784,7 @@ customer => 503 preference => 503 fault filter abort
 Now, delete the 503 rule and back to random load-balancing between v1 and v2
 
 ```bash
-oc delete routerule recommendation-v2-503 -n tutorial
+istioctl delete routerule recommendation-v2-503 -n tutorial
 
 while true
 do
@@ -850,7 +850,7 @@ done
 Then add the timeout rule
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
 ```
 
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second
@@ -874,7 +874,7 @@ curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.
 Clean up, delete the timeout rule
 
 ```bash
-oc delete routerule recommendation-timeout -n tutorial
+istioctl delete routerule recommendation-timeout -n tutorial
 ```
 
 ## Smart routing based on user-agent header (Canary Deployment)
@@ -888,15 +888,15 @@ Note: the "user-agent" header being forwarded in the Customer and Preferences co
 #### Set recommendation to all v1
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 ```
 
 #### Set Safari users to v2
 
 ```bash
-oc create -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
 
-oc get routerules -n tutorial
+istioctl get routerules -n tutorial
 ```
 
 and test with a Safari (or even Chrome on Mac since it includes Safari in the string).  Safari only sees v2 responses from recommendation
@@ -936,13 +936,13 @@ oc describe routerule recommendation-safari -n tutorial
 Remove the Safari rule
 
 ```bash
-oc delete routerule recommendation-safari -n tutorial
+istioctl delete routerule recommendation-safari -n tutorial
 ```
 
 #### Set mobile users to v2
 
 ```bash
-oc create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
 ```
@@ -950,7 +950,7 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 #### Clean up
 
 ```bash
-oc delete routerule recommendation-mobile -n tutorial
+istioctl delete routerule recommendation-mobile -n tutorial
 ```
 
 ## Mirroring Traffic (Dark Launch)
@@ -962,16 +962,16 @@ oc get pods -l app=recommendation -n tutorial
 You should have 2 pods for recommendation based on the steps above
 
 ```bash
-oc get routerules -n tutorial
+istioctl get routerules -n tutorial
 ```
 
 You should have NO routerules
-if so "oc delete routerule rulename -n tutorial"
+if so "istioctl delete routerule rulename -n tutorial"
 
 Make sure you are in the main directory of "istio-tutorial"
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ```
@@ -986,7 +986,7 @@ oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommenda
 #### Clean up
 
 ```bash
-oc delete routerule recommendation-mirror -n tutorial
+istioctl delete routerule recommendation-mirror -n tutorial
 ```
 
 ## Access Control
@@ -1087,7 +1087,7 @@ customer => preference => recommendation v2 from '2819441432-bs5ck': 182
 Now, add the Random LB DestinationPolicy
 
 ```bash
-oc create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
+istioctl create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 ```
 
 And you should see a different pattern of which pod is being selected
@@ -1109,7 +1109,7 @@ customer => preference => recommendation v2 from '2819441432-rg45q': 14
 Clean up
 
 ```bash
-oc delete -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
+istioctl delete -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 ```
@@ -1282,7 +1282,7 @@ And follow the Updating & redeploying code steps to get this slower v2 deployed.
 Second, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
 ```
 
 #### Load test without circuit breaker
@@ -1325,7 +1325,7 @@ You can run siege multiple times, but in all of the executions you should see so
 #### Clean up
 
 ```bash
-oc delete routerule recommendation-v1-v2 -n tutorial
+istioctl delete routerule recommendation-v1-v2 -n tutorial
 istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml
 ```
 
@@ -1336,7 +1336,7 @@ Pool ejection or *outlier detection* is a resilience strategy that takes place w
 First, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
 
 ```bash
-oc create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
 ```
 
 #### Scale number of instances of `v2` deployment
@@ -1729,9 +1729,9 @@ curl egressgithub-istioegress.$(minishift ip).nip.io
 #### Clean up
 
 ```bash
-oc delete egressrule httpbin-egress-rule
-oc delete egressrule google-egress-rule
-oc delete egressrule github-egress-rule
+istioctl delete egressrule httpbin-egress-rule -n istioegress
+istioctl delete egressrule google-egress-rule -n istioegress
+istioctl delete egressrule github-egress-rule -n istioegress
 ```
 and if you need some memory back, just delete the project
 
