@@ -120,22 +120,22 @@ Note: In this tutorial, you will often be polling the customer endpoint with cur
 
 ```bash
 #!/bin/bash
-curl -L https://github.com/istio/istio/releases/download/0.5.0/istio-0.5.0-osx.tar.gz | tar xz
-cd istio-0.5.0
+curl -L https://github.com/istio/istio/releases/download/0.6.0/istio-0.6.0-osx.tar.gz | tar xz
+cd istio-0.6.0
 ```
 
 ```bash
 oc login $(minishift ip):8443 -u admin -p admin
 oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
 oc adm policy add-scc-to-user anyuid -z default -n istio-system
+oc adm policy add-scc-to-user anyuid -z grafana -n istio-system
+oc adm policy add-scc-to-user anyuid -z prometheus -n istio-system
 oc create -f install/kubernetes/istio.yaml
 oc project istio-system
 oc expose svc istio-ingress
 oc apply -f install/kubernetes/addons/prometheus.yaml
 oc apply -f install/kubernetes/addons/grafana.yaml
 oc apply -f install/kubernetes/addons/servicegraph.yaml
-## Workaround for servicegraph bug https://github.com/istio/issues/issues/179
-oc set image deploy/servicegraph servicegraph="docker.io/istio/servicegraph:0.4.0"
 oc expose svc servicegraph
 oc expose svc grafana
 oc expose svc prometheus
@@ -207,14 +207,14 @@ Note: Your very first docker build will take a bit of time as it downloads all t
 Add *istioctl* to your $PATH, you downloaded it a few steps back.  An example
 
 ```bash
-export ISTIO_HOME=~/istio-0.5.0
+export ISTIO_HOME=~/istio-0.6.0
 export PATH=$ISTIO_HOME/bin:$PATH
 
 istioctl version
 
-Version: 0.5.0
-GitRevision: c9debceacb63a14a9ae24df433e2ec3ce1f16fc7
-User: root@211b132eb7f1
+Version: 0.6.0
+GitRevision: 2cb09cdf040a8573330a127947b11e5082619895
+User: root@a28f609ab931
 Hub: docker.io/istio
 GolangVersion: go1.9
 BuildStatus: Clean
@@ -394,10 +394,8 @@ oc describe deployment {servicename} | grep Replicas
 Out of the box, you get monitoring via Prometheus and Grafana.  
 
 ```bash
-open "$(minishift openshift service grafana -u)/dashboard/db/istio-dashboard?var-source=All"
+open "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5s&orgId=1"
 ```
-
-Make sure to select "Istio Dashboard" in the Grafana Dashboard
 
 ![alt text](readme_images/grafana1.png "Grafana Istio Dashboard")
 
@@ -1116,101 +1114,9 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 
 ## Rate Limiting
 
-**Note**: currently not working as of `istio-0.5.1`
+**Note**: currently not working
 
 Here we will limit the number of concurrent requests into recommendation v2
-
-Current view of the v2 RecommendationVerticle.java
-
-```java
-package com.redhat.developer.demos.recommendation;
-
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Vertx;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.healthchecks.HealthCheckHandler;
-import io.vertx.ext.healthchecks.Status;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-
-public class RecommendationVerticle extends AbstractVerticle {
-
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
-
-    private static final String HOSTNAME =
-        parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
-
-    static String parseContainerIdFromHostname(String hostname) {
-        return hostname.replaceAll("recommendation-v\\d+-", "");
-    }
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    /**
-     * Counter to help us see the lifecycle
-     */
-    private int count = 0;
-
-    /**
-     * Flag for throwing a 503 when enabled
-     */
-    private boolean misbehave = false;
-
-    @Override
-    public void start() throws Exception {
-        Router router = Router.router(vertx);
-        router.get("/").handler(this::logging);
-        router.get("/").handler(this::timeout);
-        router.get("/").handler(this::getRecommendations);
-        router.get("/misbehave").handler(this::misbehave);
-        router.get("/behave").handler(this::behave);
-
-        HealthCheckHandler hc = HealthCheckHandler.create(vertx);
-        hc.register("dummy-health-check", future -> future.complete(Status.OK()));
-        router.get("/health").handler(hc);
-
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-    }
-
-    private void logging(RoutingContext ctx) {
-        logger.info(String.format("recommendation request from %s: %d", HOSTNAME, count));
-        ctx.next();
-    }
-
-    private void timeout(RoutingContext ctx) {
-        ctx.vertx().setTimer(3000, handler -> ctx.next());
-    }
-
-    private void getRecommendations(RoutingContext ctx) {
-        if (misbehave) {
-            count = 0;
-            logger.info(String.format("Misbehaving %d", count));
-            ctx.response().setStatusCode(503).end(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
-        } else {
-            count++;
-            ctx.response().end(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
-        }
-    }
-
-    private void misbehave(RoutingContext ctx) {
-        this.misbehave = true;
-        logger.info("'misbehave' has been set to 'true'");
-        ctx.response().end("Following requests to '/' will return a 503\n");
-    }
-
-    private void behave(RoutingContext ctx) {
-        this.misbehave = false;
-        logger.info("'misbehave' has been set to 'false'");
-        ctx.response().end("Following requests to '/' will return a 200\n");
-    }
-
-    public static void main(String[] args) {
-        Vertx.vertx().deployVerticle(new RecommendationVerticle());
-    }
-
-}
-```
 
 Now apply the rate limit handler
 
