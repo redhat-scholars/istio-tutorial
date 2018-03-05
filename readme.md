@@ -777,7 +777,7 @@ customer => 503 preference => 503 fault filter abort
 customer => preference => recommendation v2 from '2036617847-m9glz': 195
 customer => 503 preference => 503 fault filter abort
 ```
-```
+
 
 Now, delete the 503 rule and back to random load-balancing between v1 and v2
 
@@ -928,7 +928,7 @@ curl -A Firefox customer-tutorial.$(minishift ip).nip.io
 You can describe the routerule to see its configuration
 
 ```bash
-oc describe routerule recommendation-safari -n tutorial
+istioctl get routerule recommendation-safari -o yaml -n tutorial
 ```
 
 Remove the Safari rule
@@ -1232,7 +1232,7 @@ You can run siege multiple times, but in all of the executions you should see so
 
 ```bash
 istioctl delete routerule recommendation-v1-v2 -n tutorial
-istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml
+istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
 ```
 
 ### Pool Ejection
@@ -1424,7 +1424,7 @@ Even with pool ejection your application doesn't *look* that resilient. That's p
 By simply adding a **retry** configuration to our current `routerule`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
 
 ```bash
-istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry.yml
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry.yml -n tutorial
 ```
 
 Throw some requests at the customer endpoint:
@@ -1480,7 +1480,7 @@ Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the c
 ```bash
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 oc delete pod -l app=recommendation,version=v2
-oc delete routerule recommendation-v1-v2 -n tutorial
+istioctl delete routerule recommendation-v1-v2 -n tutorial
 istioctl delete -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
 ```
 
@@ -1577,7 +1577,7 @@ cd ../..
 #### Istio-ize Egress
 
 ```bash
-istioctl create -f istiofiles/egress_httpbin.yml
+istioctl create -f istiofiles/egress_httpbin.yml -n istioegress
 
 istioctl get egressrules
 
@@ -1606,6 +1606,7 @@ apiVersion: config.istio.io/v1alpha2
 kind: EgressRule
 metadata:
   name: google-egress-rule
+  namespace: istioegress
 spec:
   destination:
     service: www.google.com
@@ -1628,16 +1629,14 @@ exit
 Now, apply the egressrule for github and execute the Java code that hits api.github.com/users
 
 ```bash
-istioctl create -f istiofiles/egress_github.yml
+istioctl create -f istiofiles/egress_github.yml -n istioegress
 
 curl egressgithub-istioegress.$(minishift ip).nip.io
 ```
 #### Clean up
 
 ```bash
-istioctl delete egressrule httpbin-egress-rule -n istioegress
-istioctl delete egressrule google-egress-rule -n istioegress
-istioctl delete egressrule github-egress-rule -n istioegress
+istioctl delete egressrule httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress
 ```
 and if you need some memory back, just delete the project
 
