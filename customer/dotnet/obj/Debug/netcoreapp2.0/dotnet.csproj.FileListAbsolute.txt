@@ -1,0 +1,10 @@
+/Users/dschenck/istio-tutorial/customer/dotnet/bin/Debug/netcoreapp2.0/dotnet.deps.json
+/Users/dschenck/istio-tutorial/customer/dotnet/bin/Debug/netcoreapp2.0/dotnet.runtimeconfig.json
+/Users/dschenck/istio-tutorial/customer/dotnet/bin/Debug/netcoreapp2.0/dotnet.runtimeconfig.dev.json
+/Users/dschenck/istio-tutorial/customer/dotnet/bin/Debug/netcoreapp2.0/dotnet.dll
+/Users/dschenck/istio-tutorial/customer/dotnet/bin/Debug/netcoreapp2.0/dotnet.pdb
+/Users/dschenck/istio-tutorial/customer/dotnet/obj/Debug/netcoreapp2.0/dotnet.csproj.CoreCompileInputs.cache
+/Users/dschenck/istio-tutorial/customer/dotnet/obj/Debug/netcoreapp2.0/dotnet.AssemblyInfoInputs.cache
+/Users/dschenck/istio-tutorial/customer/dotnet/obj/Debug/netcoreapp2.0/dotnet.AssemblyInfo.cs
+/Users/dschenck/istio-tutorial/customer/dotnet/obj/Debug/netcoreapp2.0/dotnet.dll
+/Users/dschenck/istio-tutorial/customer/dotnet/obj/Debug/netcoreapp2.0/dotnet.pdb
