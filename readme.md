@@ -193,7 +193,7 @@ cd istio-tutorial
  Start deploying the microservice projects, starting with customer
 
 ```bash
-cd customer
+cd customer/java
 
 mvn clean package
 
@@ -267,13 +267,13 @@ org.springframework.web.client.ResourceAccessException: I/O error on GET request
 Back to the main istio-tutorial directory
 
 ```bash
-cd ..
+cd ...
 ```
 
 ## Deploy preference
 
 ```bash
-cd preference
+cd preference/java
 
 mvn clean package
 
@@ -316,7 +316,7 @@ org.springframework.web.client.ResourceAccessException: I/O error on GET request
 Back to the main istio-tutorial directory
 
 ```bash
-cd ..
+cd ...
 ```
 
 ## Deploy recommendation
@@ -324,7 +324,7 @@ cd ..
 Note: The tag "v1" at the end of the image name is important.  We will be creating a v2 version of recommendation later in this tutorial.   Having both a v1 and v2 version of the recommendation code will allow us to exercise some interesting aspects of Istio's capabilities.
 
 ```bash
-cd recommendation
+cd recommendation/java
 
 mvn clean package
 
@@ -356,7 +356,7 @@ stern recommendation -c recommendation
 Back to the main istio-tutorial directory
 
 ```bash
-cd ..
+cd ...
 ```
 
 ## Updating Redeploying Code
@@ -364,7 +364,7 @@ cd ..
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 
 ```bash
-cd {servicename}
+cd {servicename}/java
 
 vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controller|Verticle}.java
 ```
@@ -468,7 +468,7 @@ The "v2" tag during the docker build is significant.
 There is also a 2nd deployment.yml file to label things correctly
 
 ```bash
-cd recommendation
+cd recommendation/java
 
 mvn clean package
 
@@ -544,7 +544,7 @@ oc scale --replicas=1 deployment/recommendation-v2
 and back to the main directory
 
 ```bash
-cd ..
+cd ...
 ```
 
 ## Changing Istio RouteRules
@@ -821,7 +821,7 @@ First, introduce some wait time in `recommendation v2` by uncommenting the line 
 Rebuild and redeploy
 
 ```bash
-cd recommendation
+cd recommendation/java
 
 mvn clean package
 
@@ -831,7 +831,7 @@ docker images | grep recommendation
 
 oc delete pod -l app=recommendation,version=v2 -n tutorial
 
-cd ..
+cd ...
 ```
 
 Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond

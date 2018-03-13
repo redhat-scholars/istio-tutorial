@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer
+  labels:
+    app: customer    
+spec:
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: customer

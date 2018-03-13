@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: recommendation
+    version: v2
+  name: recommendation-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: recommendation
+        version: v2
+    spec:
+      containers:
+      - env:
+        image: example/recommendation:v2
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 10
+        name: recommendation
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 10
+        securityContext:
+          privileged: false

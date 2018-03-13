@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: preference
+    version: v1
+  name: preference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: preference
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: preference
+        version: v1
+    spec:
+      containers:
+      - env:
+        image: example/preference:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+        name: preference
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+        securityContext:
+          privileged: false
