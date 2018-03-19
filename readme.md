@@ -1,12 +1,14 @@
 # Java (Spring Boot and Vert.x) + Istio on Kubernetes/OpenShift
 
+#### "If you are in a hurry and want to get hands-on with Istio insanely fast, just go to <http://learn.openshif.com/servicemesh> and start instantly"
+
 There are three different and super simple microservices in this system and they are chained together in the following sequence:
 
 customer -> preference -> recommendation
 
 For now, they have a simple exception handling solution for dealing with
 a missing dependent service, it just returns the error message to the end-user.
-
+>
 There are two more simple apps that illustrate how Istio handles egress routes: egressgithub and egresshttpbin
 
 **Table of Contents**
