@@ -3,8 +3,8 @@ package com.redhat.developer.demos.customer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -28,9 +28,13 @@ public class CustomerController {
     }
 
     @RequestMapping("/")
-    public ResponseEntity<String> getCustomer() {
+    public ResponseEntity<String> getCustomer(@RequestHeader("User-Agent") String userAgent) {
         try {
-            String response = restTemplate.getForObject(remoteURL, String.class);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(HttpHeaders.USER_AGENT, userAgent);
+            ResponseEntity<String> responseEntity =
+                    restTemplate.exchange(remoteURL, HttpMethod.GET, new HttpEntity<>(httpHeaders), String.class);
+            String response = responseEntity.getBody();
             return ResponseEntity.ok(String.format(RESPONSE_STRING_FORMAT, response.trim()));
         } catch (HttpStatusCodeException ex) {
             logger.warn("Exception trying to get the response from preference service.", ex);
