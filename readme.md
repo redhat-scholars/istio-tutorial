@@ -439,13 +439,17 @@ Note: you may have to refresh the browser for the Prometheus graph to update. An
 
 ## Tracing
 
-Tracing requires a bit of work on the Java side.  Each microservice needs to pass on the headers which are used to enable the traces.
+Tracing in Istio requires to pass a set of headers to outbound requests. It can be 
+done manually or using OpenTracing framework instrumentations such as
+[opentracing-spring-cloud](https://github.com/opentracing-contrib/java-spring-cloud).
+Framework instrumentation automatically propagates tracing headers and also creates in-process
+spans to better understand what is happening inside the application.
 
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/java/src/main/java/com/redhat/developer/demos/customer/tracing/HttpHeaderForwarderHandlerInterceptor.java
-
-and
-
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/java/src/main/java/com/redhat/developer/demos/customer/CustomerApplication.java#L21-L31
+There are different ways to configure the tracer. The Customer Java service is using [tracerresolver](https://github.com/jaegertracing/jaeger-client-java/tree/master/jaeger-tracerresolver)
+which does not require any code changes and the whole configuration is defined in
+[environmental variables](https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/java/Dockerfile#L3-L7).
+Whereas the Preference Java service is instantiating the tracer bean directly in
+[Spring configuration class](https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/java/src/main/java/com/redhat/developer/demos/preference/PreferencesApplication.java#L28-L38).
 
 To open the Jaeger console, select customer from the list of services and Find Traces
 
