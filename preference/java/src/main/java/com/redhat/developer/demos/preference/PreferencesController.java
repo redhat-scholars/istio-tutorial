@@ -29,7 +29,6 @@ public class PreferencesController {
 
     @RequestMapping("/")
     public ResponseEntity<?> getPreferences(@RequestHeader("User-Agent") String userAgent) {
-        System.out.println(userAgent);
         try {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(HttpHeaders.USER_AGENT, userAgent);
