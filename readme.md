@@ -445,7 +445,7 @@ done manually or using OpenTracing framework instrumentations such as
 Framework instrumentation automatically propagates tracing headers and also creates in-process
 spans to better understand what is happening inside the application.
 
-There are different ways to configure the tracer. The Customer Java service is using [tracerresolver](https://github.com/opentracing-contrib/java-tracerresolver)
+There are different ways to configure the tracer. The Customer Java service is using [tracerresolver](https://github.com/jaegertracing/jaeger-client-java/tree/master/jaeger-tracerresolver)
 which does not require any code changes and the whole configuration is defined in
 [environmental variables](https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/java/Dockerfile#L3-L7).
 Whereas the Preference Java service is instantiating the tracer bean directly in
