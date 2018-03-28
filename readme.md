@@ -95,7 +95,7 @@ Minishift creation script
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
-export MINISHIFT_HOME=~/minishift_1.13.1
+export MINISHIFT_HOME=~/minishift_1.15.1
 export PATH=$MINISHIFT_HOME:$PATH
 
 minishift profile set tutorial
@@ -195,7 +195,7 @@ cd istio-tutorial
  Start deploying the microservice projects, starting with customer
 
 ```bash
-cd customer/java
+cd customer/java/springboot
 
 mvn clean package
 
@@ -225,9 +225,9 @@ BuildStatus: Clean
 Now let's deploy the customer pod with its sidecar
 
 ```bash
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 
-oc create -f src/main/kubernetes/Service.yml -n tutorial
+oc create -f ../../kubernetes/Service.yml -n tutorial
 ```
 
 Since customer is the forward most microservice (customer -> preference -> recommendation), let's add an OpenShift Route that exposes that endpoint.
@@ -269,13 +269,13 @@ org.springframework.web.client.ResourceAccessException: I/O error on GET request
 Back to the main istio-tutorial directory
 
 ```bash
-cd ...
+cd ../../..
 ```
 
 ## Deploy preference
 
 ```bash
-cd preference/java
+cd preference/java/springboot
 
 mvn clean package
 
@@ -283,9 +283,9 @@ docker build -t example/preference .
 
 docker images | grep preference
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 
-oc create -f src/main/kubernetes/Service.yml
+oc create -f ../../kubernetes/Service.yml
 
 oc get pods -w
 ```
@@ -318,7 +318,7 @@ org.springframework.web.client.ResourceAccessException: I/O error on GET request
 Back to the main istio-tutorial directory
 
 ```bash
-cd ...
+cd ../../..
 ```
 
 ## Deploy recommendation
@@ -326,7 +326,7 @@ cd ...
 Note: The tag "v1" at the end of the image name is important.  We will be creating a v2 version of recommendation later in this tutorial.   Having both a v1 and v2 version of the recommendation code will allow us to exercise some interesting aspects of Istio's capabilities.
 
 ```bash
-cd recommendation/java
+cd recommendation/java/vertx
 
 mvn clean package
 
@@ -334,9 +334,9 @@ docker build -t example/recommendation:v1 .
 
 docker images | grep recommendation
 
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 
-oc create -f src/main/kubernetes/Service.yml
+oc create -f ../../kubernetes/Service.yml
 
 oc get pods -w
 
@@ -358,7 +358,7 @@ stern recommendation -c recommendation
 Back to the main istio-tutorial directory
 
 ```bash
-cd ...
+cd ../../..
 ```
 
 ## Updating Redeploying Code
@@ -366,7 +366,7 @@ cd ...
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 
 ```bash
-cd {servicename}/java
+cd {servicename}/java/{springboot|vertx}
 
 vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controller|Verticle}.java
 ```
@@ -474,7 +474,7 @@ The "v2" tag during the docker build is significant.
 There is also a 2nd deployment.yml file to label things correctly
 
 ```bash
-cd recommendation/java
+cd recommendation/java/vertx
 
 mvn clean package
 
@@ -488,7 +488,7 @@ example/recommendation                  v1              f072978d9cf6        8 mi
 *Important:* We have a 2nd Deployment to manage the v2 version of recommendation.  
 
 ```bash
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment-v2.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
 
 oc get pods -w
 ```
@@ -550,7 +550,7 @@ oc scale --replicas=1 deployment/recommendation-v2
 and back to the main directory
 
 ```bash
-cd ...
+cd ../../..
 ```
 
 ## Changing Istio RouteRules
@@ -827,7 +827,7 @@ First, introduce some wait time in `recommendation v2` by uncommenting the line 
 Rebuild and redeploy
 
 ```bash
-cd recommendation/java
+cd recommendation/java/vertx
 
 mvn clean package
 
@@ -837,7 +837,7 @@ docker images | grep recommendation
 
 oc delete pod -l app=recommendation,version=v2 -n tutorial
 
-cd ...
+cd ../../..
 ```
 
 Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond
