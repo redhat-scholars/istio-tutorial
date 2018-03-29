@@ -1,26 +1,70 @@
+Preference
+==========
 
+This is the preference microservice, part of the Istio Tutorial demo. Even though this microservice is meant to be executed within a Container on a Pod on Kubernetes/OpenShift, it can still be executed on bare metal.
 
-1. mvn clean package
+This is a regular Spring Boot application, with OpenTracing and Jaeger dependencies to provide distributed tracing capabilities.
 
-2. docker build -t example/preference .
+Running on the local machine
+============================
 
-3. docker images | grep preference
+To run this service for development purposes on your own machine, execute:
 
-4. Add istioctl to your $PATH
+```bash
+mvn spring-boot:run \
+  -Drun.arguments="--spring.config.location=src/main/resources/application-local.properties"
+```
 
-istioctl version
+The `application-local.properties` contains sensible values for a setup where all services are running locally. It assumes that the `recommendation` service is running on the port `8080`. If that's not the case, adjust the property file accordingly.
 
-5. oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+Jaeger is not required to run this example, but if you prefer to have a local Jaeger instance running to see the traces, the easiest is to start via a Docker container:
 
-6. oc create -f src/main/kubernetes/Service.yml
+```bash
+docker run \
+  --rm \
+  -p5775:5775/udp \
+  -p6831:6831/udp \
+  -p6832:6832/udp \
+  -p16686:16686 \
+  -p14268:14268 \
+  jaegertracing/all-in-one:1.3
+```
 
-7. curl customer-tutorial.$(minishift ip).nip.io
+The default configuration for the Jaeger tracer samples only a small portion of the requests. To trace every incoming request and report the spans to the log file, export the following environment variables and start the application again:
 
-8. Check out your Grafana, Jaeger and Service Graph dashboards
+```bash
+export JAEGER_REPORTER_LOG_SPANS=true
+export JAEGER_SAMPLER_TYPE=const
+export JAEGER_SAMPLER_PARAM=1
+```
 
-Tips:
+To test, call http://localhost:8180/
 
-* To view logs when there is a sidecar
+```
+$ curl http://localhost:8180/
+preference => recommendation v1 from 'caju': 3
+```
 
-oc logs customer-3857234246-qtczv -c spring-boot
+And should generate a trace like this:
 
+![Trace View](trace.png)
+
+Running on OpenShift
+====================
+
+The following commands will build a Docker image containing the application, create a Kubernetes `Deployment` and a corresponding `Service`, so that other services can discover the pods via the service name.
+
+```bash
+mvn clean package
+docker build -t example/preference .
+docker images | grep preference
+oc apply -f ../../kubernetes/Deployment.yml
+oc apply -f ../../kubernetes/Service.yml
+oc expose service preference
+```
+
+The last command will expose the service to the outside world, allowing you to make an HTTP call directly from your host machine:
+
+```
+curl http://preference-tutorial.127.0.0.1.nip.io/
+```
