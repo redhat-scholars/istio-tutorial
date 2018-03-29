@@ -9,13 +9,17 @@ import io.vertx.ext.healthchecks.Status;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
-
 public class RecommendationVerticle extends AbstractVerticle {
 
     private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
 
-    private static final String HOSTNAME =
-        parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+    private static final String HOSTNAME = parseContainerIdFromHostname(
+        System.getenv().getOrDefault("HOSTNAME", "unknown")
+    );
+
+    private static final int LISTEN_ON = Integer.parseInt(
+        System.getenv().getOrDefault("LISTEN_ON", "8080")
+    );
 
     static String parseContainerIdFromHostname(String hostname) {
         return hostname.replaceAll("recommendation-v\\d+-", "");
@@ -46,7 +50,7 @@ public class RecommendationVerticle extends AbstractVerticle {
         hc.register("dummy-health-check", future -> future.complete(Status.OK()));
         router.get("/health").handler(hc);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(router::accept).listen(LISTEN_ON);
     }
 
     private void logging(RoutingContext ctx) {

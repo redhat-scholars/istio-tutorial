@@ -1,19 +1,16 @@
 = Java (Spring Boot and Vert.x) + Istio on Kubernetes/OpenShift
 
-== "If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly"
+== If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly
 
 There are three different and super simple microservices in this system and they are chained together in the following sequence:
 
-customer -&gt; preference -&gt; recommendation
+```
+customer → preference → recommendation
+```
 
-For now, they have a simple exception handling solution for dealing with
-a missing dependent service, it just returns the error message to the end-user.
+For now, they have a simple exception handling solution for dealing with a missing dependent service: it just returns the error message to the end-user.
 
-____
-
-There are two more simple apps that illustrate how Istio handles egress routes: egressgithub and egresshttpbin
-
-____
+There are two more simple apps that illustrate how Istio handles egress routes: link:egress/egressgithub[`egressgithub`] and link:egress/egresshttpbin[`egresshttpbin`]
 
 *Table of Contents*
 
@@ -74,29 +71,39 @@ ____
 
 You will need in this tutorial:
 
-* minishift (https://github.com/minishift/minishift/releases[https://github.com/minishift/minishift/releases])
-* docker (https://www.docker.com/docker-mac[https://www.docker.com/docker-mac])
-* kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl[https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl])
-* oc (eval $(minishift oc-env))
-* mvn (https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz])
-* stern (brew install stern)
+* `minishift` 
+** https://github.com/minishift/minishift/releases[Mac OS and Fedora]
+* docker
+** https://www.docker.com/docker-mac[Mac OS]
+** Fedora: `dnf install docker`
+* kubectl
+** https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl[Mac OS]
+** Fedora: `dnf install kubernetes-client`
+* `oc (eval $(minishift oc-env))`
+* Apache Maven
+** https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[Mac OS]
+** Fedora: `dnf install maven`
+* link:https://github.com/wercker/stern[stern]
+** Mac OS: `brew install stern`
+** Fedora: `sudo curl --output /usr/local/bin/stern -L https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64 && sudo chmod +x /usr/local/bin/stern`
 * istioctl (will be installed via the steps below)
-* curl, gunzip, tar are built-in to MacOS or part of your bash shell
-* git (everybody needs the git CLI)
+* `curl`, `gunzip`, `tar` 
+** Mac OS: built-in or part of your bash shell
+** Fedora: should also be installed already, but just in case... `dnf install curl gzip tar`
+* git
+** `dnf install git`
 
 == Setup minishift
 
-Assumes minishift, tested with minishift v1.15.1+a5c47dd
-
-Minishift creation script
+Assumes `minishift`, tested with minishift v1.15.1+a5c47dd
 
 [source,bash]
 ----
 #!/bin/bash
 
-#add the location of minishift execuatable to PATH
-#I also keep other handy tools like kubectl and kubetail.sh
-#in that directory
+# add the location of minishift execuatable to PATH
+# I also keep other handy tools like kubectl and kubetail.sh
+# in that directory
 
 export MINISHIFT_HOME=~/minishift_1.15.1
 export PATH=$MINISHIFT_HOME:$PATH
@@ -104,7 +111,7 @@ export PATH=$MINISHIFT_HOME:$PATH
 minishift profile set tutorial
 minishift config set memory 8GB
 minishift config set cpus 3
-minishift config set vm-driver virtualbox
+minishift config set vm-driver virtualbox ## or kvm, for Fedora
 minishift config set image-caching true
 minishift addon enable admin-user
 
@@ -120,15 +127,25 @@ eval $(minishift docker-env)
 oc login $(minishift ip):8443 -u admin -p admin
 ----
 
-Note: In this tutorial, you will often be polling the customer endpoint with curl, while simultaneously viewing logs via stern or kubetail.sh and issuing commands via oc and istioctl. Consider using three terminal windows.
+NOTE: In this tutorial, you will often be polling the customer endpoint with `curl`, while simultaneously viewing logs via `stern` or `kubetail.sh` and issuing commands via `oc` and `istioctl`. Consider using three terminal windows.
 
 == Istio installation script
 
 [source,bash]
 ----
 #!/bin/bash
+
+# Mac OS:
 curl -L https://github.com/istio/istio/releases/download/0.6.0/istio-0.6.0-osx.tar.gz | tar xz
+
+# Fedora:
+curl -L https://github.com/istio/istio/releases/download/0.6.0/istio-0.6.0-linux.tar.gz | tar xz
+
+# Both:
 cd istio-0.6.0
+export ISTIO_HOME=`pwd`
+export PATH=$ISTIO_HOME/bin:$PATH
+
 ----
 
 [source,bash]
@@ -154,7 +171,7 @@ Wait for Istio's components to be ready
 
 [source,bash]
 ----
-oc get pods
+$ oc get pods -w
 NAME                             READY     STATUS    RESTARTS   AGE
 grafana-3617079618-4qs2b         1/1       Running   0          4m
 istio-ca-1363003450-tfnjp        1/1       Running   0          4m
@@ -173,14 +190,11 @@ And if you need quick access to the OpenShift console
 minishift console
 ----
 
-Note: on your first launch of the OpenShift console via minishift, you will like receive a warning with
-"Your connection is not private", it depends on your browser type and settings. Simply select "Proceed to 192.168.99.100 (unsafe)" to bypass the warning.
-
-For minishift, with the admin-user addon, the user is "admin" and the password is "admin"
+NOTE: On your first launch of the OpenShift console via `minishift`, you will receive a warning like "Your connection is not private". For our demo, simply select "Proceed to 192.168.xx.xx (unsafe)" to bypass the warning. Both the username and the password are set to `admin`, thanks to the `admin-user` add-on.
 
 == Deploy customer
 
-Make sure you have are logged in
+Make sure you are logged in
 
 [source,bash]
 ----
@@ -208,25 +222,18 @@ Start deploying the microservice projects, starting with customer
 [source,bash]
 ----
 cd customer/java/springboot
-
 mvn clean package
-
 docker build -t example/customer .
-
 docker images | grep customer
 ----
 
-Note: Your very first docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the docker image, updating only the jar/app layer will be very fast.
+NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
 
-Add _istioctl_ to your $PATH, you downloaded it a few steps back. An example
+Make sure `istioctl` is in your `PATH`:
 
 [source,bash]
 ----
-export ISTIO_HOME=~/istio-0.6.0
-export PATH=$ISTIO_HOME/bin:$PATH
-
-istioctl version
-
+$ istioctl version
 Version: 0.6.0
 GitRevision: 2cb09cdf040a8573330a127947b11e5082619895
 User: root@a28f609ab931
@@ -240,22 +247,21 @@ Now let's deploy the customer pod with its sidecar
 [source,bash]
 ----
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-
 oc create -f ../../kubernetes/Service.yml -n tutorial
 ----
 
-Since customer is the forward most microservice (customer -&gt; preference -&gt; recommendation), let's add an OpenShift Route that exposes that endpoint.
+Since the `customer` service is the one our users will interact with, let's add an OpenShift Route that exposes that endpoint.
 
 [source,bash]
 ----
 oc expose service customer
-
 oc get route
-
 oc get pods -w
 ----
 
-Waiting for Ready 2/2, to break out of the waiting use "ctrl-c"
+IMPORTANT: If your pod fails with `ImagePullBackOff`, it's possible that your current terminal isn't using the proper Docker Environment. See link:#setup-environment[Setup environment].
+
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
 Then test the customer endpoint
 
@@ -264,9 +270,8 @@ Then test the customer endpoint
 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
-You should see the following error because preference and recommendation are not yet deployed.
+You should see the following error because the services `preference` and `recommendation` are not yet deployed.
 
-[source,bash]
 ----
 customer => I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
 ----
@@ -297,29 +302,24 @@ cd ../../..
 [source,bash]
 ----
 cd preference/java/springboot
-
 mvn clean package
-
 docker build -t example/preference .
-
 docker images | grep preference
-
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-
 oc create -f ../../kubernetes/Service.yml
-
 oc get pods -w
 ----
 
-Wait for the Ready 2/2
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
 [source,bash]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
-It will respond with an error since recommendation is not yet deployed.
-Note: We could make this a bit more resilent in a future iteration of this tutorial
+It will respond with an error since the service `recommendation` is not yet deployed.
+
+NOTE: We could make this a bit more resilent in a future iteration of this tutorial
 
 [source,bash]
 ----
@@ -349,42 +349,41 @@ cd ../../..
 
 == Deploy recommendation
 
-Note: The tag "v1" at the end of the image name is important. We will be creating a v2 version of recommendation later in this tutorial. Having both a v1 and v2 version of the recommendation code will allow us to exercise some interesting aspects of Istio's capabilities.
+IMPORTANT: The tag `v1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
 
 [source,bash]
 ----
 cd recommendation/java/vertx
-
 mvn clean package
-
 docker build -t example/recommendation:v1 .
-
 docker images | grep recommendation
-
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-
 oc create -f ../../kubernetes/Service.yml
-
 oc get pods -w
+----
 
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
+
+[source,bash]
+----
 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
-it returns
+it should now return
 
 [source,bash]
 ----
 customer => preference => recommendation v1 from '99634814-sf4cl': 1
 ----
 
-and you can monitor the recommendation logs with
+and you can monitor the `recommendation` logs with
 
 [source,bash]
 ----
 stern recommendation -c recommendation
 ----
 
-Back to the main istio-tutorial directory
+Back to the main `istio-tutorial` directory
 
 [source,bash]
 ----
@@ -402,13 +401,12 @@ cd {servicename}/java/{springboot|vertx}
 vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controller|Verticle}.java
 ----
 
-Make your edits and esc-w-q
+Make your changes, save it and then:
 
 [source,bash]
 ----
 mvn clean package
 docker build -t example/{servicename} .
-
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
 
@@ -459,10 +457,10 @@ In the Prometheus dashboard, add the following
 
 [source,bash]
 ----
-round(increase(istio_recommendation_request_count{destination="recommendation.tutorial.svc.cluster.local" }[60m]))
+round(increase(istio_request_count{destination_service="recommendation.tutorial.svc.cluster.local" }[60m]))
 ----
 
-and select Execute
+and select `Execute`
 
 image:readme_images/prometheus_custom_metric.png[alt text]
 
@@ -470,48 +468,46 @@ Then run several requests through the system
 
 [source,bash]
 ----
+# Mac OS: run the following command a few times
 curl customer-tutorial.$(minishift ip).nip.io
+
+# Fedora:
+watch -n 0.5 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
-Note: you may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
+NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
 
 == Tracing
 
-Tracing in Istio requires to pass a set of headers to outbound requests. It can be
-done manually or using OpenTracing framework instrumentations such as
-https://github.com/opentracing-contrib/java-spring-cloud[opentracing-spring-cloud].
-Framework instrumentation automatically propagates tracing headers and also creates in-process
-spans to better understand what is happening inside the application.
+Distributed Tracing involves propagating the tracing context from service to service, usually done by sending certain incoming HTTP headers downstream to outbound requests. For services embedding a http://opentracing.io/[OpenTracing] framework instrumentations such as https://github.com/opentracing-contrib/java-spring-cloud[opentracing-spring-cloud], this might be transparent. For services that are not embedding OpenTracing libraries, this context propagation needs to be done manually.
 
-There are different ways to configure the tracer. The Customer Java service is using https://github.com/jaegertracing/jaeger-client-java/tree/master/jaeger-tracerresolver[tracerresolver]
-which does not require any code changes and the whole configuration is defined in
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/java/Dockerfile#L3-L7[environmental variables].
-Whereas the Preference Java service is instantiating the tracer bean directly in
-https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/java/src/main/java/com/redhat/developer/demos/preference/PreferencesApplication.java#L28-L38[Spring configuration class].
+As OpenTracing is "just" an instrumentation library, a concrete tracer is required in order to actually capture the tracing data and report it to a remote server. Our `customer` and `preference` services ship with http://jaegertracing.io/[Jaeger] as the concrete tracer. the Istio platform automatically sends collected tracing data to Jaeger, so that we are able to see a trace involving all three services, even if our `recommendation` service is not aware of OpenTracing or Jaeger at all.
 
-To open the Jaeger console, select customer from the list of services and Find Traces
+Our `customer` and `preference` services are using the https://github.com/jaegertracing/jaeger-client-java/tree/master/jaeger-tracerresolver[`TracerResolver`] facility from OpenTracing, so that the concrete tracer can be loaded automatically without our code having a hard dependency on Jaeger. Given that the Jaeger tracer can be configured via environment variables, we don't need to do anything in order to get a properly configured Jaeger tracer ready and registered with OpenTracing. That said, there are cases where it's appropriate to manually configure a tracer. Refer to the Jaeger documentation for more information on how to do that.
+
+Let's open the Jaeger console, select `customer` from the list of services and click `Find Traces`
 
 [source,bash]
 ----
 minishift openshift service jaeger-query --in-browser
 ----
 
-image:readme_images/jaegerUI.png[alt text]
+image:readme_images/jaegerUI.png[Trace as seen in Jaeger]
 
 == Istio RouteRule Changes
 
 === recommendation:v2
 
-We can experiment with Istio routing rules by making a change to RecommendationVerticle.java like the following and creating a "v2" docker image.
+We can experiment with Istio routing rules by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
 
 [source,java]
 ----
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
 ----
 
-The "v2" tag during the docker build is significant.
+The "v2" tag during the Docker build is significant.
 
-There is also a 2nd deployment.yml file to label things correctly
+There is also a second `deployment.yml` file to label things correctly
 
 [source,bash]
 ----

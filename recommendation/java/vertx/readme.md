@@ -1,25 +1,63 @@
+Recommendation
+==============
 
-1. mvn clean package
+This is the recommendation microservice, part of the Istio Tutorial demo. Even though this microservice is meant to be executed within a Container on a Pod on Kubernetes/OpenShift, it can still be executed on bare metal.
 
-2. docker build -t example/recommendation:v1 .
+This is a Vert.x application, composed of a single Verticle and a few handlers. It can be told to misbehave.
 
-3. docker images | grep recommendation
+Running on the local machine
+============================
 
-4. Add istioctl to your $PATH
+To run this service for development purposes on your own machine, execute:
 
-istioctl version
+```bash
+mvn vertx:run
+```
 
-5. oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n tutorial
+If you already have a service running on port `8080`, you can tell which port to use by setting the environment variable
+`LISTEN_ON`
 
-6. oc create -f src/main/kubernetes/Service.yml
+```bash
+LISTEN_ON=xxxx mvn vertx:run
+```
 
-7. curl customer-tutorial.$(minishift ip).nip.io
+To test, call http://localhost:8080/
 
-8. Check out your Grafana, Jaeger and Service Graph dashboards
+```
+$ curl http://localhost:8080/
+recommendation v1 from 'caju': 3
+```
 
-Tips:
+A successful output will look like: `recommendation v1 from 'YOUR_HOSTNAME': 1`
 
-* To view logs when there is a sidecar
+To tell the service to misbehave, call the `/misbehave` endpoint:
 
-oc logs customer-3857234246-qtczv -c spring-boot
+```
+curl http://localhost:8080/misbehave
+```
 
+Subsequent calls will respond with an HTTP Status Code 503. To get the service to return 200 again, run:
+
+```
+curl http://localhost:8080/behave
+```
+
+Running on OpenShift
+====================
+
+The following commands will build a Docker image containing the application, create a Kubernetes `Deployment` and a corresponding `Service`, so that other services can discover the pods via the service name.
+
+```bash
+mvn clean package
+docker build -t example/recommendation:v1 .
+docker images | grep recommendation
+oc apply -f ../../kubernetes/Deployment.yml
+oc apply -f ../../kubernetes/Service.yml
+oc expose service recommendation
+```
+
+The last command will expose the service to the outside world, allowing you to make an HTTP call directly from your host machine:
+
+```
+curl http://recommendation-tutorial.127.0.0.1.nip.io/
+```
