@@ -19,6 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
         <java.version>1.8</java.version>
         <skipTests>true</skipTests>
     </properties>
