@@ -89,15 +89,14 @@ You will need in this tutorial:
 Assumes minishift, tested with minishift v1.15.1+a5c47dd
 
 Minishift creation script
-```bash
 
-= !/bin/bash
+[source,bash]
+----
+#!/bin/bash
 
-= add the location of minishift execuatable to PATH
-
-= I also keep other handy tools like kubectl and kubetail.sh
-
-= in that directory
+#add the location of minishift execuatable to PATH
+#I also keep other handy tools like kubectl and kubetail.sh
+#in that directory
 
 export MINISHIFT_HOME=~/minishift_1.15.1
 export PATH=$MINISHIFT_HOME:$PATH
@@ -110,7 +109,7 @@ minishift config set image-caching true
 minishift addon enable admin-user
 
 minishift start
-```
+----
 
 == Setup environment
 
