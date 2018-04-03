@@ -445,7 +445,7 @@ Istio also allows you to specify custom metrics which can be seen inside of the 
 
 [source,bash]
 ----
-minishift openshift service prometheus --in-browser
+open "$(minishift openshift service prometheus -u)/graph?g0.range_input=5m&g0.expr=&g0.tab=0"
 ----
 
 Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then
