@@ -72,7 +72,8 @@ ____
 
 == Prerequisite CLI tools
 
-You will need in this tutorial
+You will need in this tutorial:
+
 * minishift (https://github.com/minishift/minishift/releases[https://github.com/minishift/minishift/releases])
 * docker (https://www.docker.com/docker-mac[https://www.docker.com/docker-mac])
 * kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl[https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl])
@@ -85,7 +86,7 @@ You will need in this tutorial
 
 == Setup minishift
 
-Assumes minishift, tested with minishift v1.12.0+daa0943
+Assumes minishift, tested with minishift v1.15.1+a5c47dd
 
 Minishift creation script
 ```bash
