@@ -105,10 +105,9 @@ Assumes `minishift`, tested with minishift v1.15.1+a5c47dd
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
-export MINISHIFT_HOME=~/minishift_1.15.1
 export PATH=$MINISHIFT_HOME:$PATH
 
-minishift profile set tutorial
+minishift profile set istio-tutorial
 minishift config set memory 8GB
 minishift config set cpus 3
 minishift config set vm-driver virtualbox ## or kvm, for Fedora
