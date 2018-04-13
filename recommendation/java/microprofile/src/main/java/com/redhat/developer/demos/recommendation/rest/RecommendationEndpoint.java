@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class RecommendationEndpoint {
 
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
+    private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d";
 
     private static final String HOSTNAME = parseContainerIdFromHostname(
             System.getenv().getOrDefault("HOSTNAME", "unknown")
@@ -46,6 +46,7 @@ public class RecommendationEndpoint {
     @GET
     @Produces("text/plain")
     public Response getRecommendation(@HeaderParam("user-agent") String userAgent) throws InterruptedException {
+        logger.info(String.format("recommendation request from %s: %d", HOSTNAME, count));
         if (misbehave) {
             count = 0;
             logger.info(String.format("Misbehaving %d", count));
