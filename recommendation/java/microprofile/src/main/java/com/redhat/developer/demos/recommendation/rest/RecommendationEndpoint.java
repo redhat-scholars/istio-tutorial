@@ -1,4 +1,4 @@
-package com.redhat.developer.demos.preference.rest;
+package com.redhat.developer.demos.recommendation.rest;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
