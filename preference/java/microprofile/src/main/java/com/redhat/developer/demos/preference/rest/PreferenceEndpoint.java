@@ -37,7 +37,9 @@ public class PreferenceEndpoint {
                 logger.warn("Non HTTP 20x trying to get the response from preference service: " + res.getStatus());
                 return Response
                         .status(Response.Status.SERVICE_UNAVAILABLE)
-                        .entity(String.format("Error: %d - %s", res.getStatus(), res.readEntity(String.class)))
+                        .entity(String.format(RESPONSE_STRING_FORMAT,
+                                String.format("Error: %d - %s", res.getStatus(), res.readEntity(String.class)))
+                        )
                         .build();
             }
         } catch (ProcessingException ex) {
