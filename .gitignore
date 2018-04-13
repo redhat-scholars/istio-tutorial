@@ -1,5 +1,7 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
+audit.log
+
 
 ### STS ###
 .apt_generated
