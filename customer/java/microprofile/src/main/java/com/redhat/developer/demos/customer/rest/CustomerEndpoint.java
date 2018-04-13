@@ -34,10 +34,10 @@ public class CustomerEndpoint {
             if (res.getStatus() == Response.Status.OK.getStatusCode()){
                 return Response.ok(String.format(RESPONSE_STRING_FORMAT, res.readEntity(String.class))).build();
             }else{
-                logger.warn("Non HTTP 20x trying to get the response from preference service.");
+                logger.warn("Non HTTP 20x trying to get the response from preference service: " + res.getStatus());
                 return Response
                         .status(Response.Status.SERVICE_UNAVAILABLE)
-                        .entity(res.readEntity(String.class))
+                        .entity(String.format("Error: %d - %s", res.getStatus(), res.readEntity(String.class)))
                         .build();
             }
         } catch (ProcessingException ex) {
