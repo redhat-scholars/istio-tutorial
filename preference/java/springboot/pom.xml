@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.uber.jaeger</groupId>
             <artifactId>jaeger-core</artifactId>
-            <version>0.25.0</version>
+            <version>0.26.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

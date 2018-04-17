@@ -11,7 +11,8 @@ Running on the local machine
 To run this service for development purposes on your own machine, execute:
 
 ```bash
-mvn spring-boot:run \
+JAEGER_SERVICE_NAME=preference mvn \
+  spring-boot:run \
   -Drun.arguments="--spring.config.location=src/main/resources/application-local.properties"
 ```
 

@@ -20,7 +20,7 @@ public class CustomerController {
 
     private final RestTemplate restTemplate;
 
-    @Value("${preferences.api.url:http://preferences:8080}")
+    @Value("${preferences.api.url:http://preference:8080}")
     private String remoteURL;
 
     public CustomerController(RestTemplate restTemplate) {
