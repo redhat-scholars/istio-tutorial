@@ -21,7 +21,7 @@ public class CustomerEndpoint {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    @ConfigProperty(name = "preferences.api.url", defaultValue = "http://preferences:8080")
+    @ConfigProperty(name = "preferences.api.url", defaultValue = "http://preference:8080")
     private String remoteURL;
 
 
