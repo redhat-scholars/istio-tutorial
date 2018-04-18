@@ -68,11 +68,9 @@
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>microprofile-config</artifactId>
         </dependency>
-        <!-- Tracing -->
         <dependency>
-            <groupId>com.uber.jaeger</groupId>
-            <artifactId>jaeger-tracerresolver</artifactId>
-            <version>0.25.0</version>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>jaeger</artifactId>
         </dependency>
     </dependencies>
 </project>
