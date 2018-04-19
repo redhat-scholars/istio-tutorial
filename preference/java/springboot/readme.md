@@ -11,7 +11,8 @@ Running on the local machine
 To run this service for development purposes on your own machine, execute:
 
 ```bash
-mvn spring-boot:run \
+JAEGER_SERVICE_NAME=preference mvn \
+spring-boot:run \
   -Drun.arguments="--spring.config.location=src/main/resources/application-local.properties"
 ```
 
@@ -40,7 +41,7 @@ export JAEGER_SAMPLER_PARAM=1
 
 To test, call http://localhost:8180/
 
-```
+```bash
 $ curl http://localhost:8180/
 preference => recommendation v1 from 'caju': 3
 ```
@@ -65,6 +66,6 @@ oc expose service preference
 
 The last command will expose the service to the outside world, allowing you to make an HTTP call directly from your host machine:
 
-```
+```bash
 curl http://preference-tutorial.127.0.0.1.nip.io/
 ```
