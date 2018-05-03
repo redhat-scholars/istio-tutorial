@@ -19,9 +19,14 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * link:#setup-environment[Setup environment]
 * link:#istio-installation-script[Istio installation script]
 * link:#deploy-customer[Deploy customer]
-** link:
+** link:#customer-build-using-docker-daemon[Customer build using Docker daemon]
+** link:#customer-build-using-openshift-s2i-strategy[Customer build using OpenShift S2I strategy]
 * link:#deploy-preference[Deploy preference]
+** link:#preference-build-using-docker-daemon[Preference build using Docker daemon]
+** link:#preference-build-using-openshift-s2i-strategy[Preference build using OpenShift S2I strategy]
 * link:#deploy-recommendation[Deploy recommendation]
+** link:#preference-build-using-openshift-s2i-strategy[Recommendation build using Docker daemon]
+** link:#recommendation-build-using-openshift-s2i-strategy[Recommendation build using OpenShift S2I strategy]
 * link:#updating-redeploying-code[Updating Redeploying Code]
 * link:#monitoring[Monitoring]
 * link:#custom-metrics[Custom Metrics]
@@ -230,7 +235,7 @@ GolangVersion: go1.9
 BuildStatus: Clean
 ----
 
-=== Customer build using Docker Daemon 
+=== Customer build using Docker daemon 
 
 NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
 
@@ -381,7 +386,7 @@ cd ../../..
 
 IMPORTANT: The tag `v1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
 
-=== Recommendation build using Docker Daemon
+=== Recommendation build using Docker daemon
 
 [source,bash]
 ----
@@ -553,7 +558,7 @@ The "v2" tag during the Docker build is significant.
 
 There is also a second `deployment.yml` file to label things correctly
 
-=== Docker build (if you have access to Docker Daemon)
+=== Docker build (if you have access to Docker daemon)
 
 [source,bash]
 ----
@@ -576,7 +581,7 @@ oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tut
 oc get pods -w
 ----
 
-=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+=== OpenShift S2I strategy (if you DON'T have access to Docker daemon)
 
 [source, bash]
 ----
