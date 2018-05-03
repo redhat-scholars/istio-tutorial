@@ -19,6 +19,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 * link:#setup-environment[Setup environment]
 * link:#istio-installation-script[Istio installation script]
 * link:#deploy-customer[Deploy customer]
+** link:
 * link:#deploy-preference[Deploy preference]
 * link:#deploy-recommendation[Deploy recommendation]
 * link:#updating-redeploying-code[Updating Redeploying Code]
@@ -229,7 +230,7 @@ GolangVersion: go1.9
 BuildStatus: Clean
 ----
 
-=== Docker build (if you have access to Docker Daemon)
+=== Customer build using Docker Daemon 
 
 NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
 
@@ -249,7 +250,7 @@ oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutori
 oc create -f ../../kubernetes/Service.yml -n tutorial
 ----
 
-=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+=== Customer build using OpenShift S2I strategy
 
 [source, bash]
 ----
@@ -310,7 +311,7 @@ cd ../../..
 
 == Deploy preference
 
-=== Docker build (if you have access to Docker Daemon)
+=== Preference build using Docker daemon
 
 [source,bash]
 ----
@@ -322,7 +323,7 @@ oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutori
 oc create -f ../../kubernetes/Service.yml
 ----
 
-=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+=== Preference build using OpenShift S2I strategy
 
 [source, bash]
 ----
@@ -380,7 +381,7 @@ cd ../../..
 
 IMPORTANT: The tag `v1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
 
-=== Docker build (if you have access to Docker Daemon)
+=== Recommendation build using Docker Daemon
 
 [source,bash]
 ----
@@ -393,7 +394,7 @@ oc create -f ../../kubernetes/Service.yml
 oc get pods -w
 ----
 
-=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+=== Recommendation build using OpenShift S2I strategy
 
 [source, bash]
 ----
