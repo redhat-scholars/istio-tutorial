@@ -216,16 +216,6 @@ cd istio-tutorial
 
 Start deploying the microservice projects, starting with customer
 
-[source,bash]
-----
-cd customer/java/springboot
-mvn clean package
-docker build -t example/customer .
-docker images | grep customer
-----
-
-NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
-
 Make sure `istioctl` is in your `PATH`:
 
 [source,bash]
@@ -239,6 +229,18 @@ GolangVersion: go1.9
 BuildStatus: Clean
 ----
 
+=== Docker build (if you have access to Docker Daemon)
+
+NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
+
+[source,bash]
+----
+cd customer/java/springboot
+mvn clean package
+docker build -t example/customer .
+docker images | grep customer
+----
+
 Now let's deploy the customer pod with its sidecar
 
 [source,bash]
@@ -246,6 +248,18 @@ Now let's deploy the customer pod with its sidecar
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 oc create -f ../../kubernetes/Service.yml -n tutorial
 ----
+
+=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+
+[source, bash]
+----
+oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
+oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
+oc delete svc/customer ; oc expose dc/customer --port=8080
+oc logs bc/customer -f
+----
+
+== Expose customer
 
 Since the `customer` service is the one our users will interact with, let's add an OpenShift Route that exposes that endpoint.
 
@@ -296,6 +310,8 @@ cd ../../..
 
 == Deploy preference
 
+=== Docker build (if you have access to Docker Daemon)
+
 [source,bash]
 ----
 cd preference/java/springboot
@@ -304,6 +320,22 @@ docker build -t example/preference .
 docker images | grep preference
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 oc create -f ../../kubernetes/Service.yml
+----
+
+=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+
+[source, bash]
+----
+oc new-app --name=preference --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
+oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
+oc delete svc/preference ; oc expose dc/preference --port=8080
+oc logs bc/preference -f
+----
+
+== Wait preference to be deployed
+
+[source, bash]
+----
 oc get pods -w
 ----
 
@@ -348,6 +380,8 @@ cd ../../..
 
 IMPORTANT: The tag `v1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
 
+=== Docker build (if you have access to Docker Daemon)
+
 [source,bash]
 ----
 cd recommendation/java/vertx
@@ -358,6 +392,18 @@ oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutori
 oc create -f ../../kubernetes/Service.yml
 oc get pods -w
 ----
+
+=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+
+[source, bash]
+----
+oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
+oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
+oc delete svc/recommendation-v1 ; oc create -f recommendation/kubernetes/Service.yml
+oc logs bc/recommendation-v1 -f
+----
+
+== Wait recommendation to be deployed
 
 Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
@@ -506,17 +552,18 @@ The "v2" tag during the Docker build is significant.
 
 There is also a second `deployment.yml` file to label things correctly
 
+=== Docker build (if you have access to Docker Daemon)
+
 [source,bash]
 ----
 cd recommendation/java/vertx
-
 mvn clean package
 
 docker build -t example/recommendation:v2 .
 
 docker images | grep recommendation
 example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendation                  v1              f072978d9cf6        8 minutes ago      438MB
+example/recommendation                  v1                  f072978d9cf6        8 minutes ago      438MB
 ----
 
 _Important:_ We have a 2nd Deployment to manage the v2 version of recommendation. 
@@ -527,6 +574,20 @@ oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tut
 
 oc get pods -w
 ----
+
+=== OpenShift S2I strategy (if you DON'T have access to Docker Daemon)
+
+[source, bash]
+----
+mvn clean package -f recommendation/java/vertx
+oc new-app -l app=recommendation,version=v2 --name=recommendation-v2 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v2.yml
+oc apply -f <(istioctl kube-inject -f recommendation-v2.yml) -n tutorial
+oc cancel-build bc/recommendation-v2
+oc delete svc/recommendation-v2
+oc start-build recommendation-v2 --from-dir=. --follow
+----
+
+== Wait for v2 to be deployed
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
