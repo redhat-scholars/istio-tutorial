@@ -1323,6 +1323,15 @@ customer => PREFERENCE => recommendation v2 from 'virtualized': 2
 Now all requests that are from preference v2 are redirected to virtualized recommendation service.
 In this way when you deploy a new service, you can mirror the traffic without worrying about side-effects on other services, since the requests are redirected to a virtualized instance instead of a production one.
 
+==== Clean up
+
+[source,bash]
+----
+istioctl delete routerule recommendation-virtualized -n tutorial
+oc delete all  -l app=preference,version=v2
+oc delete all  -l app=recommendation,version=virtualized
+----
+
 == Access Control
 
 ==== Whitelist
