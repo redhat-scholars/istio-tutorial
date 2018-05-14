@@ -1,0 +1,50 @@
+{
+	"data": {
+		"pairs": [
+			{
+				"request": {
+					"path": {
+						"exactMatch": "/"
+					},
+					"method": {
+						"exactMatch": "GET"
+					},
+					"destination": {
+						"exactMatch": "localhost:8080"
+					},
+					"scheme": {
+						"exactMatch": "http"
+					},
+					"query": {
+						"exactMatch": ""
+					},
+					"body": {
+						"exactMatch": ""
+					}
+				},
+				"response": {
+					"status": 200,
+					"body": "recommendation v2 from 'virtualized': 2\n",
+					"encodedBody": false,
+					"headers": {
+						"Content-Length": [
+							"40"
+						],
+						"Hoverfly": [
+							"Was-Here"
+						]
+					},
+					"templated": false
+				}
+			}
+		],
+		"globalActions": {
+			"delays": []
+		}
+	},
+	"meta": {
+		"schemaVersion": "v4",
+		"hoverflyVersion": "v0.16.0",
+		"timeExported": "2018-05-14T10:20:40+02:00"
+	}
+}
