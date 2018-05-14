@@ -1241,10 +1241,10 @@ The default Kubernetes/OpenShift behavior is to round-robin load-balance across 
 So after running several times you'll get some combinations of:
 
 ----
-customer => preference => recommendation v1 from ''
-customer => PREFERENCE => recommendation v1 from ''
-customer => preference => recommendation v2 from ''
-customer => PREFERENCE => recommendation v2 from ''
+customer => preference => recommendation v1 from '2409176097-kcjsr': 3
+customer => PREFERENCE => recommendation v1 from '2409176097-kcjsr': 4
+customer => preference => recommendation v2 from '1275713543-2bs5k': 3
+customer => PREFERENCE => recommendation v2 from '1275713543-2bs5k': 3
 ---- 
 
 === Adding Service Virtualization 
@@ -1292,14 +1292,14 @@ The default Kubernetes/OpenShift behavior is to round-robin load-balance across 
 So after running several times you'll get some combinations of:
 
 ----
-customer => preference => recommendation v1 from ''
-customer => PREFERENCE => recommendation v1 from ''
-customer => preference => recommendation v1 from 'virtualized'
-customer => PREFERENCE => recommendation v1 from 'virtualized'
-customer => preference => recommendation v2 from ''
-customer => PREFERENCE => recommendation v2 from ''
-customer => preference => recommendation v2 from 'virtualized'
-customer => PREFERENCE => recommendation v2 from 'virtualized'
+customer => preference => recommendation v1 from '2409176097-kcjsr': 3
+customer => PREFERENCE => recommendation v1 from '2409176097-kcjsr': 2
+customer => preference => recommendation v1 from 'virtualized': 2
+customer => PREFERENCE => recommendation v1 from 'virtualized': 2
+customer => preference => recommendation v2 from '1275713543-2bs5k'
+customer => PREFERENCE => recommendation v2 from '1275713543-2bs5k'
+customer => preference => recommendation v2 from 'virtualized': 2
+customer => PREFERENCE => recommendation v2 from 'virtualized': 2
 ---- 
 
 Notice that now the `v2` reaches all recommendation services.
@@ -1313,14 +1313,11 @@ istioctl create -f istiofiles/route-rule-recommendation-virtualized.yml -n tutor
 Then do again some requests and you'll get something like:
 
 ----
-customer => preference => recommendation v1 from ''
-customer => PREFERENCE => recommendation v1 from 'virtualized'
-customer => preference => recommendation v1 from ''
-customer => PREFERENCE => recommendation v1 from 'virtualized'
-customer => preference => recommendation v2 from ''
-customer => PREFERENCE => recommendation v2 from 'virtualized'
-customer => preference => recommendation v2 from ''
-customer => PREFERENCE => recommendation v2 from 'virtualized'
+customer => preference => recommendation v1 from '2409176097-kcjsr': 5
+customer => PREFERENCE => recommendation v1 from 'virtualized': 2
+customer => preference => recommendation v2 from '1275713543-2bs5k': 6
+customer => PREFERENCE => recommendation v2 from 'virtualized': 2
+
 ----
 
 Now all requests that are from preference v2 are redirected to virtualized recommendation service.
