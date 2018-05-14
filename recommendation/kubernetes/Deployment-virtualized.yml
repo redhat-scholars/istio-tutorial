@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: recommendation
+    version: virtualized
+  name: recommendation-virtualized
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation
+      version: virtualized
+  template:
+    metadata:
+      labels:
+        app: recommendation
+        version: virtualized
+    spec:
+      containers:
+      - env:
+        image: example/recommendation:virtualized
+        args: ["-import=/go/bin/simulation.json"]
+        imagePullPolicy: IfNotPresent
+        name: recommendation
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        securityContext:
+          privileged: false
