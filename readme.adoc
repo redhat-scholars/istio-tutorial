@@ -50,6 +50,7 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 ** link:#clean-up[Clean up]
 * link:#mirroring-traffic-dark-launch[Mirroring Traffic (Dark Launch)]
 ** link:#clean-up[Clean up]
+* link:#service-virtualization-and-istio[Service Virtualization and Istio]
 * link:#access-control[Access Control]
 ** link:#whitelist[Whitelist]
 ** link:#blacklist[Blacklist]
@@ -1158,6 +1159,13 @@ For this concrete case, virtualized recommendation service will return `recommen
 
 === Preference:v2
 
+Move to preference directory:
+
+[source, bash]
+----
+cd preference/java/springboot
+----
+
 Change `PreferencesController.java` like the following and creating a "v2" docker image.
 
 [source,java]
@@ -1173,7 +1181,6 @@ There is also a second `deployment.yml` file to label things correctly
 
 [source, bash]
 ----
-cd preference/java/springboot
 mvn clean package
 
 docker build -t example/preference:v2 .
@@ -1186,9 +1193,9 @@ IMPORTANT: We have a 2nd Deployment to manage the v2 version of preference.
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
 
 oc get pods -w
-----
 
-`cd ../../..`
+cd ../../..
+----
 
 === OpenShift S2I strategy (if you DON’T have access to Docker daemon)
 
@@ -1247,7 +1254,7 @@ customer => preference => recommendation v2 from '1275713543-2bs5k': 3
 customer => PREFERENCE => recommendation v2 from '1275713543-2bs5k': 3
 ---- 
 
-=== Adding Service Virtualization 
+=== Adding Service Virtualization
 
 We'll create a Docker image with Hoverfly (Service Virtualization tool) with some canned requests/answers for recommendation service.
 
@@ -1259,7 +1266,7 @@ docker build -t example/recommendation:virtualized .
 docker images | grep recommendation
 
 oc apply -f <(istioctl kube-inject -f ../kubernetes/Deployment-virtualized.yml) -n tutorial
-oc get pods
+oc get pods -w
 
 cd ../..
 ----
