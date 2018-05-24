@@ -1,4 +1,4 @@
-= Java (Spring Boot and Vert.x) + Istio on Kubernetes/OpenShift
+= Java (Spring Boot, Vert.x and Microprofile) + Istio on Kubernetes/OpenShift
 
 == If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly
 
