@@ -3,25 +3,25 @@ kind: Deployment
 metadata:
   labels:
     app: preference
-    version: v1
-  name: preference-v1
+    version: v2
+  name: preference-v2
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: preference
-      version: v1
+      version: v2
   template:
     metadata:
       labels:
         app: preference
-        version: v1
+        version: v2
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
           value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
-        image: example/preference:v1
+        image: example/preference:v2
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
