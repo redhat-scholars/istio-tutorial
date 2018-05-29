@@ -1286,8 +1286,6 @@ oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 
 == Rate Limiting
 
-*Note*: currently not working
-
 Here we will limit the number of concurrent requests into recommendation v2
 
 Now apply the rate limit handler
