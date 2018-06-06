@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>customer</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>customer</PackageId>
+    <RuntimeIdentifiers>rhel.7-x64</RuntimeIdentifiers>
+    <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
+    <AssetTargetFallback>$(PackageTargetFallback);portable-net45+wp80+win8+wpa81+dnxcore50</AssetTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="standalone.sh" Condition="'$(RuntimeIdentifier)' == 'rhel.7-x64' and '$(SelfContained)' == 'false'" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
