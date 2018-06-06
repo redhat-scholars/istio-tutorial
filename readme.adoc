@@ -117,6 +117,7 @@ minishift config set cpus 3
 minishift config set vm-driver virtualbox ## or kvm, for Fedora
 minishift config set image-caching true
 minishift addon enable admin-user
+minishift addon enable anyuid
 
 minishift start
 ----
@@ -139,13 +140,13 @@ NOTE: In this tutorial, you will often be polling the customer endpoint with `cu
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/0.6.0/istio-0.6.0-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-osx.tar.gz | tar xz
 
 # Fedora:
-curl -L https://github.com/istio/istio/releases/download/0.6.0/istio-0.6.0-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-linux.tar.gz | tar xz
 
 # Both:
-cd istio-0.6.0
+cd istio-0.8.0
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 
@@ -154,16 +155,10 @@ export PATH=$ISTIO_HOME/bin:$PATH
 [source,bash]
 ----
 oc login $(minishift ip):8443 -u admin -p admin
-oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
-oc adm policy add-scc-to-user anyuid -z default -n istio-system
-oc adm policy add-scc-to-user anyuid -z grafana -n istio-system
-oc adm policy add-scc-to-user anyuid -z prometheus -n istio-system
-oc create -f install/kubernetes/istio.yaml
-oc project istio-system
-oc expose svc istio-ingress
-oc apply -f install/kubernetes/addons/prometheus.yaml
-oc apply -f install/kubernetes/addons/grafana.yaml
-oc apply -f install/kubernetes/addons/servicegraph.yaml
+
+oc new-project istio-system
+oc create -f http:...../install/istio.yaml
+oc expose svc istio-ingressgateway
 oc expose svc servicegraph
 oc expose svc grafana
 oc expose svc prometheus
@@ -175,15 +170,22 @@ Wait for Istio's components to be ready
 [source,bash]
 ----
 $ oc get pods -w
-NAME                             READY     STATUS    RESTARTS   AGE
-grafana-3617079618-4qs2b         1/1       Running   0          4m
-istio-ca-1363003450-tfnjp        1/1       Running   0          4m
-istio-ingress-1005666339-vrjln   1/1       Running   0          4m
-istio-mixer-465004155-zn78n      3/3       Running   0          5m
-istio-pilot-1861292947-25hnm     2/2       Running   0          4m
-jaeger-210917857-2w24f           1/1       Running   0          4m
-prometheus-168775884-dr5dm       1/1       Running   0          4m
-servicegraph-1100735962-tdh78    1/1       Running   0          4m
+
+NAME                                        READY     STATUS      RESTARTS   AGE
+grafana-cd99bf478-42c6h                     1/1       Running     0          3m
+istio-citadel-ff5696f6f-qm9tq               1/1       Running     0          3m
+istio-cleanup-old-ca-dmsrv                  0/1       Completed   0          3m
+istio-egressgateway-58d98d898c-dcvq5        1/1       Running     0          3m
+istio-ingress-6fb78f687f-5kszr              1/1       Running     0          3m
+istio-ingressgateway-6bc7c7c4bc-9mzkg       1/1       Running     0          3m
+istio-mixer-post-install-g9cd5              0/1       Completed   0          3m
+istio-pilot-6c5c6b586c-ghfjj                2/2       Running     0          3m
+istio-policy-5c7fbb4b9f-lg2hq               2/2       Running     0          3m
+istio-statsd-prom-bridge-6dbb7dcc7f-6qchs   1/1       Running     0          3m
+istio-telemetry-54b5bf4847-4rtmf            2/2       Running     0          3m
+jaeger-65dc9f8686-l6d9f                     1/1       Running     0          48s
+prometheus-586d95b8d9-5jxpc                 1/1       Running     0          3m
+servicegraph-6d86dfc6cb-b4js5               1/1       Running     0          3m
 ----
 
 And if you need quick access to the OpenShift console
@@ -543,7 +545,7 @@ minishift openshift service jaeger-query --in-browser
 
 image:readme_images/jaegerUI.png[Trace as seen in Jaeger]
 
-== Istio RouteRule Changes
+== Istio Route Rules Changes
 
 === recommendation:v2
 
@@ -663,7 +665,7 @@ and back to the main directory
 cd ../../..
 ----
 
-== Changing Istio RouteRules
+== Changing Istio Route Rules
 
 ==== All users to recommendation:v2
 
@@ -671,7 +673,7 @@ From the main istio-tutorial directory,
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2-new.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -684,11 +686,11 @@ Note: "replace" instead of "create" since we are overlaying the previous rule
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1-new.yml -n tutorial
 
-istioctl get routerules -n tutorial
+istioctl get virtualservice
 
-istioctl get routerule recommendation-default -o yaml -n tutorial
+iistioctl get virtualservice -o yaml -n tutorial
 ----
 
 ==== All users to recommendation v1 and v2
@@ -697,7 +699,7 @@ By simply removing the rule
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-default -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-v1-new.yml -n tutorial
 ----
 
 and you should see the default behavior of load-balancing between v1 and v2
@@ -719,11 +721,11 @@ recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 ----
 
-Create the routerule that will send 90% of requests to v1 and 10% to v2
+Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2-new.yml -n tutorial
 ----
 
 and send in several requests
@@ -741,14 +743,14 @@ In another terminal, change the mixture to be 75/25
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25-new.yml -n tutorial
 ----
 
 Clean up
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-v1-v2 -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-v1_and_v2_75_25-new.yml -n tutorial
 ----
 
 == Fault Injection
@@ -771,7 +773,7 @@ You can inject 503's, for approximately 50% of the requests
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-503-new.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
@@ -785,7 +787,7 @@ Clean up
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-503 -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-503-new.yml -n tutorial
 ----
 
 === Delay
@@ -794,7 +796,7 @@ The most insidious of possible distributed computing faults is not a "down" serv
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-delay-new.yml -n tutorial
 ----
 
 And hit the customer endpoint
@@ -826,10 +828,10 @@ Clean up
 
 [source]
 ----
-istioctl delete routerule recommendation-delay -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-delay-new.yml -n tutorial
 ----
 
-== Retry
+== Retry [Istio 0.8.0 I have not been able to make it run]
 
 Instead of failing immediately, retry the Service N more times
 
@@ -935,7 +937,7 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 
 == Timeout
 
-Wait only N seconds before giving up and failing. At this point, no other route rules should be in effect. `oc get routerules` and `oc delete routerule &lt;rulename&gt;` if there are some.
+Wait only N seconds before giving up and failing. At this point, no other virtual service nor destiantion rule (in `tutorial` namespace) should be in effect. To check it run `istioctl get virtualservice` `istioctl get destinationrule` and if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
 
 First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationVerticle.java` making it a slow performer with a 3 second delay.
 
@@ -991,7 +993,7 @@ Then add the timeout rule
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-timeout-new.yml -n tutorial
 ----
 
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second
@@ -1017,7 +1019,7 @@ Clean up, delete the timeout rule
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-timeout -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-timeout-new.yml -n tutorial
 ----
 
 == Smart routing based on user-agent header (Canary Deployment)
@@ -1035,16 +1037,16 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1-new.yml -n tutorial
 ----
 
 ==== Set Safari users to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-safari-recommendation-v2-new.yml -n tutorial
 
-istioctl get routerules -n tutorial
+istioctl get virtualservice -n tutorial
 ----
 
 and test with a Safari (or even Chrome on Mac since it includes Safari in the string). Safari only sees v2 responses from recommendation
@@ -1078,25 +1080,25 @@ curl -A Safari customer-tutorial.$(minishift ip).nip.io
 curl -A Firefox customer-tutorial.$(minishift ip).nip.io
 ----
 
-You can describe the routerule to see its configuration
+You can describe the virtualservice to see its configuration
 
 [source,bash]
 ----
-istioctl get routerule recommendation-safari -o yaml -n tutorial
+istioctl get virtualservice -o yaml -n tutorial
 ----
 
 Remove the Safari rule
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-safari -n tutorial
+istioctl delete -f istiofiles/route-rule-safari-recommendation-v2-new.yml -n tutorial
 ----
 
 ==== Set mobile users to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-mobile-recommendation-v2-new.yml -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
 ----
@@ -1105,7 +1107,7 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-mobile -n tutorial
+istioctl delete -f istiofiles/route-rule-mobile-recommendation-v2-new.yml -n tutorial
 ----
 
 == Mirroring Traffic (Dark Launch)
@@ -1119,17 +1121,18 @@ You should have 2 pods for recommendation based on the steps above
 
 [source,bash]
 ----
-istioctl get routerules -n tutorial
+istioctl get virtualservice -n tutorial
+istioctl get destinationrule
 ----
 
-You should have NO routerules
-if so "istioctl delete routerule rulename -n tutorial"
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
 
 Make sure you are in the main directory of "istio-tutorial"
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1-mirror-v2-new.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -1145,7 +1148,7 @@ oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommenda
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-mirror -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-v1-mirror-v2-new.yml -n tutorial
 ----
 
 == Access Control
