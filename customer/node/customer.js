@@ -8,6 +8,13 @@ const url = "http://preference:8080";
 
 const responseStringFormat = "customer => %s\n";
 
+var options = {
+    url: url,
+    headers: {
+        'User-Agent': 'request'
+    }
+};
+
 app.use(bodyParser.json()); // Inject JSON parser
 
 app.get('/', function(request, response) {
@@ -21,7 +28,7 @@ app.get('/', function(request, response) {
 });
 
 function getPreference(callback) {
-    request.get(url, (error, response, body) => {
+    request.get(options, (error, response, body) => {
         return callback(error, response, body);
     });
 };
