@@ -1026,7 +1026,10 @@ What is your user-agent?
 
 https://www.whoishostingthis.com/tools/user-agent/[https://www.whoishostingthis.com/tools/user-agent/]
 
-Note: the "user-agent" header being forwarded in the Customer and Preferences controllers in order for route rule modications around recommendation
+Note: the "user-agent" header is added to OpenTracing baggage in the Customer service. From
+there it is automatically propagated to all downstream services. To enable automatic
+baggage propagation all intermediate services have to be instrumented with OpenTracing.
+The baggage header for user agent has following form `baggage-user-agent: <value>`.
 
 ==== Set recommendation to all v1
 

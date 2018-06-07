@@ -1,7 +1,9 @@
 package com.redhat.developer.demos.customer;
 
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,6 +25,9 @@ public class CustomerController {
     @Value("${preferences.api.url:http://preference:8080}")
     private String remoteURL;
 
+    @Autowired
+    private Tracer tracer;
+
     public CustomerController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -30,10 +35,12 @@ public class CustomerController {
     @RequestMapping("/")
     public ResponseEntity<String> getCustomer(@RequestHeader("User-Agent") String userAgent) {
         try {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add(HttpHeaders.USER_AGENT, userAgent);
-            ResponseEntity<String> responseEntity =
-                    restTemplate.exchange(remoteURL, HttpMethod.GET, new HttpEntity<>(httpHeaders), String.class);
+            /**
+             * Set baggage
+             */
+            tracer.activeSpan().setBaggageItem("user-agent", userAgent);
+
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(remoteURL, String.class);
             String response = responseEntity.getBody();
             return ResponseEntity.ok(String.format(RESPONSE_STRING_FORMAT, response.trim()));
         } catch (HttpStatusCodeException ex) {
