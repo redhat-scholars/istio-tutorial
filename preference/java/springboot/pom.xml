@@ -45,7 +45,7 @@
         <dependency>
             <groupId>io.jaegertracing</groupId>
             <artifactId>jaeger-core</artifactId>
-            <version>0.28.1-SNAPSHOT</version>
+            <version>0.29.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
