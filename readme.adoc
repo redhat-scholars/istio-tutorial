@@ -1261,7 +1261,7 @@ Now, add the Random LB DestinationPolicy
 
 [source,bash]
 ----
-istioctl create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
+istioctl create -f istiofiles/recommendation_lb_policy_app-new.yml -n tutorial
 ----
 
 And you should see a different pattern of which pod is being selected
@@ -1285,7 +1285,7 @@ Clean up
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
+istioctl delete -f istiofiles/recommendation_lb_policy_app-new.yml -n tutorial
 
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 ----
