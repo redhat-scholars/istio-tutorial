@@ -1367,11 +1367,11 @@ First, make sure to uncomment `router.get(&quot;/&quot;).handler(this::timeout);
 
 And follow the Updating &amp; redeploying code steps to get this slower v2 deployed.
 
-Second, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
+Second, you need to *insure* you have a `routerule` in place. Let's use a 50/50 split of traffic:
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50-new.yml -n tutorial
 ----
 
 ==== Load test without circuit breaker
@@ -1393,9 +1393,9 @@ But suppose that in a production system this 3s delay was caused by too many con
 
 [source,bash]
 ----
-istioctl create -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
+istioctl replace -f istiofiles/recommendation_cb_policy_version_v2-new.yml -n tutorial
 
-istioctl get destinationpolicies -n tutorial
+istioctl get destinationrule -n tutorial
 ----
 
 More information on the fields for the simple circuit-breaker
@@ -1418,7 +1418,7 @@ You can run siege multiple times, but in all of the executions you should see so
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-v1-v2 -n tutorial
+istioctl delete virtualservice recommendation -n tutorial
 istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
 ----
 

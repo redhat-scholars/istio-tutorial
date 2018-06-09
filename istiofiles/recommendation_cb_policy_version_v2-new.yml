@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
+spec:
+  host: recommendation
+  subsets:
+    - name: version-v1
+      labels:
+        version: v1
+    - name: version-v2
+      labels:
+        version: v2
+      trafficPolicy:
+        connectionPool:
+          http:
+            http1MaxPendingRequests: 1
+            maxRequestsPerConnection: 1
+          tcp:
+            maxConnections: 1
+        outlierDetection:
+          http:
+            baseEjectionTime: 120.000s
+            consecutiveErrors: 1
+            interval: 1.000s
+            maxEjectionPercent: 100
