@@ -28,12 +28,9 @@ public class PreferencesController {
     }
 
     @RequestMapping("/")
-    public ResponseEntity<?> getPreferences(@RequestHeader("User-Agent") String userAgent) {
+    public ResponseEntity<?> getPreferences() {
         try {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add(HttpHeaders.USER_AGENT, userAgent);
-            ResponseEntity<String> responseEntity =
-                    restTemplate.exchange(remoteURL, HttpMethod.GET, new HttpEntity<>(httpHeaders), String.class);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(remoteURL, String.class);
             String response = responseEntity.getBody();
             return ResponseEntity.ok(String.format(RESPONSE_STRING_FORMAT, response.trim()));
         } catch (HttpStatusCodeException ex) {
