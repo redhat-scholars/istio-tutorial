@@ -1419,7 +1419,7 @@ You can run siege multiple times, but in all of the executions you should see so
 [source,bash]
 ----
 istioctl delete virtualservice recommendation -n tutorial
-istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
+istioctl delete -f istiofiles/recommendation_cb_policy_version_v2-new.yml -n tutorial
 ----
 
 === Pool Ejection
@@ -1430,7 +1430,7 @@ First, you need to insure you have a `routerule` in place. Let's use a 50/50 spl
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50-new.yml -n tutorial
 ----
 
 ==== Scale number of instances of `v2` deployment
@@ -1555,7 +1555,7 @@ Now let's add the pool ejection behavior:
 
 [source,bash]
 ----
-istioctl create -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
+istioctl replace -f istiofiles/recommendation_cb_policy_pool_ejection-new.yml -n tutorial
 ----
 
 Throw some requests at the customer endpoint:

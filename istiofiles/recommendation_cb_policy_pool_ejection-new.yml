@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
+spec:
+  host: recommendation
+  subsets:
+  - labels:
+      version: v1
+    name: version-v1
+    trafficPolicy:
+      connectionPool:
+        http: {}
+        tcp: {}
+      loadBalancer:
+        simple: RANDOM
+      outlierDetection:
+        http:
+          baseEjectionTime: 15.000s
+          consecutiveErrors: 1
+          interval: 5.000s
+          maxEjectionPercent: 100
+  - labels:
+      version: v2
+    name: version-v2
+    trafficPolicy:
+      connectionPool:
+        http: {}
+        tcp: {}
+      loadBalancer:
+        simple: RANDOM
+      outlierDetection:
+        http:
+          baseEjectionTime: 15.000s
+          consecutiveErrors: 1
+          interval: 5.000s
+          maxEjectionPercent: 100
