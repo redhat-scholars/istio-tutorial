@@ -1621,11 +1621,11 @@ Even with pool ejection your application doesn't _look_ that resilient. That's p
 - *Pool Ejection* to remove failing instances from the pool of responding instances;
 - *Retries* to forward the request to another instance just in case we get an open circuit breaker and/or pool ejection;
 
-By simply adding a *retry* configuration to our current `routerule`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
+By simply adding a *retry* configuration to our current `virtualservice`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry-new.yml -n tutorial
 ----
 
 Throw some requests at the customer endpoint:
@@ -1684,8 +1684,8 @@ Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the c
 ----
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 oc delete pod -l app=recommendation,version=v2
-istioctl delete routerule recommendation-v1-v2 -n tutorial
-istioctl delete -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
+istioctl delete virtualservice recommendation -n tutorial
+istioctl delete destinationrule recommendation -n tutorial
 ----
 
 == Egress
