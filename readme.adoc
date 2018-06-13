@@ -1853,7 +1853,7 @@ curl egressgithub-istioegress.$(minishift ip).nip.io
 
 [source,bash]
 ----
-istioctl delete egressrule httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress
+iistioctl delete serviceentry httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress
 ----
 
 and if you need some memory back, just delete the project
