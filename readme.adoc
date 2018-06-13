@@ -1789,7 +1789,7 @@ cd ../..
 ----
 istioctl create -f istiofiles/egress_httpbin.yml -n istioegress
 
-istioctl get egressrules
+istioctl get serviceentry
 
 curl egresshttpbin-istioegress.$(minishift ip).nip.io
 ----
@@ -1814,17 +1814,18 @@ add a egressrule for google
 [source,bash]
 ----
 cat <<EOF | istioctl create -f -
-apiVersion: config.istio.io/v1alpha2
-kind: EgressRule
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
 metadata:
   name: google-egress-rule
   namespace: istioegress
 spec:
-  destination:
-    service: www.google.com
+  hosts:
+  - www.google.com
   ports:
-    - port: 443
-      protocol: https
+  - name: https-443
+    number: 443
+    protocol: https
 EOF
 ----
 
@@ -1843,7 +1844,7 @@ Now, apply the egressrule for github and execute the Java code that hits api.git
 
 [source,bash]
 ----
-istioctl create -f istiofiles/egress_github.yml -n istioegress
+istioctl create -f istiofiles/egress_github-new.yml -n istioegress
 
 curl egressgithub-istioegress.$(minishift ip).nip.io
 ----

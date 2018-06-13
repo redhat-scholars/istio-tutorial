@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: github-egress-rule
+  namespace: istioegress
+spec:
+  hosts:
+  - api.github.com
+  ports:
+  - name: https-443
+    number: 443
+    protocol: https
