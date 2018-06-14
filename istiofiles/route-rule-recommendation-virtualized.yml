@@ -1,18 +1,38 @@
-apiVersion: config.istio.io/v1alpha2
-kind: RouteRule
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
 metadata:
-  name: recommendation-virtualized
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
 spec:
-  destination:
-    namespace: tutorial
-    name: recommendation
-  match:
-    source:
-      name: preference
-      labels:
+  hosts:
+  - recommendation
+  http:
+  - match:
+    - sourceLabels:
+        app: preference
         version: v2
-  precedence: 2
-  route:
+    route:
+    - destination:
+        host: recommendation
+        subset: version-virtualized
+  - route:
+    - destination:
+        host: recommendation
+        subset: version-v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
+spec:
+  host: recommendation
+  subsets:
   - labels:
       version: virtualized
-    weight: 100
+    name: version-virtualized
+  - labels:
+      version: v1
+    name: version-v1
