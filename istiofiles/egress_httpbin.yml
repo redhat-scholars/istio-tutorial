@@ -1,10 +1,12 @@
-apiVersion: config.istio.io/v1alpha2
-kind: EgressRule
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
 metadata:
   name: httpbin-egress-rule
+  namespace: istioegress
 spec:
-  destination:
-    service: httpbin.org
+  hosts:
+  - httpbin.org
   ports:
-    - port: 80
-      protocol: http
+  - name: http-80
+    number: 80
+    protocol: http

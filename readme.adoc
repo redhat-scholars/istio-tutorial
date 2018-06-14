@@ -155,9 +155,8 @@ export PATH=$ISTIO_HOME/bin:$PATH
 [source,bash]
 ----
 oc login $(minishift ip):8443 -u admin -p admin
-
-oc new-project istio-system
-oc create -f http:...../install/istio.yaml
+oc create -f install/kubernetes/istio-demo.yaml
+oc project istio-system
 oc expose svc istio-ingressgateway
 oc expose svc servicegraph
 oc expose svc grafana
@@ -172,20 +171,20 @@ Wait for Istio's components to be ready
 $ oc get pods -w
 
 NAME                                        READY     STATUS      RESTARTS   AGE
-grafana-cd99bf478-42c6h                     1/1       Running     0          3m
-istio-citadel-ff5696f6f-qm9tq               1/1       Running     0          3m
-istio-cleanup-old-ca-dmsrv                  0/1       Completed   0          3m
-istio-egressgateway-58d98d898c-dcvq5        1/1       Running     0          3m
-istio-ingress-6fb78f687f-5kszr              1/1       Running     0          3m
-istio-ingressgateway-6bc7c7c4bc-9mzkg       1/1       Running     0          3m
-istio-mixer-post-install-g9cd5              0/1       Completed   0          3m
-istio-pilot-6c5c6b586c-ghfjj                2/2       Running     0          3m
-istio-policy-5c7fbb4b9f-lg2hq               2/2       Running     0          3m
-istio-statsd-prom-bridge-6dbb7dcc7f-6qchs   1/1       Running     0          3m
-istio-telemetry-54b5bf4847-4rtmf            2/2       Running     0          3m
-jaeger-65dc9f8686-l6d9f                     1/1       Running     0          48s
-prometheus-586d95b8d9-5jxpc                 1/1       Running     0          3m
-servicegraph-6d86dfc6cb-b4js5               1/1       Running     0          3m
+grafana-cd99bf478-59ndr                     1/1       Running     4          4d
+istio-citadel-ff5696f6f-grn7m               1/1       Running     4          4d
+istio-cleanup-old-ca-x49kj                  0/1       Completed   0          4d
+istio-egressgateway-58d98d898c-xb7n9        1/1       Running     5          4d
+istio-ingressgateway-6bc7c7c4bc-lxwn8       1/1       Running     5          4d
+istio-mixer-post-install-wwj4p              0/1       Completed   0          4d
+istio-pilot-6c5c6b586c-gvwcr                2/2       Running     8          4d
+istio-policy-5c7fbb4b9f-jgqcn               2/2       Running     8          4d
+istio-sidecar-injector-dbd67c88d-rwj4v      1/1       Running     4          4d
+istio-statsd-prom-bridge-6dbb7dcc7f-5tlsd   1/1       Running     4          4d
+istio-telemetry-54b5bf4847-9w8m9            2/2       Running     8          4d
+istio-tracing-67dbb5b89f-g2jh6              1/1       Running     5          4d
+prometheus-586d95b8d9-4pnfm                 1/1       Running     8          4d
+servicegraph-6d86dfc6cb-vq27n               1/1       Running     21         4d
 ----
 
 And if you need quick access to the OpenShift console
@@ -229,11 +228,11 @@ Make sure `istioctl` is in your `PATH`:
 [source,bash]
 ----
 $ istioctl version
-Version: 0.6.0
-GitRevision: 2cb09cdf040a8573330a127947b11e5082619895
-User: root@a28f609ab931
+Version: 0.8.0
+GitRevision: 6f9f420f0c7119ff4fa6a1966a6f6d89b1b4db84
+User: root@48d5ddfd72da
 Hub: docker.io/istio
-GolangVersion: go1.9
+GolangVersion: go1.10.1
 BuildStatus: Clean
 ----
 
@@ -673,7 +672,7 @@ From the main istio-tutorial directory,
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v2-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -686,7 +685,7 @@ Note: "replace" instead of "create" since we are overlaying the previous rule
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1-new.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 
 istioctl get virtualservice
 
@@ -699,7 +698,7 @@ By simply removing the rule
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-recommendation-v1-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 ----
 
 and you should see the default behavior of load-balancing between v1 and v2
@@ -725,7 +724,7 @@ Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
 ----
 
 and send in several requests
@@ -743,14 +742,14 @@ In another terminal, change the mixture to be 75/25
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25-new.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
 ----
 
 Clean up
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-recommendation-v1_and_v2_75_25-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
 ----
 
 == Fault Injection
@@ -773,7 +772,7 @@ You can inject 503's, for approximately 50% of the requests
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-503-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
@@ -787,7 +786,7 @@ Clean up
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-recommendation-503-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-503.yml -n tutorial
 ----
 
 === Delay
@@ -796,7 +795,7 @@ The most insidious of possible distributed computing faults is not a "down" serv
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-delay-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
 ----
 
 And hit the customer endpoint
@@ -828,7 +827,7 @@ Clean up
 
 [source]
 ----
-istioctl delete -f istiofiles/route-rule-recommendation-delay-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
 ----
 
 == Retry [Istio 0.8.0 I have not been able to make it run]
@@ -993,7 +992,7 @@ Then add the timeout rule
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-timeout-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
 ----
 
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second
@@ -1019,7 +1018,7 @@ Clean up, delete the timeout rule
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-recommendation-timeout-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
 ----
 
 == Smart routing based on user-agent header (Canary Deployment)
@@ -1037,14 +1036,14 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
 ----
 
 ==== Set Safari users to v2
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-safari-recommendation-v2-new.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
 
 istioctl get virtualservice -n tutorial
 ----
@@ -1091,14 +1090,14 @@ Remove the Safari rule
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-safari-recommendation-v2-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
 ----
 
 ==== Set mobile users to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-mobile-recommendation-v2-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
 ----
@@ -1107,7 +1106,7 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-mobile-recommendation-v2-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
 ----
 
 == Mirroring Traffic (Dark Launch)
@@ -1132,7 +1131,7 @@ Make sure you are in the main directory of "istio-tutorial"
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1-mirror-v2-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -1148,7 +1147,7 @@ oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommenda
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-recommendation-v1-mirror-v2-new.yml -n tutorial
+istioctl delete -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
 ----
 
 == Access Control
@@ -1261,7 +1260,7 @@ Now, add the Random LB DestinationPolicy
 
 [source,bash]
 ----
-istioctl create -f istiofiles/recommendation_lb_policy_app-new.yml -n tutorial
+istioctl create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 ----
 
 And you should see a different pattern of which pod is being selected
@@ -1285,7 +1284,7 @@ Clean up
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/recommendation_lb_policy_app-new.yml -n tutorial
+istioctl delete -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
 
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 ----
@@ -1367,11 +1366,11 @@ First, make sure to uncomment `router.get(&quot;/&quot;).handler(this::timeout);
 
 And follow the Updating &amp; redeploying code steps to get this slower v2 deployed.
 
-Second, you need to *insure* you have a `routerule` in place. Let's use a 50/50 split of traffic:
+Second, you need to *ensure* you have a `destinationrule` and `virtualservice` in place. Let's use a 50/50 split of traffic:
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
 ----
 
 ==== Load test without circuit breaker
@@ -1393,7 +1392,7 @@ But suppose that in a production system this 3s delay was caused by too many con
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/recommendation_cb_policy_version_v2-new.yml -n tutorial
+istioctl replace -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
 
 istioctl get destinationrule -n tutorial
 ----
@@ -1419,7 +1418,7 @@ You can run siege multiple times, but in all of the executions you should see so
 [source,bash]
 ----
 istioctl delete virtualservice recommendation -n tutorial
-istioctl delete -f istiofiles/recommendation_cb_policy_version_v2-new.yml -n tutorial
+istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
 ----
 
 === Pool Ejection
@@ -1430,7 +1429,7 @@ First, you need to insure you have a `routerule` in place. Let's use a 50/50 spl
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50-new.yml -n tutorial
+istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
 ----
 
 ==== Scale number of instances of `v2` deployment
@@ -1555,7 +1554,7 @@ Now let's add the pool ejection behavior:
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/recommendation_cb_policy_pool_ejection-new.yml -n tutorial
+istioctl replace -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
 ----
 
 Throw some requests at the customer endpoint:
@@ -1625,7 +1624,7 @@ By simply adding a *retry* configuration to our current `virtualservice`, we'll 
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry-new.yml -n tutorial
+istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry.yml -n tutorial
 ----
 
 Throw some requests at the customer endpoint:
@@ -1844,7 +1843,7 @@ Now, apply the egressrule for github and execute the Java code that hits api.git
 
 [source,bash]
 ----
-istioctl create -f istiofiles/egress_github-new.yml -n istioegress
+istioctl create -f istiofiles/egress_github.yml -n istioegress
 
 curl egressgithub-istioegress.$(minishift ip).nip.io
 ----
@@ -1899,6 +1898,8 @@ oc exec $CPOD -c customer -n tutorial curl http://preference:8080
 oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
 oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
 ----
+
+IMPORTANT: `/routes` is not valid anymore, and I have not found any endpoint that can be the replacement.
 
 [source,bash]
 ----

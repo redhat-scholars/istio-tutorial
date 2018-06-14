@@ -1,39 +1,39 @@
-apiVersion: config.istio.io/v1alpha2
-kind: DestinationPolicy
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
 metadata:
-  name: recommendation-poolejector-v1
+  creationTimestamp: null
+  name: recommendation
   namespace: tutorial
 spec:
-  destination:
-    namespace: tutorial
-    name: recommendation
-    labels:
+  host: recommendation
+  subsets:
+  - labels:
       version: v1
-  loadBalancing:
-    name: RANDOM
-  circuitBreaker:
-    simpleCb:
-      httpConsecutiveErrors: 1
-      sleepWindow: 15s
-      httpDetectionInterval: 5s
-      httpMaxEjectionPercent: 100
----
-apiVersion: config.istio.io/v1alpha2
-kind: DestinationPolicy
-metadata:
-  name: recommendation-poolejector-v2
-  namespace: tutorial
-spec:
-  destination:
-    namespace: tutorial
-    name: recommendation
-    labels:
+    name: version-v1
+    trafficPolicy:
+      connectionPool:
+        http: {}
+        tcp: {}
+      loadBalancer:
+        simple: RANDOM
+      outlierDetection:
+        http:
+          baseEjectionTime: 15.000s
+          consecutiveErrors: 1
+          interval: 5.000s
+          maxEjectionPercent: 100
+  - labels:
       version: v2
-  loadBalancing:
-    name: RANDOM
-  circuitBreaker:
-    simpleCb:
-      httpConsecutiveErrors: 1
-      sleepWindow: 15s
-      httpDetectionInterval: 5s
-      httpMaxEjectionPercent: 100
+    name: version-v2
+    trafficPolicy:
+      connectionPool:
+        http: {}
+        tcp: {}
+      loadBalancer:
+        simple: RANDOM
+      outlierDetection:
+        http:
+          baseEjectionTime: 15.000s
+          consecutiveErrors: 1
+          interval: 5.000s
+          maxEjectionPercent: 100

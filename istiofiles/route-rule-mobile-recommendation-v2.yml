@@ -1,17 +1,23 @@
-apiVersion: config.istio.io/v1alpha2
-kind: RouteRule
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
 metadata:
-  name: recommendation-mobile
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
 spec:
-  destination:
-    namespace: tutorial
-    name: recommendation
-  precedence: 2
-  match:
-    request:
-      headers:
+  hosts:
+  - recommendation
+  http:
+  - match:
+    - headers:
         user-agent:
-          regex: ".*Mobile.*"  
-  route:
-  - labels:
-      version: v2
+          regex: .*Mobile.*
+    route:
+    - destination:
+        host: recommendation
+        subset: version-v2
+  - route:
+    - destination:
+        host: recommendation
+        subset: version-v1
+---

@@ -1,17 +1,23 @@
-apiVersion: config.istio.io/v1alpha2
-kind: RouteRule
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
 metadata:
-  name: recommendation-safari
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
 spec:
-  destination:
-    namespace: tutorial
-    name: recommendation
-  precedence: 2
-  match:
-    request:
-      headers:
-        baggage-user-agent:
-          regex: ".*Safari.*"  
-  route:
-  - labels:
-      version: v2
+  hosts:
+  - recommendation
+  http:
+  - match:
+    - headers:
+        user-agent:
+          regex: .*Safari.*
+    route:
+    - destination:
+        host: recommendation
+        subset: version-v2
+  - route:
+    - destination:
+        host: recommendation
+        subset: version-v1
+---

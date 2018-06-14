@@ -1,21 +1,31 @@
-apiVersion: config.istio.io/v1alpha2
-kind: RouteRule
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
 metadata:
-  name: recommendation-mirror
+  name: recommendation
+  namespace: tutorial
 spec:
-  destination:
-    namespace: tutorial
-    name: recommendation
-  precedence: 2
-  route:
-  - labels:
+  hosts:
+  - recommendation
+  http:
+  - route:
+    - destination:
+        host: recommendation
+        subset: version-v1
+    mirror:
+      host: recommendation
+      subset: version-v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: recommendation
+  namespace: tutorial
+spec:
+  host: recommendation
+  subsets:
+  - name: version-v1
+    labels:
       version: v1
-    weight: 100
-  - labels:
-      version: v2
-    weight: 0
-  mirror:
-    namespace: tutorial
-    name: recommendation
+  - name: version-v2
     labels:
       version: v2

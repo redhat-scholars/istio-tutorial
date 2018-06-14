@@ -1,15 +1,14 @@
-apiVersion: config.istio.io/v1alpha2
-kind: RouteRule
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
 metadata:
-  name: recommendation-timeout
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
 spec:
-  destination:
-    namespace: tutorial
-    name: recommendation
-  precedence: 1
-  route:
-  - labels:
-      app: recommendation
-  httpReqTimeout:
-    simpleTimeout:
-      timeout: 1s
+  hosts:
+  - recommendation
+  http:
+  - route:
+    - destination:
+        host: recommendation
+    timeout: 1.000s

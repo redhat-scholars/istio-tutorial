@@ -1,14 +1,10 @@
-apiVersion: config.istio.io/v1alpha2
-kind: DestinationPolicy
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
 metadata:
-  name: recommendation-loadbalancer
+  name: recommendation
   namespace: tutorial
 spec:
-  source:
-    name: preference
-  destination: 
-    name: recommendation
-  loadBalancing:
-    name: RANDOM     
-#    name: LEAST_CONN
-#   name: ROUND_ROBIN
+  host: recommendation
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
