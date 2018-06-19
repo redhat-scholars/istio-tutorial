@@ -171,20 +171,20 @@ Wait for Istio's components to be ready
 $ oc get pods -w
 
 NAME                                        READY     STATUS      RESTARTS   AGE
-grafana-cd99bf478-59ndr                     1/1       Running     4          4d
-istio-citadel-ff5696f6f-grn7m               1/1       Running     4          4d
-istio-cleanup-old-ca-x49kj                  0/1       Completed   0          4d
-istio-egressgateway-58d98d898c-xb7n9        1/1       Running     5          4d
-istio-ingressgateway-6bc7c7c4bc-lxwn8       1/1       Running     5          4d
-istio-mixer-post-install-wwj4p              0/1       Completed   0          4d
-istio-pilot-6c5c6b586c-gvwcr                2/2       Running     8          4d
-istio-policy-5c7fbb4b9f-jgqcn               2/2       Running     8          4d
-istio-sidecar-injector-dbd67c88d-rwj4v      1/1       Running     4          4d
-istio-statsd-prom-bridge-6dbb7dcc7f-5tlsd   1/1       Running     4          4d
-istio-telemetry-54b5bf4847-9w8m9            2/2       Running     8          4d
-istio-tracing-67dbb5b89f-g2jh6              1/1       Running     5          4d
-prometheus-586d95b8d9-4pnfm                 1/1       Running     8          4d
-servicegraph-6d86dfc6cb-vq27n               1/1       Running     21         4d
+grafana-cd99bf478-bhnjw                     1/1       Running     0          4m
+istio-citadel-ff5696f6f-vh6cg               1/1       Running     0          4m
+istio-cleanup-old-ca-lxd5t                  0/1       Completed   0          4m
+istio-egressgateway-58d98d898c-qw8v4        1/1       Running     0          4m
+istio-ingressgateway-6bc7c7c4bc-bq648       1/1       Running     0          4m
+istio-mixer-post-install-mwtqx              0/1       Completed   0          4m
+istio-pilot-6c5c6b586c-vs2b6                2/2       Running     0          4m
+istio-policy-5c7fbb4b9f-xtbqr               2/2       Running     0          4m
+istio-sidecar-injector-dbd67c88d-wjfxw      1/1       Running     0          4m
+istio-statsd-prom-bridge-6dbb7dcc7f-xjxcw   1/1       Running     0          4m
+istio-telemetry-54b5bf4847-dztv2            2/2       Running     0          4m
+istio-tracing-67dbb5b89f-f77dx              1/1       Running     0          4m
+prometheus-586d95b8d9-c2926                 1/1       Running     0          4m
+servicegraph-6d86dfc6cb-czn4q               1/1       Running     0          4m
 ----
 
 And if you need quick access to the OpenShift console
