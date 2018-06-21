@@ -455,7 +455,7 @@ Make your changes, save it and then:
 [source,bash]
 ----
 mvn clean package
-docker build -t example/{servicename} .
+docker build -t example/{servicename}:v1 .
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
 
