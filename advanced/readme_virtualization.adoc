@@ -166,7 +166,7 @@ Let's avoid this by just sending traffic that comes from preference v2 service t
 
 [source, bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-virtualized.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
 ----
 
 Then do again some requests and you'll get something like:
@@ -186,7 +186,7 @@ In this way when you deploy a new service, you can mirror the traffic without wo
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/route-rule-recommendation-virtualized.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
 oc delete all  -l app=preference,version=v2
 oc delete all  -l app=recommendation,version=virtualized
 ----
