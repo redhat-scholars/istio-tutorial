@@ -122,6 +122,32 @@ In this page you can see the distributed tracing, as provided by Jaeger.
 
 image::https://i.imgur.com/hY78haT.png[Distributed Tracing Page]
 
+== Generating Sample Data
+
+To show the capabilities of Kiali, you'll need an Istio-enabled application to
+be running. On the Kiali repository there's a sample application called
+Bookinfo that you can use to show these capabilities, and you can deploy it
+like this:
+
+[source, bash]
+----
+git clone git@github.com:kiali/kiali
+cd kiali
+./hack/istio/install-bookinfo-demo.sh
+----
+
+This will install the demo. Now we just need to visit it to generate data. We
+can get the URL like this:
+
+[source, bash]
+----
+oc project bookinfo
+oc get routes
+----
+
+From there, we just visit the "productpage" service and this will connect to
+all the other services on the demo.
+
 == Cleanup (Uninstalling Kiali)
 
 To uninstall Kiali from your cluster, run the following command:
