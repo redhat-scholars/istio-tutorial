@@ -1,0 +1,132 @@
+= Observing Microservice meshes with Kiali
+
+At some point on the journey of everyone that is venturing on the world of
+microservices comes the need to actually visualize what is happening on the
+mesh. Questions like "who's connecting to who?", "how much of the traffic goes
+to each microservice?" are hard to answer because of how loosely tied
+microservices are, by definition.
+
+Those are the kinds of question that Kiali has the ability to answer, by giving
+you a big picture of the mesh, and showing the whole flow of your requests and
+data.
+
+== How does it work?
+
+Kiali taps into the data provided by Istio and Openshift to generate its
+visualizations. It fetches ingress data (such as request tracing with Jaeger),
+the listing and data of the services, health indexes, and so on.
+
+It runs as a service together with Istio, and does not require any changes to
+Istio or Openshift configuration (besides the ones required to install Istio).
+
+== How to install it?
+
+Those are the instructions to install the latest version of Kiali available. It
+requires Openshift and Istio to be configured and running correctly, so go do
+that now if you haven't yet.
+
+[source, bash]
+----
+curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-configmap.yaml | \
+   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+
+curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-secrets.yaml | \
+   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+
+curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali.yaml | \
+   IMAGE_NAME=kiali/kiali \
+   IMAGE_VERSION=latest \
+   NAMESPACE=istio-system \
+   VERSION_LABEL=master \
+   VERBOSE_MODE=4 envsubst | oc create -n istio-system -f -
+----
+
+This will take a while (usually up to one minute). After the service is
+running, which you can check like this:
+
+[source, bash]
+----
+oc project istio-system
+oc get pods
+----
+
+You'll see a result that's something like this:
+
+----
+NAME                                        READY     STATUS      RESTARTS   AGE
+elasticsearch-0                             0/1       Running     0          1d
+grafana-6bb556d859-sr2kn                    0/1       Running     0          1d
+istio-citadel-d8b87b7fb-m6kr8               0/1       Running     0          1d
+istio-egressgateway-5c7847547d-l79bc        0/1       Running     0          1d
+istio-ingress-d4898f4d8-c45kz               0/1       Running     0          1d
+istio-ingressgateway-54ddb65d74-sznf9       0/1       Running     0          1d
+istio-pilot-58c7c644c7-l88d7                0/2       Running     0          1d
+istio-policy-586559fdd9-l88v9               0/2       Running     0          1d
+istio-sidecar-injector-6fc85fbd55-6r2hj     0/1       Running     0          1d
+istio-statsd-prom-bridge-6dbb7dcc7f-7qmbw   0/1       Running     0          1d
+istio-telemetry-7988677557-tz4sm            0/2       Running     0          1d
+jaeger-agent-lmhbb                          0/1       Running     0          0s
+jaeger-collector-68fd846775-wll4r           0/1       Running     0          1d
+jaeger-query-58f4655965-q8jjk               0/1       Running     0          1d
+kiali-7966d98797-77gqz                      0/1       Running     0          1d
+prometheus-586d95b8d9-r6d6x                 0/1       Running     0          1d
+----
+
+If the "STATUS" column for Kiali is "Running", you can check which URL it is
+using by using this command:
+
+[source, bash]
+----
+NAME                   HOST/PORT                                                PATH      SERVICES               PORT              TERMINATION   WILDCARD
+grafana                grafana-istio-system.192.168.15.12.nip.io                          grafana                http                            None
+istio-ingress          istio-ingress-istio-system.192.168.15.12.nip.io                    istio-ingress          http                            None
+istio-ingressgateway   istio-ingressgateway-istio-system.192.168.15.12.nip.io             istio-ingressgateway   http                            None
+jaeger-query           jaeger-query-istio-system.192.168.15.12.nip.io                     jaeger-query           jaeger-query      edge          None
+kiali                  kiali-istio-system.192.168.15.12.nip.io                            kiali                  <all>                           None
+prometheus             prometheus-istio-system.192.168.15.12.nip.io                       prometheus             http-prometheus                 None
+tracing                tracing-istio-system.192.168.15.12.nip.io                          tracing                tracing           edge          None
+----
+
+So now we have the URL for Kiali (in my case,
+"kiali-istio-system.192.168.15.12.nip.io"), so let's access it:
+
+image::https://i.imgur.com/rG5tdZu.png[Login Page]
+
+This is the login page. The default credentials is "admin/admin", but it's
+recommended to change it before using it in production.
+
+== Service Graph
+
+After login, you should be greeted with the graph page:
+
+image::https://i.imgur.com/PtKVfe4.png[Graph Page]
+
+It shows a graph with all the microservices, connected by the requests going
+through then. On this page, you can see how the services interact with each
+other.
+
+== Service Listing
+
+TODO.
+
+== Istio Config
+
+In this page, you can see all currently running config rules, such as Virtual
+Services, Route Rules, Routes, Circuit Breakers, Fault Injection and so on.
+
+image::https://i.imgur.com/KWhZ29z.png[Istio Config Page]
+
+== Distributed Tracing
+
+In this page you can see the distributed tracing, as provided by Jaeger.
+
+image::https://i.imgur.com/hY78haT.png[Distributed Tracing Page]
+
+== Cleanup (Uninstalling Kiali)
+
+To uninstall Kiali from your cluster, run the following command:
+
+[source, bash]
+----
+oc delete all,secrets,sa,templates,configmaps,deployments,clusterroles,clusterrolebindings,routerules --selector=app=kiali -n istio-system
+----
