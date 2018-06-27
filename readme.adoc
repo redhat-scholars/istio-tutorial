@@ -674,6 +674,7 @@ From the main istio-tutorial directory,
 
 [source,bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
@@ -752,6 +753,7 @@ Clean up
 [source,bash]
 ----
 istioctl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 ----
 
 == Fault Injection
@@ -774,6 +776,7 @@ You can inject 503's, for approximately 50% of the requests
 
 [source,bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
@@ -829,10 +832,11 @@ Clean up
 
 [source]
 ----
+istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
 ----
 
-== Retry [Istio 0.8.0 I have not been able to make it run]
+== Retry [Istio 0.8.0 I have not been able to make it run, not migrated]
 
 Instead of failing immediately, retry the Service N more times
 
@@ -840,6 +844,7 @@ We will use Istio and return 503's about 50% of the time. Send all users to v2 w
 
 [source,bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation-v2.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-v2_503.yml -n tutorial
 ----
 
@@ -1038,6 +1043,7 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 
 [source,bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
 ----
 
@@ -1108,6 +1114,7 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 
 [source,bash]
 ----
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
 ----
 
@@ -1133,6 +1140,7 @@ Make sure you are in the main directory of "istio-tutorial"
 
 [source,bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
@@ -1149,6 +1157,7 @@ oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommenda
 
 [source,bash]
 ----
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
 ----
 
@@ -1372,6 +1381,7 @@ Second, you need to *ensure* you have a `destinationrule` and `virtualservice` i
 
 [source,bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml -n tutorial
 ----
 
@@ -1431,6 +1441,7 @@ First, you need to insure you have a `routerule` in place. Let's use a 50/50 spl
 
 [source,bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml -n tutorial
 ----
 
@@ -1967,7 +1978,8 @@ Now add a new routerule
 
 [source,bash]
 ----
-oc create -f istiofiles/virtual-service-recommendation-v2.yml
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml
+istioctl create -f istiofiles/virtual-service-recommendation-v2.yml
 ----
 
 The review the routes again

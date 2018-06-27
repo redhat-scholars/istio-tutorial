@@ -21,4 +21,3 @@ spec:
         subset: version-v2
       weight: 50
 ---
-

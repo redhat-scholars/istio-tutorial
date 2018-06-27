@@ -17,15 +17,3 @@ spec:
         host: recommendation
         subset: app-recommendation
 ---
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  creationTimestamp: null
-  name: recommendation
-  namespace: tutorial
-spec:
-  host: recommendation
-  subsets:
-  - labels:
-      app: recommendation
-    name: app-recommendation
