@@ -69,9 +69,7 @@ public class RecommendationEndpoint {
     @Produces("text/plain")
     @Path("/timeout")
     public Response timeout(){
-        this.misbehave = true;
-        logger.info("'misbehave' has been set to 'true'");
-        return Response.ok("Following requests to '/' will return a 503\n").build();
+        this.timeout = true;
     }
 
     @GET
