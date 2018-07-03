@@ -1,4 +1,5 @@
 = Java (Spring Boot, Vert.x and Microprofile) + Istio on Kubernetes/OpenShift
+:sectanchors:
 
 == If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly
 
@@ -14,64 +15,64 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 *Table of Contents*
 
-* link:#prerequisite-cli-tools[Prerequisite CLI tools]
-* link:#setup-minishift[Setup minishift]
-* link:#setup-environment[Setup environment]
-* link:#istio-installation-script[Istio installation script]
-* link:#deploy-customer[Deploy customer]
-** link:#customer-build-using-docker-daemon[Customer build using Docker daemon]
-** link:#customer-build-using-openshift-s2i-strategy[Customer build using OpenShift S2I strategy]
-* link:#deploy-preference[Deploy preference]
-** link:#preference-build-using-docker-daemon[Preference build using Docker daemon]
-** link:#preference-build-using-openshift-s2i-strategy[Preference build using OpenShift S2I strategy]
-* link:#deploy-recommendation[Deploy recommendation]
-** link:#preference-build-using-openshift-s2i-strategy[Recommendation build using Docker daemon]
-** link:#recommendation-build-using-openshift-s2i-strategy[Recommendation build using OpenShift S2I strategy]
-* link:#updating-redeploying-code[Updating Redeploying Code]
-* link:#monitoring[Monitoring]
-* link:#custom-metrics[Custom Metrics]
-* link:#tracing[Tracing]
-* link:#istio-routerule-changes[Istio RouteRule Changes]
-* link:#recommendationv2[recommendation:v2]
-* link:#changing-istio-routerules[Changing Istio RouteRules]
-** link:#all-users-to-recommendationv2[All users to recommendation:v2]
-** link:#all-users-to-recommendationv1[All users to recommendation:v1]
-** link:#all-users-to-recommendation-v1-and-v2[All users to recommendation v1 and v2]
-** link:#split-traffic-between-v1-and-v2[Split traffic between v1 and v2]
-* link:#fault-injection[Fault Injection]
-* link:#http-error-503[HTTP Error 503]
-* link:#delay[Delay]
-* link:#retry[Retry]
-* link:#timeout[Timeout]
-* link:#smart-routing-based-on-user-agent-header-canary-deployment[Smart routing based on user-agent header (Canary Deployment)]
-** link:#set-recommendation-to-all-v1[Set recommendation to all v1]
-** link:#set-safari-users-to-v2[Set Safari users to v2]
-** link:#set-mobile-users-to-v2[Set mobile users to v2]
-** link:#clean-up[Clean up]
-* link:#mirroring-traffic-dark-launch[Mirroring Traffic (Dark Launch)]
-** link:#clean-up[Clean up]
-* link:#access-control[Access Control]
-** link:#whitelist[Whitelist]
-** link:#blacklist[Blacklist]
-* link:#load-balancer[Load Balancer]
-* link:#rate-limiting[Rate Limiting]
-* link:#circuit-breaker[Circuit Breaker]
-* link:#fail-fast-with-max-connections-and-max-pending-requests[Fail Fast with Max Connections and Max Pending Requests]
-** link:#load-test-without-circuit-breaker[Load test without circuit breaker]
-** link:#load-test-with-circuit-breaker[Load test with circuit breaker]
-** link:#clean-up[Clean up]
-* link:#pool-ejection[Pool Ejection]
-** link:#scale-number-of-instances-of-v2-deployment[Scale number of instances of `v2` deployment]
-** link:#test-behavior-without-failing-instances[Test behavior without failing instances]
-** link:#test-behavior-with-failing-instance-and-without-pool-ejection[Test behavior with failing instance and without pool ejection]
-** link:#test-behavior-with-failing-instance-and-with-pool-ejection[Test behavior with failing instance and with pool ejection]
-* link:#ultimate-resilience-with-retries-circuit-breaker-and-pool-ejection[Ultimate resilience with retries, circuit breaker, and pool ejection]
-** link:#clean-up[Clean up]
-* link:#egress[Egress]
-** link:#create-httpbin-java-app[Create HTTPBin Java App]
-** link:#create-the-github-java-app[Create the Github Java App]
-** link:#istio-ize-egress[Istio-ize Egress]
-* link:#tips-tricks[Tips &amp; Tricks]
+* link:#_prerequisite_cli_tools[Prerequisite CLI tools]
+* link:#_setup_minishift[Setup minishift]
+* link:#_setup_environment[Setup environment]
+* link:#_istio_installation_script[Istio installation script]
+* link:#_deploy_customer[Deploy customer]
+** link:#_customer_build_using_docker_daemon[Customer build using Docker daemon]
+** link:#_customer_build_using_openshift_s2i_strategy[Customer build using OpenShift S2I strategy]
+* link:#_deploy_preference[Deploy preference]
+** link:#_preference_build_using_docker_daemon[Preference build using Docker daemon]
+** link:#_preference_build_using_openshift_s2i_strategy[Preference build using OpenShift S2I strategy]
+* link:#_deploy_recommendation[Deploy recommendation]
+** link:#_preference_build_using_openshift_s2i_strategy[Recommendation build using Docker daemon]
+** link:#_recommendation_build_using_openshift_s2i_strategy[Recommendation build using OpenShift S2I strategy]
+* link:#_updating_redeploying_code[Updating Redeploying Code]
+* link:#_monitoring[Monitoring]
+* link:#_custom_metrics[Custom Metrics]
+* link:#_tracing[Tracing]
+* link:#_istio_routing[Istio Routing]
+* link:#_recommendationv2[recommendation:v2]
+* link:#_changing_istio_routing[Changing Istio Routing]
+** link:#_all_users_to_recommendationv2[All users to recommendation:v2]
+** link:#_all_users_to_recommendationv1[All users to recommendation:v1]
+** link:#_all_users_to_recommendation_v1_and_v2[All users to recommendation v1 and v2]
+** link:#_split_traffic_between_v1_and_v2[Split traffic between v1 and v2]
+* link:#_fault_injection[Fault Injection]
+* link:#_http_error_503[HTTP Error 503]
+* link:#_delay[Delay]
+* link:#_retry[Retry]
+* link:#_timeout[Timeout]
+* link:#_smart_routing_based_on_user_agent_header_canary_deployment[Smart routing based on user-agent header (Canary Deployment)]
+** link:#_set_recommendation_to_all_v1[Set recommendation to all v1]
+** link:#_set_safari_users_to_v2[Set Safari users to v2]
+** link:#_set_mobile_users_to_v2[Set mobile users to v2]
+** link:#_clean_up[Clean up]
+* link:#_mirroring_traffic_dark_launch[Mirroring Traffic (Dark Launch)]
+** link:#_clean_up[Clean up]
+* link:#_access_control[Access Control]
+** link:#_whitelist[Whitelist]
+** link:#_blacklist[Blacklist]
+* link:#_load_balancer[Load Balancer]
+* link:#_rate_limiting[Rate Limiting]
+* link:#_circuit_breaker[Circuit Breaker]
+* link:#_fail_fast_with_max_connections_and_max_pending_requests[Fail Fast with Max Connections and Max Pending Requests]
+** link:#_load_test_without_circuit_breaker[Load test without circuit breaker]
+** link:#_load_test_with_circuit_breaker[Load test with circuit breaker]
+** link:#_clean_up[Clean up]
+* link:#_pool_ejection[Pool Ejection]
+** link:#_scale_number_of_instances_of_v2_deployment[Scale number of instances of `v2` deployment]
+** link:#_test_behavior_without_failing_instances[Test behavior without failing instances]
+** link:#_test_behavior_with_failing_instance_and_without_pool_ejection[Test behavior with failing instance and without pool ejection]
+** link:#_test_behavior_with_failing_instance_and_with_pool_ejection[Test behavior with failing instance and with pool ejection]
+* link:#_ultimate_resilience_with_retries_circuit_breaker_and_pool_ejection[Ultimate resilience with retries, circuit breaker, and pool ejection]
+** link:#_clean_up[Clean up]
+* link:#_egress[Egress]
+** link:#_create_httpbin_java_app[Create HTTPBin Java App]
+** link:#_create_the_github_java_app[Create the Github Java App]
+** link:#_istio_ize_egress[Istio-ize Egress]
+* link:#_tips_tricks[Tips &amp; Tricks]
 
 == Prerequisite CLI tools
 
@@ -548,7 +549,7 @@ image:readme_images/jaegerUI.png[Trace as seen in Jaeger]
 
 === recommendation:v2
 
-We can experiment with Istio routing rules by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
+We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
 
 [source,java]
 ----
@@ -664,7 +665,7 @@ and back to the main directory
 cd ../../..
 ----
 
-== Changing Istio Route Rules
+== Changing Istio Routings
 
 IMPORTANT: It takes more or less 10 seconds between you apply an Istio resource and Istio mesh is updated with it. This means that you need to wait for 10 seconds until you can test any change.
 
@@ -1437,7 +1438,7 @@ istioctl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_
 
 Pool ejection or _outlier detection_ is a resilience strategy that takes place whenever we have a pool of instances/pods to serve a client request. If the request is forwarded to a certain instance and it fails (e.g. returns a 50x error code), then Istio will eject this instance from the pool for a certain _sleep window_. In our example the sleep window is configured to be 15s. This increases the overall availability by making sure that only healthy pods participate in the pool of instances.
 
-First, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
+First, you need to insure you have a `destinationrule` and `virtualservice` in place to send traffic to the services. Let's use a 50/50 split of traffic:
 
 [source,bash]
 ----
@@ -1912,7 +1913,7 @@ oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
 oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
 ----
 
-IMPORTANT: `/routes` is not valid anymore, and I have not found any endpoint that can be the replacement.
+IMPORTANT: `/routes` is not valid anymore in Istio 0.8.0, and I have not found any endpoint that can be the replacement by checking all valid endpoints.
 
 [source,bash]
 ----
@@ -1974,7 +1975,7 @@ Look for "route_config_name": "8080", you should see 3 entries for customer, pre
 }
 ----
 
-Now add a new routerule
+Now add a new `destinationrule` and `virtualservice`.
 
 [source,bash]
 ----
