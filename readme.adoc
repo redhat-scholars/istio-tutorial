@@ -1917,62 +1917,133 @@ IMPORTANT: `/routes` is not valid anymore in Istio 0.8.0, and I have not found a
 
 [source,bash]
 ----
-oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > afile.json
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > afile.json
 ----
 
-Look for "route_config_name": "8080", you should see 3 entries for customer, preference and recommendation
+Look for `route_config`, containing `"name": "8080"` abd you should see entries for customer, preference and recommendation
 
 [source,json]
 ----
-{
-	"name": "8080",
-	"virtual_hosts": [{
-		"name": "customer.springistio.svc.cluster.local|http",
-		"domains": ["customer:8080", "customer", "customer.springistio:8080", "customer.springistio", "customer.springistio.svc:8080", "customer.springistio.svc", "customer.springistio.svc.cluster:8080", "customer.springistio.svc.cluster", "customer.springistio.svc.cluster.local:8080", "customer.springistio.svc.cluster.local", "172.30.176.159:8080", "172.30.176.159"],
-		"routes": [{
-			"match": {
-				"prefix": "/"
-			},
-			"route": {
-				"cluster": "out.customer.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},
-			"decorator": {
-				"operation": "default-route"
-			}
-		}]
-	}, {
-		"name": "preference.springistio.svc.cluster.local|http",
-		"domains": ["preference:8080", "preference", "preference.springistio:8080", "preference.springistio", "preference.springistio.svc:8080", "preference.springistio.svc", "preference.springistio.svc.cluster:8080", "preference.springistio.svc.cluster", "preference.springistio.svc.cluster.local:8080", "preference.springistio.svc.cluster.local", "172.30.249.133:8080", "172.30.249.133"],
-		"routes": [{
-			"match": {
-				"prefix": "/"
-			},
-			"route": {
-				"cluster": "out.preference.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},
-			"decorator": {
-				"operation": "default-route"
-			}
-		}]
-	}, {
-		"name": "recommendation.springistio.svc.cluster.local|http",
-		"domains": ["recommendation:8080", "recommendation", "recommendation.springistio:8080", "recommendation.springistio", "recommendation.springistio.svc:8080", "recommendation.springistio.svc", "recommendation.springistio.svc.cluster:8080", "recommendation.springistio.svc.cluster", "recommendation.springistio.svc.cluster.local:8080", "recommendation.springistio.svc.cluster.local", "172.30.209.113:8080", "172.30.209.113"],
-		"routes": [{
-			"match": {
-				"prefix": "/"
-			},
-			"route": {
-				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},
-			"decorator": {
-				"operation": "default-route"
-			}
-		}]
-	}]
-}
+"virtualHosts": [
+      {
+       "name": "customer.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "customer.tutorial.svc.cluster.local",
+        "customer.tutorial.svc.cluster.local:8080",
+        "customer",
+        "customer:8080",
+        "customer.tutorial.svc.cluster",
+        "customer.tutorial.svc.cluster:8080",
+        "customer.tutorial.svc",
+        "customer.tutorial.svc:8080",
+        "customer.tutorial",
+        "customer.tutorial:8080",
+        "172.30.107.115",
+        "172.30.107.115:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||customer.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "istio-pilot.istio-system.svc.cluster.local:8080",
+       "domains": [
+        "istio-pilot.istio-system.svc.cluster.local",
+        "istio-pilot.istio-system.svc.cluster.local:8080",
+        "istio-pilot.istio-system",
+        "istio-pilot.istio-system:8080",
+        "istio-pilot.istio-system.svc.cluster",
+        "istio-pilot.istio-system.svc.cluster:8080",
+        "istio-pilot.istio-system.svc",
+        "istio-pilot.istio-system.svc:8080",
+        "172.30.142.41",
+        "172.30.142.41:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||istio-pilot.istio-system.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "preference.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "preference.tutorial.svc.cluster.local",
+        "preference.tutorial.svc.cluster.local:8080",
+        "preference",
+        "preference:8080",
+        "preference.tutorial.svc.cluster",
+        "preference.tutorial.svc.cluster:8080",
+        "preference.tutorial.svc",
+        "preference.tutorial.svc:8080",
+        "preference.tutorial",
+        "preference.tutorial:8080",
+        "172.30.26.194",
+        "172.30.26.194:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||preference.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "recommendation.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "recommendation.tutorial.svc.cluster.local",
+        "recommendation.tutorial.svc.cluster.local:8080",
+        "recommendation",
+        "recommendation:8080",
+        "recommendation.tutorial.svc.cluster",
+        "recommendation.tutorial.svc.cluster:8080",
+        "recommendation.tutorial.svc",
+        "recommendation.tutorial.svc:8080",
+        "recommendation.tutorial",
+        "recommendation.tutorial:8080",
+        "172.30.103.127",
+        "172.30.103.127:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||recommendation.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      }
+     ],
 ----
 
 Now add a new `destinationrule` and `virtualservice`.
@@ -1987,7 +2058,7 @@ The review the routes again
 
 [source,bash]
 ----
-oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > bfile.json
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > bfile.json
 ----
 
 Here is the Before:
@@ -2014,9 +2085,8 @@ And the After:
 [source,javascript]
 ----
 			"route": {
-				"cluster": "out.recommendation.springistio.svc.cluster.local|http|version=v2",
-				"timeout": "0s"
-			},
+          		"cluster": "outbound|8080|version-v2|recommendation.tutorial.svc.cluster.local",
+          	},
 ----
 
 and
@@ -2024,8 +2094,8 @@ and
 [source,javascript]
 ----
 			"decorator": {
-				"operation": "recommendation-default"
-			}
+          		"operation": "recommendation"
+         	}
 ----
 
 If you need the Pod IP
@@ -2042,7 +2112,7 @@ Dive into the istio-proxy container
 oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
 cd /etc/istio/proxy
 ls
-cat envoy-rev3.json
+cat envoy-rev0.json
 ----
 
 Snowdrop Troubleshooting
