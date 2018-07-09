@@ -10,7 +10,7 @@ spec:
   http:
   - match:
     - headers:
-        user-agent:
+        baggage-user-agent:
           regex: .*Safari.*
     route:
     - destination:
