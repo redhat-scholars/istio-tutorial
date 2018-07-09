@@ -693,7 +693,7 @@ istioctl replace -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
 
 istioctl get virtualservice
 
-iistioctl get virtualservice -o yaml -n tutorial
+istioctl get virtualservice -o yaml -n tutorial
 ----
 
 ==== All users to recommendation v1 and v2
@@ -1516,7 +1516,7 @@ Now we'll get into one the pods and add some erratic behavior on it. Get one of 
 
 [source,bash]
 ----
-oc exec -it recommendation-v2-2036617847-spdrb -c recommendation /bin/bash
+oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
