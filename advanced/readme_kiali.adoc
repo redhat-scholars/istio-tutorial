@@ -107,7 +107,32 @@ other.
 
 == Service Listing
 
-TODO.
+In this page, you can get a listing of all the services that are running on the
+cluster, and get some information on them, such as health status:
+
+image::https://i.imgur.com/Gytp5Wm.png[Service Listing Page]
+
+Clicking on a service you'll see this page, where you can introspect into more
+information on the service:
+
+image::https://i.imgur.com/msQjCb4.png[Service Details]
+
+You can see the health status of the service (a Healthy service means one that
+is is up and responding correctly):
+
+image::https://i.imgur.com/MVpqDx8.png[Health Status]
+
+You can also see the deployments:
+
+image::https://i.imgur.com/TdyjCOu.png[Deployments]
+
+The source services:
+
+image::https://i.imgur.com/Qof6a8s.png[Source Services]
+
+And the virtual services on the istio infrastructure:
+
+image::https://i.imgur.com/mlZknRv.png[Virtual Services]
 
 == Istio Config
 
