@@ -1,29 +1,31 @@
-= Observing Microservice meshes with Kiali
+= Observing microservice meshes with Kiali
 
-At some point on the journey of everyone that is venturing on the world of
-microservices comes the need to actually visualize what is happening on the
-mesh. Questions like "who's connecting to who?", "how much of the traffic goes
-to each microservice?" are hard to answer because of how loosely tied
-microservices are, by definition.
+At some point when you are developing your microservice architecture, you will
+need to visualize what is happening in your service mesh. You will have
+questions like “Which service is connected to which other service?” and “How
+much traffic goes to each microservice?” But because of the loosely tied nature
+of microservice architectures , these questions can be difficult to answer.
 
 Those are the kinds of question that Kiali has the ability to answer, by giving
 you a big picture of the mesh, and showing the whole flow of your requests and
 data.
 
-== How does it work?
+== How does Kiali work?
 
-Kiali taps into the data provided by Istio and Openshift to generate its
+Kiali taps into the data provided by Istio and OpenShift to generate its
 visualizations. It fetches ingress data (such as request tracing with Jaeger),
 the listing and data of the services, health indexes, and so on.
 
-It runs as a service together with Istio, and does not require any changes to
-Istio or Openshift configuration (besides the ones required to install Istio).
+Kiali runs as a service together with Istio, and does not require any changes
+to Istio or Openshift configuration (besides the ones required to install
+Istio).
 
-== How to install it?
+== How to install Kiali?
 
-Those are the instructions to install the latest version of Kiali available. It
-requires Openshift and Istio to be configured and running correctly, so go do
-that now if you haven't yet.
+A prerequisite for installing Kiali is that you must have OpenShift and Istio
+installed and configured.
+
+Install Kiali with the following commands:
 
 [source, bash]
 ----
@@ -41,8 +43,8 @@ curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali
    VERBOSE_MODE=4 envsubst | oc create -n istio-system -f -
 ----
 
-This will take a while (usually up to one minute). After the service is
-running, which you can check like this:
+Installing Kiali may take a minute or two. You can use the following commands
+to see if the service is running:
 
 [source, bash]
 ----
@@ -77,75 +79,31 @@ using by using this command:
 
 [source, bash]
 ----
-NAME                   HOST/PORT                                                PATH      SERVICES               PORT              TERMINATION   WILDCARD
-grafana                grafana-istio-system.192.168.15.12.nip.io                          grafana                http                            None
-istio-ingress          istio-ingress-istio-system.192.168.15.12.nip.io                    istio-ingress          http                            None
-istio-ingressgateway   istio-ingressgateway-istio-system.192.168.15.12.nip.io             istio-ingressgateway   http                            None
-jaeger-query           jaeger-query-istio-system.192.168.15.12.nip.io                     jaeger-query           jaeger-query      edge          None
-kiali                  kiali-istio-system.192.168.15.12.nip.io                            kiali                  <all>                           None
-prometheus             prometheus-istio-system.192.168.15.12.nip.io                       prometheus             http-prometheus                 None
-tracing                tracing-istio-system.192.168.15.12.nip.io                          tracing                tracing           edge          None
+oc project istio-system
+oc get routes
 ----
 
-So now we have the URL for Kiali (in my case,
-"kiali-istio-system.192.168.15.12.nip.io"), so let's access it:
+And you'll see a result that's something like this:
+
+[source, bash]
+----
+NAME                   HOST/PORT                                                PATH      SERVICES               PORT              TERMINATION   WILDCARD
+grafana                grafana-istio-system.127.0.0.1.nip.io                          grafana                http                            None
+istio-ingress          istio-ingress-istio-system.127.0.0.1.nip.io                    istio-ingress          http                            None
+istio-ingressgateway   istio-ingressgateway-istio-system.127.0.0.1.nip.io             istio-ingressgateway   http                            None
+jaeger-query           jaeger-query-istio-system.127.0.0.1.nip.io                     jaeger-query           jaeger-query      edge          None
+kiali                  kiali-istio-system.127.0.0.1.nip.io                            kiali                  <all>                           None
+prometheus             prometheus-istio-system.127.0.0.1.nip.io                       prometheus             http-prometheus                 None
+tracing                tracing-istio-system.127.0.0.1.nip.io                          tracing                tracing           edge          None
+----
+
+So now we have the URL for Kiali (usually,
+"kiali-istio-system.127.0.0.1.nip.io"), so let's access it:
 
 image::https://i.imgur.com/rG5tdZu.png[Login Page]
 
-This is the login page. The default credentials is "admin/admin", but it's
-recommended to change it before using it in production.
-
-== Service Graph
-
-After login, you should be greeted with the graph page:
-
-image::https://i.imgur.com/PtKVfe4.png[Graph Page]
-
-It shows a graph with all the microservices, connected by the requests going
-through then. On this page, you can see how the services interact with each
-other.
-
-== Service Listing
-
-In this page, you can get a listing of all the services that are running on the
-cluster, and get some information on them, such as health status:
-
-image::https://i.imgur.com/Gytp5Wm.png[Service Listing Page]
-
-Clicking on a service you'll see this page, where you can introspect into more
-information on the service:
-
-image::https://i.imgur.com/msQjCb4.png[Service Details]
-
-You can see the health status of the service (a Healthy service means one that
-is is up and responding correctly):
-
-image::https://i.imgur.com/MVpqDx8.png[Health Status]
-
-You can also see the deployments:
-
-image::https://i.imgur.com/TdyjCOu.png[Deployments]
-
-The source services:
-
-image::https://i.imgur.com/Qof6a8s.png[Source Services]
-
-And the virtual services on the istio infrastructure:
-
-image::https://i.imgur.com/mlZknRv.png[Virtual Services]
-
-== Istio Config
-
-In this page, you can see all currently running config rules, such as Virtual
-Services, Route Rules, Routes, Circuit Breakers, Fault Injection and so on.
-
-image::https://i.imgur.com/KWhZ29z.png[Istio Config Page]
-
-== Distributed Tracing
-
-In this page you can see the distributed tracing, as provided by Jaeger.
-
-image::https://i.imgur.com/hY78haT.png[Distributed Tracing Page]
+The default credentials are "admin/admin", but it's recommended to change them
+before using it in production.
 
 == Generating Sample Data
 
@@ -172,6 +130,61 @@ oc get routes
 
 From there, we just visit the "productpage" service and this will connect to
 all the other services on the demo.
+
+== Service Graph
+
+After you login, you should see the Service Graph page:
+
+image::https://i.imgur.com/PtKVfe4.png[Service Graph Page]
+
+It shows a graph with all the microservices, connected by the requests going
+through then. On this page, you can see how the services interact with each
+other.
+
+== Service Listing
+
+Click the Services link in the left navigation. On the Services page you can
+view a listing of all the services that are running in the cluster, and
+additional information about them, such as health status.
+
+image::https://i.imgur.com/Gytp5Wm.png[Service Listing Page]
+
+Click on a service name to view the Service Details page, where you can view
+additional information about each service.
+
+image::https://i.imgur.com/msQjCb4.png[Service Details]
+
+You can see the health status of the service (a Healthy service means one that
+is is up and responding correctly):
+
+image::https://i.imgur.com/MVpqDx8.png[Health Status]
+
+You can also see the deployments:
+
+image::https://i.imgur.com/TdyjCOu.png[Deployments]
+
+The source services:
+
+image::https://i.imgur.com/Qof6a8s.png[Source Services]
+
+And the virtual services on the Istio infrastructure:
+
+image::https://i.imgur.com/mlZknRv.png[Virtual Services]
+
+== Istio Config
+
+Click the Istio Config link on the left navigation. On this page, you can see
+all currently running config rules, such as Virtual Services, Route Rules,
+Routes, Circuit Breakers, Fault Injection and so on.
+
+image::https://i.imgur.com/KWhZ29z.png[Istio Config Page]
+
+== Distributed Tracing
+
+Click on the Distributed Tracing link in the left navigation. On this page you
+can see the distributed tracing, as provided by Jaeger.
+
+image::https://i.imgur.com/hY78haT.png[Distributed Tracing Page]
 
 == Cleanup (Uninstalling Kiali)
 
