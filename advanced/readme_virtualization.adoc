@@ -1,6 +1,6 @@
 = Service Virtualization and Istio
 
-IMPORTANT: You should have NO routerules if so `istioctl delete routerule rulename -n tutorial`
+IMPORTANT: You should have NO `virtualservice` nor `destinationrule` in `tutorial` namespace, if so `istioctl delete virtualservice name -n tutorial` and `istioctl delete destinationrule name -n tutorial`
 
 We'll create version 2 of preferences service. 
 But in this case instead of communicating with recommendation service, we are goinng to communicate with a virtualized recommendation service.
@@ -166,7 +166,7 @@ Let's avoid this by just sending traffic that comes from preference v2 service t
 
 [source, bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-virtualized.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
 ----
 
 Then do again some requests and you'll get something like:
@@ -186,7 +186,7 @@ In this way when you deploy a new service, you can mirror the traffic without wo
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-virtualized -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
 oc delete all  -l app=preference,version=v2
 oc delete all  -l app=recommendation,version=virtualized
 ----

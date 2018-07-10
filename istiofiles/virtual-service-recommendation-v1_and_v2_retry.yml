@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
+spec:
+  hosts:
+  - recommendation
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 4.000s
+    route:
+    - destination:
+        host: recommendation
+        subset: version-v1
+      weight: 50
+    - destination:
+        host: recommendation
+        subset: version-v2
+      weight: 50
+---

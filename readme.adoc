@@ -1,4 +1,5 @@
 = Java (Spring Boot, Vert.x and Microprofile) + Istio on Kubernetes/OpenShift
+:sectanchors:
 
 == If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly
 
@@ -14,64 +15,64 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 *Table of Contents*
 
-* link:#prerequisite-cli-tools[Prerequisite CLI tools]
-* link:#setup-minishift[Setup minishift]
-* link:#setup-environment[Setup environment]
-* link:#istio-installation-script[Istio installation script]
-* link:#deploy-customer[Deploy customer]
-** link:#customer-build-using-docker-daemon[Customer build using Docker daemon]
-** link:#customer-build-using-openshift-s2i-strategy[Customer build using OpenShift S2I strategy]
-* link:#deploy-preference[Deploy preference]
-** link:#preference-build-using-docker-daemon[Preference build using Docker daemon]
-** link:#preference-build-using-openshift-s2i-strategy[Preference build using OpenShift S2I strategy]
-* link:#deploy-recommendation[Deploy recommendation]
-** link:#preference-build-using-openshift-s2i-strategy[Recommendation build using Docker daemon]
-** link:#recommendation-build-using-openshift-s2i-strategy[Recommendation build using OpenShift S2I strategy]
-* link:#updating-redeploying-code[Updating Redeploying Code]
-* link:#monitoring[Monitoring]
-* link:#custom-metrics[Custom Metrics]
-* link:#tracing[Tracing]
-* link:#istio-routerule-changes[Istio RouteRule Changes]
-* link:#recommendationv2[recommendation:v2]
-* link:#changing-istio-routerules[Changing Istio RouteRules]
-** link:#all-users-to-recommendationv2[All users to recommendation:v2]
-** link:#all-users-to-recommendationv1[All users to recommendation:v1]
-** link:#all-users-to-recommendation-v1-and-v2[All users to recommendation v1 and v2]
-** link:#split-traffic-between-v1-and-v2[Split traffic between v1 and v2]
-* link:#fault-injection[Fault Injection]
-* link:#http-error-503[HTTP Error 503]
-* link:#delay[Delay]
-* link:#retry[Retry]
-* link:#timeout[Timeout]
-* link:#smart-routing-based-on-user-agent-header-canary-deployment[Smart routing based on user-agent header (Canary Deployment)]
-** link:#set-recommendation-to-all-v1[Set recommendation to all v1]
-** link:#set-safari-users-to-v2[Set Safari users to v2]
-** link:#set-mobile-users-to-v2[Set mobile users to v2]
-** link:#clean-up[Clean up]
-* link:#mirroring-traffic-dark-launch[Mirroring Traffic (Dark Launch)]
-** link:#clean-up[Clean up]
-* link:#access-control[Access Control]
-** link:#whitelist[Whitelist]
-** link:#blacklist[Blacklist]
-* link:#load-balancer[Load Balancer]
-* link:#rate-limiting[Rate Limiting]
-* link:#circuit-breaker[Circuit Breaker]
-* link:#fail-fast-with-max-connections-and-max-pending-requests[Fail Fast with Max Connections and Max Pending Requests]
-** link:#load-test-without-circuit-breaker[Load test without circuit breaker]
-** link:#load-test-with-circuit-breaker[Load test with circuit breaker]
-** link:#clean-up[Clean up]
-* link:#pool-ejection[Pool Ejection]
-** link:#scale-number-of-instances-of-v2-deployment[Scale number of instances of `v2` deployment]
-** link:#test-behavior-without-failing-instances[Test behavior without failing instances]
-** link:#test-behavior-with-failing-instance-and-without-pool-ejection[Test behavior with failing instance and without pool ejection]
-** link:#test-behavior-with-failing-instance-and-with-pool-ejection[Test behavior with failing instance and with pool ejection]
-* link:#ultimate-resilience-with-retries-circuit-breaker-and-pool-ejection[Ultimate resilience with retries, circuit breaker, and pool ejection]
-** link:#clean-up[Clean up]
-* link:#egress[Egress]
-** link:#create-httpbin-java-app[Create HTTPBin Java App]
-** link:#create-the-github-java-app[Create the Github Java App]
-** link:#istio-ize-egress[Istio-ize Egress]
-* link:#tips-tricks[Tips &amp; Tricks]
+* link:#_prerequisite_cli_tools[Prerequisite CLI tools]
+* link:#_setup_minishift[Setup minishift]
+* link:#_setup_environment[Setup environment]
+* link:#_istio_installation_script[Istio installation script]
+* link:#_deploy_customer[Deploy customer]
+** link:#_customer_build_using_docker_daemon[Customer build using Docker daemon]
+** link:#_customer_build_using_openshift_s2i_strategy[Customer build using OpenShift S2I strategy]
+* link:#_deploy_preference[Deploy preference]
+** link:#_preference_build_using_docker_daemon[Preference build using Docker daemon]
+** link:#_preference_build_using_openshift_s2i_strategy[Preference build using OpenShift S2I strategy]
+* link:#_deploy_recommendation[Deploy recommendation]
+** link:#_preference_build_using_openshift_s2i_strategy[Recommendation build using Docker daemon]
+** link:#_recommendation_build_using_openshift_s2i_strategy[Recommendation build using OpenShift S2I strategy]
+* link:#_updating_redeploying_code[Updating Redeploying Code]
+* link:#_monitoring[Monitoring]
+* link:#_custom_metrics[Custom Metrics]
+* link:#_tracing[Tracing]
+* link:#_istio_routing[Istio Routing]
+* link:#_recommendationv2[recommendation:v2]
+* link:#_changing_istio_routing[Changing Istio Routing]
+** link:#_all_users_to_recommendationv2[All users to recommendation:v2]
+** link:#_all_users_to_recommendationv1[All users to recommendation:v1]
+** link:#_all_users_to_recommendation_v1_and_v2[All users to recommendation v1 and v2]
+** link:#_split_traffic_between_v1_and_v2[Split traffic between v1 and v2]
+* link:#_fault_injection[Fault Injection]
+* link:#_http_error_503[HTTP Error 503]
+* link:#_delay[Delay]
+* link:#_retry[Retry]
+* link:#_timeout[Timeout]
+* link:#_smart_routing_based_on_user_agent_header_canary_deployment[Smart routing based on user-agent header (Canary Deployment)]
+** link:#_set_recommendation_to_all_v1[Set recommendation to all v1]
+** link:#_set_safari_users_to_v2[Set Safari users to v2]
+** link:#_set_mobile_users_to_v2[Set mobile users to v2]
+** link:#_clean_up[Clean up]
+* link:#_mirroring_traffic_dark_launch[Mirroring Traffic (Dark Launch)]
+** link:#_clean_up[Clean up]
+* link:#_access_control[Access Control]
+** link:#_whitelist[Whitelist]
+** link:#_blacklist[Blacklist]
+* link:#_load_balancer[Load Balancer]
+* link:#_rate_limiting[Rate Limiting]
+* link:#_circuit_breaker[Circuit Breaker]
+* link:#_fail_fast_with_max_connections_and_max_pending_requests[Fail Fast with Max Connections and Max Pending Requests]
+** link:#_load_test_without_circuit_breaker[Load test without circuit breaker]
+** link:#_load_test_with_circuit_breaker[Load test with circuit breaker]
+** link:#_clean_up[Clean up]
+* link:#_pool_ejection[Pool Ejection]
+** link:#_scale_number_of_instances_of_v2_deployment[Scale number of instances of `v2` deployment]
+** link:#_test_behavior_without_failing_instances[Test behavior without failing instances]
+** link:#_test_behavior_with_failing_instance_and_without_pool_ejection[Test behavior with failing instance and without pool ejection]
+** link:#_test_behavior_with_failing_instance_and_with_pool_ejection[Test behavior with failing instance and with pool ejection]
+* link:#_ultimate_resilience_with_retries_circuit_breaker_and_pool_ejection[Ultimate resilience with retries, circuit breaker, and pool ejection]
+** link:#_clean_up[Clean up]
+* link:#_egress[Egress]
+** link:#_create_httpbin_java_app[Create HTTPBin Java App]
+** link:#_create_the_github_java_app[Create the Github Java App]
+** link:#_istio_ize_egress[Istio-ize Egress]
+* link:#_tips_tricks[Tips &amp; Tricks]
 
 == Prerequisite CLI tools
 
@@ -117,6 +118,7 @@ minishift config set cpus 3
 minishift config set vm-driver virtualbox ## or kvm, for Fedora
 minishift config set image-caching true
 minishift addon enable admin-user
+minishift addon enable anyuid
 
 minishift start
 ----
@@ -139,13 +141,13 @@ NOTE: In this tutorial, you will often be polling the customer endpoint with `cu
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/0.6.0/istio-0.6.0-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-osx.tar.gz | tar xz
 
 # Fedora:
-curl -L https://github.com/istio/istio/releases/download/0.6.0/istio-0.6.0-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-linux.tar.gz | tar xz
 
 # Both:
-cd istio-0.6.0
+cd istio-0.8.0
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 
@@ -154,20 +156,13 @@ export PATH=$ISTIO_HOME/bin:$PATH
 [source,bash]
 ----
 oc login $(minishift ip):8443 -u admin -p admin
-oc adm policy add-scc-to-user anyuid -z istio-ingress-service-account -n istio-system
-oc adm policy add-scc-to-user anyuid -z default -n istio-system
-oc adm policy add-scc-to-user anyuid -z grafana -n istio-system
-oc adm policy add-scc-to-user anyuid -z prometheus -n istio-system
-oc create -f install/kubernetes/istio.yaml
+oc create -f install/kubernetes/istio-demo.yaml
 oc project istio-system
-oc expose svc istio-ingress
-oc apply -f install/kubernetes/addons/prometheus.yaml
-oc apply -f install/kubernetes/addons/grafana.yaml
-oc apply -f install/kubernetes/addons/servicegraph.yaml
+oc expose svc istio-ingressgateway
 oc expose svc servicegraph
 oc expose svc grafana
 oc expose svc prometheus
-oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
+oc expose svc tracing
 ----
 
 Wait for Istio's components to be ready
@@ -175,15 +170,22 @@ Wait for Istio's components to be ready
 [source,bash]
 ----
 $ oc get pods -w
-NAME                             READY     STATUS    RESTARTS   AGE
-grafana-3617079618-4qs2b         1/1       Running   0          4m
-istio-ca-1363003450-tfnjp        1/1       Running   0          4m
-istio-ingress-1005666339-vrjln   1/1       Running   0          4m
-istio-mixer-465004155-zn78n      3/3       Running   0          5m
-istio-pilot-1861292947-25hnm     2/2       Running   0          4m
-jaeger-210917857-2w24f           1/1       Running   0          4m
-prometheus-168775884-dr5dm       1/1       Running   0          4m
-servicegraph-1100735962-tdh78    1/1       Running   0          4m
+
+NAME                                        READY     STATUS      RESTARTS   AGE
+grafana-cd99bf478-bhnjw                     1/1       Running     0          4m
+istio-citadel-ff5696f6f-vh6cg               1/1       Running     0          4m
+istio-cleanup-old-ca-lxd5t                  0/1       Completed   0          4m
+istio-egressgateway-58d98d898c-qw8v4        1/1       Running     0          4m
+istio-ingressgateway-6bc7c7c4bc-bq648       1/1       Running     0          4m
+istio-mixer-post-install-mwtqx              0/1       Completed   0          4m
+istio-pilot-6c5c6b586c-vs2b6                2/2       Running     0          4m
+istio-policy-5c7fbb4b9f-xtbqr               2/2       Running     0          4m
+istio-sidecar-injector-dbd67c88d-wjfxw      1/1       Running     0          4m
+istio-statsd-prom-bridge-6dbb7dcc7f-xjxcw   1/1       Running     0          4m
+istio-telemetry-54b5bf4847-dztv2            2/2       Running     0          4m
+istio-tracing-67dbb5b89f-f77dx              1/1       Running     0          4m
+prometheus-586d95b8d9-c2926                 1/1       Running     0          4m
+servicegraph-6d86dfc6cb-czn4q               1/1       Running     0          4m
 ----
 
 And if you need quick access to the OpenShift console
@@ -227,11 +229,11 @@ Make sure `istioctl` is in your `PATH`:
 [source,bash]
 ----
 $ istioctl version
-Version: 0.6.0
-GitRevision: 2cb09cdf040a8573330a127947b11e5082619895
-User: root@a28f609ab931
+Version: 0.8.0
+GitRevision: 6f9f420f0c7119ff4fa6a1966a6f6d89b1b4db84
+User: root@48d5ddfd72da
 Hub: docker.io/istio
-GolangVersion: go1.9
+GolangVersion: go1.10.1
 BuildStatus: Clean
 ----
 
@@ -259,7 +261,7 @@ oc create -f ../../kubernetes/Service.yml -n tutorial
 
 [source, bash]
 ----
-oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
+oc new-app --name=customer --context-dir=customer/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
 oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
 oc delete svc/customer ; oc expose dc/customer --port=8080
 oc logs bc/customer -f
@@ -332,7 +334,7 @@ oc create -f ../../kubernetes/Service.yml
 
 [source, bash]
 ----
-oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
+oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
 oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
 oc delete svc/preference-v1 ; oc expose dc/preference-v1 --port=8080
 oc logs bc/preference-v1 -f
@@ -403,7 +405,7 @@ oc get pods -w
 
 [source, bash]
 ----
-oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
+oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
 oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
 oc delete svc/recommendation-v1 ; oc create -f recommendation/kubernetes/Service.yml
 oc logs bc/recommendation-v1 -f
@@ -538,16 +540,16 @@ Let's open the Jaeger console, select `customer` from the list of services and c
 
 [source,bash]
 ----
-minishift openshift service jaeger-query --in-browser
+minishift openshift service tracing --in-browser
 ----
 
 image:readme_images/jaegerUI.png[Trace as seen in Jaeger]
 
-== Istio RouteRule Changes
+== Istio Routing
 
 === recommendation:v2
 
-We can experiment with Istio routing rules by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
+We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
 
 [source,java]
 ----
@@ -663,7 +665,9 @@ and back to the main directory
 cd ../../..
 ----
 
-== Changing Istio RouteRules
+== Changing Istio Routings
+
+IMPORTANT: It takes more or less 10 seconds between you apply an Istio resource and Istio mesh is updated with it. This means that you need to wait for 10 seconds until you can test any change.
 
 ==== All users to recommendation:v2
 
@@ -671,7 +675,8 @@ From the main istio-tutorial directory,
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -684,11 +689,11 @@ Note: "replace" instead of "create" since we are overlaying the previous rule
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl replace -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
 
-istioctl get routerules -n tutorial
+istioctl get virtualservice
 
-istioctl get routerule recommendation-default -o yaml -n tutorial
+istioctl get virtualservice -o yaml -n tutorial
 ----
 
 ==== All users to recommendation v1 and v2
@@ -697,7 +702,7 @@ By simply removing the rule
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-default -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
 ----
 
 and you should see the default behavior of load-balancing between v1 and v2
@@ -719,11 +724,11 @@ recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 ----
 
-Create the routerule that will send 90% of requests to v1 and 10% to v2
+Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2.yml -n tutorial
 ----
 
 and send in several requests
@@ -741,14 +746,15 @@ In another terminal, change the mixture to be 75/25
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl replace -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial
 ----
 
 Clean up
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-v1-v2 -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 ----
 
 == Fault Injection
@@ -771,7 +777,8 @@ You can inject 503's, for approximately 50% of the requests
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-503.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-503.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
@@ -785,7 +792,7 @@ Clean up
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-503 -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial
 ----
 
 === Delay
@@ -794,7 +801,7 @@ The most insidious of possible distributed computing faults is not a "down" serv
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-delay.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
 ----
 
 And hit the customer endpoint
@@ -826,10 +833,11 @@ Clean up
 
 [source]
 ----
-istioctl delete routerule recommendation-delay -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
 ----
 
-== Retry
+== Retry [Istio 0.8.0 I have not been able to make it run, not migrated]
 
 Instead of failing immediately, retry the Service N more times
 
@@ -837,7 +845,8 @@ We will use Istio and return 503's about 50% of the time. Send all users to v2 w
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v2_503.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v2_503.yml -n tutorial
 ----
 
 Now, if you hit the customer endpoint several times, you should see some 503's
@@ -867,7 +876,7 @@ Now add the retry rule
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v2_retry.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v2_retry.yml -n tutorial
 ----
 
 and after a few seconds, things will settle down and you will see it work every time
@@ -935,7 +944,7 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 
 == Timeout
 
-Wait only N seconds before giving up and failing. At this point, no other route rules should be in effect. `oc get routerules` and `oc delete routerule &lt;rulename&gt;` if there are some.
+Wait only N seconds before giving up and failing. At this point, no other virtual service nor destiantion rule (in `tutorial` namespace) should be in effect. To check it run `istioctl get virtualservice` `istioctl get destinationrule` and if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
 
 First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationVerticle.java` making it a slow performer with a 3 second delay.
 
@@ -991,7 +1000,7 @@ Then add the timeout rule
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-timeout.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial
 ----
 
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second
@@ -1017,7 +1026,7 @@ Clean up, delete the timeout rule
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-timeout -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial
 ----
 
 == Smart routing based on user-agent header (Canary Deployment)
@@ -1035,16 +1044,17 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
 ----
 
 ==== Set Safari users to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-safari-recommendation-v2.yml -n tutorial
+istioctl replace -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial
 
-istioctl get routerules -n tutorial
+istioctl get virtualservice -n tutorial
 ----
 
 and test with a Safari (or even Chrome on Mac since it includes Safari in the string). Safari only sees v2 responses from recommendation
@@ -1078,25 +1088,25 @@ curl -A Safari customer-tutorial.$(minishift ip).nip.io
 curl -A Firefox customer-tutorial.$(minishift ip).nip.io
 ----
 
-You can describe the routerule to see its configuration
+You can describe the virtualservice to see its configuration
 
 [source,bash]
 ----
-istioctl get routerule recommendation-safari -o yaml -n tutorial
+istioctl get virtualservice -o yaml -n tutorial
 ----
 
 Remove the Safari rule
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-safari -n tutorial
+istioctl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial
 ----
 
 ==== Set mobile users to v2
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-mobile-recommendation-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
 ----
@@ -1105,7 +1115,8 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-mobile -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
 ----
 
 == Mirroring Traffic (Dark Launch)
@@ -1119,17 +1130,19 @@ You should have 2 pods for recommendation based on the steps above
 
 [source,bash]
 ----
-istioctl get routerules -n tutorial
+istioctl get virtualservice -n tutorial
+istioctl get destinationrule
 ----
 
-You should have NO routerules
-if so "istioctl delete routerule rulename -n tutorial"
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
 
 Make sure you are in the main directory of "istio-tutorial"
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1-mirror-v2.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -1145,7 +1158,8 @@ oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommenda
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-mirror -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
 ----
 
 == Access Control
@@ -1258,7 +1272,7 @@ Now, add the Random LB DestinationPolicy
 
 [source,bash]
 ----
-istioctl create -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial
 ----
 
 And you should see a different pattern of which pod is being selected
@@ -1282,7 +1296,7 @@ Clean up
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/recommendation_lb_policy_app.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial
 
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 ----
@@ -1364,11 +1378,12 @@ First, make sure to uncomment `router.get(&quot;/&quot;).handler(this::timeout);
 
 And follow the Updating &amp; redeploying code steps to get this slower v2 deployed.
 
-Second, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
+Second, you need to *ensure* you have a `destinationrule` and `virtualservice` in place. Let's use a 50/50 split of traffic:
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml -n tutorial
 ----
 
 ==== Load test without circuit breaker
@@ -1390,9 +1405,9 @@ But suppose that in a production system this 3s delay was caused by too many con
 
 [source,bash]
 ----
-istioctl create -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
+istioctl replace -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial
 
-istioctl get destinationpolicies -n tutorial
+istioctl get destinationrule -n tutorial
 ----
 
 More information on the fields for the simple circuit-breaker
@@ -1415,19 +1430,20 @@ You can run siege multiple times, but in all of the executions you should see so
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-v1-v2 -n tutorial
-istioctl delete -f istiofiles/recommendation_cb_policy_version_v2.yml -n tutorial
+istioctl delete virtualservice recommendation -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial
 ----
 
 === Pool Ejection
 
 Pool ejection or _outlier detection_ is a resilience strategy that takes place whenever we have a pool of instances/pods to serve a client request. If the request is forwarded to a certain instance and it fails (e.g. returns a 50x error code), then Istio will eject this instance from the pool for a certain _sleep window_. In our example the sleep window is configured to be 15s. This increases the overall availability by making sure that only healthy pods participate in the pool of instances.
 
-First, you need to insure you have a `routerule` in place. Let's use a 50/50 split of traffic:
+First, you need to insure you have a `destinationrule` and `virtualservice` in place to send traffic to the services. Let's use a 50/50 split of traffic:
 
 [source,bash]
 ----
-istioctl create -f istiofiles/route-rule-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml -n tutorial
 ----
 
 ==== Scale number of instances of `v2` deployment
@@ -1500,7 +1516,7 @@ Now we'll get into one the pods and add some erratic behavior on it. Get one of 
 
 [source,bash]
 ----
-oc exec -it recommendation-v2-2036617847-spdrb -c recommendation /bin/bash
+oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -1552,7 +1568,7 @@ Now let's add the pool ejection behavior:
 
 [source,bash]
 ----
-istioctl create -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
+istioctl replace -f istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml -n tutorial
 ----
 
 Throw some requests at the customer endpoint:
@@ -1618,11 +1634,11 @@ Even with pool ejection your application doesn't _look_ that resilient. That's p
 - *Pool Ejection* to remove failing instances from the pool of responding instances;
 - *Retries* to forward the request to another instance just in case we get an open circuit breaker and/or pool ejection;
 
-By simply adding a *retry* configuration to our current `routerule`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
+By simply adding a *retry* configuration to our current `virtualservice`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
 
 [source,bash]
 ----
-istioctl replace -f istiofiles/route-rule-recommendation-v1_and_v2_retry.yml -n tutorial
+istioctl replace -f istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml -n tutorial
 ----
 
 Throw some requests at the customer endpoint:
@@ -1681,8 +1697,8 @@ Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the c
 ----
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 oc delete pod -l app=recommendation,version=v2
-istioctl delete routerule recommendation-v1-v2 -n tutorial
-istioctl delete -f istiofiles/recommendation_cb_policy_pool_ejection.yml -n tutorial
+istioctl delete virtualservice recommendation -n tutorial
+istioctl delete destinationrule recommendation -n tutorial
 ----
 
 == Egress
@@ -1786,7 +1802,7 @@ cd ../..
 ----
 istioctl create -f istiofiles/egress_httpbin.yml -n istioegress
 
-istioctl get egressrules
+istioctl get serviceentry
 
 curl egresshttpbin-istioegress.$(minishift ip).nip.io
 ----
@@ -1811,17 +1827,18 @@ add a egressrule for google
 [source,bash]
 ----
 cat <<EOF | istioctl create -f -
-apiVersion: config.istio.io/v1alpha2
-kind: EgressRule
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
 metadata:
   name: google-egress-rule
   namespace: istioegress
 spec:
-  destination:
-    service: www.google.com
+  hosts:
+  - www.google.com
   ports:
-    - port: 443
-      protocol: https
+  - name: https-443
+    number: 443
+    protocol: https
 EOF
 ----
 
@@ -1849,7 +1866,7 @@ curl egressgithub-istioegress.$(minishift ip).nip.io
 
 [source,bash]
 ----
-istioctl delete egressrule httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress
+iistioctl delete serviceentry httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress
 ----
 
 and if you need some memory back, just delete the project
@@ -1896,78 +1913,152 @@ oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
 oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
 ----
 
+IMPORTANT: `/routes` is not valid anymore in Istio 0.8.0, and I have not found any endpoint that can be the replacement by checking all valid endpoints.
+
 [source,bash]
 ----
-oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > afile.json
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > afile.json
 ----
 
-Look for "route_config_name": "8080", you should see 3 entries for customer, preference and recommendation
+Look for `route_config`, containing `"name": "8080"` abd you should see entries for customer, preference and recommendation
 
 [source,json]
 ----
-{
-	"name": "8080",
-	"virtual_hosts": [{
-		"name": "customer.springistio.svc.cluster.local|http",
-		"domains": ["customer:8080", "customer", "customer.springistio:8080", "customer.springistio", "customer.springistio.svc:8080", "customer.springistio.svc", "customer.springistio.svc.cluster:8080", "customer.springistio.svc.cluster", "customer.springistio.svc.cluster.local:8080", "customer.springistio.svc.cluster.local", "172.30.176.159:8080", "172.30.176.159"],
-		"routes": [{
-			"match": {
-				"prefix": "/"
-			},
-			"route": {
-				"cluster": "out.customer.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},
-			"decorator": {
-				"operation": "default-route"
-			}
-		}]
-	}, {
-		"name": "preference.springistio.svc.cluster.local|http",
-		"domains": ["preference:8080", "preference", "preference.springistio:8080", "preference.springistio", "preference.springistio.svc:8080", "preference.springistio.svc", "preference.springistio.svc.cluster:8080", "preference.springistio.svc.cluster", "preference.springistio.svc.cluster.local:8080", "preference.springistio.svc.cluster.local", "172.30.249.133:8080", "172.30.249.133"],
-		"routes": [{
-			"match": {
-				"prefix": "/"
-			},
-			"route": {
-				"cluster": "out.preference.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},
-			"decorator": {
-				"operation": "default-route"
-			}
-		}]
-	}, {
-		"name": "recommendation.springistio.svc.cluster.local|http",
-		"domains": ["recommendation:8080", "recommendation", "recommendation.springistio:8080", "recommendation.springistio", "recommendation.springistio.svc:8080", "recommendation.springistio.svc", "recommendation.springistio.svc.cluster:8080", "recommendation.springistio.svc.cluster", "recommendation.springistio.svc.cluster.local:8080", "recommendation.springistio.svc.cluster.local", "172.30.209.113:8080", "172.30.209.113"],
-		"routes": [{
-			"match": {
-				"prefix": "/"
-			},
-			"route": {
-				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},
-			"decorator": {
-				"operation": "default-route"
-			}
-		}]
-	}]
-}
+"virtualHosts": [
+      {
+       "name": "customer.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "customer.tutorial.svc.cluster.local",
+        "customer.tutorial.svc.cluster.local:8080",
+        "customer",
+        "customer:8080",
+        "customer.tutorial.svc.cluster",
+        "customer.tutorial.svc.cluster:8080",
+        "customer.tutorial.svc",
+        "customer.tutorial.svc:8080",
+        "customer.tutorial",
+        "customer.tutorial:8080",
+        "172.30.107.115",
+        "172.30.107.115:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||customer.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "istio-pilot.istio-system.svc.cluster.local:8080",
+       "domains": [
+        "istio-pilot.istio-system.svc.cluster.local",
+        "istio-pilot.istio-system.svc.cluster.local:8080",
+        "istio-pilot.istio-system",
+        "istio-pilot.istio-system:8080",
+        "istio-pilot.istio-system.svc.cluster",
+        "istio-pilot.istio-system.svc.cluster:8080",
+        "istio-pilot.istio-system.svc",
+        "istio-pilot.istio-system.svc:8080",
+        "172.30.142.41",
+        "172.30.142.41:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||istio-pilot.istio-system.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "preference.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "preference.tutorial.svc.cluster.local",
+        "preference.tutorial.svc.cluster.local:8080",
+        "preference",
+        "preference:8080",
+        "preference.tutorial.svc.cluster",
+        "preference.tutorial.svc.cluster:8080",
+        "preference.tutorial.svc",
+        "preference.tutorial.svc:8080",
+        "preference.tutorial",
+        "preference.tutorial:8080",
+        "172.30.26.194",
+        "172.30.26.194:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||preference.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "recommendation.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "recommendation.tutorial.svc.cluster.local",
+        "recommendation.tutorial.svc.cluster.local:8080",
+        "recommendation",
+        "recommendation:8080",
+        "recommendation.tutorial.svc.cluster",
+        "recommendation.tutorial.svc.cluster:8080",
+        "recommendation.tutorial.svc",
+        "recommendation.tutorial.svc:8080",
+        "recommendation.tutorial",
+        "recommendation.tutorial:8080",
+        "172.30.103.127",
+        "172.30.103.127:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||recommendation.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      }
+     ],
 ----
 
-Now add a new routerule
+Now add a new `destinationrule` and `virtualservice`.
 
 [source,bash]
 ----
-oc create -f istiofiles/route-rule-recommendation-v2.yml
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml
+istioctl create -f istiofiles/virtual-service-recommendation-v2.yml
 ----
 
 The review the routes again
 
 [source,bash]
 ----
-oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/routes > bfile.json
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > bfile.json
 ----
 
 Here is the Before:
@@ -1994,9 +2085,8 @@ And the After:
 [source,javascript]
 ----
 			"route": {
-				"cluster": "out.recommendation.springistio.svc.cluster.local|http|version=v2",
-				"timeout": "0s"
-			},
+          		"cluster": "outbound|8080|version-v2|recommendation.tutorial.svc.cluster.local",
+          	},
 ----
 
 and
@@ -2004,8 +2094,8 @@ and
 [source,javascript]
 ----
 			"decorator": {
-				"operation": "recommendation-default"
-			}
+          		"operation": "recommendation"
+         	}
 ----
 
 If you need the Pod IP
@@ -2022,7 +2112,7 @@ Dive into the istio-proxy container
 oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
 cd /etc/istio/proxy
 ls
-cat envoy-rev3.json
+cat envoy-rev0.json
 ----
 
 Snowdrop Troubleshooting
