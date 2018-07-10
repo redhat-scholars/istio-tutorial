@@ -162,7 +162,7 @@ oc expose svc istio-ingressgateway
 oc expose svc servicegraph
 oc expose svc grafana
 oc expose svc prometheus
-oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/master/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
+oc expose svc tracing
 ----
 
 Wait for Istio's components to be ready
@@ -261,7 +261,7 @@ oc create -f ../../kubernetes/Service.yml -n tutorial
 
 [source, bash]
 ----
-oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
+oc new-app --name=customer --context-dir=customer/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
 oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
 oc delete svc/customer ; oc expose dc/customer --port=8080
 oc logs bc/customer -f
@@ -334,7 +334,7 @@ oc create -f ../../kubernetes/Service.yml
 
 [source, bash]
 ----
-oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
+oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
 oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
 oc delete svc/preference-v1 ; oc expose dc/preference-v1 --port=8080
 oc logs bc/preference-v1 -f
@@ -405,7 +405,7 @@ oc get pods -w
 
 [source, bash]
 ----
-oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
+oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
 oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
 oc delete svc/recommendation-v1 ; oc create -f recommendation/kubernetes/Service.yml
 oc logs bc/recommendation-v1 -f
@@ -540,7 +540,7 @@ Let's open the Jaeger console, select `customer` from the list of services and c
 
 [source,bash]
 ----
-minishift openshift service jaeger-query --in-browser
+minishift openshift service tracing --in-browser
 ----
 
 image:readme_images/jaegerUI.png[Trace as seen in Jaeger]
