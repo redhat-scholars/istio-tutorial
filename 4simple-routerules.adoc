@@ -1,0 +1,213 @@
+== Simple Route Rules
+
+For this use case, we need to create a modified version of Recommendations
+
+=== Create recommendation:v2
+
+We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
+
+[source,java]
+----
+private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+----
+
+The "v2" tag during the Docker build is significant.
+
+There is also a second `deployment.yml` file to label things correctly
+
+==== Docker build (if you have access to Docker daemon)
+
+[source,bash]
+----
+cd recommendation/java/vertx
+mvn clean package
+
+docker build -t example/recommendation:v2 .
+
+docker images | grep recommendation
+example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
+example/recommendation                  v1                  f072978d9cf6        8 minutes ago      438MB
+----
+
+_Important:_ We have a 2nd Deployment to manage the v2 version of recommendation. 
+
+[source,bash]
+----
+oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+
+oc get pods -w
+----
+
+==== OpenShift S2I strategy (if you DON'T have access to Docker daemon)
+
+[source, bash]
+----
+mvn clean package -f recommendation/java/vertx
+oc new-app -l app=recommendation,version=v2 --name=recommendation-v2 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v2.yml
+oc apply -f <(istioctl kube-inject -f recommendation-v2.yml) -n tutorial
+oc cancel-build bc/recommendation-v2
+oc delete svc/recommendation-v2
+oc start-build recommendation-v2 --from-dir=. --follow
+----
+
+==== Wait for v2 to be deployed
+
+Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
+
+[source,bash]
+----
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preference-243057078-8c5hz           2/2       Running   0          15m
+recommendation-v1-60483540-9snd9     2/2       Running   0          12m
+recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
+----
+
+and test the customer endpoint
+
+[source,bash]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+you likely see "customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
+
+[source]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
+
+Send several requests to see their responses
+
+[source,bash]
+----
+#!/bin/bash
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+----
+
+The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
+
+[source,bash]
+----
+oc scale --replicas=2 deployment/recommendation-v2
+----
+
+Now, you will see two requests into the v2 and one for v1.
+
+[source,bash]
+----
+customer => preference => recommendation v1 from '2819441432-qsp25': 29
+customer => preference => recommendation v2 from '99634814-sf4cl': 37
+customer => preference => recommendation v2 from '99634814-sf4cl': 38
+----
+
+Scale back to a single replica of the recommendation-v2 Deployment
+
+[source,bash]
+----
+oc scale --replicas=1 deployment/recommendation-v2
+----
+
+and back to the main directory
+
+[source,bash]
+----
+cd ../../..
+----
+
+=== Changing Istio Routings
+
+IMPORTANT: It takes more or less 10 seconds between you apply an Istio resource and Istio mesh is updated with it. This means that you need to wait for 10 seconds until you can test any change.
+
+==== All users to recommendation:v2
+
+From the main istio-tutorial directory,
+
+[source,bash]
+----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v2.yml -n tutorial
+
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+you should only see v2 being returned
+
+==== All users to recommendation:v1
+
+Note: "replace" instead of "create" since we are overlaying the previous rule
+
+[source,bash]
+----
+istioctl replace -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+
+istioctl get virtualservice
+
+istioctl get virtualservice -o yaml -n tutorial
+----
+
+==== All users to recommendation v1 and v2
+
+By simply removing the rule
+
+[source,bash]
+----
+istioctl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+----
+
+and you should see the default behavior of load-balancing between v1 and v2
+
+[source,bash]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+==== Canary deployment: Split traffic between v1 and v2
+
+Canary Deployment scenario: push v2 into the cluster but slowly send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
+
+[source,bash]
+----
+oc get pods -l app=recommendation -n tutorial
+NAME                                  READY     STATUS    RESTARTS   AGE
+recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
+recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
+----
+
+Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
+
+[source,bash]
+----
+istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2.yml -n tutorial
+----
+
+and send in several requests
+
+[source,bash]
+----
+#!/bin/bash
+while true
+do curl customer-tutorial.$(minishift ip).nip.io
+sleep .1
+done
+----
+
+In another terminal, change the mixture to be 75/25
+
+[source,bash]
+----
+istioctl replace -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial
+----
+
+Clean up
+
+[source,bash]
+----
+istioctl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+----

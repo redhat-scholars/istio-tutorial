@@ -1,0 +1,123 @@
+== Setup
+=== Prerequisite CLI tools
+
+You will need in this tutorial:
+
+* `minishift` 
+** https://github.com/minishift/minishift/releases[Mac OS and Fedora]
+* docker
+** https://www.docker.com/docker-mac[Mac OS]
+** Fedora: `dnf install docker`
+* kubectl
+** https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl[Mac OS]
+** Fedora: `dnf install kubernetes-client`
+* `oc (eval $(minishift oc-env))`
+* Apache Maven
+** https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[Mac OS]
+** Fedora: `dnf install maven`
+* link:https://github.com/wercker/stern[stern]
+** Mac OS: `brew install stern`
+** Fedora: `sudo curl --output /usr/local/bin/stern -L https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64 && sudo chmod +x /usr/local/bin/stern`
+* istioctl (will be installed via the steps below)
+* `curl`, `gunzip`, `tar` 
+** Mac OS: built-in or part of your bash shell
+** Fedora: should also be installed already, but just in case... `dnf install curl gzip tar`
+* git
+** `dnf install git`
+
+=== Setup minishift
+
+Assumes `minishift`, tested with minishift v1.15.1+a5c47dd
+
+[source,bash]
+----
+#!/bin/bash
+
+# add the location of minishift execuatable to PATH
+# I also keep other handy tools like kubectl and kubetail.sh
+# in that directory
+
+minishift profile set istio-tutorial
+minishift config set memory 8GB
+minishift config set cpus 3
+minishift config set vm-driver virtualbox ## or kvm, for Fedora
+minishift config set image-caching true
+minishift addon enable admin-user
+minishift addon enable anyuid
+
+minishift start
+----
+
+=== Setup environment
+
+[source,bash]
+----
+eval $(minishift oc-env)
+eval $(minishift docker-env)
+oc login $(minishift ip):8443 -u admin -p admin
+----
+
+NOTE: In this tutorial, you will often be polling the customer endpoint with `curl`, while simultaneously viewing logs via `stern` or `kubetail.sh` and issuing commands via `oc` and `istioctl`. Consider using three terminal windows.
+
+=== Istio installation script
+
+[source,bash]
+----
+#!/bin/bash
+
+# Mac OS:
+curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-osx.tar.gz | tar xz
+
+# Fedora:
+curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-linux.tar.gz | tar xz
+
+# Both:
+cd istio-0.8.0
+export ISTIO_HOME=`pwd`
+export PATH=$ISTIO_HOME/bin:$PATH
+
+----
+
+[source,bash]
+----
+oc login $(minishift ip):8443 -u admin -p admin
+oc create -f install/kubernetes/istio-demo.yaml
+oc project istio-system
+oc expose svc istio-ingressgateway
+oc expose svc servicegraph
+oc expose svc grafana
+oc expose svc prometheus
+oc expose svc tracing
+----
+
+Wait for Istio's components to be ready
+
+[source,bash]
+----
+$ oc get pods -w
+
+NAME                                        READY     STATUS      RESTARTS   AGE
+grafana-cd99bf478-bhnjw                     1/1       Running     0          4m
+istio-citadel-ff5696f6f-vh6cg               1/1       Running     0          4m
+istio-cleanup-old-ca-lxd5t                  0/1       Completed   0          4m
+istio-egressgateway-58d98d898c-qw8v4        1/1       Running     0          4m
+istio-ingressgateway-6bc7c7c4bc-bq648       1/1       Running     0          4m
+istio-mixer-post-install-mwtqx              0/1       Completed   0          4m
+istio-pilot-6c5c6b586c-vs2b6                2/2       Running     0          4m
+istio-policy-5c7fbb4b9f-xtbqr               2/2       Running     0          4m
+istio-sidecar-injector-dbd67c88d-wjfxw      1/1       Running     0          4m
+istio-statsd-prom-bridge-6dbb7dcc7f-xjxcw   1/1       Running     0          4m
+istio-telemetry-54b5bf4847-dztv2            2/2       Running     0          4m
+istio-tracing-67dbb5b89f-f77dx              1/1       Running     0          4m
+prometheus-586d95b8d9-c2926                 1/1       Running     0          4m
+servicegraph-6d86dfc6cb-czn4q               1/1       Running     0          4m
+----
+
+And if you need quick access to the OpenShift console
+
+[source,bash]
+----
+minishift console
+----
+
+NOTE: On your first launch of the OpenShift console via `minishift`, you will receive a warning like "Your connection is not private". For our demo, simply select "Proceed to 192.168.xx.xx (unsafe)" to bypass the warning. Both the username and the password are set to `admin`, thanks to the `admin-user` add-on.

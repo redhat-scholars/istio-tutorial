@@ -1,0 +1,174 @@
+== Egress
+
+There are two examples of egress routing, one for httpbin.org and one for github. Egress routes allow you to apply rules to how internal services interact with external APIs/services.
+
+Create a namespace/project to hold these egress examples
+
+[source,bash]
+----
+oc new-project istioegress
+oc adm policy add-scc-to-user privileged -z default -n istioegress
+----
+
+=== Create HTTPBin Java App
+
+[source,bash]
+----
+cd egress/egresshttpbin/
+
+mvn spring-boot:run
+
+curl localhost:8080
+
+ctrl-c
+
+mvn clean package
+
+docker build -t example/egresshttpbin:v1 .
+
+docker images | grep egress
+
+docker run -it -p 8080:8080 --rm example/egresshttpbin:v1
+
+curl $(minishift ip):8080
+
+ctrl-c
+
+docker ps | grep egress
+
+docker ps -a | grep egress
+
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+
+oc create -f src/main/kubernetes/Service.yml
+
+oc expose service egresshttpbin
+
+curl egresshttpbin-istioegress.$(minishift ip).nip.io
+
+----
+
+Note: It does not work…yet, more to come.
+
+Back to the main istio-tutorial directory
+
+[source,bash]
+----
+cd ../..
+----
+
+=== Create the Github Java App
+
+[source,bash]
+----
+cd egress/egressgithub/
+
+mvn clean package
+
+docker build -t example/egressgithub:v1 .
+
+docker images | grep egress
+
+docker run -it -p 8080:8080 --rm example/egressgithub:v1
+
+curl $(minishift ip):8080
+----
+
+Note: it will not work now but it will once Istio-ized
+
+[source,bash]
+----
+ctrl-c
+
+docker ps | grep egress
+
+oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+
+oc create -f src/main/kubernetes/Service.yml
+
+oc expose service egressgithub
+
+curl egressgithub-istioegress.$(minishift ip).nip.io
+
+cd ../..
+----
+
+=== Istio-ize Egress
+
+[source,bash]
+----
+istioctl create -f istiofiles/egress_httpbin.yml -n istioegress
+
+istioctl get serviceentry
+
+curl egresshttpbin-istioegress.$(minishift ip).nip.io
+----
+
+or shell into the pod by getting its name and then using that name with oc exec
+
+[source,bash]
+----
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) -c egresshttpbin /bin/bash
+
+curl localhost:8080
+
+curl httpbin.org/user-agent
+
+curl httpbin.org/headers
+
+exit
+----
+
+add a egressrule for google
+
+[source,bash]
+----
+cat <<EOF | istioctl create -f -
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: google-egress-rule
+  namespace: istioegress
+spec:
+  hosts:
+  - www.google.com
+  ports:
+  - name: https-443
+    number: 443
+    protocol: https
+EOF
+----
+
+and shell into the github pod for testing google access
+
+[source,bash]
+----
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) -c egressgithub /bin/bash
+
+curl http://www.google.com:443
+
+exit
+----
+
+Now, apply the egressrule for github and execute the Java code that hits api.github.com/users
+
+[source,bash]
+----
+istioctl create -f istiofiles/egress_github.yml -n istioegress
+
+curl egressgithub-istioegress.$(minishift ip).nip.io
+----
+
+Clean up
+
+[source,bash]
+----
+iistioctl delete serviceentry httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress
+----
+
+and if you need some memory back, just delete the project
+
+[source,bash]
+----
+oc delete project istioegress
+----
