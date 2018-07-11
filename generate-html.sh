@@ -1,4 +1,4 @@
 #!/bin/bash
 
-asciidoctor readme.adoc -o docs/index.html
-open docs/index.html
+asciidoctor readme.adoc -o index.html
+open index.html

@@ -8,6 +8,9 @@ This content is brought to you by http://developers.redhat.com - Register today!
 :source-highlighter: highlight.js
 
 
+A HTML version of this file is published at https://redhat-developer-demos.github.io/istio-tutorial/
+
+
 If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly
 
 
