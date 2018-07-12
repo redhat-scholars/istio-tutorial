@@ -46,5 +46,9 @@ include::docs/7circuit-breaker.adoc[]
 
 include::docs/8egress.adoc[]
 
+== Advanced use cases
+
+include::docs/advanced/virtualization.adoc[]
+
 include::docs/9tips.adoc[]
 

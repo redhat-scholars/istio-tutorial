@@ -1,4 +1,4 @@
-= Service Virtualization and Istio
+=== Service Virtualization and Istio
 
 IMPORTANT: You should have NO `virtualservice` nor `destinationrule` in `tutorial` namespace, if so `istioctl delete virtualservice name -n tutorial` and `istioctl delete destinationrule name -n tutorial`
 
@@ -9,7 +9,7 @@ Service virtualization can be understood as something similar as mocking where i
 
 For this concrete case, virtualized recommendation service will return `recommendation v2 from 'virtualized': 2`.
 
-== Preference:v2
+==== Preference:v2
 
 Move to preference directory:
 
@@ -29,7 +29,7 @@ The "v2" tag during the Docker build is significant.
 
 There is also a second `deployment.yml` file to label things correctly
 
-== Docker build (if you have access to Docker daemon)
+===== Docker build (if you have access to Docker daemon)
 
 [source, bash]
 ----
@@ -49,7 +49,7 @@ oc get pods -w
 cd ../../..
 ----
 
-== OpenShift S2I strategy (if you DON’T have access to Docker daemon)
+===== OpenShift S2I strategy (if you DON’T have access to Docker daemon)
 
 [source, bash]
 ----
@@ -62,7 +62,7 @@ oc delete svc/preference-v2
 oc start-build preference-v2 --from-dir=. --follow
 ----
 
-== Wait for v2 to be deployed
+===== Wait for v2 to be deployed
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
@@ -106,7 +106,7 @@ customer => preference => recommendation v2 from '1275713543-2bs5k': 3
 customer => PREFERENCE => recommendation v2 from '1275713543-2bs5k': 3
 ---- 
 
-== Adding Service Virtualization
+==== Adding Service Virtualization
 
 We'll create a Docker image with Hoverfly (Service Virtualization tool) with some canned requests/answers for recommendation service.
 
@@ -182,7 +182,7 @@ customer => PREFERENCE => recommendation v2 from 'virtualized': 2
 Now all requests that are from preference v2 are redirected to virtualized recommendation service.
 In this way when you deploy a new service, you can mirror the traffic without worrying about side-effects on other services, since the requests are redirected to a virtualized instance instead of a production one.
 
-=== Clean up
+Clean up
 
 [source,bash]
 ----
