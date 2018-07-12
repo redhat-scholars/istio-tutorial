@@ -8,10 +8,14 @@ This content is brought to you by http://developers.redhat.com - Register today!
 :source-highlighter: highlight.js
 
 
-A HTML version of this file is published at https://redhat-developer-demos.github.io/istio-tutorial/
+- A HTML version of this file is published at https://redhat-developer-demos.github.io/istio-tutorial/
 
+- The source code is available at https://github.com/redhat-developer-demos/istio-tutorial
 
-If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly
+- Download the ebook "Introducing Istio Service Mesh for Microservices" for FREE at https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/.
+
+- If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly.
+
 
 
 There are three different and super simple microservices in this system and they are chained together in the following sequence:
@@ -26,21 +30,21 @@ There are two more simple apps that illustrate how Istio handles egress routes: 
 
 toc::[]
 
-include::1setup.adoc[]
+include::docs/1setup.adoc[]
 
-include::2deploy-microservices.adoc[]
+include::docs/2deploy-microservices.adoc[]
 
-include::3monitoring-tracing.adoc[]
+include::docs/3monitoring-tracing.adoc[]
 
-include::4simple-routerules.adoc[]
+include::docs/4simple-routerules.adoc[]
 
-include::5advanced-routerules.adoc[]
+include::docs/5advanced-routerules.adoc[]
 
-include::6fault-injection.adoc[]
+include::docs/6fault-injection.adoc[]
 
-include::7circuit-breaker.adoc[]
+include::docs/7circuit-breaker.adoc[]
 
-include::8egress.adoc[]
+include::docs/8egress.adoc[]
 
-include::9tips.adoc[]
+include::docs/9tips.adoc[]
 
