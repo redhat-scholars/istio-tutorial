@@ -35,7 +35,7 @@ siege -r 2 -c 20 -v customer-tutorial.$(minishift ip).nip.io
 
 You should see an output similar to this:
 
-image:readme_images/siege_ok.png[siege output with all successful requests]
+image:docs/images/siege_ok.png[siege output with all successful requests]
 
 All of the requests to our system were successful, but it took some time to run the test, as the `v2` instance/pod was a slow performer.
 
@@ -60,7 +60,7 @@ Now let's see what is the behavior of the system running `siege` again:
 siege -r 2 -c 20 -v customer-tutorial.$(minishift ip).nip.io
 ----
 
-image:readme_images/siege_cb_503.png[siege output with some 503 requests due to open circuit breaker]
+image:docs/images/siege_cb_503.png[siege output with some 503 requests due to open circuit breaker]
 
 You can run siege multiple times, but in all of the executions you should see some `503` errors being displayed in the results. That's the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the instance/pod.
 

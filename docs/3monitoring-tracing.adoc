@@ -9,11 +9,11 @@ Out of the box, you get monitoring via Prometheus and Grafana.
 open "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5s&orgId=1"
 ----
 
-image:readme_images/grafana1.png[alt text]
+image:docs/images/grafana1.png[alt text]
 
 Scroll-down to see the stats for customer, preference and recommendation
 
-image:readme_images/grafana2.png[alt text]
+image:docs/images/grafana2.png[alt text]
 
 === Custom Metrics
 
@@ -40,7 +40,7 @@ round(increase(istio_request_count{destination_service="recommendation.tutorial.
 
 and select `Execute`
 
-image:readme_images/prometheus_custom_metric.png[alt text]
+image:docs/images/prometheus_custom_metric.png[alt text]
 
 Then run several requests through the system
 
@@ -70,4 +70,4 @@ Let's open the Jaeger console, select `customer` from the list of services and c
 minishift openshift service tracing --in-browser
 ----
 
-image:readme_images/jaegerUI.png[Trace as seen in Jaeger]
+image:docs/images/jaegerUI.png[Trace as seen in Jaeger]
