@@ -12,6 +12,7 @@ import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.opentracing.ActiveSpanManager;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -29,7 +30,7 @@ public class CustomerCamelRoute extends RouteBuilder {
                 .contextPath("/")
                 .bindingMode(RestBindingMode.auto);
 
-        rest("/").get().consumes("text/plain")
+        rest("/").get().consumes(MediaType.TEXT_PLAIN_VALUE)
                 .route().routeId("root")
                 .pipeline()
                     .bean("CustomerCamelRoute", "addTracer")
