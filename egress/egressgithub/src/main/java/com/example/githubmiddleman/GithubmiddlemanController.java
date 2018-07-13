@@ -1,13 +1,12 @@
 package com.example.githubmiddleman;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 public class GithubmiddlemanController {
