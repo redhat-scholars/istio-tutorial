@@ -33,7 +33,7 @@ Assumes `minishift`, tested with minishift v1.15.1+a5c47dd
 ----
 #!/bin/bash
 
-# add the location of minishift execuatable to PATH
+# add the location of minishift executable to PATH
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 

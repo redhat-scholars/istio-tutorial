@@ -3,7 +3,7 @@
 IMPORTANT: You should have NO `virtualservice` nor `destinationrule` in `tutorial` namespace, if so `istioctl delete virtualservice name -n tutorial` and `istioctl delete destinationrule name -n tutorial`
 
 We'll create version 2 of preferences service. 
-But in this case instead of communicating with recommendation service, we are goinng to communicate with a virtualized recommendation service.
+But in this case instead of communicating with recommendation service, we are going to communicate with a virtualized recommendation service.
 
 Service virtualization can be understood as something similar as mocking where instead of mocking components (classes), you are mocking remote services.
 

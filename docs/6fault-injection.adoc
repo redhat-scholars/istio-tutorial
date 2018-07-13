@@ -57,7 +57,7 @@ sleep .1
 done
 ----
 
-You will notice many requets to the customer endpoint now have a delay.
+You will notice many requests to the customer endpoint now have a delay.
 If you are monitoring the logs for recommendation v1 and v2, you will also see the delay happens BEFORE the recommendation service is actually called
 
 [source,bash]
@@ -185,7 +185,7 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 
 === Timeout
 
-Wait only N seconds before giving up and failing. At this point, no other virtual service nor destiantion rule (in `tutorial` namespace) should be in effect. To check it run `istioctl get virtualservice` `istioctl get destinationrule` and if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
+Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `istioctl get virtualservice` `istioctl get destinationrule` and if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
 
 First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationVerticle.java` making it a slow performer with a 3 second delay.
 

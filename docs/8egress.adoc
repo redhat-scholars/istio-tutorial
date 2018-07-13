@@ -1,6 +1,6 @@
 == Egress
 
-There are two examples of egress routing, one for httpbin.org and one for github. Egress routes allow you to apply rules to how internal services interact with external APIs/services.
+There are two examples of egress routing, one for httpbin.org and one for GitHub. Egress routes allow you to apply rules to how internal services interact with external APIs/services.
 
 Create a namespace/project to hold these egress examples
 
@@ -57,7 +57,7 @@ Back to the main istio-tutorial directory
 cd ../..
 ----
 
-=== Create the Github Java App
+=== Create the GitHub Java App
 
 [source,bash]
 ----
@@ -139,7 +139,7 @@ spec:
 EOF
 ----
 
-and shell into the github pod for testing google access
+and shell into the GitHub pod for testing google access
 
 [source,bash]
 ----
@@ -150,7 +150,7 @@ curl http://www.google.com:443
 exit
 ----
 
-Now, apply the egressrule for github and execute the Java code that hits api.github.com/users
+Now, apply the egressrule for GitHub and execute the Java code that hits api.github.com/users
 
 [source,bash]
 ----
