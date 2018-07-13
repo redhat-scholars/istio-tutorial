@@ -159,7 +159,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 It will respond with an error since the service `recommendation` is not yet deployed.
 
-NOTE: We could make this a bit more resilent in a future iteration of this tutorial
+NOTE: We could make this a bit more resilient in a future iteration of this tutorial
 
 [source,bash]
 ----
