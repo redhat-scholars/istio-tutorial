@@ -90,6 +90,11 @@ Scale number of instances of `v2` deployment
 ----
 oc scale deployment recommendation-v2 --replicas=2 -n tutorial
 oc get pods -w
+
+or
+
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial
+kubectl get pods -w
 ----
 
 Wait for all the pods to be in the ready state.
@@ -140,6 +145,8 @@ Let's get the name of the pods from recommendation `v2`:
 [source,bash]
 ----
 oc get pods -l app=recommendation,version=v2
+or
+kubectl get pods -l app=recommendation,version=v2
 ----
 
 You should see something like this:
@@ -155,6 +162,8 @@ Now we'll get into one the pods and add some erratic behavior on it. Get one of 
 [source,bash]
 ----
 oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -335,6 +344,11 @@ Clean up
 ----
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 oc delete pod -l app=recommendation,version=v2
+or
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
+kubectl delete pod -l app=recommendation,version=v2
+
+
 istioctl delete virtualservice recommendation -n tutorial
 istioctl delete destinationrule recommendation -n tutorial
 ----

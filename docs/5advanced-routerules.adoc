@@ -95,6 +95,8 @@ istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tu
 [source,bash]
 ----
 oc get pods -l app=recommendation -n tutorial
+or 
+kubectl get pods -l app=recommendation -n tutorial
 ----
 
 You should have 2 pods for recommendation based on the steps above
@@ -123,6 +125,8 @@ Check the logs of recommendation-v2
 [source,bash]
 ----
 oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation
+or
+kubectl logs -f `oc get pods|grep recommendation-v1|awk '{ print $1 }'` -c recommendation
 ----
 
 Clean up
@@ -188,6 +192,8 @@ Add another v2 pod to the mix
 [source,bash]
 ----
 oc scale deployment recommendation-v2 --replicas=2 -n tutorial
+or
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial
 ----
 
 Wait a bit (oc get pods -w to watch)
@@ -202,9 +208,15 @@ Add a 3rd v2 pod to the mix
 
 [source,bash]
 ----
-oc scale deployment recommendation-v2 --replicas=3 -n tutorial
+$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial
+$ oc get pods -n tutorial
 
-oc get pods -n tutorial
+or 
+
+$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial
+$ kubectl get pods -n tutorial
+
+
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-1755156816-cjd2z             2/2       Running   0          1h
 preference-3336288630-2cc6f          2/2       Running   0          1h
@@ -270,6 +282,8 @@ Clean up
 istioctl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial
 
 oc scale deployment recommendation-v2 --replicas=1 -n tutorial
+or
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
 ----
 
 === Rate Limiting

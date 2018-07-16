@@ -34,8 +34,12 @@ _Important:_ We have a 2nd Deployment to manage the v2 version of recommendation
 [source,bash]
 ----
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
-
 oc get pods -w
+
+or
+
+kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+kubectl get pods -w
 ----
 
 ==== OpenShift S2I strategy (if you DON'T have access to Docker daemon)
@@ -95,6 +99,8 @@ The default Kubernetes/OpenShift behavior is to round-robin load-balance across 
 [source,bash]
 ----
 oc scale --replicas=2 deployment/recommendation-v2
+or
+kubectl scale --replicas=2 deployment/recommendation-v2
 ----
 
 Now, you will see two requests into the v2 and one for v1.
@@ -111,6 +117,8 @@ Scale back to a single replica of the recommendation-v2 Deployment
 [source,bash]
 ----
 oc scale --replicas=1 deployment/recommendation-v2
+or
+kubectl scale --replicas=2 deployment/recommendation-v2
 ----
 
 and back to the main directory
@@ -173,7 +181,10 @@ Canary Deployment scenario: push v2 into the cluster but slowly send end-user tr
 
 [source,bash]
 ----
-oc get pods -l app=recommendation -n tutorial
+$ oc get pods -l app=recommendation -n tutorial
+or
+$ kubectl get pods -l app=recommendation -n tutorial
+
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          1h

@@ -80,9 +80,14 @@ export PATH=$ISTIO_HOME/bin:$PATH
 
 [source,bash]
 ----
-oc login $(minishift ip):8443 -u admin -p admin
 oc create -f install/kubernetes/istio-demo.yaml
+or 
+kubectl create -f install/kubernetes/istio-demo.yaml
+
 oc project istio-system
+or
+kubectl config set-context $(kubectl config current-context) --namespace=istio-system
+
 oc expose svc istio-ingressgateway
 oc expose svc servicegraph
 oc expose svc grafana
@@ -95,6 +100,8 @@ Wait for Istio's components to be ready
 [source,bash]
 ----
 $ oc get pods -w
+or
+$ kubectl get pods -w
 
 NAME                                        READY     STATUS      RESTARTS   AGE
 grafana-cd99bf478-bhnjw                     1/1       Running     0          4m

@@ -579,7 +579,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_egress">Egress</a>
 <ul class="sectlevel2">
 <li><a href="#_create_httpbin_java_app">Create HTTPBin Java App</a></li>
-<li><a href="#_create_the_github_java_app">Create the Github Java App</a></li>
+<li><a href="#_create_the_github_java_app">Create the GitHub Java App</a></li>
 <li><a href="#_istio_ize_egress">Istio-ize Egress</a></li>
 </ul>
 </li>
@@ -711,7 +711,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 
-# add the location of minishift execuatable to PATH
+# add the location of minishift executable to PATH
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
@@ -769,9 +769,14 @@ export PATH=$ISTIO_HOME/bin:$PATH</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login $(minishift ip):8443 -u admin -p admin
-oc create -f install/kubernetes/istio-demo.yaml
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create -f install/kubernetes/istio-demo.yaml
+or
+kubectl create -f install/kubernetes/istio-demo.yaml
+
 oc project istio-system
+or
+kubectl config set-context $(kubectl config current-context) --namespace=istio-system
+
 oc expose svc istio-ingressgateway
 oc expose svc servicegraph
 oc expose svc grafana
@@ -785,6 +790,8 @@ oc expose svc tracing</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -w
+or
+$ kubectl get pods -w
 
 NAME                                        READY     STATUS      RESTARTS   AGE
 grafana-cd99bf478-bhnjw                     1/1       Running     0          4m
@@ -836,7 +843,9 @@ On your first launch of the OpenShift console via <code>minishift</code>, you wi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami
+or
+kubectl config current-context</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -845,6 +854,10 @@ On your first launch of the OpenShift console via <code>minishift</code>, you wi
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project tutorial
+or
+kubectl create namespace tutorial
+kubectl config set-context $(kubectl config current-context) --namespace=tutorial
+
 oc adm policy add-scc-to-user privileged -z default -n tutorial</code></pre>
 </div>
 </div>
@@ -902,7 +915,12 @@ docker images | grep customer</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml -n tutorial</code></pre>
+oc create -f ../../kubernetes/Service.yml -n tutorial
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
+kubectl create -f ../../kubernetes/Service.yml -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -925,8 +943,14 @@ oc logs bc/customer -f</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer
+
 oc get route
-oc get pods -w</code></pre>
+oc get pods -w
+
+or
+
+kubectl get route -o=jsonpath='{.items[0].spec.host}'
+kubectl get pods -w</code></pre>
 </div>
 </div>
 <div class="admonitionblock important">
@@ -996,8 +1020,14 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 mvn clean package
 docker build -t example/preference:v1 .
 docker images | grep preference
+
 oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml</code></pre>
+oc create -f ../../kubernetes/Service.yml
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
+kubectl create -f ../../kubernetes/Service.yml</code></pre>
 </div>
 </div>
 </div>
@@ -1016,7 +1046,9 @@ oc logs bc/preference-v1 -f</code></pre>
 <h4 id="_wait_preference_to_be_deployed">Wait preference to be deployed</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w
+or
+kubectl get pods -w</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1037,7 +1069,7 @@ oc logs bc/preference-v1 -f</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-We could make this a bit more resilent in a future iteration of this tutorial
+We could make this a bit more resilient in a future iteration of this tutorial
 </td>
 </tr>
 </table>
@@ -1095,9 +1127,16 @@ The tag <code>v1</code> at the end of the image name matters. We will be creatin
 mvn clean package
 docker build -t example/recommendation:v1 .
 docker images | grep recommendation
+
 oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 oc create -f ../../kubernetes/Service.yml
-oc get pods -w</code></pre>
+oc get pods -w
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
+kubectl create -f ../../kubernetes/Service.yml
+kubectl get pods -w</code></pre>
 </div>
 </div>
 </div>
@@ -1167,10 +1206,16 @@ vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controll
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package
 docker build -t example/{servicename}:v1 .
+
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
+oc delete pod -l app={servicename},version=v1
 
-oc delete pod -l app={servicename},version=v1</code></pre>
+or
+
+kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
+kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
+kubectl delete pod -l app={servicename},version=v1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1181,7 +1226,9 @@ oc delete pod -l app={servicename},version=v1</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc describe deployment {servicename} | grep Replicas</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc describe deployment {servicename} | grep Replicas
+or
+kubectl describe deployment {servicename} | grep Replicas</code></pre>
 </div>
 </div>
 </div>
@@ -1334,8 +1381,12 @@ example/recommendation                  v1                  f072978d9cf6        
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+oc get pods -w
 
-oc get pods -w</code></pre>
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+kubectl get pods -w</code></pre>
 </div>
 </div>
 </div>
@@ -1402,7 +1453,9 @@ done</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=2 deployment/recommendation-v2</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=2 deployment/recommendation-v2
+or
+kubectl scale --replicas=2 deployment/recommendation-v2</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1420,7 +1473,9 @@ customer =&gt; preference =&gt; recommendation v2 from '99634814-sf4cl': 38</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=1 deployment/recommendation-v2</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=1 deployment/recommendation-v2
+or
+kubectl scale --replicas=2 deployment/recommendation-v2</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1505,7 +1560,10 @@ istioctl get virtualservice -o yaml -n tutorial</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -l app=recommendation -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -l app=recommendation -n tutorial
+or
+$ kubectl get pods -l app=recommendation -n tutorial
+
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></pre>
@@ -1666,7 +1724,9 @@ istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tu
 <h3 id="_mirroring_traffic_dark_launch">Mirroring Traffic (Dark Launch)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -l app=recommendation -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -l app=recommendation -n tutorial
+or
+kubectl get pods -l app=recommendation -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1698,7 +1758,9 @@ curl customer-tutorial.$(minishift ip).nip.io</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation
+or
+kubectl logs -f `oc get pods|grep recommendation-v1|awk '{ print $1 }'` -c recommendation</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1774,7 +1836,9 @@ customer =&gt; 403 PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not all
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale deployment recommendation-v2 --replicas=2 -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale deployment recommendation-v2 --replicas=2 -n tutorial
+or
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1791,9 +1855,15 @@ and curl the customer endpoint many times</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale deployment recommendation-v2 --replicas=3 -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial
+$ oc get pods -n tutorial
 
-oc get pods -n tutorial
+or
+
+$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial
+$ kubectl get pods -n tutorial
+
+
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-1755156816-cjd2z             2/2       Running   0          1h
 preference-3336288630-2cc6f          2/2       Running   0          1h
@@ -1863,7 +1933,9 @@ customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 14</c
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial
 
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial</code></pre>
+oc scale deployment recommendation-v2 --replicas=1 -n tutorial
+or
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -1948,7 +2020,10 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -l app=recommendation -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -l app=recommendation -n tutorial
+or
+$ kubectl get pods -l app=recommendation -n tutorial
+
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          18h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          3h</code></pre>
@@ -2003,7 +2078,7 @@ done</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You will notice many requets to the customer endpoint now have a delay.
+<p>You will notice many requests to the customer endpoint now have a delay.
 If you are monitoring the logs for recommendation v1 and v2, you will also see the delay happens BEFORE the recommendation service is actually called</p>
 </div>
 <div class="listingblock">
@@ -2144,7 +2219,7 @@ customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 130</
 <div class="sect2">
 <h3 id="_timeout">Timeout</h3>
 <div class="paragraph">
-<p>Wait only N seconds before giving up and failing. At this point, no other virtual service nor destiantion rule (in <code>tutorial</code> namespace) should be in effect. To check it run <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> and if so <code>istioctl delete virtualservice virtualservicename -n tutorial</code> and <code>istioctl delete destinationrule destinationrulename -n tutorial</code></p>
+<p>Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in <code>tutorial</code> namespace) should be in effect. To check it run <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> and if so <code>istioctl delete virtualservice virtualservicename -n tutorial</code> and <code>istioctl delete destinationrule destinationrulename -n tutorial</code></p>
 </div>
 <div class="paragraph">
 <p>First, introduce some wait time in <code>recommendation v2</code> by uncommenting the line that calls the <code>timeout()</code> method. Update <code>RecommendationVerticle.java</code> making it a slow performer with a 3 second delay.</p>
@@ -2182,6 +2257,8 @@ docker build -t example/recommendation:v2 .
 docker images | grep recommendation
 
 oc delete pod -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..</code></pre>
 </div>
@@ -2349,7 +2426,12 @@ istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale deployment recommendation-v2 --replicas=2 -n tutorial
-oc get pods -w</code></pre>
+oc get pods -w
+
+or
+
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial
+kubectl get pods -w</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2404,7 +2486,9 @@ customer =&gt; preference =&gt; recommendation v2 from '2036617847-hdjv2': 220</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -l app=recommendation,version=v2</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -l app=recommendation,version=v2
+or
+kubectl get pods -l app=recommendation,version=v2</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2421,7 +2505,9 @@ recommendation-v2-2036617847-spdrb   2/2       Running   0          7m</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2618,6 +2704,11 @@ customer =&gt; preference =&gt; recommendation v1 from '2039379827-jmm6x': 554</
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale deployment recommendation-v2 --replicas=1 -n tutorial
 oc delete pod -l app=recommendation,version=v2
+or
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
+kubectl delete pod -l app=recommendation,version=v2
+
+
 istioctl delete virtualservice recommendation -n tutorial
 istioctl delete destinationrule recommendation -n tutorial</code></pre>
 </div>
@@ -2629,7 +2720,7 @@ istioctl delete destinationrule recommendation -n tutorial</code></pre>
 <h2 id="_egress">Egress</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>There are two examples of egress routing, one for httpbin.org and one for github. Egress routes allow you to apply rules to how internal services interact with external APIs/services.</p>
+<p>There are two examples of egress routing, one for httpbin.org and one for GitHub. Egress routes allow you to apply rules to how internal services interact with external APIs/services.</p>
 </div>
 <div class="paragraph">
 <p>Create a namespace/project to hold these egress examples</p>
@@ -2637,6 +2728,10 @@ istioctl delete destinationrule recommendation -n tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project istioegress
+or
+kubectl create namespace istioegress
+kubectl config set-context $(kubectl config current-context) --namespace=istioegress
+
 oc adm policy add-scc-to-user privileged -z default -n istioegress</code></pre>
 </div>
 </div>
@@ -2669,8 +2764,11 @@ docker ps | grep egress
 docker ps -a | grep egress
 
 oc apply -f &lt;(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
-
 oc create -f src/main/kubernetes/Service.yml
+or
+kubectl apply -f &lt;(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+kubectl create -f src/main/kubernetes/Service.yml
+
 
 oc expose service egresshttpbin
 
@@ -2690,7 +2788,7 @@ curl egresshttpbin-istioegress.$(minishift ip).nip.io</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_create_the_github_java_app">Create the Github Java App</h3>
+<h3 id="_create_the_github_java_app">Create the GitHub Java App</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd egress/egressgithub/
@@ -2716,8 +2814,10 @@ curl $(minishift ip):8080</code></pre>
 docker ps | grep egress
 
 oc apply -f &lt;(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
-
 oc create -f src/main/kubernetes/Service.yml
+or
+kubectl apply -f &lt;(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
+kubectl create -f src/main/kubernetes/Service.yml
 
 oc expose service egressgithub
 
@@ -2744,6 +2844,8 @@ curl egresshttpbin-istioegress.$(minishift ip).nip.io</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) -c egresshttpbin /bin/bash
+or
+kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) -c egresshttpbin /bin/bash
 
 curl localhost:8080
 
@@ -2776,11 +2878,13 @@ EOF</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>and shell into the github pod for testing google access</p>
+<p>and shell into the GitHub pod for testing google access</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) -c egressgithub /bin/bash
+or
+kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) -c egressgithub /bin/bash
 
 curl http://www.google.com:443
 
@@ -2788,7 +2892,7 @@ exit</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now, apply the egressrule for github and execute the Java code that hits api.github.com/users</p>
+<p>Now, apply the egressrule for GitHub and execute the Java code that hits api.github.com/users</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2802,7 +2906,7 @@ curl egressgithub-istioegress.$(minishift ip).nip.io</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">iistioctl delete serviceentry httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete serviceentry httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2835,7 +2939,7 @@ You should have NO <code>virtualservice</code> nor <code>destinationrule</code> 
 </div>
 <div class="paragraph">
 <p>We&#8217;ll create version 2 of preferences service.
-But in this case instead of communicating with recommendation service, we are goinng to communicate with a virtualized recommendation service.</p>
+But in this case instead of communicating with recommendation service, we are going to communicate with a virtualized recommendation service.</p>
 </div>
 <div class="paragraph">
 <p>Service virtualization can be understood as something similar as mocking where instead of mocking components (classes), you are mocking remote services.</p>
@@ -3077,7 +3181,9 @@ oc delete all  -l app=recommendation,version=virtualized</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
+or
+kubectl get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3085,7 +3191,9 @@ oc delete all  -l app=recommendation,version=virtualized</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
+or
+kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3096,7 +3204,14 @@ oc delete all  -l app=recommendation,version=virtualized</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
 PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
 RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
-RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)</code></pre>
+RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)
+
+or
+
+CPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
+PPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
+RPOD1=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
+RPOD2=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3106,7 +3221,13 @@ RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendatio
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://preference:8080
 oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
-oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080</code></pre>
+oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
+
+or
+
+kubectl exec $CPOD -c customer -n tutorial curl http://preference:8080
+kubectl exec $CPOD -c customer -n tutorial curl http://recommendation:8080
+kubectl exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080</code></pre>
 </div>
 </div>
 <div class="admonitionblock important">
@@ -3123,7 +3244,9 @@ oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json
+or
+kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3267,7 +3390,9 @@ istioctl create -f istiofiles/virtual-service-recommendation-v2.yml</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json
+or
+kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3316,7 +3441,9 @@ istioctl create -f istiofiles/virtual-service-recommendation-v2.yml</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
+or
+kubectl get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3325,6 +3452,9 @@ istioctl create -f istiofiles/virtual-service-recommendation-v2.yml</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
+or
+kubectl exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
+
 cd /etc/istio/proxy
 ls
 cat envoy-rev0.json</code></pre>

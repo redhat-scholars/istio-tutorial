@@ -8,7 +8,10 @@ By default, recommendation v1 and v2 are being randomly load-balanced as that is
 
 [source,bash]
 ----
-oc get pods -l app=recommendation -n tutorial
+$ oc get pods -l app=recommendation -n tutorial
+or
+$ kubectl get pods -l app=recommendation -n tutorial
+
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          18h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
@@ -221,6 +224,8 @@ docker build -t example/recommendation:v2 .
 docker images | grep recommendation
 
 oc delete pod -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
 ----
