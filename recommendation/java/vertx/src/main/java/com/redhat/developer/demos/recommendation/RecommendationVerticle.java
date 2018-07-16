@@ -2,16 +2,21 @@ package com.redhat.developer.demos.recommendation;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.healthchecks.HealthCheckHandler;
 import io.vertx.ext.healthchecks.Status;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.codec.BodyCodec;
 
 public class RecommendationVerticle extends AbstractVerticle {
 
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
+    private static final String RESPONSE_STRING_FORMAT = "recommendation v3 from '%s': %d\n";
+    private static final String HTTP_NOW = "now.httpbin.org";
 
     private static final String HOSTNAME = parseContainerIdFromHostname(
         System.getenv().getOrDefault("HOSTNAME", "unknown")
@@ -71,6 +76,23 @@ public class RecommendationVerticle extends AbstractVerticle {
             count++;
             ctx.response().end(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
         }
+    }
+
+    private void getNow(RoutingContext ctx) {
+        final WebClient client = WebClient.create(vertx);
+        client.get(80, HTTP_NOW, "/")
+        .timeout(5000)
+        .as(BodyCodec.jsonObject())
+            .send(ar -> {
+                if (ar.succeeded()) {
+                    HttpResponse<JsonObject> response = ar.result();
+                    JsonObject body = response.body();
+                    String now = body.getJsonObject("now").getString("rfc2822");
+                    ctx.response().end(now + " " + String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
+                } else {
+                    ctx.response().setStatusCode(503).end(ar.cause().getMessage());
+                }
+            });
     }
 
     private void misbehave(RoutingContext ctx) {
