@@ -1,187 +1,179 @@
 == Egress
 
-There are two examples of egress routing, one for httpbin.org and one for GitHub. Egress routes allow you to apply rules to how internal services interact with external APIs/services.
+Let's see an example of using egress route by deploying a recommendation:v3 version. Egress service entry allow you to apply rules to how internal services interact with external APIs/services.
 
-Create a namespace/project to hold these egress examples
+In this case, we are going to configure Istio to access http://now.httpbin.org from internal service (recommendation:v3).
+
+=== Create recommendation:v3
+
+We can experiment with Egress service entry by making two changes to `RecommendationVerticle.java` like the following and creating a "v3" docker image.
+
+First change is updating the response string to:
+
+[source,java]
+----
+private static final String RESPONSE_STRING_FORMAT = "recommendation v3 from '%s': %d\n";
+----
+
+The "v3" tag during the Docker build is significant.
+
+There is also a third `deployment.yml` file to label things correctly
+
+The second change is to change the default output to make a call to http://now.httpbin.org.
+
+From:
+
+[source, java]
+----
+private void getRecommendations(RoutingContext ctx) {
+  if (misbehave) {
+    count = 0;
+    logger.info(String.format("Misbehaving %d", count));
+    ctx.response().setStatusCode(503).end(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
+  } else {
+    count++;
+    ctx.response().end(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
+  }
+}
+----
+
+To:
+
+[source, java]
+----
+private void getRecommendations(RoutingContext ctx) {
+  if (misbehave) {
+    count = 0;
+    logger.info(String.format("Misbehaving %d", count));
+    ctx.response().setStatusCode(503).end(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
+  } else {
+    count++;
+    getNow(ctx);
+  }
+}
+----
+
+==== Docker build (if you have access to Docker daemon)
 
 [source,bash]
 ----
-oc new-project istioegress
-or
-kubectl create namespace istioegress
-kubectl config set-context $(kubectl config current-context) --namespace=istioegress
-
-oc adm policy add-scc-to-user privileged -z default -n istioegress
-----
-
-=== Create HTTPBin Java App
-
-[source,bash]
-----
-cd egress/egresshttpbin/
-
-mvn spring-boot:run
-
-curl localhost:8080
-
-ctrl-c
-
+cd recommendation/java/vertx
 mvn clean package
 
-docker build -t example/egresshttpbin:v1 .
+docker build -t example/recommendation:v3 .
 
-docker images | grep egress
+docker images | grep recommendation
+example/recommendation                  v3                  0671dfb295df        3 seconds ago       443MB
+example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
+example/recommendation                  v1                  f072978d9cf6        8 minutes ago       438MB
+----
 
-docker run -it -p 8080:8080 --rm example/egresshttpbin:v1
+_Important:_ We have a 3rd Deployment to manage the v3 version of recommendation. 
 
-curl $(minishift ip):8080
+[source,bash]
+----
+oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v3.yml) -n tutorial
+oc get pods -w
 
-ctrl-c
-
-docker ps | grep egress
-
-docker ps -a | grep egress
-
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
-oc create -f src/main/kubernetes/Service.yml
 or
-kubectl apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
-kubectl create -f src/main/kubernetes/Service.yml
 
-
-oc expose service egresshttpbin
-
-curl egresshttpbin-istioegress.$(minishift ip).nip.io
-
+kubectl apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment-v3.yml) -n tutorial
+kubectl get pods -w
 ----
 
-Note: It does not work…yet, more to come.
+==== OpenShift S2I strategy (if you DON'T have access to Docker daemon)
 
-Back to the main istio-tutorial directory
+[source, bash]
+----
+mvn clean package -f recommendation/java/vertx
+oc new-app -l app=recommendation,version=v3 --name=recommendation-v3 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v3.yml
+oc apply -f <(istioctl kube-inject -f recommendation-v3.yml) -n tutorial
+oc cancel-build bc/recommendation-v3
+oc delete svc/recommendation-v3
+oc start-build recommendation-v3 --from-dir=. --follow
+----
+
+==== Wait for v3 to be deployed
+
+Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
 [source,bash]
 ----
-cd ../..
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preference-243057078-8c5hz           2/2       Running   0          15m
+recommendation-v1-60483540-9snd9     2/2       Running   0          12m
+recommendation-v2-2815683430-vpx4p   2/2       Running   0          15s
+recommendation-v3-7b445dd469-j6rkg   2/2       Running   0          2m
 ----
 
-=== Create the GitHub Java App
-
-[source,bash]
+[source, terminal]
 ----
-cd egress/egressgithub/
-
-mvn clean package
-
-docker build -t example/egressgithub:v1 .
-
-docker images | grep egress
-
-docker run -it -p 8080:8080 --rm example/egressgithub:v1
-
-curl $(minishift ip):8080
-----
-
-Note: it will not work now but it will once Istio-ized
-
-[source,bash]
-----
-ctrl-c
-
-docker ps | grep egress
-
-oc apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
-oc create -f src/main/kubernetes/Service.yml
-or
-kubectl apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment.yml) -n istioegress
-kubectl create -f src/main/kubernetes/Service.yml
-
-oc expose service egressgithub
-
-curl egressgithub-istioegress.$(minishift ip).nip.io
-
-cd ../..
+cd ../../..
 ----
 
 === Istio-ize Egress
 
+Be sure you do not have any previous destination rule nor virtual service installed.
+
+Let's redirect all traffic to reccomendation:v3.
+
+[source, bash]
+----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v3.yml
+----
+
+Then access to the service:
+
+
+Http client used to communicate with `httpbin` is configured with a 5 seconds timeout.
+Since no Egress service entry has been registered to access an external site, the timeout error is thrown after 5 seconds of trying to access to the site.
+
+[source, bash]
+----
+curl -m 10 customer-tutorial.$(minishift ip).nip.io
+
+upstream request timeout
+----
+
+Let's fix it by registering a service entry to allow access to `httpbin`.
+
 [source,bash]
 ----
-istioctl create -f istiofiles/egress_httpbin.yml -n istioegress
+istioctl create -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
 
 istioctl get serviceentry
 
-curl egresshttpbin-istioegress.$(minishift ip).nip.io
+curl customer-tutorial.$(minishift ip).nip.io
+customer => preference => Mon, 16 Jul 2018 12:03:38 GMT recommendation v3 from '7b445dd469-j6rkg': 1
 ----
 
 or shell into the pod by getting its name and then using that name with oc exec
 
 [source,bash]
 ----
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) -c egresshttpbin /bin/bash
+oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
+
 or
-kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egresshttpbin,version=v1) -c egresshttpbin /bin/bash
 
-curl localhost:8080
+kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v3) -c recommendation /bin/bash
 
-curl httpbin.org/user-agent
-
-curl httpbin.org/headers
+curl http://now.httpbin.org
 
 exit
 ----
 
-add a egressrule for google
 
-[source,bash]
-----
-cat <<EOF | istioctl create -f -
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  name: google-egress-rule
-  namespace: istioegress
-spec:
-  hosts:
-  - www.google.com
-  ports:
-  - name: https-443
-    number: 443
-    protocol: https
-EOF
-----
-
-and shell into the GitHub pod for testing google access
-
-[source,bash]
-----
-oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) -c egressgithub /bin/bash
-or
-kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v1) -c egressgithub /bin/bash
-
-curl http://www.google.com:443
-
-exit
-----
-
-Now, apply the egressrule for GitHub and execute the Java code that hits api.github.com/users
-
-[source,bash]
-----
-istioctl create -f istiofiles/egress_github.yml -n istioegress
-
-curl egressgithub-istioegress.$(minishift ip).nip.io
-----
 
 Clean up
 
 [source,bash]
 ----
-istioctl delete serviceentry httpbin-egress-rule google-egress-rule github-egress-rule -n istioegress
+istioctl delete -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml
 ----
 
-and if you need some memory back, just delete the project
 
-[source,bash]
-----
-oc delete project istioegress
-----
+

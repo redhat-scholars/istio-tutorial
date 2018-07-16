@@ -26,8 +26,6 @@ customer → preference → recommendation
 
 For now, they have a simple exception handling solution for dealing with a missing dependent service: it just returns the error message to the end-user.
 
-There are two more simple apps that illustrate how Istio handles egress routes: link:egress/egressgithub[`egressgithub`] and link:egress/egresshttpbin[`egresshttpbin`]
-
 toc::[]
 
 include::docs/1setup.adoc[]
