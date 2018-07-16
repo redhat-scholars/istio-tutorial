@@ -1,13 +1,8 @@
 package com.redhat.developer.demos;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Predicate;
-import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("RecommendationCamelRoute")
