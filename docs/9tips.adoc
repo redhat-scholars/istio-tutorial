@@ -1,5 +1,3 @@
-== Tips &amp; Tricks
-
 Some tips and tricks that you might find handy
 
 You have two containers in a pod
