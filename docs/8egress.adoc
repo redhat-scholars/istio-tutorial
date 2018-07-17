@@ -25,32 +25,16 @@ From:
 
 [source, java]
 ----
-private void getRecommendations(RoutingContext ctx) {
-  if (misbehave) {
-    count = 0;
-    logger.info(String.format("Misbehaving %d", count));
-    ctx.response().setStatusCode(503).end(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
-  } else {
-    count++;
-    ctx.response().end(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
-  }
-}
+        router.get("/").handler(this::getRecommendations);
+//        router.get("/").handler(this::getNow);
 ----
 
 To:
 
 [source, java]
 ----
-private void getRecommendations(RoutingContext ctx) {
-  if (misbehave) {
-    count = 0;
-    logger.info(String.format("Misbehaving %d", count));
-    ctx.response().setStatusCode(503).end(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
-  } else {
-    count++;
-    getNow(ctx);
-  }
-}
+//        router.get("/").handler(this::getRecommendations);
+        router.get("/").handler(this::getNow);
 ----
 
 ==== Docker build (if you have access to Docker daemon)
@@ -127,14 +111,13 @@ istioctl create -f istiofiles/virtual-service-recommendation-v3.yml
 Then access to the service:
 
 
-Http client used to communicate with `httpbin` is configured with a 5 seconds timeout.
-Since no Egress service entry has been registered to access an external site, the timeout error is thrown after 5 seconds of trying to access to the site.
 
+IMPORTANT: Since no Egress service entry has been registered to access an external site, the timeout error is thrown after 5 seconds of trying to access to the site.
+.
 [source, bash]
 ----
-curl -m 10 customer-tutorial.$(minishift ip).nip.io
-
-upstream request timeout
+$ curl -m 5 customer-tutorial.$(minishift ip).nip.io
+curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received
 ----
 
 Let's fix it by registering a service entry to allow access to `httpbin`.

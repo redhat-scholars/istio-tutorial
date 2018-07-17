@@ -48,6 +48,7 @@ public class RecommendationVerticle extends AbstractVerticle {
 //        router.get("/").handler(this::timeout);
         router.get("/").handler(this::logging);
         router.get("/").handler(this::getRecommendations);
+//        router.get("/").handler(this::getNow);
         router.get("/misbehave").handler(this::misbehave);
         router.get("/behave").handler(this::behave);
 
@@ -79,6 +80,7 @@ public class RecommendationVerticle extends AbstractVerticle {
     }
 
     private void getNow(RoutingContext ctx) {
+        count++;
         final WebClient client = WebClient.create(vertx);
         client.get(80, HTTP_NOW, "/")
         .timeout(5000)
