@@ -46,7 +46,7 @@ GolangVersion: go1.10.1
 BuildStatus: Clean
 ----
 
-==== Customer build using Docker daemon 
+==== Customer build using Docker daemon
 
 NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
 
@@ -160,7 +160,7 @@ kubectl create -f ../../kubernetes/Service.yml
 
 [source, bash]
 ----
-oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
+oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' JAEGER_SERVICE_NAME=preference fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
 oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
 oc delete svc/preference-v1 ; oc expose dc/preference-v1 --port=8080
 oc logs bc/preference-v1 -f
@@ -229,7 +229,7 @@ oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutori
 oc create -f ../../kubernetes/Service.yml
 oc get pods -w
 
-or 
+or
 
 kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 kubectl create -f ../../kubernetes/Service.yml
