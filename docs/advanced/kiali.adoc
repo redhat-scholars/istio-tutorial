@@ -103,7 +103,7 @@ tracing                tracing-istio-system.127.0.0.1.nip.io                    
 So now we have the URL for Kiali (usually,
 "kiali-istio-system.127.0.0.1.nip.io"), so let's access it:
 
-image::https://i.imgur.com/rG5tdZu.png[Login Page]
+image:docs/images/kiali-login.png[Login Page]
 
 The default credentials are "admin/admin", but it's recommended to change them
 before using it in production.
@@ -125,7 +125,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 After you login, you should see the Service Graph page:
 
-image::https://i.imgur.com/PtKVfe4.png[Service Graph Page]
+image:docs/images/kiali-service-graph.png[Service Graph Page]
 
 It shows a graph with all the microservices, connected by the requests going
 through then. On this page, you can see how the services interact with each
@@ -137,29 +137,29 @@ Click the Services link in the left navigation. On the Services page you can
 view a listing of all the services that are running in the cluster, and
 additional information about them, such as health status.
 
-image::https://i.imgur.com/Gytp5Wm.png[Service Listing Page]
+image:docs/images/kiali-service-list.png[Service Listing Page]
 
 Click on the "Preferences" service to view the Service Details page, where you
 can view additional information about each service.
 
-image::https://i.imgur.com/msQjCb4.png[Service Details]
+image:docs/images/kiali-service-details.png[Service Details]
 
 You can see the health status of the service (a Healthy service means one that
 is is up and responding correctly):
 
-image::https://i.imgur.com/MVpqDx8.png[Health Status]
+image:docs/images/kiali-service-health.png[Health Status]
 
 You can also see the deployments:
 
-image::https://i.imgur.com/TdyjCOu.png[Deployments]
+image:docs/images/kiali-deployments.png[Deployments]
 
 The source services:
 
-image::https://i.imgur.com/Qof6a8s.png[Source Services]
+image:docs/images/kiali-source-services.png[Source Services]
 
 And the virtual services on the Istio infrastructure:
 
-image::https://i.imgur.com/mlZknRv.png[Virtual Services]
+image:docs/images/kiali-virtual-services.png[Virtual Services]
 
 == Istio Config
 
@@ -167,14 +167,14 @@ Click the Istio Config link on the left navigation. On this page, you can see
 all currently running config rules, such as Virtual Services, Route Rules,
 Routes, Circuit Breakers, Fault Injection and so on.
 
-image::https://i.imgur.com/KWhZ29z.png[Istio Config Page]
+image:docs/images/kiali-istio-config.png[Istio Config Page]
 
 == Distributed Tracing
 
 Click on the Distributed Tracing link in the left navigation. On this page you
 can see the distributed tracing, as provided by Jaeger.
 
-image::https://i.imgur.com/hY78haT.png[Distributed Tracing Page]
+image:docs/images/kiali-distributed-tracing.png[Distributed Tracing Page]
 
 == Cleanup (Uninstalling Kiali)
 
