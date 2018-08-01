@@ -29,12 +29,15 @@ Install Kiali with the following commands:
 
 [source, bash]
 ----
+# This command installs Kiali's configmaps
 curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-configmap.yaml | \
    VERSION_LABEL=master envsubst | oc create -n istio-system -f -
 
+# This command installs Kiali's secrets
 curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-secrets.yaml | \
    VERSION_LABEL=master envsubst | oc create -n istio-system -f -
 
+# And this command installs the Kiali service
 curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali.yaml | \
    IMAGE_NAME=kiali/kiali \
    IMAGE_VERSION=latest \
@@ -108,28 +111,15 @@ before using it in production.
 == Generating Sample Data
 
 To show the capabilities of Kiali, you'll need an Istio-enabled application to
-be running. On the Kiali repository there's a sample application called
-Bookinfo that you can use to show these capabilities, and you can deploy it
-like this:
+be running. For this, we can use the `customer-tutorial` application we created
+earlier.
+
+To generate data for it, we can `curl` it with this command:
 
 [source, bash]
 ----
-git clone git@github.com:kiali/kiali
-cd kiali
-./hack/istio/install-bookinfo-demo.sh
+curl customer-tutorial.$(minishift ip).nip.io
 ----
-
-This will install the demo. Now we just need to visit it to generate data. We
-can get the URL like this:
-
-[source, bash]
-----
-oc project bookinfo
-oc get routes
-----
-
-From there, we just visit the "productpage" service and this will connect to
-all the other services on the demo.
 
 == Service Graph
 
@@ -149,8 +139,8 @@ additional information about them, such as health status.
 
 image::https://i.imgur.com/Gytp5Wm.png[Service Listing Page]
 
-Click on a service name to view the Service Details page, where you can view
-additional information about each service.
+Click on the "Preferences" service to view the Service Details page, where you
+can view additional information about each service.
 
 image::https://i.imgur.com/msQjCb4.png[Service Details]
 
