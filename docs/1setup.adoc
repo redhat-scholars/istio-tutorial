@@ -66,13 +66,13 @@ NOTE: In this tutorial, you will often be polling the customer endpoint with `cu
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.0/istio-1.0.0-osx.tar.gz | tar xz
 
 # Fedora:
-curl -L https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.0/istio-1.0.0-linux.tar.gz | tar xz
 
 # Both:
-cd istio-0.8.0
+cd istio-1.0.0
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 
@@ -80,9 +80,15 @@ export PATH=$ISTIO_HOME/bin:$PATH
 
 [source,bash]
 ----
-oc create -f install/kubernetes/istio-demo.yaml
+
+oc apply -f install/kubernetes/helm/istio/templates/crds.yaml
+or
+kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+
+
+oc apply -f install/kubernetes/istio-demo.yaml
 or 
-kubectl create -f install/kubernetes/istio-demo.yaml
+kubectl apply -f install/kubernetes/istio-demo.yaml
 
 oc project istio-system
 or
@@ -104,20 +110,21 @@ or
 $ kubectl get pods -w
 
 NAME                                        READY     STATUS      RESTARTS   AGE
-grafana-cd99bf478-bhnjw                     1/1       Running     0          4m
-istio-citadel-ff5696f6f-vh6cg               1/1       Running     0          4m
-istio-cleanup-old-ca-lxd5t                  0/1       Completed   0          4m
-istio-egressgateway-58d98d898c-qw8v4        1/1       Running     0          4m
-istio-ingressgateway-6bc7c7c4bc-bq648       1/1       Running     0          4m
-istio-mixer-post-install-mwtqx              0/1       Completed   0          4m
-istio-pilot-6c5c6b586c-vs2b6                2/2       Running     0          4m
-istio-policy-5c7fbb4b9f-xtbqr               2/2       Running     0          4m
-istio-sidecar-injector-dbd67c88d-wjfxw      1/1       Running     0          4m
-istio-statsd-prom-bridge-6dbb7dcc7f-xjxcw   1/1       Running     0          4m
-istio-telemetry-54b5bf4847-dztv2            2/2       Running     0          4m
-istio-tracing-67dbb5b89f-f77dx              1/1       Running     0          4m
-prometheus-586d95b8d9-c2926                 1/1       Running     0          4m
-servicegraph-6d86dfc6cb-czn4q               1/1       Running     0          4m
+grafana-6995b4fbd7-ntp4f                    1/1       Running     0          57m
+istio-citadel-54f4678f86-jnv5s              1/1       Running     0          57m
+istio-cleanup-secrets-nch4k                 0/1       Completed   0          57m
+istio-egressgateway-5d7f8fcc7b-r76gg        1/1       Running     0          57m
+istio-galley-7bd8b5f88f-nlczb               1/1       Running     0          57m
+istio-grafana-post-install-lffq2            0/1       Completed   0          57m
+istio-ingressgateway-6f58fdc8d7-gbzzq       1/1       Running     0          57m
+istio-pilot-d99689994-zh66q                 2/2       Running     0          57m
+istio-policy-766bf4bd6d-skwkp               2/2       Running     0          57m
+istio-sidecar-injector-85ccf84984-crmhv     1/1       Running     0          57m
+istio-statsd-prom-bridge-55965ff9c8-76nx4   1/1       Running     0          57m
+istio-telemetry-55b6b5bbc7-qmf2l            2/2       Running     0          57m
+istio-tracing-77f9f94b98-kknh7              1/1       Running     0          57m
+prometheus-7456f56c96-nxdvv                 1/1       Running     0          57m
+servicegraph-684c85ffb9-f7tjp               1/1       Running     2          57m
 ----
 
 And if you need quick access to the OpenShift console

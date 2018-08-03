@@ -17,11 +17,10 @@ spec:
       loadBalancer:
         simple: RANDOM
       outlierDetection:
-        http:
-          baseEjectionTime: 15.000s
-          consecutiveErrors: 1
-          interval: 5.000s
-          maxEjectionPercent: 100
+        baseEjectionTime: 15.000s
+        consecutiveErrors: 1
+        interval: 5.000s
+        maxEjectionPercent: 100
   - labels:
       version: v2
     name: version-v2
@@ -32,8 +31,7 @@ spec:
       loadBalancer:
         simple: RANDOM
       outlierDetection:
-        http:
-          baseEjectionTime: 15.000s
-          consecutiveErrors: 1
-          interval: 5.000s
-          maxEjectionPercent: 100
+        baseEjectionTime: 15.000s
+        consecutiveErrors: 1
+        interval: 5.000s
+        maxEjectionPercent: 100

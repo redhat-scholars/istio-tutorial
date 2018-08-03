@@ -79,7 +79,7 @@ istioctl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tu
 ----
 istioctl create -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" curl -A Safari customer-tutorial.$(minishift ip).nip.io
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" customer-tutorial.$(minishift ip).nip.io
 ----
 
 ===== Clean up
@@ -323,15 +323,15 @@ customer => preference => recommendation v2 from '2819441432-f4ls5': 108
 customer => preference => recommendation v1 from '99634814-d2z2t': 1932
 customer => preference => recommendation v2 from '2819441432-f4ls5': 109
 customer => preference => recommendation v1 from '99634814-d2z2t': 1933
-customer => 503 preference => 429 Too Many Requests
+customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
 customer => preference => recommendation v1 from '99634814-d2z2t': 1934
 customer => preference => recommendation v2 from '2819441432-f4ls5': 110
 customer => preference => recommendation v1 from '99634814-d2z2t': 1935
-customer => 503 preference => 429 Too Many Requests
+customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
 customer => preference => recommendation v1 from '99634814-d2z2t': 1936
 customer => preference => recommendation v2 from '2819441432-f4ls5': 111
 customer => preference => recommendation v1 from '99634814-d2z2t': 1937
-customer => 503 preference => 429 Too Many Requests
+customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
 customer => preference => recommendation v1 from '99634814-d2z2t': 1938
 customer => preference => recommendation v2 from '2819441432-f4ls5': 112
 ----

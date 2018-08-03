@@ -81,7 +81,7 @@ istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
 ----
 
-=== Retry [Istio 0.8.0 I have not been able to make it run, not migrated]
+=== Retry [Istio 1.0.0 I have not been able to make it run, not migrated]
 
 Instead of failing immediately, retry the Service N more times
 

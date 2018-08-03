@@ -50,8 +50,6 @@ kubectl exec $CPOD -c customer -n tutorial curl http://recommendation:8080
 kubectl exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
 ----
 
-IMPORTANT: `/routes` is not valid anymore in Istio 0.8.0, and I have not found any endpoint that can be the replacement by checking all valid endpoints.
-
 [source,bash]
 ----
 oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > afile.json
@@ -59,7 +57,7 @@ or
 kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > afile.json
 ----
 
-Look for `route_config`, containing `"name": "8080"` abd you should see entries for customer, preference and recommendation
+Look for `route_config`, containing `"name": "8080"` and you should see entries for customer, preference and recommendation
 
 [source,json]
 ----

@@ -130,8 +130,6 @@ cd ../../..
 
 === Changing Istio Routings
 
-IMPORTANT: It takes more or less 10 seconds between you apply an Istio resource and Istio mesh is updated with it. This means that you need to wait for 10 seconds until you can test any change.
-
 ==== All users to recommendation:v2
 
 From the main istio-tutorial directory,
