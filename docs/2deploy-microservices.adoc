@@ -75,7 +75,7 @@ kubectl create -f ../../kubernetes/Service.yml -n tutorial
 
 [source, bash]
 ----
-oc new-app --name=customer --context-dir=customer/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' JAEGER_SERVICE_NAME=customer fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
+oc new-app --name=customer --context-dir=customer/java/springboot --env=JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' --env=JAEGER_SERVICE_NAME=customer fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
 oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
 oc delete svc/customer ; oc expose dc/customer --port=8080
 oc logs bc/customer -f
@@ -160,9 +160,9 @@ kubectl create -f ../../kubernetes/Service.yml
 
 [source, bash]
 ----
-oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' JAEGER_SERVICE_NAME=preference fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
+oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot --env=JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' --env=JAEGER_SERVICE_NAME=preference fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
 oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
-oc delete svc/preference-v1 ; oc expose dc/preference --port=8080
+oc delete svc/preference-v1 ; oc expose dc/preference-v1 --name=preference --port=8080
 oc logs bc/preference-v1 -f
 ----
 
@@ -240,7 +240,7 @@ kubectl get pods -w
 
 [source, bash]
 ----
-oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
+oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx --env=JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
 oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
 oc delete svc/recommendation-v1 ; oc create -f recommendation/kubernetes/Service.yml
 oc logs bc/recommendation-v1 -f
