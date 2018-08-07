@@ -108,7 +108,7 @@ Throw some requests at the customer endpoint:
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 
@@ -183,7 +183,7 @@ Throw some requests at the customer endpoint:
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 
@@ -225,7 +225,7 @@ Throw some requests at the customer endpoint:
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 
@@ -295,7 +295,7 @@ Throw some requests at the customer endpoint:
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 

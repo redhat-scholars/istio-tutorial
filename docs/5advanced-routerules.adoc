@@ -126,7 +126,7 @@ Check the logs of recommendation-v2
 ----
 oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation
 or
-kubectl logs -f `oc get pods|grep recommendation-v1|awk '{ print $1 }'` -c recommendation
+kubectl logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation
 ----
 
 Clean up
@@ -137,7 +137,7 @@ istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutor
 istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
 ----
 
-=== Access Control
+=== Access Control (NOT Working for 1.0)
 
 ==== Whitelist
 
@@ -233,7 +233,7 @@ Wait for those 2/2 (two containers in each pod) and then poll the customer endpo
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 
@@ -286,7 +286,7 @@ or
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
 ----
 
-=== Rate Limiting
+=== Rate Limiting [Not working for 1.0]
 
 Here we will limit the number of concurrent requests into recommendation v2
 
@@ -311,7 +311,7 @@ Throw some requests at customer
 #!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 

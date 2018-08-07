@@ -117,7 +117,7 @@ IMPORTANT: Since no Egress service entry has been registered to access an extern
 [source, bash]
 ----
 $ curl -m 5 customer-tutorial.$(minishift ip).nip.io
-curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received
+curl: (28) Operation timed out after 5000 milliseconds with 0 bytes received
 ----
 
 Let's fix it by registering a service entry to allow access to `httpbin`.

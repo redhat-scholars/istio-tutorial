@@ -51,7 +51,7 @@ Then run several requests through the system
 
 [source,bash]
 ----
-while true; do curl customer-tutorial.$(minishift ip).nip.io; sleep 1;  done
+while true; do curl customer-tutorial.$(minishift ip).nip.io; sleep .5;  done
 ----
 
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.

@@ -56,7 +56,7 @@ And hit the customer endpoint
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 
@@ -81,7 +81,7 @@ istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
 ----
 
-=== Retry [Istio 1.0.0 I have not been able to make it run, not migrated]
+=== Retry [Not working for 1.0]
 
 Instead of failing immediately, retry the Service N more times
 
@@ -101,7 +101,7 @@ Now, if you hit the customer endpoint several times, you should see some 503's
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer => preference => recommendation v2 from '2036617847-m9glz': 190
@@ -131,7 +131,7 @@ and after a few seconds, things will settle down and you will see it work every 
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer => preference => recommendation v2 from '2036617847-m9glz': 196
@@ -155,7 +155,7 @@ istioctl delete routerule recommendation-v2-retry -n tutorial
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer => preference => recommendation v2 from '2036617847-m9glz': 190
@@ -179,7 +179,7 @@ istioctl delete routerule recommendation-v2-503 -n tutorial
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
@@ -238,7 +238,7 @@ Hit the customer endpoint a few times, to see the load-balancing between v1 and 
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 ----
 
@@ -257,7 +257,7 @@ You will see it return v1 OR "upstream request timeout" after waiting about 1 se
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer => 503 preference => 504 upstream request timeout
