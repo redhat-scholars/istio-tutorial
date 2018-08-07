@@ -537,21 +537,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_mirroring_traffic_dark_launch">Mirroring Traffic (Dark Launch)</a></li>
-<li><a href="#_access_control">Access Control</a>
+<li><a href="#_access_control_not_working_for_1_0">Access Control (NOT Working for 1.0)</a>
 <ul class="sectlevel3">
 <li><a href="#_whitelist">Whitelist</a></li>
 <li><a href="#_blacklist">Blacklist</a></li>
 </ul>
 </li>
 <li><a href="#_load_balancer">Load Balancer</a></li>
-<li><a href="#_rate_limiting">Rate Limiting</a></li>
+<li><a href="#_rate_limiting_not_working_for_1_0">Rate Limiting [Not working for 1.0]</a></li>
 </ul>
 </li>
 <li><a href="#_fault_injection">Fault Injection</a>
 <ul class="sectlevel2">
 <li><a href="#_http_error_503">HTTP Error 503</a></li>
 <li><a href="#_delay">Delay</a></li>
-<li><a href="#_retry_istio_1_0_0_i_have_not_been_able_to_make_it_run_not_migrated">Retry [Istio 1.0.0 I have not been able to make it run, not migrated]</a></li>
+<li><a href="#_retry_not_working_for_1_0">Retry [Not working for 1.0]</a></li>
 <li><a href="#_timeout">Timeout</a></li>
 </ul>
 </li>
@@ -1307,7 +1307,7 @@ kubectl describe deployment {servicename} | grep Replicas</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">while true; do curl customer-tutorial.$(minishift ip).nip.io; sleep 1;  done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">while true; do curl customer-tutorial.$(minishift ip).nip.io; sleep .5;  done</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -1453,7 +1453,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -1582,7 +1582,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -1757,7 +1757,7 @@ curl customer-tutorial.$(minishift ip).nip.io</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation
 or
-kubectl logs -f `oc get pods|grep recommendation-v1|awk '{ print $1 }'` -c recommendation</code></pre>
+kubectl logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1771,7 +1771,7 @@ istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n
 </div>
 </div>
 <div class="sect2">
-<h3 id="_access_control">Access Control</h3>
+<h3 id="_access_control_not_working_for_1_0">Access Control (NOT Working for 1.0)</h3>
 <div class="sect3">
 <h4 id="_whitelist">Whitelist</h4>
 <div class="paragraph">
@@ -1878,7 +1878,7 @@ recommendation-v2-2815683430-tptf2   2/2       Running   0          33m</code></
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -1937,7 +1937,7 @@ kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rate_limiting">Rate Limiting</h3>
+<h3 id="_rate_limiting_not_working_for_1_0">Rate Limiting [Not working for 1.0]</h3>
 <div class="paragraph">
 <p>Here we will limit the number of concurrent requests into recommendation v2</p>
 </div>
@@ -1965,7 +1965,7 @@ kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -2070,7 +2070,7 @@ customer =&gt; preference =&gt; recommendation v2 from '2819441432-qsp25': 51</c
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -2100,7 +2100,7 @@ istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutori
 </div>
 </div>
 <div class="sect2">
-<h3 id="_retry_istio_1_0_0_i_have_not_been_able_to_make_it_run_not_migrated">Retry [Istio 1.0.0 I have not been able to make it run, not migrated]</h3>
+<h3 id="_retry_not_working_for_1_0">Retry [Not working for 1.0]</h3>
 <div class="paragraph">
 <p>Instead of failing immediately, retry the Service N more times</p>
 </div>
@@ -2122,7 +2122,7 @@ istioctl create -f istiofiles/virtual-service-recommendation-v2_503.yml -n tutor
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 190
@@ -2154,7 +2154,7 @@ customer =&gt; 503 preference =&gt; 503 fault filter abort</code></pre>
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 196
@@ -2180,7 +2180,7 @@ customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 198</
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 190
@@ -2205,7 +2205,7 @@ customer =&gt; 503 preference =&gt; 503 fault filter abort</code></pre>
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 207
@@ -2269,7 +2269,7 @@ cd ../../..</code></pre>
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -2290,7 +2290,7 @@ done</code></pre>
 while true
 do
 time curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done
 
 customer =&gt; 503 preference =&gt; 504 upstream request timeout
@@ -2444,7 +2444,7 @@ kubectl get pods -w</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -2527,7 +2527,7 @@ exit</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -2573,7 +2573,7 @@ customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '2036617
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -2649,7 +2649,7 @@ customer =&gt; preference =&gt; recommendation v2 from '2036617847-hdjv2': 270</
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -2860,7 +2860,7 @@ Since no Egress service entry has been registered to access an external site, th
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl -m 5 customer-tutorial.$(minishift ip).nip.io
-curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received</code></pre>
+curl: (28) Operation timed out after 5000 milliseconds with 0 bytes received</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3035,7 +3035,7 @@ recommendation-v2-1275713543-2bs5k            2/2       Running   4          2d<
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
@@ -3095,7 +3095,7 @@ recommendation-virtualized-2649197284-rp9cg   2/2       Running   2          3h<
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 while true
 do curl customer-tutorial.$(minishift ip).nip.io
-sleep .1
+sleep .5
 done</code></pre>
 </div>
 </div>
