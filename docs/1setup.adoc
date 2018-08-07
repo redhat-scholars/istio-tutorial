@@ -27,7 +27,7 @@ You will need in this tutorial:
 
 === Setup minishift
 
-Assumes `minishift`, tested with minishift v1.15.1+a5c47dd
+Assumes `minishift`, tested with minishift v1.22.0+7163416
 
 [source,bash]
 ----

@@ -11,7 +11,12 @@ open "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5s&o
 
 image:docs/images/grafana1.png[alt text]
 
-Scroll-down to see the stats for customer, preference and recommendation
+[source,bash]
+----
+open "$(minishift openshift service grafana -u)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
+----
+
+to check the "Workload of the services"
 
 image:docs/images/grafana2.png[alt text]
 
@@ -35,7 +40,7 @@ In the Prometheus dashboard, add the following
 
 [source,bash]
 ----
-round(increase(istio_request_count{destination_service="recommendation.tutorial.svc.cluster.local" }[60m]))
+istio_requests_total{destination_service="recommendation.tutorial.svc.cluster.local"}
 ----
 
 and select `Execute`
@@ -46,11 +51,7 @@ Then run several requests through the system
 
 [source,bash]
 ----
-# Mac OS: run the following command a few times
-curl customer-tutorial.$(minishift ip).nip.io
-
-# Fedora:
-watch -n 0.5 curl customer-tutorial.$(minishift ip).nip.io
+while true; do curl customer-tutorial.$(minishift ip).nip.io; sleep 1;  done
 ----
 
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
