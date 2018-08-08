@@ -288,7 +288,9 @@ or
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
 ----
 
-=== Rate Limiting [Not working for 1.0]
+=== Rate Limiting
+
+IMPORTANT: The Rate Limiting rules take some time to be applied and reflected. Be patient here!
 
 Here we will limit the number of concurrent requests into recommendation v2
 

@@ -544,7 +544,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_load_balancer">Load Balancer</a></li>
-<li><a href="#_rate_limiting_not_working_for_1_0">Rate Limiting [Not working for 1.0]</a></li>
+<li><a href="#_rate_limiting">Rate Limiting</a></li>
 </ul>
 </li>
 <li><a href="#_fault_injection">Fault Injection</a>
@@ -1949,7 +1949,19 @@ kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rate_limiting_not_working_for_1_0">Rate Limiting [Not working for 1.0]</h3>
+<h3 id="_rate_limiting">Rate Limiting</h3>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The Rate Limiting rules take some time to be applied and reflected. Be patient here!
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Here we will limit the number of concurrent requests into recommendation v2</p>
 </div>
