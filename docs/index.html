@@ -537,7 +537,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_mirroring_traffic_dark_launch">Mirroring Traffic (Dark Launch)</a></li>
-<li><a href="#_access_control_not_working_for_1_0">Access Control (NOT Working for 1.0)</a>
+<li><a href="#_access_control">Access Control</a>
 <ul class="sectlevel3">
 <li><a href="#_whitelist">Whitelist</a></li>
 <li><a href="#_blacklist">Blacklist</a></li>
@@ -1771,7 +1771,19 @@ istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n
 </div>
 </div>
 <div class="sect2">
-<h3 id="_access_control_not_working_for_1_0">Access Control (NOT Working for 1.0)</h3>
+<h3 id="_access_control">Access Control</h3>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The Access Control rules take some time to be applied and reflected. Be patient here!
+</td>
+</tr>
+</table>
+</div>
 <div class="sect3">
 <h4 id="_whitelist">Whitelist</h4>
 <div class="paragraph">
@@ -3444,7 +3456,7 @@ cat envoy-rev0.json</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-17 11:11:18 EDT
+Last updated 2018-08-07 19:12:10 EDT
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

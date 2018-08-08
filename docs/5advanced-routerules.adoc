@@ -137,7 +137,9 @@ istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutor
 istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
 ----
 
-=== Access Control (NOT Working for 1.0)
+=== Access Control
+
+IMPORTANT: The Access Control rules take some time to be applied and reflected. Be patient here!
 
 ==== Whitelist
 
