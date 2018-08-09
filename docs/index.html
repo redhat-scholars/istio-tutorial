@@ -551,7 +551,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_http_error_503">HTTP Error 503</a></li>
 <li><a href="#_delay">Delay</a></li>
-<li><a href="#_retry_not_working_for_1_0">Retry [Not working for 1.0]</a></li>
+<li><a href="#_retry">Retry</a></li>
 <li><a href="#_timeout">Timeout</a></li>
 </ul>
 </li>
@@ -2124,18 +2124,31 @@ istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutori
 </div>
 </div>
 <div class="sect2">
-<h3 id="_retry_not_working_for_1_0">Retry [Not working for 1.0]</h3>
+<h3 id="_retry">Retry</h3>
 <div class="paragraph">
 <p>Instead of failing immediately, retry the Service N more times</p>
 </div>
 <div class="paragraph">
-<p>We will use Istio and return 503&#8217;s about 50% of the time. Send all users to v2 which will throw out some 503&#8217;s</p>
+<p>We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v2_503.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/misbehave
+exit</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is a special endpoint that will make our application return only `503`s.</p>
 </div>
 <div class="paragraph">
 <p>Now, if you hit the customer endpoint several times, you should see some 503&#8217;s</p>
@@ -2149,16 +2162,18 @@ curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
 done
 
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 190
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 191
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 192
-customer =&gt; 503 preference =&gt; 503 fault filter abort
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 193
-customer =&gt; 503 preference =&gt; 503 fault filter abort
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 194
-customer =&gt; 503 preference =&gt; 503 fault filter abort
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 195
-customer =&gt; 503 preference =&gt; 503 fault filter abort</code></pre>
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 864
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 865
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 866
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 867
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 868
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 869
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2170,7 +2185,7 @@ customer =&gt; 503 preference =&gt; 503 fault filter abort</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>and after a few seconds, things will settle down and you will see it work every time</p>
+<p>You will see it work every time because Istio will retry the recommendation service and it will land on v1 only.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2181,25 +2196,25 @@ curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
 done
 
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 196
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 197
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 198</code></pre>
+customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 196
+customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 197
+customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You can see the active RouteRules via</p>
+<p>You can see the active Virtual Services via</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl get routerules -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl get virtualservices -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now, delete the retry rule and see the old behavior, some random 503s</p>
+<p>Now, delete the retry rule and see the old behavior, where v2 throws 503s</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete routerule recommendation-v2-retry -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete virtualservice recommendation -n tutorial
 
 while true
 do
@@ -2207,26 +2222,49 @@ curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
 done
 
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 190
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 191
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 192
-customer =&gt; 503 preference =&gt; 503 fault filter abort
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 193
-customer =&gt; 503 preference =&gt; 503 fault filter abort
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 194
-customer =&gt; 503 preference =&gt; 503 fault filter abort
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 195
-customer =&gt; 503 preference =&gt; 503 fault filter abort</code></pre>
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1118
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1119
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1120
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1121
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1122
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1123
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1124
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1125
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1126
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now, delete the 503 rule and back to random load-balancing between v1 and v2</p>
+<p>Now, make the pod v2 behave well again</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete routerule recommendation-v2-503 -n tutorial
-
-while true
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/behave
+exit</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The application is back to random load-balancing between v1 and v2</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
 sleep .5

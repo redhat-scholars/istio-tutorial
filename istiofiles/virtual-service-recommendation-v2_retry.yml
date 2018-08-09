@@ -10,12 +10,7 @@ spec:
   - route:
     - destination:
         host: recommendation
-        subset: version-v2
     retries:
       attempts: 3
       perTryTimeout: 2s
-    fault:
-      abort:
-        httpStatus: 503
-        percent: 50
 ---

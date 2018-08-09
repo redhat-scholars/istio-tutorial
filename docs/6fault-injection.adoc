@@ -81,17 +81,28 @@ istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
 ----
 
-=== Retry [Not working for 1.0]
+=== Retry
 
 Instead of failing immediately, retry the Service N more times
 
-We will use Istio and return 503's about 50% of the time. Send all users to v2 which will throw out some 503's
+We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:
 
 [source,bash]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v2_503.yml -n tutorial
+oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
+
+You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
+
+[source,bash]
+----
+curl localhost:8080/misbehave
+exit
+----
+
+This is a special endpoint that will make our application return only `503`s.
 
 Now, if you hit the customer endpoint several times, you should see some 503's
 
@@ -104,16 +115,18 @@ curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
 done
 
-customer => preference => recommendation v2 from '2036617847-m9glz': 190
-customer => preference => recommendation v2 from '2036617847-m9glz': 191
-customer => preference => recommendation v2 from '2036617847-m9glz': 192
-customer => 503 preference => 503 fault filter abort
-customer => preference => recommendation v2 from '2036617847-m9glz': 193
-customer => 503 preference => 503 fault filter abort
-customer => preference => recommendation v2 from '2036617847-m9glz': 194
-customer => 503 preference => 503 fault filter abort
-customer => preference => recommendation v2 from '2036617847-m9glz': 195
-customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 864
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 865
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 866
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 867
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 868
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 869
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
 ----
 
 Now add the retry rule
@@ -123,7 +136,7 @@ Now add the retry rule
 istioctl create -f istiofiles/virtual-service-recommendation-v2_retry.yml -n tutorial
 ----
 
-and after a few seconds, things will settle down and you will see it work every time
+You will see it work every time because Istio will retry the recommendation service and it will land on v1 only.
 
 [source,bash]
 ----
@@ -134,23 +147,23 @@ curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
 done
 
-customer => preference => recommendation v2 from '2036617847-m9glz': 196
-customer => preference => recommendation v2 from '2036617847-m9glz': 197
-customer => preference => recommendation v2 from '2036617847-m9glz': 198
+customer => preference => recommendation v1 from '2036617847-m9glz': 196
+customer => preference => recommendation v1 from '2036617847-m9glz': 197
+customer => preference => recommendation v1 from '2036617847-m9glz': 198
 ----
 
-You can see the active RouteRules via
-
-[source,bash]
-----
-istioctl get routerules -n tutorial
-----
-
-Now, delete the retry rule and see the old behavior, some random 503s
+You can see the active Virtual Services via
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-v2-retry -n tutorial
+istioctl get virtualservices -n tutorial
+----
+
+Now, delete the retry rule and see the old behavior, where v2 throws 503s
+
+[source,bash]
+----
+istioctl delete virtualservice recommendation -n tutorial
 
 while true
 do
@@ -158,24 +171,45 @@ curl customer-tutorial.$(minishift ip).nip.io
 sleep .5
 done
 
-customer => preference => recommendation v2 from '2036617847-m9glz': 190
-customer => preference => recommendation v2 from '2036617847-m9glz': 191
-customer => preference => recommendation v2 from '2036617847-m9glz': 192
-customer => 503 preference => 503 fault filter abort
-customer => preference => recommendation v2 from '2036617847-m9glz': 193
-customer => 503 preference => 503 fault filter abort
-customer => preference => recommendation v2 from '2036617847-m9glz': 194
-customer => 503 preference => 503 fault filter abort
-customer => preference => recommendation v2 from '2036617847-m9glz': 195
-customer => 503 preference => 503 fault filter abort
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1118
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1119
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1120
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1121
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1122
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1123
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1124
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1125
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1126
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
 ----
 
-Now, delete the 503 rule and back to random load-balancing between v1 and v2
+Now, make the pod v2 behave well again
 
 [source,bash]
 ----
-istioctl delete routerule recommendation-v2-503 -n tutorial
+oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+----
 
+You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
+
+[source,bash]
+----
+curl localhost:8080/behave
+exit
+----
+
+The application is back to random load-balancing between v1 and v2
+
+[source,bash]
+----
 while true
 do
 curl customer-tutorial.$(minishift ip).nip.io
