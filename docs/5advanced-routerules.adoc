@@ -228,15 +228,11 @@ recommendation-v2-2815683430-d49n6   2/2       Running   0          51m
 recommendation-v2-2815683430-tptf2   2/2       Running   0          33m
 ----
 
-Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint
+Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint:
 
-[source,bash]
+[source, bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 The results should follow a fairly normal round-robin distribution pattern
@@ -308,15 +304,11 @@ Now setup the requestcount quota
 istioctl create -f istiofiles/rate_limit_rule.yml
 ----
 
-Throw some requests at customer
+Throw some requests at customer:
 
-[source,bash]
+[source, bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 You should see some 429 errors:

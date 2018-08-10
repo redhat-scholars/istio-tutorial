@@ -52,12 +52,7 @@ And hit the customer endpoint
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do
-time curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 You will notice many requests to the customer endpoint now have a delay.
@@ -108,12 +103,7 @@ Now, if you hit the customer endpoint several times, you should see some 503's
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 
 customer => preference => recommendation v1 from 'b87789c58-h9r4s': 864
 customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
@@ -140,12 +130,7 @@ You will see it work every time because Istio will retry the recommendation serv
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 
 customer => preference => recommendation v1 from '2036617847-m9glz': 196
 customer => preference => recommendation v1 from '2036617847-m9glz': 197
@@ -165,11 +150,7 @@ Now, delete the retry rule and see the old behavior, where v2 throws 503s
 ----
 istioctl delete virtualservice recommendation -n tutorial
 
-while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 
 customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1118
 customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1119
@@ -210,11 +191,8 @@ The application is back to random load-balancing between v1 and v2
 
 [source,bash]
 ----
-while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
+
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
 customer => preference => recommendation v1 from '2039379827-h58vw': 130
@@ -268,12 +246,7 @@ Hit the customer endpoint a few times, to see the load-balancing between v1 and 
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do
-time curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 Then add the timeout rule
@@ -287,12 +260,7 @@ You will see it return v1 OR "upstream request timeout" after waiting about 1 se
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do
-time curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 
 customer => 503 preference => 504 upstream request timeout
 curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.035 total
