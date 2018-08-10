@@ -1,0 +1,176 @@
+= Observing microservice meshes with Kiali
+
+At some point when you are developing your microservice architecture, you will
+need to visualize what is happening in your service mesh. You will have
+questions like “Which service is connected to which other service?” and “How
+much traffic goes to each microservice?” But because of the loosely tied nature
+of microservice architectures , these questions can be difficult to answer.
+
+Those are the kinds of question that Kiali has the ability to answer, by giving
+you a big picture of the mesh, and showing the whole flow of your requests and
+data.
+
+== How does Kiali work?
+
+Kiali taps into the data provided by Istio and OpenShift to generate its
+visualizations. It fetches ingress data (such as request tracing with Jaeger),
+the listing and data of the services, health indexes, and so on.
+
+Kiali runs as a service together with Istio, and does not require any changes
+to Istio or Openshift configuration (besides the ones required to install
+Istio).
+
+== How to install Kiali?
+
+A prerequisite for installing Kiali is that you must have OpenShift and Istio
+installed and configured.
+
+Install Kiali with the following commands:
+
+[source, bash]
+----
+# This command installs Kiali's configmaps
+curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-configmap.yaml | \
+   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+
+# This command installs Kiali's secrets
+curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-secrets.yaml | \
+   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+
+# And this command installs the Kiali service
+curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali.yaml | \
+   IMAGE_NAME=kiali/kiali \
+   IMAGE_VERSION=latest \
+   NAMESPACE=istio-system \
+   VERSION_LABEL=master \
+   VERBOSE_MODE=4 envsubst | oc create -n istio-system -f -
+----
+
+Installing Kiali may take a minute or two. You can use the following commands
+to see if the service is running:
+
+[source, bash]
+----
+oc project istio-system
+oc get pods -w
+----
+
+Wait until the status for Kiali is `Running` and there are `1/1` pods in the
+`Ready` column. To exit, press `Ctrl+C`.
+
+[source, bash]
+----
+oc project istio-system
+oc get routes
+----
+
+And you'll see a result that's something like this:
+
+[source, bash]
+----
+NAME                   HOST/PORT                                                PATH      SERVICES               PORT              TERMINATION   WILDCARD
+grafana                grafana-istio-system.127.0.0.1.nip.io                          grafana                http                            None
+istio-ingress          istio-ingress-istio-system.127.0.0.1.nip.io                    istio-ingress          http                            None
+istio-ingressgateway   istio-ingressgateway-istio-system.127.0.0.1.nip.io             istio-ingressgateway   http                            None
+jaeger-query           jaeger-query-istio-system.127.0.0.1.nip.io                     jaeger-query           jaeger-query      edge          None
+kiali                  kiali-istio-system.127.0.0.1.nip.io                            kiali                  <all>                           None
+prometheus             prometheus-istio-system.127.0.0.1.nip.io                       prometheus             http-prometheus                 None
+tracing                tracing-istio-system.127.0.0.1.nip.io                          tracing                tracing           edge          None
+----
+
+So now we have the URL for Kiali (usually,
+"kiali-istio-system.127.0.0.1.nip.io"), so let's access it:
+
+image:docs/images/kiali-login.png[Login Page]
+
+The default credentials are "admin/admin", but it's recommended to change them
+before using it in production.
+
+== Generating Sample Data
+
+To show the capabilities of Kiali, you'll need an Istio-enabled application to
+be running. For this, we can use the `customer-tutorial` application we created
+earlier.
+
+To generate data for it, we can `curl` it with this command:
+
+[source, bash]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+== Service Graph
+
+After you login, you should see the Service Graph page:
+
+image:docs/images/kiali-service-graph.png[Service Graph Page]
+
+It shows a graph with all the microservices, connected by the requests going
+through then. On this page, you can see how the services interact with each
+other.
+
+== Service Listing
+
+Click the Services link in the left navigation. On the Services page you can
+view a listing of all the services that are running in the cluster, and
+additional information about them, such as health status.
+
+image:docs/images/kiali-service-list.png[Service Listing Page]
+
+Click on the "Filter by Namespace" dropdown, and select "tutorial". Then,
+you'll see a list of only the services on the tutorial:
+
+image:docs/images/kiali-service-list-2.png[Service Listing Page Filtered]
+
+Click on the "preference" to see its details:
+
+image:docs/images/kiali-service-details.png[Service Details]
+
+By hovering the icon on the Health section, you can see the health of a service
+(a service is considered healthy) when it's online and responding to requests
+without errors:
+
+image:docs/images/kiali-service-health.png[Health Status]
+
+You can also see the deployments:
+
+image:docs/images/kiali-deployments.png[Deployments]
+
+And the source services:
+
+image:docs/images/kiali-source-services.png[Source Services]
+
+And the virtual services on the Istio infrastructure (if you defined any before
+on the tutorial). This one is from the "recommendation" service, where I
+defined a timeout rule:
+
+image:docs/images/kiali-virtual-services.png[Virtual Services]
+
+Click on the name of the virtual service, and you'll see the details for the
+virtual service:
+
+image:docs/images/kiali-virtual-services-2.png[Virtual Services Details]
+
+== Istio Config
+
+Click the Istio Config link on the left navigation. On this page, you can see
+all currently running config rules, such as Virtual Services, Route Rules,
+Routes, Circuit Breakers, Fault Injection and so on.
+
+image:docs/images/kiali-istio-config.png[Istio Config Page]
+
+== Distributed Tracing
+
+Click on the Distributed Tracing link in the left navigation. On this page you
+can see the distributed tracing, as provided by Jaeger.
+
+image:docs/images/kiali-distributed-tracing.png[Distributed Tracing Page]
+
+== Cleanup (Uninstalling Kiali)
+
+To uninstall Kiali from your cluster, run the following command:
+
+[source, bash]
+----
+oc delete all,secrets,sa,templates,configmaps,deployments,clusterroles,clusterrolebindings,virtualservices,destinationrules --selector=app=kiali -n istio-system
+----
