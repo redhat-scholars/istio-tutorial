@@ -46,6 +46,8 @@ include::docs/8egress.adoc[]
 
 == Advanced use cases
 
+include::docs/advanced/kiali.adoc[]
+
 include::docs/advanced/virtualization.adoc[]
 
 == Tips &amp; Tricks

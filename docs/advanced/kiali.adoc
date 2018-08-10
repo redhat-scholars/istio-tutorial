@@ -1,4 +1,4 @@
-= Observing microservice meshes with Kiali
+=== Observing microservice meshes with Kiali
 
 At some point when you are developing your microservice architecture, you will
 need to visualize what is happening in your service mesh. You will have
@@ -10,7 +10,7 @@ Those are the kinds of question that Kiali has the ability to answer, by giving
 you a big picture of the mesh, and showing the whole flow of your requests and
 data.
 
-== How does Kiali work?
+==== How does Kiali work?
 
 Kiali taps into the data provided by Istio and OpenShift to generate its
 visualizations. It fetches ingress data (such as request tracing with Jaeger),
@@ -20,7 +20,7 @@ Kiali runs as a service together with Istio, and does not require any changes
 to Istio or Openshift configuration (besides the ones required to install
 Istio).
 
-== How to install Kiali?
+==== How to install Kiali?
 
 A prerequisite for installing Kiali is that you must have OpenShift and Istio
 installed and configured.
@@ -86,7 +86,7 @@ image:docs/images/kiali-login.png[Login Page]
 The default credentials are "admin/admin", but it's recommended to change them
 before using it in production.
 
-== Generating Sample Data
+==== Generating Sample Data
 
 To show the capabilities of Kiali, you'll need an Istio-enabled application to
 be running. For this, we can use the `customer-tutorial` application we created
@@ -99,7 +99,7 @@ To generate data for it, we can `curl` it with this command:
 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
-== Service Graph
+==== Service Graph
 
 After you login, you should see the Service Graph page:
 
@@ -109,7 +109,7 @@ It shows a graph with all the microservices, connected by the requests going
 through then. On this page, you can see how the services interact with each
 other.
 
-== Service Listing
+==== Service Listing
 
 Click the Services link in the left navigation. On the Services page you can
 view a listing of all the services that are running in the cluster, and
@@ -151,7 +151,7 @@ virtual service:
 
 image:docs/images/kiali-virtual-services-2.png[Virtual Services Details]
 
-== Istio Config
+==== Istio Config
 
 Click the Istio Config link on the left navigation. On this page, you can see
 all currently running config rules, such as Virtual Services, Route Rules,
@@ -159,14 +159,14 @@ Routes, Circuit Breakers, Fault Injection and so on.
 
 image:docs/images/kiali-istio-config.png[Istio Config Page]
 
-== Distributed Tracing
+==== Distributed Tracing
 
 Click on the Distributed Tracing link in the left navigation. On this page you
 can see the distributed tracing, as provided by Jaeger.
 
 image:docs/images/kiali-distributed-tracing.png[Distributed Tracing Page]
 
-== Cleanup (Uninstalling Kiali)
+==== Cleanup (Uninstalling Kiali)
 
 To uninstall Kiali from your cluster, run the following command:
 
