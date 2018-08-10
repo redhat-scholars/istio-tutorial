@@ -53,33 +53,11 @@ to see if the service is running:
 [source, bash]
 ----
 oc project istio-system
-oc get pods
+oc get pods -w
 ----
 
-You'll see a result that's something like this:
-
-----
-NAME                                        READY     STATUS      RESTARTS   AGE
-elasticsearch-0                             0/1       Running     0          1d
-grafana-6bb556d859-sr2kn                    0/1       Running     0          1d
-istio-citadel-d8b87b7fb-m6kr8               0/1       Running     0          1d
-istio-egressgateway-5c7847547d-l79bc        0/1       Running     0          1d
-istio-ingress-d4898f4d8-c45kz               0/1       Running     0          1d
-istio-ingressgateway-54ddb65d74-sznf9       0/1       Running     0          1d
-istio-pilot-58c7c644c7-l88d7                0/2       Running     0          1d
-istio-policy-586559fdd9-l88v9               0/2       Running     0          1d
-istio-sidecar-injector-6fc85fbd55-6r2hj     0/1       Running     0          1d
-istio-statsd-prom-bridge-6dbb7dcc7f-7qmbw   0/1       Running     0          1d
-istio-telemetry-7988677557-tz4sm            0/2       Running     0          1d
-jaeger-agent-lmhbb                          0/1       Running     0          0s
-jaeger-collector-68fd846775-wll4r           0/1       Running     0          1d
-jaeger-query-58f4655965-q8jjk               0/1       Running     0          1d
-kiali-7966d98797-77gqz                      0/1       Running     0          1d
-prometheus-586d95b8d9-r6d6x                 0/1       Running     0          1d
-----
-
-If the "STATUS" column for Kiali is "Running", you can check which URL it is
-using by using this command:
+Wait until the status for Kiali is `Running` and there are `1/1` pods in the
+`Ready` column. To exit, press `Ctrl+C`.
 
 [source, bash]
 ----
@@ -140,13 +118,18 @@ additional information about them, such as health status.
 
 image:docs/images/kiali-service-list.png[Service Listing Page]
 
-Click on the "Preferences" service to view the Service Details page, where you
-can view additional information about each service.
+Click on the "Filter by Namespace" dropdown, and select "tutorial". Then,
+you'll see a list of only the services on the tutorial:
+
+image:docs/images/kiali-service-list-2.png[Service Listing Page Filtered]
+
+Click on the "preference" to see its details:
 
 image:docs/images/kiali-service-details.png[Service Details]
 
-You can see the health status of the service (a Healthy service means one that
-is is up and responding correctly):
+By hovering the icon on the Health section, you can see the health of a service
+(a service is considered healthy) when it's online and responding to requests
+without errors:
 
 image:docs/images/kiali-service-health.png[Health Status]
 
@@ -154,13 +137,20 @@ You can also see the deployments:
 
 image:docs/images/kiali-deployments.png[Deployments]
 
-The source services:
+And the source services:
 
 image:docs/images/kiali-source-services.png[Source Services]
 
-And the virtual services on the Istio infrastructure:
+And the virtual services on the Istio infrastructure (if you defined any before
+on the tutorial). This one is from the "recommendation" service, where I
+defined a timeout rule:
 
 image:docs/images/kiali-virtual-services.png[Virtual Services]
+
+Click on the name of the virtual service, and you'll see the details for the
+virtual service:
+
+image:docs/images/kiali-virtual-services-2.png[Virtual Services Details]
 
 == Istio Config
 
