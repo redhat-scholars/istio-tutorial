@@ -5,7 +5,7 @@ This content is brought to you by http://developers.redhat.com - Register today!
 :toclevels: 3
 :icons: font
 :data-uri:
-:source-highlighter: highlight.js
+:source-highlighter: highlightjs
 
 
 - A HTML version of this file is published at https://redhat-developer-demos.github.io/istio-tutorial/

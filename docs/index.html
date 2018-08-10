@@ -1458,15 +1458,11 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 <p>you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service</p>
 </div>
 <div class="paragraph">
-<p>Send several requests to see their responses</p>
+<p>Send several requests to see their responses:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1587,15 +1583,11 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 </div>
 </div>
 <div class="paragraph">
-<p>and send in several requests</p>
+<p>and send in several requests:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1895,15 +1887,11 @@ recommendation-v2-2815683430-tptf2   2/2       Running   0          33m</code></
 </div>
 </div>
 <div class="paragraph">
-<p>Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint</p>
+<p>Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1994,15 +1982,11 @@ The Rate Limiting rules take some time to be applied and reflected. Be patient h
 </div>
 </div>
 <div class="paragraph">
-<p>Throw some requests at customer</p>
+<p>Throw some requests at customer:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2102,12 +2086,7 @@ customer =&gt; preference =&gt; recommendation v2 from '2819441432-qsp25': 51</c
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do
-time curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2167,12 +2146,7 @@ exit</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
 
 customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 864
 customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
@@ -2201,12 +2175,7 @@ customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
 
 customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 196
 customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 197
@@ -2228,11 +2197,7 @@ customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete virtualservice recommendation -n tutorial
 
-while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 
 customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1118
 customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1119
@@ -2276,11 +2241,8 @@ exit</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">while true
-do
-curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
+
 customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 207
 customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 130</code></pre>
@@ -2339,12 +2301,7 @@ cd ../../..</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do
-time curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2360,12 +2317,7 @@ done</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do
-time curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
 
 customer =&gt; 503 preference =&gt; 504 upstream request timeout
 curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.035 total
@@ -2515,11 +2467,7 @@ kubectl get pods -w</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2598,11 +2546,7 @@ exit</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2644,11 +2588,7 @@ customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '2036617
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2720,11 +2660,7 @@ customer =&gt; preference =&gt; recommendation v2 from '2036617847-hdjv2': 270</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3742,7 +3678,7 @@ cat envoy-rev0.json</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-08-10 10:20:24 EDT
+Last updated 2018-08-10 10:47:56 EDT
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
