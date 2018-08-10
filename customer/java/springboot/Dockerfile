@@ -1,3 +1,8 @@
+FROM maven:latest as java-builder
+COPY . /src
+WORKDIR /src
+RUN mvn clean package
+
 FROM fabric8/java-jboss-openjdk8-jdk:1.3.1
 ENV JAVA_APP_DIR=/deployments
 ENV JAEGER_SERVICE_NAME=customer\
@@ -6,4 +11,4 @@ ENV JAEGER_SERVICE_NAME=customer\
   JAEGER_SAMPLER_TYPE=const\
   JAEGER_SAMPLER_PARAM=1
 EXPOSE 8080 8778 9779
-COPY target/customer.jar /deployments/
+COPY --from=java-builder /src/target/customer.jar /deployments/

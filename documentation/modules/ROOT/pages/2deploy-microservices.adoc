@@ -55,7 +55,6 @@ NOTE: Your very first Docker build will take a bit of time as it downloads all t
 [source,bash]
 ----
 cd customer/java/springboot
-mvn clean package
 docker build -t example/customer .
 docker images | grep customer
 ----
@@ -146,7 +145,6 @@ cd ../../..
 [source,bash]
 ----
 cd preference/java/springboot
-mvn clean package
 docker build -t example/preference:v1 .
 docker images | grep preference
 
@@ -225,7 +223,6 @@ IMPORTANT: The tag `v1` at the end of the image name matters. We will be creatin
 [source,bash]
 ----
 cd recommendation/java/vertx
-mvn clean package
 docker build -t example/recommendation:v1 .
 docker images | grep recommendation
 
@@ -296,7 +293,6 @@ Make your changes, save it and then:
 
 [source,bash]
 ----
-mvn clean package
 docker build -t example/{servicename}:v1 .
 
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
