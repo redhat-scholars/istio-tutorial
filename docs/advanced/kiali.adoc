@@ -43,8 +43,7 @@ curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali
    IMAGE_VERSION=latest \
    NAMESPACE=istio-system \
    VERSION_LABEL=master \
-   VERBOSE_MODE=4 \ 
-   JAEGER_SERVICE=tracing envsubst | oc create -n istio-system -f -
+   VERBOSE_MODE=4 envsubst | oc create -n istio-system -f -
 ----
 
 Installing Kiali may take a minute or two. You can use the following commands
@@ -173,5 +172,5 @@ To uninstall Kiali from your cluster, run the following command:
 
 [source, bash]
 ----
-oc delete all,secrets,sa,templates,configmaps,deployments,clusterroles,clusterrolebindings,routerules --selector=app=kiali -n istio-system
+oc delete all,secrets,sa,templates,configmaps,deployments,clusterroles,clusterrolebindings,virtualservices,destinationrules --selector=app=kiali -n istio-system
 ----
