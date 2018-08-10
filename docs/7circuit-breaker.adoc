@@ -105,11 +105,7 @@ Throw some requests at the customer endpoint:
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 You will see the load balancing 50/50 between the two different versions of the `recommendation` service. And within version `v2`, you will also see that some requests are handled by one pod and some requests are handled by the other pod.
@@ -180,11 +176,7 @@ Throw some requests at the customer endpoint:
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 You'll see that whenever the pod `recommendation-v2-2036617847-spdrb` receives a request, you get a `503` error:
@@ -222,11 +214,7 @@ Throw some requests at the customer endpoint:
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 You will see that whenever you get a failing request with `503` from the pod `recommendation-v2-2036617847-spdrb`, it gets ejected from the pool, and it doesn't receive any more requests until the sleep window expires - which takes at least 15s.
@@ -292,11 +280,7 @@ Throw some requests at the customer endpoint:
 
 [source,bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 You won't receive `503`s anymore. But the requests from recommendation `v2` are still taking more time to get a response:

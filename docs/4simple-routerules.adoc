@@ -83,15 +83,11 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
-Send several requests to see their responses
+Send several requests to see their responses:
 
-[source,bash]
+[source, bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
@@ -195,15 +191,11 @@ Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2.yml -n tutorial
 ----
 
-and send in several requests
+and send in several requests:
 
-[source,bash]
+[source, bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 In another terminal, change the mixture to be 75/25
