@@ -88,11 +88,7 @@ Send several requests to see their responses
 
 [source, bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service.
@@ -139,11 +135,7 @@ Send several requests to see their responses
 
 [source, bash]
 ----
-#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done
+./scripts/run.sh
 ----
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service.
