@@ -4,6 +4,18 @@ Let's see an example of using egress route by deploying a recommendation:v3 vers
 
 In this case, we are going to configure Istio to access http://now.httpbin.org from internal service (recommendation:v3).
 
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source. bash]
+----
+./scripts/clean.sh
+----
+====
+
 === Create recommendation:v3
 
 We can experiment with Egress service entry by making two changes to `RecommendationVerticle.java` like the following and creating a "v3" docker image.
@@ -148,7 +160,6 @@ exit
 ----
 
 
-
 Clean up
 
 [source,bash]
@@ -158,5 +169,9 @@ istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tu
 istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml
 ----
 
+or you can run:
 
-
+[source. bash]
+----
+./scripts/clean.sh
+----

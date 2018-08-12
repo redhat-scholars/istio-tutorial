@@ -1,5 +1,17 @@
 == Circuit Breaker
 
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source. bash]
+----
+./scripts/clean.sh
+----
+====
+
 === Fail Fast with Max Connections and Max Pending Requests
 
 First, make sure to uncomment `router.get(&quot;/&quot;).handler(this::timeout);` in the RecommendationVerticle.java:
@@ -70,6 +82,13 @@ Clean up
 ----
 istioctl delete virtualservice recommendation -n tutorial
 istioctl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial
+----
+
+or you can run:
+
+[source. bash]
+----
+./scripts/clean.sh
 ----
 
 === Pool Ejection

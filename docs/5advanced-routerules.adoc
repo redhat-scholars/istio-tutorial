@@ -1,5 +1,17 @@
 == Advanced Route Rules
 
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source. bash]
+----
+./scripts/clean.sh
+----
+====
+
 === Smart routing based on user-agent header (Canary Deployment)
 
 What is your user-agent?
@@ -90,6 +102,13 @@ istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutor
 istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
 ----
 
+or you can run:
+
+[source. bash]
+----
+./scripts/clean.sh
+----
+
 === Mirroring Traffic (Dark Launch)
 
 [source,bash]
@@ -108,7 +127,12 @@ istioctl get destinationrule
 ----
 
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
-if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
+if so run:
+
+[source. bash]
+----
+./scripts/clean.sh
+----
 
 Make sure you are in the main directory of "istio-tutorial"
 
@@ -135,6 +159,13 @@ Clean up
 ----
 istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
+----
+
+or you can run:
+
+[source. bash]
+----
+./scripts/clean.sh
 ----
 
 === Access Control
@@ -339,4 +370,11 @@ Clean up
 istioctl delete -f istiofiles/rate_limit_rule.yml
 
 istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
+----
+
+or you can run:
+
+[source. bash]
+----
+./scripts/clean.sh
 ----

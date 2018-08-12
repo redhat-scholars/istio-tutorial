@@ -2,6 +2,18 @@
 
 Apply some chaos engineering by throwing in some HTTP errors or network delays. Understanding failure scenarios is a critical aspect of microservices architecture (aka distributed computing)
 
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source. bash]
+----
+./scripts/clean.sh
+----
+====
+
 === HTTP Error 503
 
 By default, recommendation v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift
@@ -275,4 +287,11 @@ Clean up, delete the timeout rule
 [source,bash]
 ----
 istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial
+----
+
+or you can run:
+
+[source. bash]
+----
+./scripts/clean.sh
 ----
