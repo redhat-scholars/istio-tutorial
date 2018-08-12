@@ -1,6 +1,16 @@
 === Service Virtualization and Istio
 
-IMPORTANT: You should have NO `virtualservice` nor `destinationrule` in `tutorial` namespace, if so `istioctl delete virtualservice name -n tutorial` and `istioctl delete destinationrule name -n tutorial`
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source. bash]
+----
+./scripts/clean.sh
+----
+====
 
 We'll create version 2 of preferences service. 
 But in this case instead of communicating with recommendation service, we are going to communicate with a virtualized recommendation service.
@@ -166,6 +176,7 @@ Let's avoid this by just sending traffic that comes from preference v2 service t
 
 [source, bash]
 ----
+istioctl create -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
 ----
 
@@ -186,6 +197,7 @@ Clean up
 
 [source,bash]
 ----
+istioctl delete -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
 oc delete all  -l app=preference,version=v2
 oc delete all  -l app=recommendation,version=virtualized
