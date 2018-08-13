@@ -374,7 +374,7 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 
 or you can run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----

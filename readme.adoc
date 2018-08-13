@@ -50,6 +50,8 @@ include::docs/advanced/kiali.adoc[]
 
 include::docs/advanced/virtualization.adoc[]
 
+include::docs/advanced/mTLS.adoc[]
+
 == Tips &amp; Tricks
 
 include::docs/9tips.adoc[]
