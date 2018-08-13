@@ -53,3 +53,35 @@ else
     done
     
 fi
+
+contentgw=`istioctl get gateway -n "$namespace" 2>/dev/null`
+
+if [ -z "$contentgw" ]; then
+    echo "No Gateway in $namespace namespace."
+else
+    contentgw=`awk 'NR>1' <<< "$contentgw"`
+
+    names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentgw"`
+
+    for name in "${names[@]}"
+    do
+        istioctl delete gateway "$name" -n "$namespace"
+    done
+    
+fi
+
+contentp=`istioctl get policy -n "$namespace" 2>/dev/null`
+
+if [ -z "$contentp" ]; then
+    echo "No Policy in $namespace namespace."
+else
+    contentp=`awk 'NR>1' <<< "$contentp"`
+
+    names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentp"`
+
+    for name in "${names[@]}"
+    do
+        istioctl delete policy "$name" -n "$namespace"
+    done
+    
+fi
