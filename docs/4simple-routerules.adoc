@@ -215,7 +215,7 @@ istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutor
 
 or you can run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----

@@ -10,7 +10,7 @@ In this case, we are going to configure Istio to access http://now.httpbin.org f
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----
@@ -171,7 +171,7 @@ istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml
 
 or you can run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----

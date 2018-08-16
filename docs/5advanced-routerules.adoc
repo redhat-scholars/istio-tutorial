@@ -6,7 +6,7 @@
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----
@@ -104,7 +104,7 @@ istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tu
 
 or you can run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----
@@ -129,7 +129,7 @@ istioctl get destinationrule
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----
@@ -163,7 +163,7 @@ istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n
 
 or you can run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----
@@ -374,7 +374,7 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 
 or you can run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----

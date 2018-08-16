@@ -6,7 +6,7 @@
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----

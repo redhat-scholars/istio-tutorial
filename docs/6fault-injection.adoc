@@ -8,7 +8,7 @@ Apply some chaos engineering by throwing in some HTTP errors or network delays. 
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----
@@ -291,7 +291,7 @@ istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tuto
 
 or you can run:
 
-[source. bash]
+[source, bash]
 ----
 ./scripts/clean.sh
 ----
