@@ -950,7 +950,7 @@ kubectl create -f ../../kubernetes/Service.yml -n tutorial</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; customer.yml
 oc apply -f &lt;(istioctl kube-inject -f customer.yml) -n tutorial
-oc delete svc/customer ; oc expose dc/customer --port=8080
+oc delete svc/customer ; oc create -f customer/kubernetes/Service.yml
 oc logs bc/customer -f</code></pre>
 </div>
 </div>
@@ -1057,7 +1057,7 @@ kubectl create -f ../../kubernetes/Service.yml</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; preference.yml
 oc apply -f &lt;(istioctl kube-inject -f preference.yml) -n tutorial
-oc delete svc/preference-v1 ; oc expose dc/preference-v1 --port=8080
+oc delete svc/preference-v1 ; oc create -f preference/kubernetes/Service.yml
 oc logs bc/preference-v1 -f</code></pre>
 </div>
 </div>
@@ -1607,6 +1607,14 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1614,6 +1622,27 @@ istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutor
 <div class="sect1">
 <h2 id="_advanced_route_rules">Advanced Route Rules</h2>
 <div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Before Start</div>
+<div class="paragraph">
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="sect2">
 <h3 id="_smart_routing_based_on_user_agent_header_canary_deployment">Smart routing based on user-agent header (Canary Deployment)</h3>
 <div class="paragraph">
@@ -1718,6 +1747,14 @@ curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.
 istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1741,7 +1778,12 @@ istioctl get destinationrule</code></pre>
 </div>
 <div class="paragraph">
 <p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
-if so <code>istioctl delete virtualservice virtualservicename -n tutorial</code> and <code>istioctl delete destinationrule destinationrulename -n tutorial</code></p>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Make sure you are in the main directory of "istio-tutorial"</p>
@@ -1771,6 +1813,14 @@ kubectl logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recom
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
 </div>
 </div>
 </div>
@@ -2021,6 +2071,14 @@ customer =&gt; preference =&gt; recommendation v2 from '2819441432-f4ls5': 112</
 istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2029,6 +2087,27 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml</code></pre>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Apply some chaos engineering by throwing in some HTTP errors or network delays. Understanding failure scenarios is a critical aspect of microservices architecture (aka distributed computing)</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Before Start</div>
+<div class="paragraph">
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="sect2">
 <h3 id="_http_error_503">HTTP Error 503</h3>
@@ -2335,12 +2414,41 @@ curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_circuit_breaker">Circuit Breaker</h2>
 <div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Before Start</div>
+<div class="paragraph">
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="sect2">
 <h3 id="_fail_fast_with_max_connections_and_max_pending_requests">Fail Fast with Max Connections and Max Pending Requests</h3>
 <div class="paragraph">
@@ -2425,6 +2533,14 @@ istioctl get destinationrule -n tutorial</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete virtualservice recommendation -n tutorial
 istioctl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
 </div>
 </div>
 </div>
@@ -2732,6 +2848,27 @@ istioctl delete destinationrule recommendation -n tutorial</code></pre>
 <div class="paragraph">
 <p>In this case, we are going to configure Istio to access <a href="http://now.httpbin.org" class="bare">http://now.httpbin.org</a> from internal service (recommendation:v3).</p>
 </div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Before Start</div>
+<div class="paragraph">
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="sect2">
 <h3 id="_create_recommendation_v3">Create recommendation:v3</h3>
 <div class="paragraph">
@@ -2910,6 +3047,14 @@ exit</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
 istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
 </div>
 </div>
 </div>
@@ -3151,7 +3296,16 @@ can see the distributed tracing, as provided by Jaeger.</p>
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-You should have NO <code>virtualservice</code> nor <code>destinationrule</code> in <code>tutorial</code> namespace, if so <code>istioctl delete virtualservice name -n tutorial</code> and <code>istioctl delete destinationrule name -n tutorial</code>
+<div class="title">Before Start</div>
+<div class="paragraph">
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./scripts/clean.sh</pre>
+</div>
+</div>
 </td>
 </tr>
 </table>
@@ -3266,11 +3420,7 @@ recommendation-v2-1275713543-2bs5k            2/2       Running   4          2d<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3326,11 +3476,7 @@ recommendation-virtualized-2649197284-rp9cg   2/2       Running   2          3h<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-while true
-do curl customer-tutorial.$(minishift ip).nip.io
-sleep .5
-done</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3357,7 +3503,8 @@ Let&#8217;s avoid this by just sending traffic that comes from preference v2 ser
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3380,7 +3527,8 @@ In this way when you deploy a new service, you can mirror the traffic without wo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
 oc delete all  -l app=preference,version=v2
 oc delete all  -l app=recommendation,version=virtualized</code></pre>
 </div>
