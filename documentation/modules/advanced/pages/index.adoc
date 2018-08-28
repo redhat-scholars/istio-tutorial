@@ -1,0 +1,3 @@
+= Advanced use cases of Istio on Kubernetes/OpenShift
+
+This section contains advanced use cases for Istio which might go beyond routing or circuit breaker.

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fault Injection :: Istio Tutorial Docs</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/6fault-injection.html">
+    <meta name="generator" content="Antora 1.0.3">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <a href="#">Istio Tutorial</a>
+        <span class="separator">//</span>
+        <a href="https://redhat-developer-demos.github.io/istio-tutorial">Docs</a>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-link">Project</div>
+          <div class="navbar-dropdown">
+            <div class="navbar-item"><strong>GitHub</strong></div>
+            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial">Istio Tutorial Repository</a>
+            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial/issues">Istio Tutorial Issue Tracker</a>
+          </div>
+        </div>
+        <a class="navbar-item" href="https://twitter.com/rhdevelopers">
+          <span class="icon">
+            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header><div class="main-wrapper">
+<div class="navigation-container" data-component="istio-tutorial" data-version="1.0.0">
+  <aside class="navigation">
+    <div class="panels">
+<div class="navigation-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Istio Tutorial</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Introduction to Istio Tutorial</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="1setup.html">1. Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="1setup.html#prerequisite">Prerequisites</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="1setup.html#minishift">Setup MiniShift</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="1setup.html#environment">Setup Environment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="1setup.html#istioinstallation">Install Istio</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="3monitoring-tracing.html">3. Monitoring and Tracing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Custom Metrics</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="4simple-routerules.html">4. Simple Routing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="4simple-routerules.html#istiorouting">Changing Istio Routings</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="4simple-routerules.html#alltorecommendationv2">All Users To Recommendation V2</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="4simple-routerules.html#alltorecommendationv1">All Users To Recommendation V1</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="4simple-routerules.html#alltorecommendationv1v2">All Users To Recommendation V1 and V2</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="4simple-routerules.html#canarydeploymentrecommendation">Canary Deployment Between v1 And v2</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="5advanced-routerules.html">5. Advanced Routing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="5advanced-routerules.html#canarydeploymentuseragent">Canary Deployment based on user-agent</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="5advanced-routerules.html#alltorecommendationv1">All Users To Recommendation V1</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="5advanced-routerules.html#safaritov2">All Safari Users To Recommendation V2</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="5advanced-routerules.html#mobiletov2">All Mobile Users To Recommendation V2</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5advanced-routerules.html#mirroringtraffic">Mirroring Traffic</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="5advanced-routerules.html#accesscontrol">Access Control</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="5advanced-routerules.html#whitelist">White List</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="5advanced-routerules.html#blacklist">Black List</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5advanced-routerules.html#loadbalancer">Load Balancer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5advanced-routerules.html#ratelimiting">Rate Limiting</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="6fault-injection.html">6. Fault Injection</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#503error">HTTP 503 Error</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#delay">Delay</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#retry">Retry</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#timeout">Timeout</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="7circuit-breaker.html">7. Circuit Breaker</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="7circuit-breaker.html#failfast">Fail Fast</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="7circuit-breaker.html#nocircuitbreaker">No Circuit Breaker</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="7circuit-breaker.html#circuitbreaker">Circuit Breaker</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="7circuit-breaker.html#poolejection">Pool Ejection</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="7circuit-breaker.html#nofailinginstances">No Failing Instance</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="7circuit-breaker.html#failinginstancesnopoolejection">Failing Instance No Pool Ejection</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="7circuit-breaker.html#failinginstancespoolejection">Failing Instance Pool Ejection</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="7circuit-breaker.html#circuitbreakerandpoolejection">Circuit Breaker + Pool Ejection</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="8egress.html">8. Egress</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="8egress.html#createrecommendationv3">Create Recommendation V3</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="8egress.html#istioegress">Istio-ize Egress</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="9tips.html">9. Tips</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="advanced/index.html">Advanced Istio Tutorial</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/kiali.html">Kiali</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#howkiali">How Kiali Work</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#installkiali">Install Kiali</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#generatingdata">Generating Data</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#servicegraph">Service Graph</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#servicelistening">Service Listening</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#istioconf">Istio Config</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#distributedtracing">Distributed Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/kiali.html#cleanup">Uninstall Kiali</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/virtualization.html">Service Virtualization and Istio</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/virtualization.html#deploypreferencev2">Deploy Preference V2</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/virtualization.html#servicevirtualization">Adding Service Virtualization</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/virtualization.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/mTLS.html">Mutual TLS and Istio</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/mTLS.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/mTLS.html#enablingtls">Enabling TLS</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/mTLS.html#restore">Restore Environment</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="navigation-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Istio Tutorial</span>
+    <span class="version">1.0.0</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Istio Tutorial</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">1.0.0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+  <main class="main">
+<div class="toolbar" role="navigation">
+  <button class="navigation-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
+    <li class="crumb"><a href="6fault-injection.html">6. Fault Injection</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/alex/git/istio-tutorial/documentation/modules/ROOT/pages/6fault-injection.adoc">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1>Fault Injection</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Apply some chaos engineering by throwing in some HTTP errors or network delays. Understanding failure scenarios is a critical aspect of microservices architecture (aka distributed computing)</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Before Start</div>
+<div class="paragraph">
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="503error"><a class="anchor" href="#503error"></a>HTTP Error 503</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, recommendation v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -l app=recommendation -n tutorial
+or
+$ kubectl get pods -l app=recommendation -n tutorial
+
+NAME                                  READY     STATUS    RESTARTS   AGE
+recommendation-v1-3719512284-7mlzw   2/2       Running   6          18h
+recommendation-v2-2815683430-vn77w   2/2       Running   0          3h</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can inject 503&#8217;s, for approximately 50% of the requests</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-503.yml -n tutorial
+
+curl customer-tutorial.$(minishift ip).nip.io
+customer =&gt; preference =&gt; recommendation v1 from '99634814-sf4cl': 88
+curl customer-tutorial.$(minishift ip).nip.io
+customer =&gt; 503 preference =&gt; 503 fault filter abort
+curl customer-tutorial.$(minishift ip).nip.io
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-qsp25': 51</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Clean up</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delay"><a class="anchor" href="#delay"></a>Delay</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slowly, potentially causing a cascading failure in your network of services.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And hit the customer endpoint</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will notice many requests to the customer endpoint now have a delay.
+If you are monitoring the logs for recommendation v1 and v2, you will also see the delay happens BEFORE the recommendation service is actually called</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern recommendation -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or
+`bash
+./kubetail.sh recommendation -n tutorial
+`</p>
+</div>
+<div class="paragraph">
+<p>Clean up</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="retry"><a class="anchor" href="#retry"></a>Retry</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Instead of failing immediately, retry the Service N more times</p>
+</div>
+<div class="paragraph">
+<p>We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/misbehave
+exit</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is a special endpoint that will make our application return only `503`s.</p>
+</div>
+<div class="paragraph">
+<p>Now, if you hit the customer endpoint several times, you should see some 503&#8217;s</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
+
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 864
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 865
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 866
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 867
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 868
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 869
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now add the retry rule</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/virtual-service-recommendation-v2_retry.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will see it work every time because Istio will retry the recommendation service and it will land on v1 only.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
+
+customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 196
+customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 197
+customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can see the active Virtual Services via</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl get virtualservices -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, delete the retry rule and see the old behavior, where v2 throws 503s</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete virtualservice recommendation -n tutorial
+
+./scripts/run.sh
+
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1118
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1119
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1120
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1121
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1122
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1123
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1124
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1125
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1126
+customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, make the pod v2 behave well again</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/behave
+exit</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The application is back to random load-balancing between v1 and v2</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
+
+customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
+customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 207
+customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 130</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="timeout"><a class="anchor" href="#timeout"></a>Timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in <code>tutorial</code> namespace) should be in effect. To check it run <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> and if so <code>istioctl delete virtualservice virtualservicename -n tutorial</code> and <code>istioctl delete destinationrule destinationrulename -n tutorial</code></p>
+</div>
+<div class="paragraph">
+<p>First, introduce some wait time in <code>recommendation v2</code> by uncommenting the line that calls the <code>timeout()</code> method. Update <code>RecommendationVerticle.java</code> making it a slow performer with a 3 second delay.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Override
+    public void start() throws Exception {
+        Router router = Router.router(vertx);
+        router.get("/").handler(this::logging);
+        router.get("/").handler(this::timeout);
+        router.get("/").handler(this::getRecommendations);
+        router.get("/misbehave").handler(this::misbehave);
+        router.get("/behave").handler(this::behave);
+
+        HealthCheckHandler hc = HealthCheckHandler.create(vertx);
+        hc.register("dummy-health-check", future -&gt; future.complete(Status.OK()));
+        router.get("/health").handler(hc);
+
+        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rebuild and redeploy</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx
+
+mvn clean package
+
+docker build -t example/recommendation:v2 .
+
+docker images | grep recommendation
+
+oc delete pod -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then add the timeout rule</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will see it return v1 OR "upstream request timeout" after waiting about 1 second</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
+
+customer =&gt; 503 preference =&gt; 504 upstream request timeout
+curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.035 total
+customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 210
+curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 36% cpu 0.025 total
+customer =&gt; 503 preference =&gt; 504 upstream request timeout
+curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.034 total</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Clean up, delete the timeout rule</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+  </main>
+</div>
+<footer class="footer">
+  <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script src="../../_/js/vendor/highlight.js"></script>
+<script>hljs.initHighlighting()</script>
+  </body>
+</html>
