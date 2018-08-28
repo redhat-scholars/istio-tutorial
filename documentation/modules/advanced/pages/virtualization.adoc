@@ -1,0 +1,200 @@
+= Service Virtualization and Istio
+include::_attributes.adoc[]
+
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----
+====
+
+We'll create version 2 of preferences service. 
+But in this case instead of communicating with recommendation service, we are going to communicate with a virtualized recommendation service.
+
+Service virtualization can be understood as something similar as mocking where instead of mocking components (classes), you are mocking remote services.
+
+For this concrete case, virtualized recommendation service will return `recommendation v2 from 'virtualized': 2`.
+
+[#deploypreferencev2]
+== Deploy Preference:v2
+
+Move to preference directory:
+
+[source, bash]
+----
+cd preference/java/springboot
+----
+
+Change `PreferencesController.java` like the following and creating a "v2" docker image.
+
+[source,java]
+----
+private static final String RESPONSE_STRING_FORMAT = "PREFERENCE => %s\n";
+----
+
+The "v2" tag during the Docker build is significant.
+
+There is also a second `deployment.yml` file to label things correctly
+
+=== Docker build (if you have access to Docker daemon)
+
+[source, bash]
+----
+mvn clean package
+
+docker build -t example/preference:v2 .
+----
+
+IMPORTANT: We have a 2nd Deployment to manage the v2 version of preference.
+
+[source, bash]
+----
+oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+
+oc get pods -w
+
+cd ../../..
+----
+
+=== OpenShift S2I strategy (if you DON’T have access to Docker daemon)
+
+[source, bash]
+----
+mvn clean package -f preference/java/springboot
+
+oc new-app -l app=preference,version=v2 --name=preference-v2 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference-v2.yml
+oc apply -f <(istioctl kube-inject -f preference-v2.yml) -n tutorial
+oc cancel-build bc/preference-v2
+oc delete svc/preference-v2
+oc start-build preference-v2 --from-dir=. --follow
+----
+
+=== Wait for v2 to be deployed
+
+Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
+
+----
+NAME                                          READY     STATUS    RESTARTS   AGE
+customer-3647816848-j5xd5                     2/2       Running   25         14d
+preference-v1-406256754-8v7x5                 2/2       Running   12         2h
+preference-v2-3602772496-wmkvl                2/2       Running   12         2h
+recommendation-v1-2409176097-kcjsr            2/2       Running   8          14d
+recommendation-v2-1275713543-2bs5k            2/2       Running   4          2d
+----
+
+and test the customer endpoint
+
+[source, bash]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+you likely see "customer => preference => recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
+
+Send several requests to see their responses
+
+[source, bash]
+----
+./scripts/run.sh
+----
+
+The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service.
+
+So after running several times you'll get some combinations of:
+
+----
+customer => preference => recommendation v1 from '2409176097-kcjsr': 3
+customer => PREFERENCE => recommendation v1 from '2409176097-kcjsr': 4
+customer => preference => recommendation v2 from '1275713543-2bs5k': 3
+customer => PREFERENCE => recommendation v2 from '1275713543-2bs5k': 3
+---- 
+
+[#servicevirtualization]
+== Adding Service Virtualization
+
+We'll create a Docker image with Hoverfly (Service Virtualization tool) with some canned requests/answers for recommendation service.
+
+[source, bash]
+----
+cd recommendation/virtualized
+
+docker build -t example/recommendation:virtualized .
+docker images | grep recommendation
+
+oc apply -f <(istioctl kube-inject -f ../kubernetes/Deployment-virtualized.yml) -n tutorial
+oc get pods -w
+
+cd ../..
+----
+
+After this step, you should have three versions of recommendation service (v1, v2 and virtualized).
+
+----
+NAME                                          READY     STATUS    RESTARTS   AGE
+customer-3647816848-j5xd5                     2/2       Running   25         14d
+preference-v1-406256754-8v7x5                 2/2       Running   12         2h
+preference-v2-3602772496-wmkvl                2/2       Running   12         2h
+recommendation-v1-2409176097-kcjsr            2/2       Running   8          14d
+recommendation-v2-1275713543-2bs5k            2/2       Running   4          2d
+recommendation-virtualized-2649197284-rp9cg   2/2       Running   2          3h
+----
+
+Send several requests to see their responses
+
+[source, bash]
+----
+./scripts/run.sh
+----
+
+The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service.
+
+So after running several times you'll get some combinations of:
+
+----
+customer => preference => recommendation v1 from '2409176097-kcjsr': 3
+customer => PREFERENCE => recommendation v1 from '2409176097-kcjsr': 2
+customer => preference => recommendation v1 from 'virtualized': 2
+customer => PREFERENCE => recommendation v1 from 'virtualized': 2
+customer => preference => recommendation v2 from '1275713543-2bs5k'
+customer => PREFERENCE => recommendation v2 from '1275713543-2bs5k'
+customer => preference => recommendation v2 from 'virtualized': 2
+customer => PREFERENCE => recommendation v2 from 'virtualized': 2
+---- 
+
+Notice that now the `v2` reaches all recommendation services.
+Let's avoid this by just sending traffic that comes from preference v2 service to the virtualized recommendation service.
+
+[source, bash]
+----
+istioctl create -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
+----
+
+Then do again some requests and you'll get something like:
+
+----
+customer => preference => recommendation v1 from '2409176097-kcjsr': 5
+customer => PREFERENCE => recommendation v1 from 'virtualized': 2
+customer => preference => recommendation v2 from '1275713543-2bs5k': 6
+customer => PREFERENCE => recommendation v2 from 'virtualized': 2
+
+----
+
+Now all requests that are from preference v2 are redirected to virtualized recommendation service.
+In this way when you deploy a new service, you can mirror the traffic without worrying about side-effects on other services, since the requests are redirected to a virtualized instance instead of a production one.
+
+[#cleanup]
+== Clean up
+
+[source,bash]
+----
+istioctl delete -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
+oc delete all  -l app=preference,version=v2
+oc delete all  -l app=recommendation,version=virtualized
+----

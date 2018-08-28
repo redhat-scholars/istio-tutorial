@@ -28,31 +28,31 @@ For now, they have a simple exception handling solution for dealing with a missi
 
 toc::[]
 
-include::docs/1setup.adoc[]
+include::documentation/modules/ROOT/pages/1setup.adoc[]
 
-include::docs/2deploy-microservices.adoc[]
+include::documentation/modules/ROOT/pages/2deploy-microservices.adoc[]
 
-include::docs/3monitoring-tracing.adoc[]
+include::documentation/modules/ROOT/pages/3monitoring-tracing.adoc[]
 
-include::docs/4simple-routerules.adoc[]
+include::documentation/modules/ROOT/pages/4simple-routerules.adoc[]
 
-include::docs/5advanced-routerules.adoc[]
+include::documentation/modules/ROOT/pages/5advanced-routerules.adoc[]
 
-include::docs/6fault-injection.adoc[]
+include::documentation/modules/ROOT/pages/6fault-injection.adoc[]
 
-include::docs/7circuit-breaker.adoc[]
+include::documentation/modules/ROOT/pages/7circuit-breaker.adoc[]
 
-include::docs/8egress.adoc[]
+include::documentation/modules/ROOT/pages/8egress.adoc[]
 
 == Advanced use cases
 
-include::docs/advanced/kiali.adoc[]
+include::documentation/modules/advanced/pages/kiali.adoc[]
 
-include::docs/advanced/virtualization.adoc[]
+include::documentation/modules/advanced/pages/virtualization.adoc[]
 
-include::docs/advanced/mTLS.adoc[]
+include::documentation/modules/advanced/pages/mTLS.adoc[]
 
 == Tips &amp; Tricks
 
-include::docs/9tips.adoc[]
+include::documentation/modules/ROOT/pages/9tips.adoc[]
 
