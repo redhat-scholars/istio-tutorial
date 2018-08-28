@@ -1,7 +1,7 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 audit.log
-
+.cache/
 
 ### STS ###
 .apt_generated
@@ -27,3 +27,4 @@ nbdist/
 
 .DS_Store
 .vscode
+
