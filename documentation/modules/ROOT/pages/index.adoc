@@ -1,0 +1,19 @@
+= Java (Spring Boot, Vert.x and Microprofile) + Istio on Kubernetes/OpenShift
+
+- A HTML version of this file is published at https://redhat-developer-demos.github.io/istio-tutorial/
+
+- The source code is available at https://github.com/redhat-developer-demos/istio-tutorial
+
+- Download the ebook "Introducing Istio Service Mesh for Microservices" for FREE at https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/.
+
+- If you are in a hurry and want to get hands-on with Istio insanely fast, just go to http://learn.openshift.com/servicemesh[http://learn.openshift.com/servicemesh] and start instantly.
+
+
+
+There are three different and super simple microservices in this system and they are chained together in the following sequence:
+
+```
+customer → preference → recommendation
+```
+
+For now, they have a simple exception handling solution for dealing with a missing dependent service: it just returns the error message to the end-user.

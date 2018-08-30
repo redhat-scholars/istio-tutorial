@@ -1,4 +1,4 @@
 #!/bin/bash
 
-asciidoctor readme.adoc -o docs/index.html
+antora --pull site.yml --stacktrace
 open docs/index.html

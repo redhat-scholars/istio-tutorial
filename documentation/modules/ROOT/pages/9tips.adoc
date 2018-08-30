@@ -1,0 +1,267 @@
+= Tips
+include::_attributes.adoc[]
+
+Some tips and tricks that you might find handy
+
+You have two containers in a pod
+
+[source,bash]
+----
+oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
+or
+kubectl get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
+----
+
+From these images
+
+[source,bash]
+----
+oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
+or
+kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
+----
+
+Get the pod ids
+
+[source,bash]
+----
+CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
+PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
+RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
+RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)
+
+or
+
+CPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
+PPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
+RPOD1=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
+RPOD2=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)
+----
+
+The pods all see each other's services
+
+[source,bash]
+----
+oc exec $CPOD -c customer -n tutorial curl http://preference:8080
+oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
+oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
+
+or
+
+kubectl exec $CPOD -c customer -n tutorial curl http://preference:8080
+kubectl exec $CPOD -c customer -n tutorial curl http://recommendation:8080
+kubectl exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
+----
+
+[source,bash]
+----
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > afile.json
+or
+kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > afile.json
+----
+
+Look for `route_config`, containing `"name": "8080"` and you should see entries for customer, preference and recommendation
+
+[source,json]
+----
+"virtualHosts": [
+      {
+       "name": "customer.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "customer.tutorial.svc.cluster.local",
+        "customer.tutorial.svc.cluster.local:8080",
+        "customer",
+        "customer:8080",
+        "customer.tutorial.svc.cluster",
+        "customer.tutorial.svc.cluster:8080",
+        "customer.tutorial.svc",
+        "customer.tutorial.svc:8080",
+        "customer.tutorial",
+        "customer.tutorial:8080",
+        "172.30.107.115",
+        "172.30.107.115:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||customer.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "istio-pilot.istio-system.svc.cluster.local:8080",
+       "domains": [
+        "istio-pilot.istio-system.svc.cluster.local",
+        "istio-pilot.istio-system.svc.cluster.local:8080",
+        "istio-pilot.istio-system",
+        "istio-pilot.istio-system:8080",
+        "istio-pilot.istio-system.svc.cluster",
+        "istio-pilot.istio-system.svc.cluster:8080",
+        "istio-pilot.istio-system.svc",
+        "istio-pilot.istio-system.svc:8080",
+        "172.30.142.41",
+        "172.30.142.41:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||istio-pilot.istio-system.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "preference.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "preference.tutorial.svc.cluster.local",
+        "preference.tutorial.svc.cluster.local:8080",
+        "preference",
+        "preference:8080",
+        "preference.tutorial.svc.cluster",
+        "preference.tutorial.svc.cluster:8080",
+        "preference.tutorial.svc",
+        "preference.tutorial.svc:8080",
+        "preference.tutorial",
+        "preference.tutorial:8080",
+        "172.30.26.194",
+        "172.30.26.194:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||preference.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      },
+      {
+       "name": "recommendation.tutorial.svc.cluster.local:8080",
+       "domains": [
+        "recommendation.tutorial.svc.cluster.local",
+        "recommendation.tutorial.svc.cluster.local:8080",
+        "recommendation",
+        "recommendation:8080",
+        "recommendation.tutorial.svc.cluster",
+        "recommendation.tutorial.svc.cluster:8080",
+        "recommendation.tutorial.svc",
+        "recommendation.tutorial.svc:8080",
+        "recommendation.tutorial",
+        "recommendation.tutorial:8080",
+        "172.30.103.127",
+        "172.30.103.127:8080"
+       ],
+       "routes": [
+        {
+         "match": {
+          "prefix": "/"
+         },
+         "route": {
+          "cluster": "outbound|8080||recommendation.tutorial.svc.cluster.local"
+         },
+         "decorator": {
+          "operation": "default-route"
+         }
+        }
+       ]
+      }
+     ],
+----
+
+Now add a new `destinationrule` and `virtualservice`.
+
+[source,bash]
+----
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml
+istioctl create -f istiofiles/virtual-service-recommendation-v2.yml
+----
+
+The review the routes again
+
+[source,bash]
+----
+oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > bfile.json
+or
+kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > bfile.json
+----
+
+Here is the Before:
+
+[source,javascript]
+----
+			"route": {
+				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
+				"timeout": "0s"
+			},
+----
+
+and
+
+[source,javascript]
+----
+			"decorator": {
+				"operation": "default-route"
+			}
+----
+
+And the After:
+
+[source,javascript]
+----
+			"route": {
+          		"cluster": "outbound|8080|version-v2|recommendation.tutorial.svc.cluster.local",
+          	},
+----
+
+and
+
+[source,javascript]
+----
+			"decorator": {
+          		"operation": "recommendation"
+         	}
+----
+
+If you need the Pod IP
+
+[source,bash]
+----
+oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
+or
+kubectl get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
+----
+
+Dive into the istio-proxy container
+
+[source,bash]
+----
+oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
+or
+kubectl exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
+
+cd /etc/istio/proxy
+ls
+cat envoy-rev0.json
+----
+
+Snowdrop Troubleshooting
+
+https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md[https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md]
