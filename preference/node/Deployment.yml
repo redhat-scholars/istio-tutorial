@@ -4,7 +4,7 @@ metadata:
   labels:
     app: preference
     version: v1
-  name: preference
+  name: preference-v1
 spec:
   replicas: 1
   selector:
@@ -19,13 +19,13 @@ spec:
     spec:
       containers:
       - env:
-        image: example/preference:latest
+        image: example/preference:v1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
             command:
             - curl
-            - localhost:8080/health
+            - localhost:8080/api/health/liveness
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 1
@@ -44,7 +44,7 @@ spec:
           exec:
             command:
             - curl
-            - localhost:8080/health
+            - localhost:8080/api/health/readiness
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 1

@@ -1,16 +1,15 @@
-FROM node:6.9.2
-#FROM rhscl/nodejs-6-rhel7 
+FROM bucharestgold/centos7-s2i-nodejs:10.x
 
 # Create directory for application
-RUN mkdir -p /usr/src/app 
-WORKDIR /usr/src/app
+RUN mkdir -p /opt/app-root/src
+WORKDIR /opt/app-root/src
 
 # Dependencies are installed here
-COPY package.json /usr/src/app/
+COPY package.json .
 RUN npm install
 
 # App sourcd
-COPY . /usr/src/app/
+COPY . .
 
 EXPOSE 8080
-CMD ["node", "recommendation.js"]
+CMD ["npm", "start"]

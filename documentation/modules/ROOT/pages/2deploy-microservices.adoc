@@ -48,14 +48,23 @@ GolangVersion: go1.10.1
 BuildStatus: Clean
 ----
 
-=== Customer build using Docker daemon 
+=== Customer build using Docker daemon
 
 NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
 
 [source,bash]
 ----
+# Spring Boot
 cd customer/java/springboot
 mvn clean package
+docker build -t example/customer .
+docker images | grep customer
+----
+
+[source,bash]
+----
+# Node.js
+cd customer/node
 docker build -t example/customer .
 docker images | grep customer
 ----
@@ -64,22 +73,46 @@ Now let's deploy the customer pod with its sidecar
 
 [source,bash]
 ----
+# Spring Boot
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 oc create -f ../../kubernetes/Service.yml -n tutorial
 
-or
+# or
 
 kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 kubectl create -f ../../kubernetes/Service.yml -n tutorial
 ----
 
+[source,bash]
+----
+# Node.js
+oc apply -f <(istioctl kube-inject -f Deployment.yml) -n tutorial
+oc create -f Service.yml -n tutorial
+
+# or
+
+kubectl apply -f <(istioctl kube-inject -f Deployment.yml) -n tutorial
+kubectl create -f Service.yml -n tutorial
+----
+
+
 === Customer build using OpenShift S2I strategy
 
-[source, bash]
+[source,bash]
 ----
+# Spring Boot
 oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
 oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
 oc delete svc/customer ; oc create -f customer/kubernetes/Service.yml
+oc logs bc/customer -f
+----
+
+[source,bash]
+----
+# Node.js
+oc new-app --name=customer --context-dir=customer/node -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 bucharestgold/centos7-s2i-nodejs~https://github.com/redhat-developer-demos/istio-tutorial -o yaml > customer.yaml
+oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
+oc delete svc/customer ; oc create -f Service.yml
 oc logs bc/customer -f
 ----
 
@@ -113,8 +146,16 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 You should see the following error because the services `preference` and `recommendation` are not yet deployed.
 
+[source,bash]
 ----
+# Spring Boot
 customer => I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
+----
+
+[source,bash]
+----
+# Node.js
+customer => Error: getaddrinfo ENOTFOUND preference preference:8080
 ----
 
 Also review the logs
@@ -128,7 +169,14 @@ You should see a stacktrace containing this cause:
 
 [source,bash]
 ----
+# Spring Boot
 org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
+----
+
+[source,bash]
+----
+# Node.js
+{"level":50,"time":1536093058709,"msg":"getaddrinfo ENOTFOUND preference preference:8080","pid":72150,"hostname":"Callisto.local","type":"Error","stack":"Error: getaddrinfo ENOTFOUND preference preference:8080\n    aterrnoException (dns.js:50:10)\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:92:26)","code":"ENOTFOUND","errno":"ENOTFOUND","syscall":"getaddrinfo","hostname":"preference","host":"preference","port":"8080","v":1}
 ----
 
 Back to the main istio-tutorial directory
@@ -145,6 +193,7 @@ cd ../../..
 
 [source,bash]
 ----
+# Spring Boot
 cd preference/java/springboot
 mvn clean package
 docker build -t example/preference:v1 .
@@ -159,19 +208,45 @@ kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n t
 kubectl create -f ../../kubernetes/Service.yml
 ----
 
+[source,bash]
+----
+# Node.js
+cd preference/node
+docker build -t example/preference:v1 .
+docker images | grep preference
+
+oc apply -f <(istioctl kube-inject -f Deployment.yml) -n tutorial
+oc create -f Service.yml
+
+or
+
+kubectl apply -f <(istioctl kube-inject -f Deployment.yml) -n tutorial
+kubectl create -f Service.yml
+----
+
 === Preference build using OpenShift S2I strategy
 
-[source, bash]
+[source,bash]
 ----
+# Spring Boot
 oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
 oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
 oc delete svc/preference-v1 ; oc create -f preference/kubernetes/Service.yml
 oc logs bc/preference-v1 -f
 ----
 
+[source,bash]
+----
+# Node.js
+oc new-app app=preference,version=v1 --name=preference-v1 --context-dir=preference/node -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 bucharestgold/centos7-s2i-nodejs~https://github.com/redhat-developer-demos/istio-tutorial -o yaml > preference.yaml
+oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
+oc delete svc/preference ; oc create -f Service.yml
+oc logs bc/preference -f
+----
+
 === Wait preference to be deployed
 
-[source, bash]
+[source,bash]
 ----
 oc get pods -w
 or
@@ -182,7 +257,7 @@ Wait until the status is `Running` and there are `2/2` pods in the `Ready` colum
 
 [source,bash]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl preference-tutorial.$(minishift ip).nip.io
 ----
 
 It will respond with an error since the service `recommendation` is not yet deployed.
@@ -191,7 +266,14 @@ NOTE: We could make this a bit more resilient in a future iteration of this tuto
 
 [source,bash]
 ----
+# Spring Boot
 customer => 503 preference => I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
+----
+
+[source,bash]
+----
+# Node.js
+customer => preference =>  Error: getaddrinfo ENOTFOUND recommendation recommendation:8080
 ----
 
 and check out the logs
@@ -205,7 +287,14 @@ You should see a stacktrace containing this cause:
 
 [source,bash]
 ----
+# Spring Boot
 org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
+----
+
+[source,bash]
+----
+# Node.js
+{"level":50,"time":1536156500899,"msg":"getaddrinfo ENOTFOUND recommendation recommendation:8080","pid":15,"hostname":"preference-78bcfc5d-l5m5d","type":"Error","stack":"Error: getaddrinfo ENOTFOUND recommendation recommendation:8080\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:57:26)","errno":"ENOTFOUND","code":"ENOTFOUND","syscall":"getaddrinfo","hostname":"recommendation","host":"recommendation","port":"8080","v":1}
 ----
 
 Back to the main istio-tutorial directory
@@ -224,6 +313,7 @@ IMPORTANT: The tag `v1` at the end of the image name matters. We will be creatin
 
 [source,bash]
 ----
+# Vert.x
 cd recommendation/java/vertx
 mvn clean package
 docker build -t example/recommendation:v1 .
@@ -233,7 +323,25 @@ oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutori
 oc create -f ../../kubernetes/Service.yml
 oc get pods -w
 
-or 
+or
+
+kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
+kubectl create -f ../../kubernetes/Service.yml
+kubectl get pods -w
+----
+
+[source,bash]
+----
+# Node.js
+cd recommendation/node
+docker build -t example/recommendation:v1 .
+docker images | grep recommendation
+
+oc apply -f <(istioctl kube-inject -f Deployment.yml) -n tutorial
+oc create -f Service.yml
+oc get pods -w
+
+or
 
 kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
 kubectl create -f ../../kubernetes/Service.yml
@@ -242,11 +350,21 @@ kubectl get pods -w
 
 === Recommendation build using OpenShift S2I strategy
 
-[source, bash]
+[source,bash]
 ----
+# Vert.x
 oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
 oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
 oc delete svc/recommendation-v1 ; oc create -f recommendation/kubernetes/Service.yml
+oc logs bc/recommendation-v1 -f
+----
+
+[source,bash]
+----
+# Node.js
+oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/node bucharestgold/centos7-s2i-nodejs~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
+oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
+oc delete svc/recommendation-v1 ; oc create -f Service.yml
 oc logs bc/recommendation-v1 -f
 ----
 
@@ -283,19 +401,29 @@ cd ../../..
 [#redeployingcode]
 == Updating Redeploying Code
 
-When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
+When you wish to change code (e.g. editing the .java or .js files) and wish to "redeploy", simply:
 
 [source,bash]
 ----
+# Spring Boot or Vert.x
 cd {servicename}/java/{springboot|vertx}
 
 vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controller|Verticle}.java
+----
+
+[source,bash]
+----
+# Node.js
+cd {servicename}/node
+
+vi {servicename}.js
 ----
 
 Make your changes, save it and then:
 
 [source,bash]
 ----
+# Spring Boot Vert.x or Node.js
 mvn clean package
 docker build -t example/{servicename}:v1 .
 

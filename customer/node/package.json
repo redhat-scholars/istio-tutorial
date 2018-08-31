@@ -1,15 +1,22 @@
 {
-  "name": "body-parser",
+  "name": "customer",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Customer microservice",
+  "main": "customer.js",
   "scripts": {
+    "lint": "eslint customer.js --fix",
+    "start": "node customer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
+    "kube-probe": "~0.3.1",
+    "pino": "~5.4.0",
     "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "eslint": "~5.4.0"
   }
 }
