@@ -11,6 +11,10 @@ Those are the kinds of question that Kiali has the ability to answer, by giving
 you a big picture of the mesh, and showing the whole flow of your requests and
 data.
 
+Kiali builds upon the same concepts as Istio, and you can check the
+link:https://www.kiali.io/documentation/glossary/concepts/[glossary] for a
+refresher.
+
 [#howkiali]
 == How does Kiali work?
 
@@ -28,25 +32,39 @@ Istio).
 A prerequisite for installing Kiali is that you must have OpenShift and Istio
 installed and configured.
 
-Install Kiali with the following commands:
+To install it, you're going to need the `envsubst` command, that is available
+on `dnf` for Fedora, and on `homebrew` for OS X, like so:
+
+* Fedora: `dnf install gettext`
+* OS X: `brew install gettext`
+
+Then, install Kiali with the following commands:
 
 [source, bash]
 ----
-# This command installs Kiali's configmaps
-curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-configmap.yaml | \
-   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+# URLS for Jaeger and Grafana
+JAEGER_URL="https://jaeger-query-istio-system.$(minishift ip).nip.io"
+GRAFANA_URL="https://grafana-istio-system.$(minishift ip).nip.io"
+VERSION_LABEL="v0.7.2"
 
-# This command installs Kiali's secrets
-curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-secrets.yaml | \
-   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+# Installs Kiali's configmap
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali-configmap.yaml | \
+  VERSION_LABEL=${VERSION_LABEL} \
+  JAEGER_URL=${JAEGER_URL}  \
+  GRAFANA_URL=${GRAFANA_URL} envsubst | oc create -n istio-system -f -
 
-# And this command installs the Kiali service
-curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali.yaml | \
-   IMAGE_NAME=kiali/kiali \
-   IMAGE_VERSION=latest \
-   NAMESPACE=istio-system \
-   VERSION_LABEL=master \
-   VERBOSE_MODE=4 envsubst | oc create -n istio-system -f -
+# Installs Kiali's secrets
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali-secrets.yaml | \
+  VERSION_LABEL=${VERSION_LABEL} envsubst | oc create -n istio-system -f -
+
+# Deploys Kiali to the cluster
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali.yaml | \
+  VERSION_LABEL=${VERSION_LABEL}  \
+  IMAGE_NAME=kiali/kiali \
+  IMAGE_VERSION=${VERSION_LABEL}  \
+  NAMESPACE=istio-system  \
+  VERBOSE_MODE=4  \
+  IMAGE_PULL_POLICY_TOKEN="imagePullPolicy: Always" envsubst | oc create -n istio-system -f -
 ----
 
 Installing Kiali may take a minute or two. You can use the following commands
@@ -71,18 +89,28 @@ And you'll see a result that's something like this:
 
 [source, bash]
 ----
-NAME                   HOST/PORT                                                PATH      SERVICES               PORT              TERMINATION   WILDCARD
-grafana                grafana-istio-system.127.0.0.1.nip.io                          grafana                http                            None
-istio-ingress          istio-ingress-istio-system.127.0.0.1.nip.io                    istio-ingress          http                            None
-istio-ingressgateway   istio-ingressgateway-istio-system.127.0.0.1.nip.io             istio-ingressgateway   http                            None
-jaeger-query           jaeger-query-istio-system.127.0.0.1.nip.io                     jaeger-query           jaeger-query      edge          None
-kiali                  kiali-istio-system.127.0.0.1.nip.io                            kiali                  <all>                           None
-prometheus             prometheus-istio-system.127.0.0.1.nip.io                       prometheus             http-prometheus                 None
-tracing                tracing-istio-system.127.0.0.1.nip.io                          tracing                tracing           edge          None
+NAME                                          READY     STATUS      RESTARTS   AGE
+elasticsearch-0                               1/1       Running     0          2h
+grafana-6d5c5477-25qfz                        1/1       Running     0          2h
+istio-citadel-b9b8d7589-nttjg                 1/1       Running     0          3h
+istio-egressgateway-7f987dc785-sfpxt          1/1       Running     0          3h
+istio-galley-745db694bb-f4chz                 1/1       Running     0          3h
+istio-ingressgateway-5bd8ffd968-vgvt7         1/1       Running     0          3h
+istio-pilot-cf76476d4-hdq55                   2/2       Running     0          3h
+istio-policy-7cd858cc78-rs7rm                 2/2       Running     0          3h
+istio-sidecar-injector-86c5d87f-9jvgd         1/1       Running     0          3h
+istio-statsd-prom-bridge-7f44bb5ddb-7mhvm     1/1       Running     0          3h
+istio-telemetry-f757b89c5-sl67n               2/2       Running     0          3h
+jaeger-agent-nc68q                            1/1       Running     0          2h
+jaeger-collector-d8b97d664-fn8b6              1/1       Running     0          2h
+jaeger-query-7745b957bb-9bd8h                 1/1       Running     0          2h
+kiali-7b4dbdd448-xshkt                        1/1       Running     0          2h
+openshift-ansible-istio-installer-job-mcz42   0/1       Completed   0          3h
+prometheus-84bd4b9796-7wkv6                   1/1       Running     0          3h
 ----
 
-So now we have the URL for Kiali (usually,
-"kiali-istio-system.127.0.0.1.nip.io"), so let's access it:
+So now we can access Kiali at `kiali-istio-system.$(minishift ip).nip.io`, so
+let's do it:
 
 image:kiali-login.png[Login Page]
 
@@ -114,63 +142,68 @@ It shows a graph with all the microservices, connected by the requests going
 through then. On this page, you can see how the services interact with each
 other.
 
-[#servicelistening]
-== Service Listing
+[#applications]
+== Applications
 
-Click the Services link in the left navigation. On the Services page you can
+Click the `Applications` link in the left navigation. On this page you can
 view a listing of all the services that are running in the cluster, and
 additional information about them, such as health status.
 
-image:kiali-service-list.png[Service Listing Page]
+image:kiali-application-list.png[Application Listing Page]
 
-Click on the "Filter by Namespace" dropdown, and select "tutorial". Then,
-you'll see a list of only the services on the tutorial:
+Click on the "customer" application to see its details:
 
-image:kiali-service-list-2.png[Service Listing Page Filtered]
-
-Click on the "preference" to see its details:
-
-image:kiali-service-details.png[Service Details]
+image:kiali-application-details.png[Service Details]
 
 By hovering the icon on the Health section, you can see the health of a service
 (a service is considered healthy) when it's online and responding to requests
 without errors:
 
-image:kiali-service-health.png[Health Status]
+image:kiali-application-health.png[Health Status]
 
-You can also see the deployments:
+By clicking on `Outbound Metrics` or `Inbound Metrics`, you can also see the
+metrics for an application, like so:
 
-image:kiali-deployments.png[Deployments]
+image:kiali-application-metrics.png[Application Metrics]
 
-And the source services:
+[#workloads]
+== Workloads
 
-image:kiali-source-services.png[Source Services]
+Click the `Workloads` link in the left navigation. On this page you can view
+a listing of all the workloads are present on your applications. 
 
-And the virtual services on the Istio infrastructure (if you defined any before
-on the tutorial). This one is from the "recommendation" service, where I
-defined a timeout rule:
+image:kiali-workload-list.png[Workload Listing]
 
-image:kiali-virtual-services.png[Virtual Services]
+Click on the `customer` workload. Here you can see details for the workload,
+such as the pods and services that are included in it:
 
-Click on the name of the virtual service, and you'll see the details for the
-virtual service:
+image:kiali-workload-details.png[Workload Details]
 
-image:kiali-virtual-services-2.png[Virtual Services Details]
+By clicking `Outbound Metrics` and `Inbound Metrics`, you can check the
+metrics for the workload. The metrics are the same as the `Application` ones.
 
-[#istioconfig]
-== Istio Config
+[#services]
+== Services
 
-Click the Istio Config link on the left navigation. On this page, you can see
-all currently running config rules, such as Virtual Services, Route Rules,
-Routes, Circuit Breakers, Fault Injection and so on.
+Click on the `Services` link in the left navigation. Here, you can see the
+listing of all services.
 
-image:kiali-istio-config.png[Istio Config Page]
+image:kiali-service-list.png[Service Listing]
+
+Click on the `customer` service. You can, on this page, see the details of
+the service, such as metrics, traces, workloads, virtual services,
+destination rules and so on:
+
+image:kiali-service-details.png[Service Details]
 
 [#distributedtracing]
 == Distributed Tracing
 
-Click on the Distributed Tracing link in the left navigation. On this page you
-can see the distributed tracing, as provided by Jaeger.
+Click on the Distributed Tracing link in the left navigation. The distributed
+tracing, provided by Jaeger, will open in a new page.
+
+NOTE: The tracing page opens in a new browser window/tab, so if it doesn't
+open, please check if your browser didn't block it from opening.
 
 image:kiali-distributed-tracing.png[Distributed Tracing Page]
 
