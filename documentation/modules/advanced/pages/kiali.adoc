@@ -32,14 +32,20 @@ Istio).
 A prerequisite for installing Kiali is that you must have OpenShift and Istio
 installed and configured.
 
-Install Kiali with the following commands:
+To install it, you're going to need the `envsubst` command, that is available
+on `dnf` for Fedora, and on `homebrew` for OS X, like so:
+
+* Fedora: `dnf install gettext`
+* OS X: `brew install gettext`
+
+Then, install Kiali with the following commands:
 
 [source, bash]
 ----
 # URLS for Jaeger and Grafana
 JAEGER_URL="https://jaeger-query-istio-system.$(minishift ip).nip.io"
 GRAFANA_URL="https://grafana-istio-system.$(minishift ip).nip.io"
-VERSION_LABEL="v0.7"
+VERSION_LABEL="v0.7.2"
 
 # Installs Kiali's configmap
 curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali-configmap.yaml | \
