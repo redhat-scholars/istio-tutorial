@@ -116,7 +116,7 @@ Scale back to a single replica of the recommendation-v2 Deployment
 ----
 oc scale --replicas=1 deployment/recommendation-v2
 or
-kubectl scale --replicas=2 deployment/recommendation-v2
+kubectl scale --replicas=1 deployment/recommendation-v2
 ----
 
 and back to the main directory
