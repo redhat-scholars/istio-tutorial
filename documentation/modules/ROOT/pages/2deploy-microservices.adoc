@@ -40,9 +40,9 @@ Make sure `istioctl` is in your `PATH`:
 [source,bash]
 ----
 $ istioctl version
-Version: 1.0.0
-GitRevision: 3a136c90ec5e308f236e0d7ebb5c4c5e405217f4
-User: root@71a9470ea93c
+Version: 1.0.2
+GitRevision: d639408fded355fb906ef2a1f9e8ffddc24c3d64
+User: root@66ce69d4a51e
 Hub: gcr.io/istio-release
 GolangVersion: go1.10.1
 BuildStatus: Clean
