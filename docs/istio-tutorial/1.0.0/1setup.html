@@ -475,7 +475,8 @@ minishift config set image-caching true
 minishift addon enable admin-user
 minishift addon enable anyuid
 
-minishift start</code></pre>
+minishift start
+minishift ssh -- sudo setenforce 0</code></pre>
 </div>
 </div>
 </div>

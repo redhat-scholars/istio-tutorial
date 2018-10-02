@@ -50,6 +50,7 @@ minishift addon enable admin-user
 minishift addon enable anyuid
 
 minishift start
+minishift ssh -- sudo setenforce 0
 ----
 
 [#environment]
