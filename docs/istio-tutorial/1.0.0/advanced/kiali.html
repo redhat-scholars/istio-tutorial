@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Observing microservice meshes with Kiali :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/advanced/kiali.html">
-    <meta name="generator" content="Antora 1.0.3">
+    <meta name="generator" content="Antora 1.1.1">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">  </head>
   <body class="article">
@@ -243,7 +243,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../9tips.html">9. Tips</a>
+    <a class="nav-link" href="../9tips.html">9. Tips And Tricks</a>
   </li>
 </ul>
   </li>
@@ -346,7 +346,7 @@
     <li class="crumb"><a href="kiali.html">Kiali</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/alex/git/istio-tutorial/documentation/modules/advanced/pages/kiali.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///Users/rafaelbenevides/projetos/istio/istio-tutorial/documentation/modules/advanced/pages/kiali.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Observing microservice meshes with Kiali</h1>
@@ -363,6 +363,11 @@ of microservice architectures , these questions can be difficult to answer.</p>
 <p>Those are the kinds of question that Kiali has the ability to answer, by giving
 you a big picture of the mesh, and showing the whole flow of your requests and
 data.</p>
+</div>
+<div class="paragraph">
+<p>Kiali builds upon the same concepts as Istio, and you can check the
+<a href="https://www.kiali.io/documentation/glossary/concepts/">glossary</a> for a
+refresher.</p>
 </div>
 </div>
 </div>
@@ -389,25 +394,47 @@ Istio).</p>
 installed and configured.</p>
 </div>
 <div class="paragraph">
-<p>Install Kiali with the following commands:</p>
+<p>To install it, you&#8217;re going to need the <code>envsubst</code> command, that is available
+on <code>dnf</code> for Fedora, and on <code>homebrew</code> for OS X, like so:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Fedora: <code>dnf install gettext</code></p>
+</li>
+<li>
+<p>OS X: <code>brew install gettext</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Then, install Kiali with the following commands:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># This command installs Kiali's configmaps
-curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-configmap.yaml | \
-   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># URLS for Jaeger and Grafana
+JAEGER_URL="https://jaeger-query-istio-system.$(minishift ip).nip.io"
+GRAFANA_URL="https://grafana-istio-system.$(minishift ip).nip.io"
+VERSION_LABEL="v0.7.2"
 
-# This command installs Kiali's secrets
-curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali-secrets.yaml | \
-   VERSION_LABEL=master envsubst | oc create -n istio-system -f -
+# Installs Kiali's configmap
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali-configmap.yaml | \
+  VERSION_LABEL=${VERSION_LABEL} \
+  JAEGER_URL=${JAEGER_URL}  \
+  GRAFANA_URL=${GRAFANA_URL} envsubst | oc create -n istio-system -f -
 
-# And this command installs the Kiali service
-curl https://raw.githubusercontent.com/kiali/kiali/master/deploy/openshift/kiali.yaml | \
-   IMAGE_NAME=kiali/kiali \
-   IMAGE_VERSION=latest \
-   NAMESPACE=istio-system \
-   VERSION_LABEL=master \
-   VERBOSE_MODE=4 envsubst | oc create -n istio-system -f -</code></pre>
+# Installs Kiali's secrets
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali-secrets.yaml | \
+  VERSION_LABEL=${VERSION_LABEL} envsubst | oc create -n istio-system -f -
+
+# Deploys Kiali to the cluster
+curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali.yaml | \
+  VERSION_LABEL=${VERSION_LABEL}  \
+  IMAGE_NAME=kiali/kiali \
+  IMAGE_VERSION=${VERSION_LABEL}  \
+  NAMESPACE=istio-system  \
+  VERBOSE_MODE=4  \
+  IMAGE_PULL_POLICY_TOKEN="imagePullPolicy: Always" envsubst | oc create -n istio-system -f -</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -435,19 +462,29 @@ oc get routes</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                   HOST/PORT                                                PATH      SERVICES               PORT              TERMINATION   WILDCARD
-grafana                grafana-istio-system.127.0.0.1.nip.io                          grafana                http                            None
-istio-ingress          istio-ingress-istio-system.127.0.0.1.nip.io                    istio-ingress          http                            None
-istio-ingressgateway   istio-ingressgateway-istio-system.127.0.0.1.nip.io             istio-ingressgateway   http                            None
-jaeger-query           jaeger-query-istio-system.127.0.0.1.nip.io                     jaeger-query           jaeger-query      edge          None
-kiali                  kiali-istio-system.127.0.0.1.nip.io                            kiali                  &lt;all&gt;                           None
-prometheus             prometheus-istio-system.127.0.0.1.nip.io                       prometheus             http-prometheus                 None
-tracing                tracing-istio-system.127.0.0.1.nip.io                          tracing                tracing           edge          None</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                          READY     STATUS      RESTARTS   AGE
+elasticsearch-0                               1/1       Running     0          2h
+grafana-6d5c5477-25qfz                        1/1       Running     0          2h
+istio-citadel-b9b8d7589-nttjg                 1/1       Running     0          3h
+istio-egressgateway-7f987dc785-sfpxt          1/1       Running     0          3h
+istio-galley-745db694bb-f4chz                 1/1       Running     0          3h
+istio-ingressgateway-5bd8ffd968-vgvt7         1/1       Running     0          3h
+istio-pilot-cf76476d4-hdq55                   2/2       Running     0          3h
+istio-policy-7cd858cc78-rs7rm                 2/2       Running     0          3h
+istio-sidecar-injector-86c5d87f-9jvgd         1/1       Running     0          3h
+istio-statsd-prom-bridge-7f44bb5ddb-7mhvm     1/1       Running     0          3h
+istio-telemetry-f757b89c5-sl67n               2/2       Running     0          3h
+jaeger-agent-nc68q                            1/1       Running     0          2h
+jaeger-collector-d8b97d664-fn8b6              1/1       Running     0          2h
+jaeger-query-7745b957bb-9bd8h                 1/1       Running     0          2h
+kiali-7b4dbdd448-xshkt                        1/1       Running     0          2h
+openshift-ansible-istio-installer-job-mcz42   0/1       Completed   0          3h
+prometheus-84bd4b9796-7wkv6                   1/1       Running     0          3h</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>So now we have the URL for Kiali (usually,
-"kiali-istio-system.127.0.0.1.nip.io"), so let&#8217;s access it:</p>
+<p>So now we can access Kiali at <code>kiali-istio-system.$(minishift ip).nip.io</code>, so
+let&#8217;s do it:</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="_images/kiali-login.png" alt="Login Page"></span></p>
@@ -493,28 +530,21 @@ other.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="servicelistening"><a class="anchor" href="#servicelistening"></a>Service Listing</h2>
+<h2 id="applications"><a class="anchor" href="#applications"></a>Applications</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Click the Services link in the left navigation. On the Services page you can
+<p>Click the <code>Applications</code> link in the left navigation. On this page you can
 view a listing of all the services that are running in the cluster, and
 additional information about them, such as health status.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/kiali-service-list.png" alt="Service Listing Page"></span></p>
+<p><span class="image"><img src="_images/kiali-application-list.png" alt="Application Listing Page"></span></p>
 </div>
 <div class="paragraph">
-<p>Click on the "Filter by Namespace" dropdown, and select "tutorial". Then,
-you&#8217;ll see a list of only the services on the tutorial:</p>
+<p>Click on the "customer" application to see its details:</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/kiali-service-list-2.png" alt="Service Listing Page Filtered"></span></p>
-</div>
-<div class="paragraph">
-<p>Click on the "preference" to see its details:</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/kiali-service-details.png" alt="Service Details"></span></p>
+<p><span class="image"><img src="_images/kiali-application-details.png" alt="Service Details"></span></p>
 </div>
 <div class="paragraph">
 <p>By hovering the icon on the Health section, you can see the health of a service
@@ -522,47 +552,57 @@ you&#8217;ll see a list of only the services on the tutorial:</p>
 without errors:</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/kiali-service-health.png" alt="Health Status"></span></p>
+<p><span class="image"><img src="_images/kiali-application-health.png" alt="Health Status"></span></p>
 </div>
 <div class="paragraph">
-<p>You can also see the deployments:</p>
+<p>By clicking on <code>Outbound Metrics</code> or <code>Inbound Metrics</code>, you can also see the
+metrics for an application, like so:</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/kiali-deployments.png" alt="Deployments"></span></p>
-</div>
-<div class="paragraph">
-<p>And the source services:</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/kiali-source-services.png" alt="Source Services"></span></p>
-</div>
-<div class="paragraph">
-<p>And the virtual services on the Istio infrastructure (if you defined any before
-on the tutorial). This one is from the "recommendation" service, where I
-defined a timeout rule:</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/kiali-virtual-services.png" alt="Virtual Services"></span></p>
-</div>
-<div class="paragraph">
-<p>Click on the name of the virtual service, and you&#8217;ll see the details for the
-virtual service:</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/kiali-virtual-services-2.png" alt="Virtual Services Details"></span></p>
+<p><span class="image"><img src="_images/kiali-application-metrics.png" alt="Application Metrics"></span></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="istioconfig"><a class="anchor" href="#istioconfig"></a>Istio Config</h2>
+<h2 id="workloads"><a class="anchor" href="#workloads"></a>Workloads</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Click the Istio Config link on the left navigation. On this page, you can see
-all currently running config rules, such as Virtual Services, Route Rules,
-Routes, Circuit Breakers, Fault Injection and so on.</p>
+<p>Click the <code>Workloads</code> link in the left navigation. On this page you can view
+a listing of all the workloads are present on your applications.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/kiali-istio-config.png" alt="Istio Config Page"></span></p>
+<p><span class="image"><img src="_images/kiali-workload-list.png" alt="Workload Listing"></span></p>
+</div>
+<div class="paragraph">
+<p>Click on the <code>customer</code> workload. Here you can see details for the workload,
+such as the pods and services that are included in it:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-workload-details.png" alt="Workload Details"></span></p>
+</div>
+<div class="paragraph">
+<p>By clicking <code>Outbound Metrics</code> and <code>Inbound Metrics</code>, you can check the
+metrics for the workload. The metrics are the same as the <code>Application</code> ones.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="services"><a class="anchor" href="#services"></a>Services</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Click on the <code>Services</code> link in the left navigation. Here, you can see the
+listing of all services.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-service-list.png" alt="Service Listing"></span></p>
+</div>
+<div class="paragraph">
+<p>Click on the <code>customer</code> service. You can, on this page, see the details of
+the service, such as metrics, traces, workloads, virtual services,
+destination rules and so on:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-service-details.png" alt="Service Details"></span></p>
 </div>
 </div>
 </div>
@@ -570,8 +610,21 @@ Routes, Circuit Breakers, Fault Injection and so on.</p>
 <h2 id="distributedtracing"><a class="anchor" href="#distributedtracing"></a>Distributed Tracing</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Click on the Distributed Tracing link in the left navigation. On this page you
-can see the distributed tracing, as provided by Jaeger.</p>
+<p>Click on the Distributed Tracing link in the left navigation. The distributed
+tracing, provided by Jaeger, will open in a new page.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The tracing page opens in a new browser window/tab, so if it doesn&#8217;t
+open, please check if your browser didn&#8217;t block it from opening.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="_images/kiali-distributed-tracing.png" alt="Distributed Tracing Page"></span></p>

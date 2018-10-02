@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/1setup.html">
-    <meta name="generator" content="Antora 1.0.3">
+    <meta name="generator" content="Antora 1.1.1">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
   <body class="article">
@@ -243,7 +243,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="9tips.html">9. Tips</a>
+    <a class="nav-link" href="9tips.html">9. Tips And Tricks</a>
   </li>
 </ul>
   </li>
@@ -346,7 +346,7 @@
     <li class="crumb"><a href="1setup.html">1. Setup</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/alex/git/istio-tutorial/documentation/modules/ROOT/pages/1setup.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///Users/rafaelbenevides/projetos/istio/istio-tutorial/documentation/modules/ROOT/pages/1setup.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Setup</h1>
@@ -512,13 +512,13 @@ In this tutorial, you will often be polling the customer endpoint with <code>cur
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.0/istio-1.0.0-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
 
-# Fedora:
-curl -L https://github.com/istio/istio/releases/download/1.0.0/istio-1.0.0-linux.tar.gz | tar xz
+# Fedora/RHEL:
+curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
 
 # Both:
-cd istio-1.0.0
+cd istio-1.0.2
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH</code></pre>
 </div>
