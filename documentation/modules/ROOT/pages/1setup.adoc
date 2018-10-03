@@ -5,7 +5,8 @@ include::_attributes.adoc[]
 == Prerequisite CLI tools
 
 You will need in this tutorial:
-
+* openshift
+** Mac: `brew install openshift-cli`
 * `minishift` 
 ** https://github.com/minishift/minishift/releases[Mac OS and Fedora]
 * docker
