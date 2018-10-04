@@ -77,10 +77,11 @@ kubectl create -f ../../kubernetes/Service.yml -n tutorial
 
 [source, bash]
 ----
+cd customer/java/springboot
 oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
 oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
-oc delete svc/customer ; oc create -f customer/kubernetes/Service.yml
-oc logs bc/customer -f
+oc delete svc/customer -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
+oc logs bc/customer -f -n tutorial
 ----
 
 === Expose customer
@@ -89,10 +90,10 @@ Since the `customer` service is the one our users will interact with, let's add 
 
 [source,bash]
 ----
-oc expose service customer
+oc expose service customer -n tutorial
 
-oc get route
-oc get pods -w
+oc get route -n tutorial
+oc get pods -w -n tutorial
 
 or
 
@@ -163,17 +164,18 @@ kubectl create -f ../../kubernetes/Service.yml
 
 [source, bash]
 ----
+cd preference/java/springboot
 oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
 oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
-oc delete svc/preference-v1 ; oc create -f preference/kubernetes/Service.yml
-oc logs bc/preference-v1 -f
+oc delete svc/preference-v1 -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
+oc logs bc/preference-v1 -f -n tutorial
 ----
 
 === Wait preference to be deployed
 
 [source, bash]
 ----
-oc get pods -w
+oc get pods -w -n tutorial
 or
 kubectl get pods -w
 ----
@@ -244,10 +246,11 @@ kubectl get pods -w
 
 [source, bash]
 ----
+cd recommendation/java/vertx
 oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
 oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
-oc delete svc/recommendation-v1 ; oc create -f recommendation/kubernetes/Service.yml
-oc logs bc/recommendation-v1 -f
+oc delete svc/recommendation-v1 -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
+oc logs bc/recommendation-v1 -f -n tutorial
 ----
 
 === Wait recommendation to be deployed
