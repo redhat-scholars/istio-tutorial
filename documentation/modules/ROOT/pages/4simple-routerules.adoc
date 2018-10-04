@@ -36,12 +36,12 @@ IMPORTANT: We have a 2nd Deployment to manage the v2 version of recommendation.
 [source,bash]
 ----
 oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
-oc get pods -w
+oc get pods -w -n tutorial
 
 or
 
 kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
-kubectl get pods -w
+kubectl get pods -w -n tutorial
 ----
 
 === OpenShift S2I strategy (if you DON'T have access to Docker daemon)
@@ -51,9 +51,9 @@ kubectl get pods -w
 mvn clean package -f recommendation/java/vertx
 oc new-app -l app=recommendation,version=v2 --name=recommendation-v2 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v2.yml
 oc apply -f <(istioctl kube-inject -f recommendation-v2.yml) -n tutorial
-oc cancel-build bc/recommendation-v2
-oc delete svc/recommendation-v2
-oc start-build recommendation-v2 --from-dir=. --follow
+oc cancel-build bc/recommendation-v2 -n tutorial
+oc delete svc/recommendation-v2 -n tutorial
+oc start-build recommendation-v2 --from-dir=. --follow -n tutorial
 ----
 
 === Wait for v2 to be deployed
@@ -96,9 +96,9 @@ The default Kubernetes/OpenShift behavior is to round-robin load-balance across 
 
 [source,bash]
 ----
-oc scale --replicas=2 deployment/recommendation-v2
+oc scale --replicas=2 dc/recommendation-v2 -n tutorial
 or
-kubectl scale --replicas=2 deployment/recommendation-v2
+kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial
 ----
 
 Now, you will see two requests into the v2 and one for v1.
@@ -114,9 +114,9 @@ Scale back to a single replica of the recommendation-v2 Deployment
 
 [source,bash]
 ----
-oc scale --replicas=1 deployment/recommendation-v2
+oc scale --replicas=1 dc/recommendation-v2 -n tutorial
 or
-kubectl scale --replicas=1 deployment/recommendation-v2
+kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial
 ----
 
 and back to the main directory
