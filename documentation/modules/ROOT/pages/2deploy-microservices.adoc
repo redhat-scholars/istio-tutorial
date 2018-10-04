@@ -22,6 +22,7 @@ or
 kubectl create namespace tutorial
 kubectl config set-context $(kubectl config current-context) --namespace=tutorial
 
+oc adm policy add-scc-to-user anyuid -z default -n tutorial
 oc adm policy add-scc-to-user privileged -z default -n tutorial
 ----
 

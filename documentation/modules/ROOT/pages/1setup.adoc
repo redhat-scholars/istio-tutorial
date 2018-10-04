@@ -32,7 +32,7 @@ You will need in this tutorial:
 [#minishift]
 == Setup minishift
 
-Assumes `minishift`, tested with minishift v1.22.0+7163416
+Assumes `minishift`, tested with minishift v1.25.0+90fb23e
 
 [source,bash]
 ----
@@ -51,7 +51,10 @@ minishift addon enable admin-user
 minishift addon enable anyuid
 
 minishift start
-minishift ssh -- sudo setenforce 0
+
+# Configuration for Elastic Search
+minishift ssh -- "echo "vm.max_map_count = 262144" | sudo tee --append /etc/sysctl.d/99-elasticsearch.conf"
+minishift ssh -- sudo sysctl vm.max_map_count=262144
 ----
 
 [#environment]
@@ -88,51 +91,36 @@ export PATH=$ISTIO_HOME/bin:$PATH
 
 [source,bash]
 ----
+oc new-project istio-operator
 
-oc apply -f install/kubernetes/helm/istio/templates/crds.yaml
-or
-kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+oc new-app -f  https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.2.0-ocp-3.1.0-istio-1.0.2/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL=$(minishift console --url)
 
+oc create -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.2.0-ocp-3.1.0-istio-1.0.2/istio/cr-minimal.yaml -n istio-operator
 
-oc apply -f install/kubernetes/istio-demo.yaml
-or 
-kubectl apply -f install/kubernetes/istio-demo.yaml
-
-oc project istio-system
-or
-kubectl config set-context $(kubectl config current-context) --namespace=istio-system
-
-oc expose svc istio-ingressgateway
-oc expose svc servicegraph
-oc expose svc grafana
-oc expose svc prometheus
-oc expose svc tracing
 ----
 
-Wait for Istio's components to be ready
+Wait for Istio's components to be ready. It should take approximetely 5 to 10 minutes to complete.
 
 [source,bash]
 ----
-$ oc get pods -w
+$ oc get pods -w -n istio-system
 or
 $ kubectl get pods -w
 
-NAME                                        READY     STATUS      RESTARTS   AGE
-grafana-6995b4fbd7-ntp4f                    1/1       Running     0          57m
-istio-citadel-54f4678f86-jnv5s              1/1       Running     0          57m
-istio-cleanup-secrets-nch4k                 0/1       Completed   0          57m
-istio-egressgateway-5d7f8fcc7b-r76gg        1/1       Running     0          57m
-istio-galley-7bd8b5f88f-nlczb               1/1       Running     0          57m
-istio-grafana-post-install-lffq2            0/1       Completed   0          57m
-istio-ingressgateway-6f58fdc8d7-gbzzq       1/1       Running     0          57m
-istio-pilot-d99689994-zh66q                 2/2       Running     0          57m
-istio-policy-766bf4bd6d-skwkp               2/2       Running     0          57m
-istio-sidecar-injector-85ccf84984-crmhv     1/1       Running     0          57m
-istio-statsd-prom-bridge-55965ff9c8-76nx4   1/1       Running     0          57m
-istio-telemetry-55b6b5bbc7-qmf2l            2/2       Running     0          57m
-istio-tracing-77f9f94b98-kknh7              1/1       Running     0          57m
-prometheus-7456f56c96-nxdvv                 1/1       Running     0          57m
-servicegraph-684c85ffb9-f7tjp               1/1       Running     2          57m
+NAME                                          READY     STATUS              RESTARTS   AGE
+elasticsearch-0                               0/1       ContainerCreating   0          21s
+grafana-65db6b47c9-kmtk7                      1/1       Running             0          31s
+istio-citadel-65f58755d-j6wwp                 1/1       Running             0          1m
+istio-egressgateway-79d76795d5-npbgc          1/1       Running             0          1m
+istio-galley-644dfdb95-kq4t4                  1/1       Running             0          1m
+istio-ingressgateway-5599cdfc7d-t8xk9         1/1       Running             0          1m
+istio-pilot-69f89947b8-8h25n                  2/2       Running             0          1m
+istio-policy-764d95895d-n5766                 2/2       Running             0          1m
+istio-sidecar-injector-649b9c98d9-kwcd8       1/1       Running             0          1m
+istio-statsd-prom-bridge-7f44bb5ddb-77xkw     1/1       Running             0          1m
+istio-telemetry-58f5d5895-nf7bj               2/2       Running             0          1m
+openshift-ansible-istio-installer-job-mqhrr   1/1       Running             0          3m
+prometheus-84bd4b9796-hrshh                   1/1       Running             0          1m
 ----
 
 And if you need quick access to the OpenShift console
