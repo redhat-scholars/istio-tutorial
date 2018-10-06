@@ -1,0 +1,168 @@
+= End-user authentication with JWT
+include::_attributes.adoc[]
+
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice, destinationrule, gateway or policy (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` `istioctl get gateway` `istioctl get policy`
+if so run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----
+====
+
+In this chapter, we are going to see how to enable authenticating end user with Istio.
+At the time of writing this chapter, only the JWT mechanism is supported.
+
+[#preparation]
+== Before Start
+
+To use JWT end-user authentication, we need a JWT issuer.
+In this case, we are going to use https://www.keycloak.org/[Keycloak] but notice that any other one is valid as well.
+
+Before starting let's deploy Keycloak in our `tutorial` namespace.
+
+[source, bash]
+----
+oc apply -f keycloak/Deployment.yml -n tutorial 
+oc create -f keycloak/Service.yml -n tutorial
+
+oc expose service keycloak
+----
+
+Now we need to configure Keycloak with realms, users, passwords, roles ...
+
+So open Keycloak administration web page by opening a browser to `http://keycloak-tutorial.192.168.64.87.nip.io/` where the IP should be minishift IP (`minishift ip`).
+
+Then select `administration console` option and use `admin/admin` as login/password.
+
+And you'll get something like:
+
+image:keycloak-initial.png[Initial Administration Page]
+
+Then create a new `realm`. Just move the pointer over `Master` section which is found in upper-left section and click on `Add realm` button. 
+
+image:keycloak-create_realm.png[Create Realm]
+
+Then create a `realm` called `istio`.
+
+Inside `istio` realm create a public client ID called `customer-tutorial`.
+
+image:keycloak-create_client.png[Create Client]
+
+image:keycloak-add_client.png[Adds New Client]
+
+IMPORTANT: It is really important that the client id is set to `customer-tutorial` because it is used as allowed `audiences` in the mesh.
+
+Create a role `user`.
+
+And finally, create a user called `demo` under the previous role.
+
+image:keycloak-create_user.png[Create User]
+
+image:keycloak-assign_user_role.png[Assign Role User]
+
+Select the role from `Availavle Roles` section and push `Add selected`.
+
+Then go to Credentials and set `demo` as the password.
+
+Finally, go again to `Details` tab and in `Required User Actions` input, remove the `Update Password` action.
+
+image:keycloak-details_user.png[User Details Tab] 
+
+And finally push `Save` button.
+
+[#enablingauthentication]
+== Enabling User-End Authentication
+
+Now it is time to enable end-user authentication.
+
+The first thing you need to do is run `curl customer-tutorial.$(minishift ip).nip.io` and validate that now it is still possible to communicate between all services without been authenticated.
+
+[source, bash]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+
+customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
+----
+
+After that open the file `istiofiles/enduser-authentication-jwt.yml` and replace the IP of fields `issuer` and `jwksUri` by your minishift IP (`minishift ip`).
+
+[soure, yaml]
+.istiofiles/enduser-authentication-jwt.yml
+----
+spec:
+  origins:
+  - jwt:
+      issuer: "http://keycloak-tutorial.192.168.64.87.nip.io/auth/realms/istio"
+      jwksUri: "http://keycloak-tutorial.192.168.64.87.nip.io/auth/realms/istio/protocol/openid-connect/certs"
+      audiences:
+      - customer-tutorial
+  principalBinding: USE_ORIGIN
+----
+
+And then run:
+
+[source, bash]
+----
+istioctl create -f istiofiles/enduser-authentication-jwt.yml
+----
+
+Then let's run the curl again:
+
+[source, bash]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+
+Origin authentication failed.%`
+----
+
+And now the communication is not possible because the user has not been identified (provides a valid JWT token).
+
+To get a correct token, just run next `curl` request.
+
+[source, bash]
+----
+curl 'http://localhost:8080/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'
+----
+
+And set the content of attribute `access_token` into `token` variable in your terminal.
+
+If you want to see what is inside the token just go to https://jwt.io/[jwt.io] in _Debugger_ section and paste the token.
+
+image:keycloak-jwt_token.png[]
+
+Notice how `aud` field is set to `customer-tutorial.` 
+
+[source, bash]
+----
+token="eyJhbGciOiJSUzI1NiIsInR5cCIg....."
+
+curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+
+customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
+----
+
+Now just change some part of the token and send the request again, you'll notice that request is refused.
+
+[IMPORTANT]
+====
+In this chapter you've seen how to enable end-user authentication with JWT.
+
+Obviously, you should also enable mTLS to avoid any attacker could take the token.
+
+Check xref:mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
+====
+
+[#cleanup]
+== Clean Up
+
+[source, bash]
+----
+istioctl delete -f istiofiles/enduser-authentication-jwt.yml
+oc delete -f keycloak/Deployment.yml -n tutorial 
+oc delete -f keycloak/Service.yml -n tutorial
+----
+
