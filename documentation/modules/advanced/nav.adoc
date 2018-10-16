@@ -19,3 +19,10 @@
 ** xref:mTLS.adoc#preparation[Preparation]
 ** xref:mTLS.adoc#enablingtls[Enabling TLS]
 ** xref:mTLS.adoc#restore[Restore Environment]
+
+* xref:cube.adoc[Dark Launch Automatic Test]
+** xref:cube.adoc#preparation[Preparation]
+** xref:cube.adoc#explanation[Explanation]
+** xref:cube.adoc#code[Source Code]
+** xref:cube.adoc#restore[Restore Environment]
+

@@ -1,0 +1,207 @@
+= Dark Launcher and Automatic Tests
+include::_attributes.adoc[]
+
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----
+====
+
+[#preparation]
+== Preparation
+
+IMPORTANT: We are assuming that you have recommendation v1 and v2 deployed on `tutorial` namespace.
+
+The first thing you need to do is to apply Istio resources to redirect all traffic to recommendation v1.
+
+From the main istio-tutorial directory,
+
+[source,bash]
+----
+istioctl create -f _istiofiles/destination-rule-recommendation-v1-v2.yml_ -n tutorial
+istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+
+curl customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v1 from '2819441432-qsp25': 3
+----
+
+Now you see that your _production_ traffic always goes to recommendation v1.
+
+[#explanation]
+== Explanation
+
+*Dark Launching* is a process where software is selectively or stealthily released to your users to validate that this new version behaves correctly and into expected parameters.
+
+There are many techniques under *Dark Launch* technique, you've seen one in this tutorial xref:ROOT:5advanced-routerules.adoc#mirroringtraffic[Mirroring Traffic], in this case, we are going to see how you can make that your tests (even BDD tests) can be used to test your new version without affecting your current users.
+
+You might need to use this technique if, for example, you don't want to start stressing your new service with public traffic at first (like happens in _Mirroring Traffic_ technique at first.
+
+To write these tests you can use http://www.arquillian.org/arquillian-cube[Arquillian Cube].
+
+image::arquillian_cube.png[]
+
+Arquillian Cube allows you to control Docker, Kubernetes and OpenShift containers in your tests with ease.
+As a side effect, it also supports Istio, so you can write tests that apply some Istio rules to configured cluster, runs the test, and finally restores the state of Istio.
+
+For this use case what you want is to execute an automatic test against _recommendation v2_ meanwhile public traffic still goes to _recommendation v1_.
+For this concrete example and for sake of simplicity, we set that if `user-agent` header contains *DarkLaunch* string then traffic is redirected to _v2_.
+
+_Recommendation_ project comes with a test that it is ready to be executed, but in the next section, you'll read how we have arrived at the given solution.
+
+[#code]
+=== Code
+
+The first things you need to do is adding `Arquillian Cube` dependency in _recommendation_ project.
+
+[source, xml]
+.recommendation/java/vertx/pom.xml
+----
+<dependency>
+    <groupId>org.arquillian.cube</groupId>
+    <artifactId>arquillian-cube-openshift-starter</artifactId> <!--1-->
+    <version>${cube.version}</version> <!--2-->
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.arquillian.cube</groupId>
+    <artifactId>arquillian-cube-istio-kubernetes</artifactId> <!--3-->
+    <version>${cube.version}</version>
+    <scope>test</scope>
+</dependency>
+----
+<1> Dependency for OpenShift. There is also the same for Kubernetes.
+<2> Version 1.18.2 or beyond.
+<3> Dependency for Istio integration.
+
+Then you need to configure the namespace of the project.
+For this purpose, you need to create an `arquillian.xml` file.
+
+[source, xml]
+.recommendation/java/vertx/src/test/resources/arquillian.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://jboss.org/schema/arquillian"
+    xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+  <extension qualifier="openshift"> <!--1-->
+    <property name="namespace.use.existing">tutorial</property> <!--2-->
+    <property name="env.init.enabled">false</property> <!--3-->
+  </extension>
+
+</arquillian>
+----
+<1> OpenShift cluster.
+<2> Use existing namespace named `tutorial`.
+<3> Do not initialize anything, application is already running.
+
+INFO: Arquillian Cube can also create a namespace and deploy any Kubernetes/OpenShift resource automatically. But since the application has been already deployed in xref:ROOT:2deploy-microservices.adoc[Deploy Microservices], this step is skipped.
+
+And finally, you need to create an automatic test that runs against _v2_.
+
+In this kind of tests you only want to validate _happy path_, just a quality gate that allows you to validate that everything is in place.
+
+[source, java]
+.recommendation/java/vertx/src/test/java/com/.../recommendation/DarkLaunchIT.java
+----
+@RunWith(Arquillian.class) // <1>
+@IstioResource("classpath:dark-launch-redirect-traffic-to-new-version.yml") // <2>
+@RestoreIstioResource("classpath:virtual-service-recommendation-v1.yml") // <3>
+public class DarkLaunchIT {
+
+    @RouteURL("customer")
+    @AwaitRoute
+    private URL url; // <4>
+
+    @ArquillianResource
+    IstioAssistant istioAssistant; // <5>
+
+    @Before
+    public void waitUntilIstioResourcesArePopulated() { // <6>
+        istioAssistant.await(createRequestForRecommendationV2(), response -> {
+            try {
+                return response.body().string().contains("v2");
+            } catch (IOException e) {
+                return false;
+            }
+        });
+    }
+
+    @Test
+    public void should_return_accessing_v2_message() throws IOException { // <7>
+
+        // Given
+        final Request request = createRequestForRecommendationV2(); // <8>
+
+        // When
+        final String content = makeRequest(request);
+
+        // Then
+        assertThat(content)
+            .startsWith("customer => preference => recommendation v2 from"); // <9>
+
+    }
+
+    private String makeRequest(Request request) throws IOException {
+        final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+            .addNetworkInterceptor(interceptor)
+            .build();
+        try(Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+    }
+
+    private Request createRequestForRecommendationV2() {
+        return new Request.Builder()
+                .url(url.toString())
+                .addHeader("User-Agent", "Recommendation-v2-DarkLaunch-Test")
+                .build();
+    }
+
+}
+----
+<1> Arquillian JUnit runner.
+<2> Resource to apply *before* executing the test.
+<3> Resource to apply *after* executing the test.
+<4> Public `URL` of application.
+<5> `IstioAssistant` instance to interact with Istio ecosystem.
+<6> Waits until Istio resources are populated acorss the cluster.
+<7> Test to validate that _recommendation v2_ works as expected.
+<8> Creates a _request_ setting `user-agent` as *DarkLaunch*.
+<9> Validates the response.
+
+[TIP]
+====
+You've seen a simple example here, but you can use other strategies to get the same effect:
+
+. Instead of using `user-agent` you can create a custom header, or just use the request IP range.
+. `@IstioResource` and `@RestoreIstioResource` supports expressions like `$\{prop\}` resolving the property from environment variables or system properties.
+. Use `failsafe` plugin to run this kind of tests so they are not run all the time.
+. This example works with OpenShift route, but you can use `@PortForwarding` annotation in the test to do a port forwarding to given service.
+. It is so important to add a guard to wait until Istio resources are populated across the cluster. In case of minishift/kube it is almost instantly but in case of real clusters, it might take some tenths of seconds.
+====
+
+[#restore]
+== Clean Up
+
+[source,bash]
+----
+istioctl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+----
+
+or you can run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----

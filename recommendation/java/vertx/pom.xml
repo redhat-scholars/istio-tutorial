@@ -14,6 +14,7 @@
         <java.version>1.8</java.version>
         <vertx.version>3.5.1</vertx.version>
         <vertx.maven.plugin.version>1.0.13</vertx.maven.plugin.version>
+        <cube.version>1.18.2</cube.version>
     </properties>
 
     <build>
@@ -44,6 +45,26 @@
                 <configuration>
                     <verticle>com.redhat.developer.demos.recommendation.RecommendationVerticle</verticle>
                 </configuration>
+            </plugin>
+            <!-- Dark Launch -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.0</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
@@ -85,6 +106,26 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Dark Launch -->
+        <dependency>
+            <groupId>org.arquillian.cube</groupId>
+            <artifactId>arquillian-cube-openshift-starter</artifactId>
+            <version>${cube.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.arquillian.cube</groupId>
+            <artifactId>arquillian-cube-istio-kubernetes</artifactId>
+            <version>${cube.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.11.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

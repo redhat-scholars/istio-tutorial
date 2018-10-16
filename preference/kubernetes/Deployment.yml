@@ -28,7 +28,7 @@ spec:
             command:
             - curl
             - localhost:8080/health
-          initialDelaySeconds: 20
+          initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 1
         name: preference
@@ -47,7 +47,7 @@ spec:
             command:
             - curl
             - localhost:8080/health
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 1
         securityContext:
