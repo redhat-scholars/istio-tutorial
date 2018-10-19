@@ -24,7 +24,7 @@ From the main istio-tutorial directory,
 
 [source,bash]
 ----
-istioctl create -f _istiofiles/destination-rule-recommendation-v1-v2.yml_ -n tutorial
+istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
 istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
