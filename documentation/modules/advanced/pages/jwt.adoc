@@ -11,6 +11,8 @@ if so run:
 ----
 ./scripts/clean.sh
 ----
+
+The idea is to start from zero so there is no 
 ====
 
 In this chapter, we are going to see how to enable authenticating end user with Istio.
