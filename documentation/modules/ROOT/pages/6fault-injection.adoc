@@ -33,10 +33,10 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
 
 You can inject 503's, for approximately 50% of the requests
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-503.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-503.yml[istiofiles/virtual-service-recommendation-503.yml] -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '99634814-sf4cl': 88
@@ -58,9 +58,9 @@ istioctl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial
 
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slowly, potentially causing a cascading failure in your network of services.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial
 ----
 
 And hit the customer endpoint
@@ -85,7 +85,7 @@ or
 
 Clean up
 
-[source]
+[source,bash]
 ----
 istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial
@@ -137,9 +137,9 @@ customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltr
 
 Now add the retry rule
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/virtual-service-recommendation-v2_retry.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2_retry.yml[istiofiles/virtual-service-recommendation-v2_retry.yml] -n tutorial
 ----
 
 You will see it work every time because Istio will retry the recommendation service and it will land on v1 only.
@@ -268,9 +268,9 @@ Hit the customer endpoint a few times, to see the load-balancing between v1 and 
 
 Then add the timeout rule
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial
 ----
 
 You will see it return v1 OR "upstream request timeout" after waiting about 1 second

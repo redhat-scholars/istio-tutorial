@@ -62,15 +62,15 @@ docker images | grep customer
 
 Now let's deploy the customer pod with its sidecar
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
+oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml] -n tutorial
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-kubectl create -f ../../kubernetes/Service.yml -n tutorial
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml] -n tutorial
 ----
 
 === Customer build using OpenShift S2I strategy
@@ -144,20 +144,20 @@ cd ../../..
 
 === Preference build using Docker daemon
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd preference/java/springboot
 mvn clean package
 docker build -t example/preference:v1 .
 docker images | grep preference
 
-oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
+oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-kubectl create -f ../../kubernetes/Service.yml
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
+kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
 ----
 
 === Preference build using OpenShift S2I strategy
@@ -224,21 +224,21 @@ IMPORTANT: The tag `v1` at the end of the image name matters. We will be creatin
 
 === Recommendation build using Docker daemon
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd recommendation/java/vertx
 mvn clean package
 docker build -t example/recommendation:v1 .
 docker images | grep recommendation
 
-oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
+oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml] -n tutorial
 oc get pods -w
 
 or 
 
-kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-kubectl create -f ../../kubernetes/Service.yml
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
+kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
 kubectl get pods -w
 ----
 

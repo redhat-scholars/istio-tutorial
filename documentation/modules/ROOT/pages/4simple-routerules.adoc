@@ -33,14 +33,14 @@ example/recommendation                  v1                  f072978d9cf6        
 
 IMPORTANT: We have a 2nd Deployment to manage the v2 version of recommendation. 
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-v2.yml[../../kubernetes/Deployment-v2.yml]) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-v2.yml[../../kubernetes/Deployment-v2.yml]) -n tutorial
 kubectl get pods -w -n tutorial
 ----
 
@@ -134,10 +134,10 @@ cd ../../..
 
 From the main istio-tutorial directory,
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v2.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -149,9 +149,9 @@ you should only see v2 being returned
 
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial
 
 istioctl get virtualservice
 
@@ -193,9 +193,9 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 
 Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2.yml[istiofiles/virtual-service-recommendation-v1_and_v2.yml] -n tutorial
 ----
 
 and send in several requests:
@@ -207,9 +207,9 @@ and send in several requests:
 
 In another terminal, change the mixture to be 75/25
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_75_25.yml[istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml] -n tutorial
 ----
 
 Clean up

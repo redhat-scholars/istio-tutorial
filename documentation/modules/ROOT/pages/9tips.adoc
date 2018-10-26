@@ -188,10 +188,10 @@ Look for `route_config`, containing `"name": "8080"` and you should see entries 
 
 Now add a new `destinationrule` and `virtualservice`.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml
-istioctl create -f istiofiles/virtual-service-recommendation-v2.yml
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml]
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml]
 ----
 
 The review the routes again
