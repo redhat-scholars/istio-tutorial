@@ -19,3 +19,8 @@
 ** xref:mTLS.adoc#preparation[Preparation]
 ** xref:mTLS.adoc#enablingtls[Enabling TLS]
 ** xref:mTLS.adoc#restore[Restore Environment]
+
+* xref:jwt.adoc[End-user authentication with JWT]
+** xref:jwt.adoc#preparation[Preparation]
+** xref:jwt.adoc#enablingauthentication[Enabling end-user authentication]
+** xref:jwt.adoc#cleanup[Clean Up]
