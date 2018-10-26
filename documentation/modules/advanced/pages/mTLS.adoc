@@ -30,9 +30,9 @@ oc delete route customer
 Then, you need to enable Istio Ingress to receive all traffic and redirect it to customer service.
 For this reason, let's create a `Gateway` and `VirtualService` that allows local calls reach the clustered service inside the mesh.
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/gateway-customer.yml
+istioctl create -f link:{github-repo}/{istiofiles-dir}/gateway-customer.yml[istiofiles/gateway-customer.yml]
 ----
 
 Then configure some environment variables that will help you on testing:
@@ -65,10 +65,10 @@ customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
 
 Now that Istio gateway is in place, you can enable _mTLS_ by applying next Istio resources:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/authentication-enable-tls.yml # <1>
-istioctl create -f istiofiles/destination-rule-tls.yml # <2>
+istioctl create -f link:{github-repo}/{istiofiles-dir}/authentication-enable-tls.yml[istiofiles/authentication-enable-tls.yml] # <1>
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[istiofiles/destination-rule-tls.yml] # <2>
 ----
 <1> Enables mTLS into `tutorial` namespace
 <2> Makes that services withn `tutorial` namespace communicates with _mTLS_
