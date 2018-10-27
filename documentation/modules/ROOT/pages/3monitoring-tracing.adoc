@@ -34,9 +34,9 @@ open "$(minishift openshift service prometheus -u)/graph?g0.range_input=5m&g0.ex
 
 Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/recommendation_requestcount.yml -n istio-system
+istioctl create -f link:{github-repo}/{istiofiles-dir}/recommendation_requestcount.yml[istiofiles/recommendation_requestcount.yml] -n istio-system
 ----
 
 In the Prometheus dashboard, add the following

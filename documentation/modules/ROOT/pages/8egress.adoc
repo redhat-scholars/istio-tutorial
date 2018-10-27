@@ -68,14 +68,14 @@ example/recommendation                  v1                  f072978d9cf6        
 
 _Important:_ We have a 3rd Deployment to manage the v3 version of recommendation. 
 
-[source,bash]
+[source,bash, subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v3.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
 oc get pods -w
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f src/main/kubernetes/Deployment-v3.yml) -n tutorial
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
 kubectl get pods -w
 ----
 
@@ -117,10 +117,10 @@ Be sure you do not have any previous destination rule nor virtual service instal
 
 Let's redirect all traffic to reccomendation:v3.
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v3.yml
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2-v3.yml[istiofiles/destination-rule-recommendation-v1-v2-v3.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v3.yml[istiofiles/virtual-service-recommendation-v3.yml]
 ----
 
 Then access to the service:
@@ -137,9 +137,9 @@ curl: (28) Operation timed out after 5000 milliseconds with 0 bytes received
 
 Let's fix it by registering a service entry to allow access to `httpbin`.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/service-entry-egress-httpbin.yml[istiofiles/service-entry-egress-httpbin.yml] -n tutorial
 
 istioctl get serviceentry
 

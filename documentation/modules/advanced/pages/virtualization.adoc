@@ -52,9 +52,9 @@ docker build -t example/preference:v2 .
 
 IMPORTANT: We have a 2nd Deployment to manage the v2 version of preference.
 
-[source, bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-v2.yml[../../kubernetes/Deployment-v2.yml]) -n tutorial
 
 oc get pods -w
 
@@ -119,14 +119,14 @@ customer => PREFERENCE => recommendation v2 from '1275713543-2bs5k': 3
 
 We'll create a Docker image with Hoverfly (Service Virtualization tool) with some canned requests/answers for recommendation service.
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
 cd recommendation/virtualized
 
 docker build -t example/recommendation:virtualized .
 docker images | grep recommendation
 
-oc apply -f <(istioctl kube-inject -f ../kubernetes/Deployment-virtualized.yml) -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-virtualized.yml[../../kubernetes/Deployment-virtualized.yml]) -n tutorial
 oc get pods -w
 
 cd ../..
@@ -169,10 +169,10 @@ customer => PREFERENCE => recommendation v2 from 'virtualized': 2
 Notice that now the `v2` reaches all recommendation services.
 Let's avoid this by just sending traffic that comes from preference v2 service to the virtualized recommendation service.
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1.yml[istiofiles/destination-rule-recommendation-v1.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-virtualized.yml[istiofiles/virtual-service-recommendation-virtualized.yml] -n tutorial
 ----
 
 Then do again some requests and you'll get something like:

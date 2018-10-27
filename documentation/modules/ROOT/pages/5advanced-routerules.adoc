@@ -28,18 +28,18 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 [#alltorecommendationv1]
 === Set recommendation to all v1
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial
 ----
 
 [#safaritov2]
 === Set Safari users to v2
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-safari-recommendation-v2.yml[istiofiles/virtual-service-safari-recommendation-v2.yml] -n tutorial
 
 istioctl get virtualservice -n tutorial
 ----
@@ -92,9 +92,9 @@ istioctl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tu
 [#mobiletov2]
 === Set mobile users to v2
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" customer-tutorial.$(minishift ip).nip.io
 ----
@@ -142,10 +142,10 @@ if so run:
 
 Make sure you are in the main directory of "istio-tutorial"
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -184,9 +184,9 @@ IMPORTANT: The Access Control rules take some time to be applied and reflected. 
 
 We'll create a whitelist on the preference service to only allow requests from the recommendation service, which will make the preference service invisible to the customer service. Requests from the customer service to the preference service will return a 404 Not Found HTTP error code.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/acl-whitelist.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofiles/acl-whitelist.yml] -n tutorial
 ----
 
 [source,bash]
@@ -207,9 +207,9 @@ istioctl delete -f istiofiles/acl-whitelist.yml -n tutorial
 
 We'll create a blacklist making the customer service blacklist to the preference service. Requests from the customer service to the preference service will return a 403 Forbidden HTTP error code.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/acl-blacklist.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofiles/acl-blacklist.yml] -n tutorial
 ----
 
 [source,bash]
@@ -292,9 +292,9 @@ customer => preference => recommendation v2 from '2819441432-bs5ck': 182
 
 Now, add the Random LB DestinationPolicy
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_lb_policy_app.yml[istiofiles/destination-rule-recommendation_lb_policy_app.yml] -n tutorial
 ----
 
 And you should see a different pattern of which pod is being selected
@@ -334,16 +334,16 @@ Here we will limit the number of concurrent requests into recommendation v2
 
 Now apply the rate limit handler
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/recommendation_rate_limit_handler.yml
+istioctl create -f link:{github-repo}/{istiofiles-dir}/recommendation_rate_limit_handler.yml[istiofiles/recommendation_rate_limit_handler.yml]
 ----
 
 Now setup the requestcount quota
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/rate_limit_rule.yml
+istioctl create -f link:{github-repo}/{istiofiles-dir}/rate_limit_rule.yml[istiofiles/rate_limit_rule.yml]
 ----
 
 Throw some requests at customer:

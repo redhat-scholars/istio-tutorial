@@ -32,10 +32,10 @@ And follow the Updating &amp; redeploying code steps to get this slower v2 deplo
 
 Second, you need to *ensure* you have a `destinationrule` and `virtualservice` in place. Let's use a 50/50 split of traffic:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial
 ----
 
 [#nocircuitbreaker]
@@ -56,9 +56,9 @@ All of the requests to our system were successful, but it took some time to run 
 
 But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same instance/pod. We don't want multiple requests getting queued or making the instance/pod even slower. So we'll add a circuit breaker that will *open* whenever we have more than 1 request being handled by any instance/pod.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial
 
 istioctl get destinationrule -n tutorial
 ----
@@ -102,10 +102,10 @@ Pool ejection or _outlier detection_ is a resilience strategy that takes place w
 
 First, you need to insure you have a `destinationrule` and `virtualservice` in place to send traffic to the services. Let's use a 50/50 split of traffic:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial
 ----
 
 Scale number of instances of `v2` deployment
@@ -232,9 +232,9 @@ customer => 503 preference => 503 recommendation misbehavior from '2036617847-sp
 
 Now let's add the pool ejection behavior:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml -n tutorial
+istioctl replace -f  link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_pool_ejection.yml[istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml] -n tutorial
 ----
 
 Throw some requests at the customer endpoint:
@@ -299,9 +299,9 @@ Even with pool ejection your application doesn't _look_ that resilient. That's p
 
 By simply adding a *retry* configuration to our current `virtualservice`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_retry.yml[istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml] -n tutorial
 ----
 
 Throw some requests at the customer endpoint:
