@@ -24,3 +24,9 @@
 ** xref:jwt.adoc#preparation[Preparation]
 ** xref:jwt.adoc#enablingauthentication[Enabling end-user authentication]
 ** xref:jwt.adoc#cleanup[Clean Up]
+
+* xref:cube.adoc[Dark Launch Automatic Test]
+** xref:cube.adoc#preparation[Preparation]
+** xref:cube.adoc#explanation[Explanation]
+** xref:cube.adoc#code[Source Code]
+** xref:cube.adoc#restore[Restore Environment]
