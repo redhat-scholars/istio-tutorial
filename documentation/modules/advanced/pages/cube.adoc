@@ -22,10 +22,10 @@ The first thing you need to do is to apply Istio resources to redirect all traff
 
 From the main istio-tutorial directory,
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '2819441432-qsp25': 3
@@ -189,6 +189,8 @@ You've seen a simple example here, but you can use other strategies to get the s
 . This example works with OpenShift route, but you can use `@PortForwarding` annotation in the test to do a port forwarding to given service.
 . It is so important to add a guard to wait until Istio resources are populated across the cluster. In case of minishift/kube it is almost instantly but in case of real clusters, it might take some tenths of seconds.
 ====
+
+Test project can be found link:{github-repo}/{recommendation-repo}/{recommendation-java}/src/test/java/com/redhat/developer/demos/recommendation[here].
 
 [#restore]
 == Clean Up
