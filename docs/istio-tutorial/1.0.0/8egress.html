@@ -312,6 +312,39 @@
   </li>
 </ul>
   </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/jwt.html">End-user authentication with JWT</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#enablingauthentication">Enabling end-user authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/cube.html">Dark Launch Automatic Test</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#explanation">Explanation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#code">Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#restore">Restore Environment</a>
+  </li>
+</ul>
+  </li>
 </ul>
   </li>
 </ul>
@@ -346,7 +379,7 @@
     <li class="crumb"><a href="8egress.html">8. Egress</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/rafaelbenevides/projetos/istio/istio-tutorial/documentation/modules/ROOT/pages/8egress.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///Users/asotobu/git/istio-tutorial/documentation/modules/ROOT/pages/8egress.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Egress</h1>
@@ -442,12 +475,12 @@ example/recommendation                  v1                  f072978d9cf6        
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment-v3.yml) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
 oc get pods -w
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f src/main/kubernetes/Deployment-v3.yml) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
 kubectl get pods -w</code></pre>
 </div>
 </div>
@@ -499,8 +532,8 @@ recommendation-v3-7b445dd469-j6rkg   2/2       Running   0          2m</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v3.yml</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2-v3.yml">istiofiles/destination-rule-recommendation-v1-v2-v3.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v3.yml">istiofiles/virtual-service-recommendation-v3.yml</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -530,7 +563,7 @@ curl: (28) Operation timed out after 5000 milliseconds with 0 bytes received</co
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/service-entry-egress-httpbin.yml">istiofiles/service-entry-egress-httpbin.yml</a> -n tutorial
 
 istioctl get serviceentry
 
@@ -547,7 +580,7 @@ customer =&gt; preference =&gt; Mon, 16 Jul 2018 12:03:38 GMT recommendation v3 
 
 or
 
-kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=egressgithub,version=v3) -c recommendation /bin/bash
+kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
 
 curl http://now.httpbin.org
 

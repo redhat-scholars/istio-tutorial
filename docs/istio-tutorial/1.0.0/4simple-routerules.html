@@ -312,6 +312,39 @@
   </li>
 </ul>
   </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/jwt.html">End-user authentication with JWT</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#enablingauthentication">Enabling end-user authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/cube.html">Dark Launch Automatic Test</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#explanation">Explanation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#code">Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#restore">Restore Environment</a>
+  </li>
+</ul>
+  </li>
 </ul>
   </li>
 </ul>
@@ -346,7 +379,7 @@
     <li class="crumb"><a href="4simple-routerules.html">4. Simple Routing</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/rafaelbenevides/projetos/istio/istio-tutorial/documentation/modules/ROOT/pages/4simple-routerules.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///Users/asotobu/git/istio-tutorial/documentation/modules/ROOT/pages/4simple-routerules.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Simple Route Rules</h1>
@@ -402,13 +435,13 @@ We have a 2nd Deployment to manage the v2 version of recommendation.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
-oc get pods -w
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
+oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment-v2.yml) -n tutorial
-kubectl get pods -w</code></pre>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
+kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -419,9 +452,9 @@ kubectl get pods -w</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
 oc new-app -l app=recommendation,version=v2 --name=recommendation-v2 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v2.yml
 oc apply -f &lt;(istioctl kube-inject -f recommendation-v2.yml) -n tutorial
-oc cancel-build bc/recommendation-v2
-oc delete svc/recommendation-v2
-oc start-build recommendation-v2 --from-dir=. --follow</code></pre>
+oc cancel-build bc/recommendation-v2 -n tutorial
+oc delete svc/recommendation-v2 -n tutorial
+oc start-build recommendation-v2 --from-dir=. --follow -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -471,9 +504,9 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=2 deployment/recommendation-v2
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=2 dc/recommendation-v2 -n tutorial
 or
-kubectl scale --replicas=2 deployment/recommendation-v2</code></pre>
+kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -491,9 +524,9 @@ customer =&gt; preference =&gt; recommendation v2 from '99634814-sf4cl': 38</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=1 deployment/recommendation-v2
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale --replicas=1 dc/recommendation-v2 -n tutorial
 or
-kubectl scale --replicas=1 deployment/recommendation-v2</code></pre>
+kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -517,8 +550,8 @@ kubectl scale --replicas=1 deployment/recommendation-v2</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v2.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io</code></pre>
 </div>
@@ -534,7 +567,7 @@ curl customer-tutorial.$(minishift ip).nip.io</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1.yml">istiofiles/virtual-service-recommendation-v1.yml</a> -n tutorial
 
 istioctl get virtualservice
 
@@ -582,7 +615,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/virtual-service-recommendation-v1_and_v2.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1_and_v2.yml">istiofiles/virtual-service-recommendation-v1_and_v2.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -598,7 +631,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml">istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">

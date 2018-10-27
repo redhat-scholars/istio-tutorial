@@ -312,6 +312,39 @@
   </li>
 </ul>
   </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/jwt.html">End-user authentication with JWT</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#enablingauthentication">Enabling end-user authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/cube.html">Dark Launch Automatic Test</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#explanation">Explanation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#code">Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#restore">Restore Environment</a>
+  </li>
+</ul>
+  </li>
 </ul>
   </li>
 </ul>
@@ -346,7 +379,7 @@
     <li class="crumb"><a href="2deploy-microservices.html">2. Deploy Microservices</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/rafaelbenevides/projetos/istio/istio-tutorial/documentation/modules/ROOT/pages/2deploy-microservices.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///Users/asotobu/git/istio-tutorial/documentation/modules/ROOT/pages/2deploy-microservices.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Deploy Microservices</h1>
@@ -429,13 +462,13 @@ docker images | grep customer</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">../../kubernetes/Service.yml</a> -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-kubectl create -f ../../kubernetes/Service.yml -n tutorial</code></pre>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">../../kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -443,10 +476,11 @@ kubectl create -f ../../kubernetes/Service.yml -n tutorial</code></pre>
 <h3 id="_customer_build_using_openshift_s2i_strategy"><a class="anchor" href="#_customer_build_using_openshift_s2i_strategy"></a>Customer build using OpenShift S2I strategy</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; customer.yml
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd customer/java/springboot
+oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; customer.yml
 oc apply -f &lt;(istioctl kube-inject -f customer.yml) -n tutorial
-oc delete svc/customer ; oc create -f customer/kubernetes/Service.yml
-oc logs bc/customer -f</code></pre>
+oc delete svc/customer -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
+oc logs bc/customer -f -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -457,10 +491,10 @@ oc logs bc/customer -f</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer -n tutorial
 
-oc get route
-oc get pods -w
+oc get route -n tutorial
+oc get pods -w -n tutorial
 
 or
 
@@ -538,13 +572,13 @@ mvn clean package
 docker build -t example/preference:v1 .
 docker images | grep preference
 
-oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml
+oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-kubectl create -f ../../kubernetes/Service.yml</code></pre>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">../../kubernetes/Service.yml</a></code></pre>
 </div>
 </div>
 </div>
@@ -552,10 +586,11 @@ kubectl create -f ../../kubernetes/Service.yml</code></pre>
 <h3 id="_preference_build_using_openshift_s2i_strategy"><a class="anchor" href="#_preference_build_using_openshift_s2i_strategy"></a>Preference build using OpenShift S2I strategy</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; preference.yml
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd preference/java/springboot
+oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; preference.yml
 oc apply -f &lt;(istioctl kube-inject -f preference.yml) -n tutorial
-oc delete svc/preference-v1 ; oc create -f preference/kubernetes/Service.yml
-oc logs bc/preference-v1 -f</code></pre>
+oc delete svc/preference-v1 -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
+oc logs bc/preference-v1 -f -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -563,7 +598,7 @@ oc logs bc/preference-v1 -f</code></pre>
 <h3 id="_wait_preference_to_be_deployed"><a class="anchor" href="#_wait_preference_to_be_deployed"></a>Wait preference to be deployed</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w -n tutorial
 or
 kubectl get pods -w</code></pre>
 </div>
@@ -647,14 +682,14 @@ mvn clean package
 docker build -t example/recommendation:v1 .
 docker images | grep recommendation
 
-oc apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-oc create -f ../../kubernetes/Service.yml
+oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a> -n tutorial
 oc get pods -w
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f ../../kubernetes/Deployment.yml) -n tutorial
-kubectl create -f ../../kubernetes/Service.yml
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
 kubectl get pods -w</code></pre>
 </div>
 </div>
@@ -663,10 +698,11 @@ kubectl get pods -w</code></pre>
 <h3 id="_recommendation_build_using_openshift_s2i_strategy"><a class="anchor" href="#_recommendation_build_using_openshift_s2i_strategy"></a>Recommendation build using OpenShift S2I strategy</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation.yml
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx
+oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation.yml
 oc apply -f &lt;(istioctl kube-inject -f recommendation.yml) -n tutorial
-oc delete svc/recommendation-v1 ; oc create -f recommendation/kubernetes/Service.yml
-oc logs bc/recommendation-v1 -f</code></pre>
+oc delete svc/recommendation-v1 -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
+oc logs bc/recommendation-v1 -f -n tutorial</code></pre>
 </div>
 </div>
 </div>
