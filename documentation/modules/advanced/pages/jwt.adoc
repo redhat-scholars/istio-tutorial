@@ -92,7 +92,7 @@ customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 
 After that open the file `istiofiles/enduser-authentication-jwt.yml` and replace the IP of fields `issuer` and `jwksUri` by your minishift IP (`minishift ip`).
 
-[soure, yaml]
+[source, yaml]
 .istiofiles/enduser-authentication-jwt.yml
 ----
 spec:
@@ -107,9 +107,9 @@ spec:
 
 And then run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f istiofiles/enduser-authentication-jwt.yml
+istioctl create -f link:{github-repo}/{istiofiles-dir}/enduser-authentication-jwt.yml[istiofiles/enduser-authentication-jwt.yml]
 ----
 
 Then let's run the curl again:
