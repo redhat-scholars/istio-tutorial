@@ -312,6 +312,39 @@
   </li>
 </ul>
   </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/jwt.html">End-user authentication with JWT</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#enablingauthentication">Enabling end-user authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/jwt.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/cube.html">Dark Launch Automatic Test</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#explanation">Explanation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#code">Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced/cube.html#restore">Restore Environment</a>
+  </li>
+</ul>
+  </li>
 </ul>
   </li>
 </ul>
@@ -346,7 +379,7 @@
     <li class="crumb"><a href="5advanced-routerules.html">5. Advanced Routing</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/rafaelbenevides/projetos/istio/istio-tutorial/documentation/modules/ROOT/pages/5advanced-routerules.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///Users/asotobu/git/istio-tutorial/documentation/modules/ROOT/pages/5advanced-routerules.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Advanced Route Rules</h1>
@@ -394,8 +427,8 @@ The baggage header for user agent has following form <code>baggage-user-agent: &
 <h3 id="alltorecommendationv1"><a class="anchor" href="#alltorecommendationv1"></a>Set recommendation to all v1</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1.yml">istiofiles/virtual-service-recommendation-v1.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -403,7 +436,7 @@ istioctl create -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial<
 <h3 id="safaritov2"><a class="anchor" href="#safaritov2"></a>Set Safari users to v2</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-safari-recommendation-v2.yml">istiofiles/virtual-service-safari-recommendation-v2.yml</a> -n tutorial
 
 istioctl get virtualservice -n tutorial</code></pre>
 </div>
@@ -467,7 +500,7 @@ curl -A Firefox customer-tutorial.$(minishift ip).nip.io</code></pre>
 <h3 id="mobiletov2"><a class="anchor" href="#mobiletov2"></a>Set mobile users to v2</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-mobile-recommendation-v2.yml">istiofiles/virtual-service-mobile-recommendation-v2.yml</a> -n tutorial
 
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" customer-tutorial.$(minishift ip).nip.io</code></pre>
 </div>
@@ -525,8 +558,8 @@ if so run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml">istiofiles/virtual-service-recommendation-v1-mirror-v2.yml</a> -n tutorial
 
 curl customer-tutorial.$(minishift ip).nip.io</code></pre>
 </div>
@@ -582,7 +615,7 @@ The Access Control rules take some time to be applied and reflected. Be patient 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/acl-whitelist.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/acl-whitelist.yml">istiofiles/acl-whitelist.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -607,7 +640,7 @@ customer =&gt; 404 NOT_FOUND:preferencewhitelist.listchecker.tutorial:customer i
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/acl-blacklist.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/acl-blacklist.yml">istiofiles/acl-blacklist.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -703,7 +736,7 @@ customer =&gt; preference =&gt; recommendation v2 from '2819441432-bs5ck': 182</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation_lb_policy_app.yml">istiofiles/destination-rule-recommendation_lb_policy_app.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -761,7 +794,7 @@ The Rate Limiting rules take some time to be applied and reflected. Be patient h
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/recommendation_rate_limit_handler.yml</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/recommendation_rate_limit_handler.yml">istiofiles/recommendation_rate_limit_handler.yml</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -769,7 +802,7 @@ The Rate Limiting rules take some time to be applied and reflected. Be patient h
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f istiofiles/rate_limit_rule.yml</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/rate_limit_rule.yml">istiofiles/rate_limit_rule.yml</a></code></pre>
 </div>
 </div>
 <div class="paragraph">

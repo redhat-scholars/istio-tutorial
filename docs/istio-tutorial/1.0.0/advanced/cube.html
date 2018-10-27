@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mutual TLS and Istio :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/advanced/mTLS.html">
+    <title>Dark Launcher and Automatic Tests :: Istio Tutorial Docs</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/advanced/cube.html">
     <meta name="generator" content="Antora 1.1.1">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">  </head>
@@ -297,18 +297,18 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#preparation">Preparation</a>
+    <a class="nav-link" href="mTLS.html#preparation">Preparation</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#enablingtls">Enabling TLS</a>
+    <a class="nav-link" href="mTLS.html#enablingtls">Enabling TLS</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#restore">Restore Environment</a>
+    <a class="nav-link" href="mTLS.html#restore">Restore Environment</a>
   </li>
 </ul>
   </li>
@@ -327,21 +327,21 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="cube.html">Dark Launch Automatic Test</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cube.html#preparation">Preparation</a>
+    <a class="nav-link" href="#preparation">Preparation</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cube.html#explanation">Explanation</a>
+    <a class="nav-link" href="#explanation">Explanation</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cube.html#code">Source Code</a>
+    <a class="nav-link" href="#code">Source Code</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="cube.html#restore">Restore Environment</a>
+    <a class="nav-link" href="#restore">Restore Environment</a>
   </li>
 </ul>
   </li>
@@ -376,13 +376,13 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="../index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="mTLS.html">Mutual TLS and Istio</a></li>
+    <li class="crumb"><a href="cube.html">Dark Launch Automatic Test</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/asotobu/git/istio-tutorial/documentation/modules/advanced/pages/mTLS.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///Users/asotobu/git/istio-tutorial/documentation/modules/advanced/pages/cube.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Mutual TLS and Istio</h1>
+<h1>Dark Launcher and Automatic Tests</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="admonitionblock important">
@@ -394,7 +394,7 @@
 <td class="content">
 <div class="title">Before Start</div>
 <div class="paragraph">
-<p>You should have NO virtualservice, destinationrule, gateway or policy (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> <code>istioctl get gateway</code> <code>istioctl get policy</code>
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
 if so run:</p>
 </div>
 <div class="listingblock">
@@ -406,239 +406,306 @@ if so run:</p>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>In this chapter, we are going to see how to secure the communication between all services by enabling mutual <em>TLS</em> in Istio.</p>
-</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="preparation"><a class="anchor" href="#preparation"></a>Before Start</h2>
+<h2 id="preparation"><a class="anchor" href="#preparation"></a>Preparation</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>If you are running this tutorial in OpenShift (Minishift) you need to remove the <strong>customer</strong> <code>route</code> you created at the beginning of the tutorial.</p>
-</div>
-<div class="paragraph">
-<p>To do it just run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete route customer</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, you need to enable Istio Ingress to receive all traffic and redirect it to customer service.
-For this reason, let&#8217;s create a <code>Gateway</code> and <code>VirtualService</code> that allows local calls reach the clustered service inside the mesh.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/gateway-customer.yml">istiofiles/gateway-customer.yml</a></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then configure some environment variables that will help you on testing:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_PORT=$(oc -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-
-or in Kubernetes:
-
-export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_HOST=$(minishift ip)
-export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now you can run <code>curl</code> but against <code>GATEWAY_URL</code> and you&#8217;ll see the same messages as before:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="enablingtls"><a class="anchor" href="#enablingtls"></a>Enabling mTLS</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Now that Istio gateway is in place, you can enable <em>mTLS</em> by applying next Istio resources:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/authentication-enable-tls.yml">istiofiles/authentication-enable-tls.yml</a> <i class="conum" data-value="1"></i><b>(1)</b>
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-tls.yml">istiofiles/destination-rule-tls.yml</a> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
+<div class="admonitionblock important">
 <table>
 <tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Enables mTLS into <code>tutorial</code> namespace</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Makes that services withn <code>tutorial</code> namespace communicates with <em>mTLS</em></td>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+We are assuming that you have recommendation v1 and v2 deployed on <code>tutorial</code> namespace.
+</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Then you can run:</p>
+<p>The first thing you need to do is to apply Istio resources to redirect all traffic to recommendation v1.</p>
+</div>
+<div class="paragraph">
+<p>From the main istio-tutorial directory,</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1.yml">istiofiles/virtual-service-recommendation-v1.yml</a> -n tutorial
+
+curl customer-tutorial.$(minishift ip).nip.io
+customer =&gt; preference =&gt; recommendation v1 from '2819441432-qsp25': 3</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>And you&#8217;ll see exactly the same but now the communication between the services has been secured.
-How can you check that?</p>
+<p>Now you see that your <em>production</em> traffic always goes to recommendation v1.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="explanation"><a class="anchor" href="#explanation"></a>Explanation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Dark Launching</strong> is a process where software is selectively or stealthily released to your users to validate that this new version behaves correctly and into expected parameters.</p>
 </div>
 <div class="paragraph">
-<p><strong>First</strong> running next command:</p>
+<p>There are many techniques under <strong>Dark Launch</strong> technique, you&#8217;ve seen one in this tutorial <a href="../5advanced-routerules.html#mirroringtraffic" class="page">Mirroring Traffic</a>, in this case, we are going to see how you can make that your tests (even BDD tests) can be used to test your new version without affecting your current users.</p>
+</div>
+<div class="paragraph">
+<p>You might need to use this technique if, for example, you don&#8217;t want to start stressing your new service with public traffic at first (like happens in <em>Mirroring Traffic</em> technique at first.</p>
+</div>
+<div class="paragraph">
+<p>To write these tests you can use <a href="http://www.arquillian.org/arquillian-cube">Arquillian Cube</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/arquillian_cube.png" alt="arquillian cube">
+</div>
+</div>
+<div class="paragraph">
+<p>Arquillian Cube allows you to control Docker, Kubernetes and OpenShift containers in your tests with ease.
+As a side effect, it also supports Istio, so you can write tests that apply some Istio rules to configured cluster, runs the test, and finally restores the state of Istio.</p>
+</div>
+<div class="paragraph">
+<p>For this use case what you want is to execute an automatic test against <em>recommendation v2</em> meanwhile public traffic still goes to <em>recommendation v1</em>.
+For this concrete example and for sake of simplicity, we set that if <code>user-agent</code> header contains <strong>DarkLaunch</strong> string then traffic is redirected to <em>v2</em>.</p>
+</div>
+<div class="paragraph">
+<p><em>Recommendation</em> project comes with a test that it is ready to be executed, but in the next section, you&#8217;ll read how we have arrived at the given solution.</p>
+</div>
+<div class="sect2">
+<h3 id="code"><a class="anchor" href="#code"></a>Code</h3>
+<div class="paragraph">
+<p>The first things you need to do is adding <code>Arquillian Cube</code> dependency in <em>recommendation</em> project.</p>
 </div>
 <div class="listingblock">
+<div class="title">recommendation/java/vertx/pom.xml</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl authn tls-check | grep tutorial
-
-customer.tutorial.svc.cluster.local:8080                         OK         mTLS       mTLS       default/tutorial                             default/tutorial
-preference.tutorial.svc.cluster.local:8080                       OK         mTLS       mTLS       default/tutorial                             default/tutorial
-recommendation.tutorial.svc.cluster.local:8080                   OK         mTLS       mTLS       default/tutorial                             default/tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Second</strong>, by <em>sniffing</em> traffic between services, which is a bit more tedious, open a new terminal tab and run next command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">CUSTOMER_POD=$(oc get pod | grep cust | awk '{ print $1}' ) <i class="conum" data-value="1"></i><b>(1)</b>
-
-or in Kuberentes:
-
-CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' )
-
-
-oc exec -it $CUSTOMER_POD -c istio-proxy /bin/bash <i class="conum" data-value="2"></i><b>(2)</b>
-
-or in Kubernetes:
-
-kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash
-
-# Inside pod shell
-
-ifconfig <i class="conum" data-value="3"></i><b>(3)</b>
-sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.arquillian.cube&lt;/groupId&gt;
+    &lt;artifactId&gt;arquillian-cube-openshift-starter&lt;/artifactId&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;version&gt;${cube.version}&lt;/version&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.arquillian.cube&lt;/groupId&gt;
+    &lt;artifactId&gt;arquillian-cube-istio-kubernetes&lt;/artifactId&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+    &lt;version&gt;${cube.version}&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Get customer pod name</td>
+<td>Dependency for OpenShift. There is also the same for Kubernetes.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Open a shell inside pod</td>
+<td>Version 1.18.2 or beyond.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Get IP of current pod (probably the IP represented at <code>eth0</code> interface)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Capture traffic from <code>eth0</code> (or your interface) of port <code>8080</code> and network <code>172.17.0.10</code> (your IP from <code>ifconfig</code>)</td>
+<td>Dependency for Istio integration.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Now all communication that happens between <code>customer</code> service and <code>preference</code> service is dumped in the console.</p>
-</div>
-<div class="paragraph">
-<p>So now go to a terminal and execute:</p>
+<p>Then you need to configure the namespace of the project.
+For this purpose, you need to create an <code>arquillian.xml</code> file.</p>
 </div>
 <div class="listingblock">
+<div class="title">recommendation/java/vertx/src/test/resources/arquillian.xml</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://jboss.org/schema/arquillian"
+    xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd"&gt;
+
+  &lt;extension qualifier="openshift"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;property name="namespace.use.existing"&gt;tutorial&lt;/property&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    &lt;property name="env.init.enabled"&gt;false&lt;/property&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;/extension&gt;
+
+&lt;/arquillian&gt;</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>OpenShift cluster.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use existing namespace named <code>tutorial</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Do not initialize anything, application is already running.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Obviously, the response is exactly the same, but if you go to the terminal where you are executing <code>tcpdump</code>, you should see something like:</p>
+<p>INFO: Arquillian Cube can also create a namespace and deploy any Kubernetes/OpenShift resource automatically. But since the application has been already deployed in <a href="../2deploy-microservices.html" class="page">Deploy Microservices</a>, this step is skipped.</p>
+</div>
+<div class="paragraph">
+<p>And finally, you need to create an automatic test that runs against <em>v2</em>.</p>
+</div>
+<div class="paragraph">
+<p>In this kind of tests you only want to validate <em>happy path</em>, just a quality gate that allows you to validate that everything is in place.</p>
 </div>
 <div class="listingblock">
+<div class="title">recommendation/java/vertx/src/test/java/com/&#8230;&#8203;/recommendation/DarkLaunchIT.java</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">14:24:55.078222 IP (tos 0x0, ttl 64, id 32578, offset 0, flags [DF], proto TCP (6), length 967)
-    172.17.0.15.33260 &gt; customer-7dcd544ff9-652ds.8080: Flags [P.], cksum 0x5bf5 (incorrect -&gt; 0x595e), seq 2211080917:2211081832, ack 2232186801, win 391, options [nop,nop,TS val 5958433 ecr 5779275], length 915: HTTP
-E....B@.@._........
-......j...w.....[......
-.Z.!.X/K.............w$.?....&amp;T.`n.....UX.C&amp;)Cj....y..{.&amp;..I..	..&lt;.
-.....A..q.;...o.9+.4..;...6|".......M.4Wm.:}.....^..v..2..?VW[&amp;s........@}.~B.&gt;D.k..H...r.... .L..i,.
-...=..=..y..[.k..g..0..5.f%..vz|..t.....%.`.|...B..%r0.^k.y.....y.@l$O.....?...J..qc&amp;.........Z.^&amp;..F.....w."&gt;7..	...[.......2.&amp;........&gt;......s.....5
-.n$X.....l.#...... ..Q..u..jBI.Z.Eb$9.$.._...!.........~"Xx&lt;....);........Z.
-.y/E]......K......... .@s.3.\.
-.i.v...#.O&lt;..^.F.	...?..:s...).....e......*..F.Kz..i.jk..xx...#....|.U.!.......X.....@......0.....*...l.v..G)T...9...M.....i.H ..=	.a.hp..&amp;8..L..`.s..d_o.~.T ./.......9..	;F81.......S.{.....1rE..o...`..............c+U...}.{7..Y....Q4.#..(.c]Q...[..8..$u.b...=..6.....~..9..H....R
-.9x*q....h0......O......q..Fb)..E..m..=.M.....W.Yk&gt;.......;.2eys..E.....=q.;.k ....R.f.(./^F....4.c..*Y.4....es.....TX`nh..L.z.6....(.X.&gt;c.V.0z........GF%.%..l4P.......@.^Q........46.g.#.n...e.k.._..&gt;.T+.S...t}....</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@RunWith(Arquillian.class) <i class="conum" data-value="1"></i><b>(1)</b>
+@IstioResource("classpath:dark-launch-redirect-traffic-to-new-version.yml") <i class="conum" data-value="2"></i><b>(2)</b>
+@RestoreIstioResource("classpath:virtual-service-recommendation-v1.yml") <i class="conum" data-value="3"></i><b>(3)</b>
+public class DarkLaunchIT {
+
+    @RouteURL("customer")
+    @AwaitRoute
+    private URL url; <i class="conum" data-value="4"></i><b>(4)</b>
+
+    @ArquillianResource
+    IstioAssistant istioAssistant; <i class="conum" data-value="5"></i><b>(5)</b>
+
+    @Before
+    public void waitUntilIstioResourcesArePopulated() { <i class="conum" data-value="6"></i><b>(6)</b>
+        istioAssistant.await(createRequestForRecommendationV2(), response -&gt; {
+            try {
+                return response.body().string().contains("v2");
+            } catch (IOException e) {
+                return false;
+            }
+        });
+    }
+
+    @Test
+    public void should_return_accessing_v2_message() throws IOException { <i class="conum" data-value="7"></i><b>(7)</b>
+
+        // Given
+        final Request request = createRequestForRecommendationV2(); <i class="conum" data-value="8"></i><b>(8)</b>
+
+        // When
+        final String content = makeRequest(request);
+
+        // Then
+        assertThat(content)
+            .startsWith("customer =&gt; preference =&gt; recommendation v2 from"); <i class="conum" data-value="9"></i><b>(9)</b>
+
+    }
+
+    private String makeRequest(Request request) throws IOException {
+        final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+            .addNetworkInterceptor(interceptor)
+            .build();
+        try(Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+    }
+
+    private Request createRequestForRecommendationV2() {
+        return new Request.Builder()
+                .url(url.toString())
+                .addHeader("User-Agent", "Recommendation-v2-DarkLaunch-Test")
+                .build();
+    }
+
+}</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Arquillian JUnit runner.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Resource to apply <strong>before</strong> executing the test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Resource to apply <strong>after</strong> executing the test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Public <code>URL</code> of application.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><code>IstioAssistant</code> instance to interact with Istio ecosystem.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Waits until Istio resources are populated acorss the cluster.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Test to validate that <em>recommendation v2</em> works as expected.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Creates a <em>request</em> setting <code>user-agent</code> as <strong>DarkLaunch</strong>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Validates the response.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You&#8217;ve seen a simple example here, but you can use other strategies to get the same effect:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Instead of using <code>user-agent</code> you can create a custom header, or just use the request IP range.</p>
+</li>
+<li>
+<p><code>@IstioResource</code> and <code>@RestoreIstioResource</code> supports expressions like <code>${prop}</code> resolving the property from environment variables or system properties.</p>
+</li>
+<li>
+<p>Use <code>failsafe</code> plugin to run this kind of tests so they are not run all the time.</p>
+</li>
+<li>
+<p>This example works with OpenShift route, but you can use <code>@PortForwarding</code> annotation in the test to do a port forwarding to given service.</p>
+</li>
+<li>
+<p>It is so important to add a guard to wait until Istio resources are populated across the cluster. In case of minishift/kube it is almost instantly but in case of real clusters, it might take some tenths of seconds.</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Notice that you cannot see any detail about the communication since it happened through TLS.</p>
+<p>Test project can be found <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/java/vertx/src/test/java/com/redhat/developer/demos/recommendation">here</a>.</p>
 </div>
-<div class="paragraph">
-<p>Now, let&#8217;s disable <em>TLS</em>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/authentication-enable-tls.yml
-istioctl delete -f istiofiles/destination-rule-tls.yml</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And execute again:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And again check <code>tcpdump</code> output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">host: 0192.168.64.70:31380
-user-agent: curl/7.54.0
-accept: */*
-x-forwarded-for: 172.17.0.1
-x-forwarded-proto: http
-x-envoy-internal: true
-x-request-id: e5c0b90f-341b-9edc-ac3e-7dd8b33f0e8b
-x-envoy-decorator-operation: customer.tutorial.svc.cluster.local:8080/
-x-b3-traceid: ce289e960a639d11
-x-b3-spanid: ce289e960a639d11
-x-b3-sampled: 1</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now, you can see that since there is no <em>TLS</em> enabled, the information is not shadowed but in clear.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="restore"><a class="anchor" href="#restore"></a>Clean Up</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>source,bash]</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>istioctl delete -f istiofiles/gateway-customer.yml</pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -647,14 +714,6 @@ x-b3-sampled: 1</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And finally in case of running in OpenShift (Minishift) you can restore the route:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer</code></pre>
 </div>
 </div>
 </div>
