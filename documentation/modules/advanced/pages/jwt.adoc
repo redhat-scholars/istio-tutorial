@@ -66,7 +66,7 @@ image:keycloak-create_user.png[Create User]
 
 image:keycloak-assign_user_role.png[Assign Role User]
 
-Select the role from `Availavle Roles` section and push `Add selected`.
+Select the role from `Available Roles` section and push `Add selected`.
 
 Then go to Credentials and set `demo` as the password.
 
@@ -127,7 +127,7 @@ To get a correct token, just run next `curl` request.
 
 [source, bash]
 ----
-curl 'http://localhost:8080/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'
+curl 'http://keycloak-tutorial.192.168.64.25.nip.io/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'
 ----
 
 And set the content of attribute `access_token` into `token` variable in your terminal.
