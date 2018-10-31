@@ -123,6 +123,28 @@ logout
 logout
 ----
 
+Download the Istio release and add `istioctl` to your path so later in this tutorial you can use it to manually inject the sidecars.
+
+NOTE: Another option would be to add the annotation `sidecar.istio.io/inject: "true"` in the deployment files so the sidecar is injected automatically.
+
+[source,bash]
+----
+#!/bin/bash
+
+# Mac OS:
+curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
+
+# Fedora/RHEL:
+curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
+
+# Both:
+pushd istio-1.0.2
+export ISTIO_HOME=`pwd`
+export PATH=$ISTIO_HOME/bin:$PATH
+popd
+
+----
+
 Now your system is prepared and we can install Istio operator
 
 [source,bash]
