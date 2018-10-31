@@ -25,6 +25,13 @@
 ** xref:jwt.adoc#enablingauthentication[Enabling end-user authentication]
 ** xref:jwt.adoc#cleanup[Clean Up]
 
+* xref:rbac.adoc[Istio Role Based Access Control (RBAC)]
+** xref:rbac.adoc#enabling-rbac[Enabling RBAC]
+** xref:rbac.adoc#grant-access[Granting Access]
+** xref:rbac.adoc#authorization-jwt[Authorization and JWT]
+** xref:rbac.adoc#final-notes[Final Notes]
+** xref:rbac.adoc#cleanup[Clean Up]
+
 * xref:cube.adoc[Dark Launch Automatic Test]
 ** xref:cube.adoc#preparation[Preparation]
 ** xref:cube.adoc#explanation[Explanation]

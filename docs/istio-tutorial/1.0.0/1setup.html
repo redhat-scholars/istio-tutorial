@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/1setup.html">
-    <meta name="generator" content="Antora 1.1.1">
+    <meta name="generator" content="Antora 1.0.3">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
   <body class="article">
@@ -379,7 +379,7 @@
     <li class="crumb"><a href="1setup.html">1. Setup</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///Users/asotobu/git/istio-tutorial/documentation/modules/ROOT/pages/1setup.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/1setup.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Setup</h1>
@@ -515,6 +515,7 @@ minishift config set memory 8GB
 minishift config set cpus 3
 minishift config set vm-driver virtualbox ## or kvm, for Fedora
 minishift config set image-caching true
+minishift config set openshift-version v3.11.0
 minishift addon enable admin-user
 minishift addon enable anyuid
 
@@ -546,10 +547,164 @@ In this tutorial, you will often be polling the customer endpoint with <code>cur
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>You have two options to install Istio in your environment.
+The option 1 is through the installation of <a href="https://docs.openshift.com/container-platform/3.10/servicemesh-install/servicemesh-install.html">Red Hat OpenShift Service Mesh</a>, which includes Jaeger and Kiali in addition to Istio components.
+The option 2 is using the Istio source code from upstream community.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="istioinstallation"><a class="anchor" href="#istioinstallation"></a>Istio installation script</h2>
+<h2 id="redhatistioinstallation"><a class="anchor" href="#redhatistioinstallation"></a>(Option 1) Red Hat OpenShift Service Mesh installation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Red Hat OpenShift Service Mesh uses an operator to install all Istio components and to set all permissions. You also get Jaeger and Kaili pre-installed in the bundle.</p>
+</div>
+<div class="paragraph">
+<p>Before start, you have to enable mutating and validating admission webhook plugins</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
+
+minishift openshift config set --target=kube --patch '{
+    "admissionConfig": {
+        "pluginConfig": {
+            "ValidatingAdmissionWebhook": {
+                "configuration": {
+                    "apiVersion": "apiserver.config.k8s.io/v1alpha1",
+                    "kind": "WebhookAdmission",
+                    "kubeConfigFile": "/dev/null"
+                }
+            },
+            "MutatingAdmissionWebhook": {
+                "configuration": {
+                    "apiVersion": "apiserver.config.k8s.io/v1alpha1",
+                    "kind": "WebhookAdmission",
+                    "kubeConfigFile": "/dev/null"
+                }
+            }
+        }
+    }
+}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You also need to set the system limits on <code>mmap</code> counts otherwise Elasticsearch will fail.
+Jaeger uses Elasticsearch and it is part of the Red Hat OpenShift Service Mesh.
+Elasticsearch uses a <code>mmapfs</code> directory by default to store its indices.
+The default operating system limits on <code>mmap</code> counts is likely to be too low, which may result in out of memory exceptions.
+To fix this you have to login into the minishift instance and do the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ minishift ssh
+[docker@istio-tutorial ~]$ sudo -i
+[root@istio-tutorial ~]$ echo "vm.max_map_count = 262144" &gt; /etc/sysctl.d/99-elasticsearch.conf
+[root@istio-tutorial ~]$ sysctl vm.max_map_count=262144
+[root@istio-tutorial ~]$ exit
+logout
+[docker@istio-tutorial ~]$ exit
+logout</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now your system is prepared and we can install Istio operator</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
+
+oc new-project istio-operator
+oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.3/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for the operator to be ready</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -w -n istio-operator
+
+NAME                              READY     STATUS    RESTARTS   AGE
+istio-operator-58c45d8f64-jdsrz   1/1       Running   0          10s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once operator is ready, create an installation for Istio</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
+oc project istio-operator
+cat &lt;&lt;EOF &gt;&gt;/tmp/istio-cr.yaml
+apiVersion: "istio.openshift.com/v1alpha1"
+kind: "Installation"
+metadata:
+  name: "istio-installation"
+spec:
+  deployment_type: origin
+  istio:
+    authentication: false
+    community: true
+    prefix: maistra/
+    version: 0.3.0
+  jaeger:
+    prefix: jaegertracing/
+    version: 1.7.0
+    elasticsearch_memory: 2Gi
+  kiali:
+    username: kialiadmin
+    password: kialiadmin
+    prefix: kiali/
+    version: v0.8.1
+EOF
+oc create -f /tmp/istio-cr.yaml</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+if you want mutual TLS enabled by default, change the parameter <code>authentication</code> to <code>true</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Wait for Istio&#8217;s components to be ready</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -n istio-system
+
+NAME                                          READY     STATUS      RESTARTS   AGE
+elasticsearch-0                               1/1       Running     0          3m
+grafana-648c7d5cc6-d4cgr                      1/1       Running     0          3m
+istio-citadel-64f86c964-vjd6f                 1/1       Running     0          5m
+istio-egressgateway-8579f6f649-zwmqh          1/1       Running     0          5m
+istio-galley-569c79fcbf-rc24l                 1/1       Running     0          5m
+istio-ingressgateway-5457546784-gct2p         1/1       Running     0          5m
+istio-pilot-78d8f7465f-kmclw                  2/2       Running     0          5m
+istio-policy-b57648f9f-cvj82                  2/2       Running     0          5m
+istio-sidecar-injector-5876f696f-s2pdt        1/1       Running     0          5m
+istio-statsd-prom-bridge-549d687fd9-g2gmc     1/1       Running     0          5m
+istio-telemetry-56587b8fb6-wpg9k              2/2       Running     0          5m
+jaeger-agent-6qgrl                            1/1       Running     0          3m
+jaeger-collector-9cbd5f46c-kt9w9              1/1       Running     0          3m
+jaeger-query-6678967b5-8sgdp                  1/1       Running     0          3m
+kiali-6b8c686d9b-mkxdv                        1/1       Running     0          2m
+openshift-ansible-istio-installer-job-rj7pj   0/1       Completed   0          7m
+prometheus-6ffc56584f-zgbv9                   1/1       Running     0          5m</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="upstreamistioinstallation"><a class="anchor" href="#upstreamistioinstallation"></a>(Option 2) Upstream Istio installation</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
