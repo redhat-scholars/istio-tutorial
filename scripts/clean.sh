@@ -85,3 +85,51 @@ else
     done
     
 fi
+
+contentsr=`istioctl get servicerole -n "$namespace" 2>/dev/null`
+
+if [ -z "$contentsr" ]; then
+    echo "No ServiceRole in $namespace namespace."
+else
+    contentsr=`awk 'NR>1' <<< "$contentsr"`
+
+    names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentsr"`
+
+    for name in "${names[@]}"
+    do
+        istioctl delete servicerole "$name" -n "$namespace"
+    done
+    
+fi
+
+contentsrb=`istioctl get servicerolebinding -n "$namespace" 2>/dev/null`
+
+if [ -z "$contentsrb" ]; then
+    echo "No ServiceRoleBinding in $namespace namespace."
+else
+    contentsrb=`awk 'NR>1' <<< "$contentsrb"`
+
+    names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentsrb"`
+
+    for name in "${names[@]}"
+    do
+        istioctl delete servicerolebinding "$name" -n "$namespace"
+    done
+    
+fi
+
+contentrbc=`istioctl get rbacconfig -n "$namespace" 2>/dev/null`
+
+if [ -z "$contentrbc" ]; then
+    echo "No RbacConfig in $namespace namespace."
+else
+    contentrbc=`awk 'NR>1' <<< "$contentrbc"`
+
+    names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentrbc"`
+
+    for name in "${names[@]}"
+    do
+        istioctl delete rbacconfig "$name" -n "$namespace"
+    done
+    
+fi
