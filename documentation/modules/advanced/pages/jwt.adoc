@@ -63,7 +63,7 @@ image:keycloak-create_user.png[Create User]
 
 image:keycloak-assign_user_role.png[Assign Role User]
 
-Select the role from `Availavle Roles` section and push `Add selected`.
+Select the role from `Available Roles` section and push `Add selected`.
 
 Then go to Credentials and set `demo` as the password.
 
