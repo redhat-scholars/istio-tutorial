@@ -1,0 +1,26 @@
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRole
+metadata:
+  name: service-viewer
+  namespace: tutorial
+spec:
+  rules:
+  - services: ["*"]
+    methods: ["GET"]
+    constraints:
+    - key: "destination.labels[app]"
+      values: ["customer", "recommendation", "preference"]
+---
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRoleBinding
+metadata:
+  name: bind-service-viewer
+  namespace: tutorial
+spec:
+  subjects:
+  - user: "*"
+    properties:
+      request.auth.claims[preferred_username]: "demo"
+  roleRef:
+    kind: ServiceRole
+    name: "service-viewer"
