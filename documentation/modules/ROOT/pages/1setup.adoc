@@ -221,7 +221,7 @@ jaeger-collector-9cbd5f46c-kt9w9              1/1       Running     0          3
 jaeger-query-6678967b5-8sgdp                  1/1       Running     0          3m
 kiali-6b8c686d9b-mkxdv                        1/1       Running     0          2m
 openshift-ansible-istio-installer-job-rj7pj   0/1       Completed   0          7m
-prometheus-6ffc56584f-zgbv9                   1/1       Running     0          5m
+prometheus-6ffc56584f-zgbv8                   1/1       Running     0          5m
 ----
 
 [#upstreamistioinstallation]
