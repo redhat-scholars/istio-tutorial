@@ -45,7 +45,7 @@ Then, install Kiali with the following commands:
 # URLS for Jaeger and Grafana
 JAEGER_URL="https://jaeger-query-istio-system.$(minishift ip).nip.io"
 GRAFANA_URL="https://grafana-istio-system.$(minishift ip).nip.io"
-VERSION_LABEL="v0.7.2"
+VERSION_LABEL="v0.9.0"
 
 # Installs Kiali's configmap
 curl https://raw.githubusercontent.com/kiali/kiali/${VERSION_LABEL}/deploy/openshift/kiali-configmap.yaml | \
