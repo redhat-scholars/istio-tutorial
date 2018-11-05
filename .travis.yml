@@ -1,0 +1,43 @@
+sudo: required
+
+services:
+  - docker
+addons:
+   apt:
+     sources:
+       - git-core
+     packages:
+       - git
+
+language: java
+jdk:
+  - oraclejdk8
+
+before_install:
+  - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
+  - '[ $(git log --format=%B  $TRAVIS_COMMIT_RANGE | grep -i "#doc" | wc -l) -gt 0 ] && FORCE_DOC_GEN=0 || FORCE_DOC_GEN=1'
+  - MODIFIED_DOCS=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -E 'README.adoc|^documentation/.*.adoc$' | wc -l)
+  - '[ $BRANCH == "master" ] && [ $MODIFIED_DOCS -ge 1 ] && GENERATE_DOC=0 || GENERATE_DOC=1'
+  - 'if [ $FORCE_DOC_GEN == 0 ] || [ $GENERATE_DOC == 0 ]; then
+      git config user.name "${GH_USER}";
+      git config user.email "${GH_EMAIL}";
+      git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*;
+      git fetch --unshallow origin gh-pages;
+      git worktree add -b gh-pages gh-pages origin/gh-pages;
+      GH_REF=$(git remote get-url origin | awk "{sub(/https:\/\//,\"https://${GH_TOKEN}@\")}; 1" | awk "{sub(/\.git/, \"\")} 1");
+      docker pull antora/antora:1.1.1;
+    fi'
+
+script:
+  - 'if [ $FORCE_DOC_GEN == 0 ] || [ $GENERATE_DOC == 0 ]; then
+      docker run -v $TRAVIS_BUILD_DIR:/antora --rm -t antora/antora:1.1.1 --pull --stacktrace site-gh-pages.yml;
+    fi'
+
+after_success:
+  - 'if [ $FORCE_DOC_GEN == 0 ] || [ $GENERATE_DOC == 0 ]; then
+      cd gh-pages;
+      touch .nojekyll;
+      git add .;
+      git commit -m"Publishes new documentation";
+      git push --quiet "${GH_REF}" gh-pages > /dev/null 2>&1;
+    fi'

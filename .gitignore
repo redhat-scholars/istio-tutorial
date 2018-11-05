@@ -3,6 +3,8 @@ target/
 audit.log
 .cache/
 
+docs/
+
 ### STS ###
 .apt_generated
 .classpath
