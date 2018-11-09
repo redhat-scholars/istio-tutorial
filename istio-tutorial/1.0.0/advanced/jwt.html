@@ -480,6 +480,17 @@ oc expose service keycloak</code></pre>
 </div>
 </div>
 <div class="paragraph">
+<p>Follow the deployment of Keycloak using the command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait until the status is Running and there is 1/1 pod in the Ready column. To exit, press Ctrl+C</p>
+</div>
+<div class="paragraph">
 <p>Now we need to configure Keycloak with realms, users, passwords, roles &#8230;&#8203;</p>
 </div>
 <div class="paragraph">
@@ -651,7 +662,8 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/enduser-authentication-jwt.yml
 oc delete -f keycloak/Deployment.yml -n tutorial
-oc delete -f keycloak/Service.yml -n tutorial</code></pre>
+oc delete -f keycloak/Service.yml -n tutorial
+oc delete route keycloak</code></pre>
 </div>
 </div>
 </div>
