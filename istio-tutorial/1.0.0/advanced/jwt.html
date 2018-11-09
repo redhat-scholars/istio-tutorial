@@ -330,21 +330,63 @@
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="cube.html">Dark Launch Automatic Test</a>
+    <a class="nav-link" href="rbac.html">Istio Role Based Access Control (RBAC)</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="cube.html#preparation">Preparation</a>
+    <a class="nav-link" href="rbac.html#enabling-rbac">Enabling RBAC</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="cube.html#explanation">Explanation</a>
+    <a class="nav-link" href="rbac.html#grant-access">Granting Access</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="cube.html#code">Source Code</a>
+    <a class="nav-link" href="rbac.html#authorization-jwt">Authorization and JWT</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="cube.html#restore">Restore Environment</a>
+    <a class="nav-link" href="rbac.html#final-notes">Final Notes</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="rbac.html#cleanup">Clean Up</a>
   </li>
 </ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="rbac.html">Istio Role Based Access Control (RBAC)</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="rbac.html#enabling-rbac">Enabling RBAC</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="rbac.html#grant-access">Granting Access</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="rbac.html#authorization-jwt">Authorization and JWT</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="rbac.html#final-notes">Final Notes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="rbac.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="cube.html">Dark Launch Automatic Test</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="cube.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="cube.html#explanation">Explanation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="cube.html#code">Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="cube.html#restore">Restore Environment</a>
   </li>
 </ul>
   </li>
@@ -479,7 +521,7 @@ oc expose service keycloak</code></pre>
 <p><span class="image"><img src="_images/keycloak-assign_user_role.png" alt="Assign Role User"></span></p>
 </div>
 <div class="paragraph">
-<p>Select the role from <code>Availavle Roles</code> section and push <code>Add selected</code>.</p>
+<p>Select the role from <code>Available Roles</code> section and push <code>Add selected</code>.</p>
 </div>
 <div class="paragraph">
 <p>Then go to Credentials and set <code>demo</code> as the password.</p>
