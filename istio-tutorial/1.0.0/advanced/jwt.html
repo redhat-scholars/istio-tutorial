@@ -441,7 +441,12 @@ oc expose service keycloak</code></pre>
 <p>Now we need to configure Keycloak with realms, users, passwords, roles &#8230;&#8203;</p>
 </div>
 <div class="paragraph">
-<p>So open Keycloak administration web page by opening a browser to <code><a href="http://keycloak-tutorial.192.168.64.87.nip.io/" class="bare">http://keycloak-tutorial.192.168.64.87.nip.io/</a></code> where the IP should be minishift IP (<code>minishift ip</code>).</p>
+<p>So open Keycloak administration web page by opening a browser to</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://keycloak-tutorial.$(minishift ip).nip.io/</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Then select <code>administration console</code> option and use <code>admin/admin</code> as login/password.</p>
@@ -459,34 +464,13 @@ oc expose service keycloak</code></pre>
 <p><span class="image"><img src="_images/keycloak-create_realm.png" alt="Create Realm"></span></p>
 </div>
 <div class="paragraph">
-<p>Then create a <code>realm</code> called <code>istio</code>.</p>
+<p>Select the file "keycloak/istio-realm.json" and click on "Create".</p>
 </div>
 <div class="paragraph">
-<p>Inside <code>istio</code> realm create a public client ID called <code>customer-tutorial</code>.</p>
+<p><span class="image"><img src="_images/keycloak-import.png" alt="Create Realm"></span></p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-create_client.png" alt="Create Client"></span></p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-add_client.png" alt="Adds New Client"></span></p>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-It is really important that the client id is set to <code>customer-tutorial</code> because it is used as allowed <code>audiences</code> in the mesh.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Create a role <code>user</code>.</p>
-</div>
-<div class="paragraph">
-<p>And finally, create a user called <code>demo</code> under the previous role.</p>
+<p>And finally, go to "Users" and create a user called <code>demo</code> under the previous role.</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="_images/keycloak-create_user.png" alt="Create User"></span></p>
@@ -501,13 +485,13 @@ It is really important that the client id is set to <code>customer-tutorial</cod
 <p>Then go to Credentials and set <code>demo</code> as the password.</p>
 </div>
 <div class="paragraph">
-<p>Finally, go again to <code>Details</code> tab and in <code>Required User Actions</code> input, remove the <code>Update Password</code> action.</p>
+<p>Finally, go again to Details tab and in Required User Actions input, remove the Update Password action.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-details_user.png" alt="User Details Tab"></span></p>
+<p><span class="image"><img src="_images/keycloak-details_user.png" alt="User Details"></span></p>
 </div>
 <div class="paragraph">
-<p>And finally push <code>Save</code> button.</p>
+<p>And finally push Save button.</p>
 </div>
 </div>
 </div>
@@ -569,7 +553,9 @@ Origin authentication failed.%`</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl 'http://localhost:8080/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&amp;password=demo&amp;grant_type=password&amp;client_id=customer-tutorial'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl http://keycloak-tutorial.$(minishift ip).nip.io/auth/realms/istio/protocol/openid-connect/token -d 'username=demo&amp;password=demo&amp;grant_type=password&amp;client_id=customer-tutorial'| python -c "import json,sys;obj=json.load(sys.stdin);print obj['access_token'];")
+
+echo $token</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -586,9 +572,7 @@ Origin authentication failed.%`</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token="eyJhbGciOiJSUzI1NiIsInR5cCIg....."
-
-curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
 
 customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</code></pre>
 </div>
