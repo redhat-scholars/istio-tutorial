@@ -34,6 +34,15 @@ oc create -f keycloak/Service.yml -n tutorial
 oc expose service keycloak
 ----
 
+Follow the deployment of Keycloak using the command
+
+[source, bash]
+----
+oc get pods -w
+----
+
+Wait until the status is Running and there is 1/1 pod in the Ready column. To exit, press Ctrl+C
+
 Now we need to configure Keycloak with realms, users, passwords, roles ...
 
 So open Keycloak administration web page by opening a browser to 
@@ -163,5 +172,6 @@ Check xref:mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
 istioctl delete -f istiofiles/enduser-authentication-jwt.yml
 oc delete -f keycloak/Deployment.yml -n tutorial 
 oc delete -f keycloak/Service.yml -n tutorial
+oc delete route keycloak
 ----
 
