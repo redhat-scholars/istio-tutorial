@@ -134,7 +134,25 @@ curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
 
-IMPORTANT: Remember to have a valid token at `token` variable.
+[IMPORTANT] 
+====
+Remember to have a valid token at `token` variable.
+
+To generate it you need to follow the steps defined at xref:jwt.adoc[End-user authentication with JWT] to install Keycloak and then execute next command changing the IP to your location:
+
+[source, bash]
+----
+curl 'http://keycloak-tutorial.192.168.64.25.nip.io/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'
+----
+
+And set the content of attribute `access_token` into `token` variable in your terminal.
+
+[source, bash]
+----
+token="eyJhbGciOiJSUzI1NiIsInR5cCIg....."
+----
+
+====
 
 So far, nothing new right, just that now the role to authorize a request comes from a JWT token instead of statically set in an Istio file.
 
