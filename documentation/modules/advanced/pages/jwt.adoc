@@ -36,7 +36,12 @@ oc expose service keycloak
 
 Now we need to configure Keycloak with realms, users, passwords, roles ...
 
-So open Keycloak administration web page by opening a browser to `http://keycloak-tutorial.192.168.64.87.nip.io/` where the IP should be minishift IP (`minishift ip`).
+So open Keycloak administration web page by opening a browser to 
+
+[source, bash]
+----
+open http://keycloak-tutorial.$(minishift ip).nip.io/
+----
 
 Then select `administration console` option and use `admin/admin` as login/password.
 
@@ -48,19 +53,11 @@ Then create a new `realm`. Just move the pointer over `Master` section which is 
 
 image:keycloak-create_realm.png[Create Realm]
 
-Then create a `realm` called `istio`.
+Select the file "keycloak/istio-realm.json" and click on "Create".
 
-Inside `istio` realm create a public client ID called `customer-tutorial`.
+image:keycloak-import.png[Create Realm]
 
-image:keycloak-create_client.png[Create Client]
-
-image:keycloak-add_client.png[Adds New Client]
-
-IMPORTANT: It is really important that the client id is set to `customer-tutorial` because it is used as allowed `audiences` in the mesh.
-
-Create a role `user`.
-
-And finally, create a user called `demo` under the previous role.
+And finally, go to "Users" and create a user called `demo` under the previous role.
 
 image:keycloak-create_user.png[Create User]
 
@@ -70,11 +67,11 @@ Select the role from `Availavle Roles` section and push `Add selected`.
 
 Then go to Credentials and set `demo` as the password.
 
-Finally, go again to `Details` tab and in `Required User Actions` input, remove the `Update Password` action.
+Finally, go again to Details tab and in Required User Actions input, remove the Update Password action.
 
-image:keycloak-details_user.png[User Details Tab] 
+image:keycloak-details_user.png[User Details]
 
-And finally push `Save` button.
+And finally push Save button.
 
 [#enablingauthentication]
 == Enabling User-End Authentication
@@ -127,7 +124,9 @@ To get a correct token, just run next `curl` request.
 
 [source, bash]
 ----
-curl 'http://localhost:8080/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'
+token=$(curl http://keycloak-tutorial.$(minishift ip).nip.io/auth/realms/istio/protocol/openid-connect/token -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'| python -c "import json,sys;obj=json.load(sys.stdin);print obj['access_token'];")
+
+echo $token
 ----
 
 And set the content of attribute `access_token` into `token` variable in your terminal.
@@ -140,8 +139,6 @@ Notice how `aud` field is set to `customer-tutorial.`
 
 [source, bash]
 ----
-token="eyJhbGciOiJSUzI1NiIsInR5cCIg....."
-
 curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
 
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
