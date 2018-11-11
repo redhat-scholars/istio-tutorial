@@ -1,5 +1,7 @@
 = Installing
 
+IMPORTANT: At the time of writing this service, GraalVM didn't work with microprofile, Vert.X or Spring Boot. For this reason you can only find GraalVM support for micronaut.
+
 == Kubernetes
 
 `docker build -t example/recommendation:v1 .`
