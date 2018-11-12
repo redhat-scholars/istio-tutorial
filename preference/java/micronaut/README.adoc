@@ -1,0 +1,23 @@
+
+= Installing
+
+IMPORTANT: At the time of writing this service, GraalVM didn't work with microprofile, Vert.X or Spring Boot. For this reason you can only find GraalVM support for micronaut.
+
+== Kubernetes
+
+`docker build -t example/preference:v1 .`
+
+== OpenShift
+
+```
+docker run oracle/graalvm-ce:1.0.0-rc7 cat /usr/java/latest/jre/lib/svm/builder/svm.jar > svm.jar
+
+mvn install:install-file -Dfile=svm.jar \
+                           -DgroupId=com.oracle.substratevm \
+                           -DartifactId=svm \
+                           -Dversion=GraalVM-1.0.0-rc7 \
+                           -Dpackaging=jar
+
+mvn clean package
+docker build -f Dockerfile-openshift -t example/preference:v1 .
+```

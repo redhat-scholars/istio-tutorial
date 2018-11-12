@@ -4,6 +4,8 @@ audit.log
 .cache/
 
 docs/
+dependency-reduced-pom.xml
+svm.jar
 
 ### STS ###
 .apt_generated
