@@ -8,8 +8,8 @@ spec:
   - name: customer
   origins:
   - jwt:
-      issuer: "http://keycloak-tutorial.192.168.64.12.nip.io/auth/realms/istio"
-      jwksUri: "http://keycloak-tutorial.192.168.64.12.nip.io/auth/realms/istio/protocol/openid-connect/certs"
+      issuer: "http://keycloak-tutorial.192.168.64.14.nip.io/auth/realms/istio"
+      jwksUri: "http://keycloak-tutorial.192.168.64.14.nip.io/auth/realms/istio/protocol/openid-connect/certs"
       audiences:
       - customer-tutorial  
   principalBinding: USE_ORIGIN

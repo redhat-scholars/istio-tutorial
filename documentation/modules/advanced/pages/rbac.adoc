@@ -142,14 +142,9 @@ To generate it you need to follow the steps defined at xref:jwt.adoc[End-user au
 
 [source, bash]
 ----
-curl 'http://keycloak-tutorial.192.168.64.25.nip.io/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'
-----
+token=$(curl http://keycloak-tutorial.$(minishift ip).nip.io/auth/realms/istio/protocol/openid-connect/token -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'| python -c "import json,sys;obj=json.load(sys.stdin);print obj['access_token'];")
 
-And set the content of attribute `access_token` into `token` variable in your terminal.
-
-[source, bash]
-----
-token="eyJhbGciOiJSUzI1NiIsInR5cCIg....."
+echo $token
 ----
 
 ====
