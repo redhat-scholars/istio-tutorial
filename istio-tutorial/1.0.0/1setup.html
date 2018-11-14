@@ -672,7 +672,7 @@ popd</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 
 oc new-project istio-operator
-oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.3/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"</code></pre>
+oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.4/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -704,7 +704,7 @@ spec:
     authentication: false
     community: true
     prefix: maistra/
-    version: 0.3.0
+    version: 0.4.0
   jaeger:
     prefix: jaegertracing/
     version: 1.7.0

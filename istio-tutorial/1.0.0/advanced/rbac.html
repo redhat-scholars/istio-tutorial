@@ -589,15 +589,9 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl 'http://keycloak-tutorial.192.168.64.25.nip.io/auth/realms/istio/protocol/openid-connect/token' -d 'username=demo&amp;password=demo&amp;grant_type=password&amp;client_id=customer-tutorial'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And set the content of attribute <code>access_token</code> into <code>token</code> variable in your terminal.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token="eyJhbGciOiJSUzI1NiIsInR5cCIg....."</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl http://keycloak-tutorial.$(minishift ip).nip.io/auth/realms/istio/protocol/openid-connect/token -d 'username=demo&amp;password=demo&amp;grant_type=password&amp;client_id=customer-tutorial'| python -c "import json,sys;obj=json.load(sys.stdin);print obj['access_token'];")
+
+echo $token</code></pre>
 </div>
 </div>
 </td>
