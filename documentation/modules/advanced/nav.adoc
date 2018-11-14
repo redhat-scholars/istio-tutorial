@@ -15,6 +15,14 @@
 *** xref:virtualization.adoc#servicevirtualization[Adding Service Virtualization]
 *** xref:virtualization.adoc#cleanup[Clean Up]
 
+** xref:diferencia.adoc[Diferencia and Detecting Regressions]
+*** xref:diferencia.adoc#what-is-diferencia[What is Diferencia?]
+*** xref:diferencia.adoc#master-candidate[Setting Master Candidate]
+*** xref:diferencia.adoc#deploying-diferencia[Deploying Diferencia]
+*** xref:diferencia.adoc#shadowing-traffic[Shadowing Traffic]
+*** xref:diferencia.adoc#noise-detection[Noise Detection]
+*** xref:diferencia.adoc#cleanup[Clean up]
+
 ** xref:mTLS.adoc[Mutual TLS and Istio]
 *** xref:mTLS.adoc#preparation[Preparation]
 *** xref:mTLS.adoc#enablingtls[Enabling TLS]

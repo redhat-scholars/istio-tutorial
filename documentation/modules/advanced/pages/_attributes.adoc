@@ -9,3 +9,4 @@ include::{moduledir}/_attributes.adoc[]
 :recommendation-repo: recommendation
 :recommendation-java: java/vertx
 :istiofiles-dir: istiofiles
+:diferencia-dir: diferencia

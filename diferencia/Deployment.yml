@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: diferencia-recommendations
+    version: v1
+  name: recommendation-diferencia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation-diferencia
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: recommendation-diferencia
+        version: v1
+    spec:
+      containers:
+      - image: lordofthejars/diferencia:0.4.1
+        imagePullPolicy: IfNotPresent
+        name: recommendation-diferencia
+        args: ["start", "-c=http://recommendation-candidate:8080", "-p=http://recommendation-master:8080", "--forcePlainText", "-l=debug"]
+        ports:
+        - containerPort: 8080
+          name: http-proxy
+          protocol: TCP
+        - containerPort: 8081
+          name: http-prometheus
+          protocol: TCP
+        - containerPort: 8082
+          name: http-admin
+          protocol: TCP
+        securityContext:
+          privileged: false
