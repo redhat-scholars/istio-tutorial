@@ -132,13 +132,13 @@ NOTE: Another option would be to add the annotation `sidecar.istio.io/inject: "t
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
 
 # Both:
-pushd istio-1.0.2
+pushd istio-1.0.3
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 popd
@@ -179,7 +179,7 @@ metadata:
 spec:
   deployment_type: origin
   istio:
-    authentication: false
+    authentication: true
     community: true
     prefix: maistra/
     version: 0.4.0
@@ -191,12 +191,10 @@ spec:
     username: admin
     password: admin
     prefix: kiali/
-    version: v0.8.1
+    version: v0.9.1
 EOF
 oc create -f /tmp/istio-cr.yaml
 ----
-
-NOTE: if you want mutual TLS enabled by default, change the parameter `authentication` to `true`.
 
 Wait for Istio's components to be ready
 
@@ -232,13 +230,13 @@ prometheus-6ffc56584f-zgbv8                   1/1       Running     0          5
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
 
 # Both:
-cd istio-1.0.2
+cd istio-1.0.3
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 
