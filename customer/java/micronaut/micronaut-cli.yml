@@ -1,5 +1,0 @@
-profile: service
-defaultPackage: com.redhat.developer.demos.customer
----
-testFramework: junit
-sourceLanguage: java
