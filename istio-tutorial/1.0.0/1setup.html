@@ -652,13 +652,13 @@ Another option would be to add the annotation <code>sidecar.istio.io/inject: "tr
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
 
 # Both:
-pushd istio-1.0.2
+pushd istio-1.0.3
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 popd</code></pre>
@@ -701,7 +701,7 @@ metadata:
 spec:
   deployment_type: origin
   istio:
-    authentication: false
+    authentication: true
     community: true
     prefix: maistra/
     version: 0.4.0
@@ -713,22 +713,10 @@ spec:
     username: admin
     password: admin
     prefix: kiali/
-    version: v0.8.1
+    version: v0.9.1
 EOF
 oc create -f /tmp/istio-cr.yaml</code></pre>
 </div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-if you want mutual TLS enabled by default, change the parameter <code>authentication</code> to <code>true</code>.
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
 <p>Wait for Istio&#8217;s components to be ready</p>
@@ -767,13 +755,13 @@ prometheus-6ffc56584f-zgbv8                   1/1       Running     0          5
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
 
 # Both:
-cd istio-1.0.2
+cd istio-1.0.3
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH</code></pre>
 </div>
