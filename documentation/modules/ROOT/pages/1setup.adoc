@@ -33,7 +33,7 @@ You will need in this tutorial:
 [#minishift]
 == Setup minishift
 
-Assumes `minishift`, tested with minishift v1.22.0+7163416
+In case of using Minishift you need at least minishift v1.24.0.
 
 [source,bash]
 ----
