@@ -516,7 +516,56 @@
 </ul>
 </div>
 </li>
+<li>
+<p>siege</p>
+<div class="ulist">
+<ul>
+<li>
+<p>MAC OS: <code>brew install siege</code></p>
+</li>
+<li>
+<p>Fedora: <code>dnf install siege</code></p>
+</li>
 </ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you want to validate if everything is installed at once, just open a terminal and run:</p>
+</div>
+<div class="paragraph">
+<p><code>curl -sL <a href="https://git.io/_has" class="bare">https://git.io/_has</a> | HAS_ALLOW_UNSAFE=y bash -s</code></p>
+</div>
+<div class="paragraph">
+<p>The output should be something like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">✔ minishift
+✔ docker 18.09.0
+✔ oc 22
+✔ kubectl
+✔ git 2.17.2
+✔ mvn 3.5.0
+✔ curl 7.54.0
+✔ stern 1.6.0
+✔ siege 4.0.4</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can check quickly if you are missing any tool and decide if you want to install or not.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
