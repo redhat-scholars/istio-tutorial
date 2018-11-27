@@ -1,0 +1,14 @@
+# cloud
+minishift
+docker
+oc
+kubectl
+
+# sources
+git
+mvn
+
+# access
+curl
+stern
+siege
