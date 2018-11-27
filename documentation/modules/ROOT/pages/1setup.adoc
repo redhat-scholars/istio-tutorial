@@ -29,6 +29,34 @@ You will need in this tutorial:
 ** Fedora: should also be installed already, but just in case... `dnf install curl gzip tar`
 * git
 ** `dnf install git`
+* siege
+** MAC OS: `brew install siege`
+** Fedora: `dnf install siege`
+
+
+[TIP]
+====
+If you want to validate if everything is installed at once, just open a terminal and run:
+
+`curl -sL https://git.io/_has | HAS_ALLOW_UNSAFE=y bash -s`
+
+The output should be something like:
+
+[source, bash]
+----
+✔ minishift
+✔ docker 18.09.0
+✔ oc 22
+✔ kubectl
+✔ git 2.17.2
+✔ mvn 3.5.0
+✔ curl 7.54.0
+✔ stern 1.6.0
+✔ siege 4.0.4
+----
+
+You can check quickly if you are missing any tool and decide if you want to install or not.
+====
 
 [#minishift]
 == Setup minishift
