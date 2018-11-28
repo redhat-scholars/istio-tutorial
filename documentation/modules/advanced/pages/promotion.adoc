@@ -21,6 +21,7 @@ In this chapter, we are going to see how to use Istio to promote a service to a 
 The idea behind service promotion is that you are able to promote your different versions of a service so it can be reached gradually by your public traffic.
 
 What you define is different levels where your service is promoted, and in each of this level, the service is meant to be more stable than in the previous one.
+You can think about graduating services to classes of users.
 
 There are several ways of doing it, but one way we are using in http://www.openshift.io[OpenShift IO] is by allowing the user to choose if he wants to try the latest deployed version of the application (experimental level) or a stable version of the application (stable level).
 
@@ -105,8 +106,8 @@ and test the customer endpoint until you can see that v3 has been reached.
 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
-[#features-opt-in]
-== Features Opt-in
+[#features-graduation]
+== Features Graduation
 
 With 3 versions of service _recommendation_ deployed, now we can define 3 different level of access.
 For example _experimental_, _beta_ and _production_.
@@ -125,6 +126,13 @@ For version 3:: `123` (_experimental_)
 For version 2:: `12` (_beta_)
 For version 1:: _empty_ (_production_)
 
+The reason behind using these approach is the next one.
+In this example, we have three levels _experimental_, _beta_ and _production_, and we set a number to each level, 3 is the most unstable version while one is the most stable version.
+
+So, for example, a user that sets its preferences to _experimental_ it means that he needs to reach _experimental_ or if no _eperimental_ then __beta_ or by default _production_. 
+This effectively means setting that he wants to reach all levels `123`.
+And the same applies to any other level defined by the user.
+
 [source, bash]
 ----
 curl -H "user-preference: 123" customer-tutorial.$(minishift ip).nip.io
@@ -136,6 +144,11 @@ customer => preference => recommendation v2 from '3490080923-usw67': 2
 curl customer-tutorial.$(minishift ip).nip.io
 customer => preference => recommendation v1 from '9834514598-knc40': 10
 ----
+
+One interesting point here is that if you open link:{github-repo}/{istiofiles-dir}/virtual-service-promotion-v1-v2-v3.yml[istiofiles/virtual-service-promotion-v1-v2-v3.yml] you'll see that the header is set to `baggage-user-preference` meanwhile in `curl` it is set to `user-preference`.
+
+The reason is that in _customer_ service (link:{github-repo}/master/customer/java/springboot/src/main/java/com/redhat/developer/demos/customer/CustomerController.java#L35[CustomerController.java]), `io.opentracing.Tracer` class is used to set as baggage item the `user-preference` header.
+In this way, the header is populated across all services without having to copy it manually in each service, since by default headers are not populated automatically.
 
 Now let's make a promotion of the versions, so _version 1_ is not reachable anymore, _version 2_ is the new _production_ and _version 3_ is the new _beta_.
 
