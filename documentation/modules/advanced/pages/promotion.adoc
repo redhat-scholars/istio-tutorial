@@ -1,4 +1,4 @@
-= Istio for Promoting Services
+= Istio for Promoting Services (Feature Graduation)
 include::_attributes.adoc[]
 
 [IMPORTANT]
@@ -106,8 +106,8 @@ and test the customer endpoint until you can see that v3 has been reached.
 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
-[#features-graduation]
-== Features Graduation
+[#feature-graduation]
+== Feature Graduation
 
 With 3 versions of service _recommendation_ deployed, now we can define 3 different level of access.
 For example _experimental_, _beta_ and _production_.
