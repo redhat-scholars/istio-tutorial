@@ -15,6 +15,12 @@
 *** xref:virtualization.adoc#servicevirtualization[Adding Service Virtualization]
 *** xref:virtualization.adoc#cleanup[Clean Up]
 
+** xref:promotion.adoc[Istio for Promoting Services]
+*** xref:promotion.adoc#what-is-promotion[What is Promotion?]
+*** xref:promotion.adoc#deploy-recommendation-v3[Deploy Recommendation V3]
+*** xref:promotion.adoc#feature-graduation][Feature Graduation]
+*** xref:promotion.adoc#cleanup[Clean Up]
+
 ** xref:mTLS.adoc[Mutual TLS and Istio]
 *** xref:mTLS.adoc#preparation[Preparation]
 *** xref:mTLS.adoc#enablingtls[Enabling TLS]

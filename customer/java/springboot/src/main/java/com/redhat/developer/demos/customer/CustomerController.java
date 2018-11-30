@@ -33,12 +33,15 @@ public class CustomerController {
     }
 
     @RequestMapping("/")
-    public ResponseEntity<String> getCustomer(@RequestHeader("User-Agent") String userAgent) {
+    public ResponseEntity<String> getCustomer(@RequestHeader("User-Agent") String userAgent, @RequestHeader(value = "user-preference", required = false) String userPreference) {
         try {
             /**
              * Set baggage
              */
             tracer.activeSpan().setBaggageItem("user-agent", userAgent);
+            if (userPreference != null && !userPreference.isEmpty()) {
+                tracer.activeSpan().setBaggageItem("user-preference", userPreference);
+            }
 
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(remoteURL, String.class);
             String response = responseEntity.getBody();

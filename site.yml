@@ -8,7 +8,7 @@ site:
 content:
   sources:
   - url: .
-    branches: master
+    branches: HEAD
     start_path: documentation
 ui:
   bundle:
