@@ -38,12 +38,25 @@ So let's see how to implement this approach using Istio.
 =====
 You need to be sure that you do not have a _recommendation:v3_ deployed in the cluster.
 
+[source, bash]
+----
+oc get pods
+or
+kubectl get pods
+
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preference-243057078-8c5hz           2/2       Running   0          15m
+recommendation-v1-60483540-9snd9     2/2       Running   0          12m
+recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
+----
+
 You might have a _recommendation:v3_ deployed because of you did xref:ROOT:8egress.adoc[Egress Section] ad not cleaned up the resources.
 If it is the case you can follow the xref:ROOT:8egress.adoc#cleanup[Egress Clean Up Section].
 
 If it is not the case then run:
 
-[source, base]
+[source, bash]
 ----
 oc delete all -l app=recommendation,version=v3
 or
