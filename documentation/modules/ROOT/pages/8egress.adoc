@@ -25,6 +25,7 @@ We can experiment with Egress service entry by making two changes to `Recommenda
 First change is updating the response string to:
 
 [source,java]
+.src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
 ----
 private static final String RESPONSE_STRING_FORMAT = "recommendation v3 from '%s': %d\n";
 ----
@@ -38,6 +39,7 @@ The second change is to change the default output to make a call to http://now.h
 From:
 
 [source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
 ----
         router.get("/").handler(this::getRecommendations);
 //        router.get("/").handler(this::getNow);
@@ -46,6 +48,7 @@ From:
 To:
 
 [source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
 ----
 //        router.get("/").handler(this::getRecommendations);
         router.get("/").handler(this::getNow);
@@ -163,6 +166,7 @@ exit
 ----
 
 
+[#cleanup]
 === Clean up
 
 [source,bash]
@@ -177,4 +181,46 @@ or you can run:
 [source, bash]
 ----
 ./scripts/clean.sh
+----
+
+Undeploy _recommendation:v3_:
+
+[source, bash]
+----
+oc delete all -l app=recommendation,version=v3
+or
+kubectl delete all -l app=recommendation,version=v3
+----
+
+Change _recommendation_ code to version 2:
+
+[source, bash]
+----
+cd recommendation/java/vertx
+----
+
+First change is updating the response string to:
+
+[source,java]
+.src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
+----
+private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+----
+
+And then get back to not depend on `egress` external service:
+
+[source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
+----
+//        router.get("/").handler(this::getRecommendations);
+        router.get("/").handler(this::getNow);
+----
+
+To:
+
+[source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
+----
+        router.get("/").handler(this::getRecommendations);
+//        router.get("/").handler(this::getNow);
 ----

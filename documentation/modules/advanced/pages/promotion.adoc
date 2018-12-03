@@ -34,6 +34,24 @@ So let's see how to implement this approach using Istio.
 [#deploy-recommendation-v3]
 == Create recommendation:v3
 
+[IMPORTANT]
+=====
+You need to be sure that you do not have a _recommendation:v3_ deployed in the cluster.
+
+You might have a _recommendation:v3_ deployed because of you did xref:ROOT:8egress.adoc[Egress Section] ad not cleaned up the resources.
+If it is the case you can follow the xref:ROOT:8egress.adoc#cleanup[Egress Clean Up Section].
+
+If it is not the case then run:
+
+[source, base]
+----
+oc delete all -l app=recommendation,version=v3
+or
+kubectl delete all -l app=recommendation,version=v3
+----
+
+=====
+
 We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v3" docker image.
 
 [source,java]
