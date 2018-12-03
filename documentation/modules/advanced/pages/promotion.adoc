@@ -36,7 +36,7 @@ So let's see how to implement this approach using Istio.
 
 [IMPORTANT]
 =====
-You need to be sure that you do not have a _recommendation:v3_ deployed in the cluster.
+You need to be sure that you do not have a _recommendation:v3_ deployed in the cluster and that _recommendation_ code base is correct.
 
 [source, bash]
 ----
@@ -51,7 +51,17 @@ recommendation-v1-60483540-9snd9     2/2       Running   0          12m
 recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
 ----
 
+To check if _recommendation_ source code is correct check that `getNow` method is not active.
+
+[source, java]
+.recommendation/java/vertx/src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
+----
+        router.get("/").handler(this::getRecommendations);
+//        router.get("/").handler(this::getNow);
+----
+
 You might have a _recommendation:v3_ deployed because of you did xref:ROOT:8egress.adoc[Egress Section] ad not cleaned up the resources.
+
 If it is the case you can follow the xref:ROOT:8egress.adoc#cleanup[Egress Clean Up Section].
 
 If it is not the case then run:
