@@ -1,0 +1,22 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  creationTimestamp: null
+  name: recommendation
+  namespace: tutorial
+spec:
+  host: recommendation
+  subsets:
+  - labels:
+      version: v4
+    name: version-v4
+  - labels:
+      version: v5
+    name: version-v5
+  - labels:
+      version: v6
+    name: version-v6
+  - labels:
+      version: v7
+    name: version-v7
+---

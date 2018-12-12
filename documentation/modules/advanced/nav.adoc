@@ -30,6 +30,15 @@
 *** xref:promotion.adoc#feature-graduation][Feature Graduation]
 *** xref:promotion.adoc#cleanup[Clean Up]
 
+** xref:zero-downtime-database.adoc[Zero Downtime Migration with Database]
+*** Starting the Migration
+**** xref:zero-downtime-database.adoc#recommendationv4[Deploy Recommendation V4]
+**** xref:zero-downtime-database.adoc#recommendationv5[Deploy Recommendation V5]
+**** xref:zero-downtime-database.adoc#recommendationv6[Deploy Recommendation V6]
+**** xref:zero-downtime-database.adoc#recommendationv7[Deploy Recommendation V7]
+*** xref:zero-downtime-database.adoc#finalstep[Final Step]
+*** xref:zero-downtime-database.adoc#cleanup[Clean Up]
+
 
 ** xref:mTLS.adoc[Mutual TLS and Istio]
 *** xref:mTLS.adoc#preparation[Preparation]
