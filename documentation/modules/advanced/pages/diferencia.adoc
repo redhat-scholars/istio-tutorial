@@ -49,7 +49,7 @@ kubectl create -f link:{github-repo}/{diferencia-dir}/recommendation-candidate-s
 
 Next thing is to deploy Diferencia.
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
 oc apply -f <(istioctl kube-inject -f link:{github-repo}/{diferencia-dir}/Deployment.yml[diferencia/Deployment.yml]) -n tutorial
 oc create -f diferencia/Service.yml -n tutorial
