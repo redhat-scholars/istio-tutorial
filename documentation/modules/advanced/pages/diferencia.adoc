@@ -67,6 +67,8 @@ The last thing is to just start shadowing traffic between `recommendation:v1` an
 
 [source, bash,subs="+macros,+attributes"]
 ----
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
+
 istioctl create -f link:{github-repo}/{diferencia-dir}/virtual-service-recommendation-v1-diferencia-mirror-v2.yml[diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml] -n tutorial
 ----
 
