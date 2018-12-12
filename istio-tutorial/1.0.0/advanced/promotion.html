@@ -483,6 +483,59 @@ You can think about graduating services to classes of users.</p>
 <div class="sect1">
 <h2 id="deploy-recommendation-v3"><a class="anchor" href="#deploy-recommendation-v3"></a>Create recommendation:v3</h2>
 <div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You need to be sure that you do not have a <em>recommendation:v3</em> deployed in the cluster and that <em>recommendation</em> code base is correct.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods
+or
+kubectl get pods
+
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preference-243057078-8c5hz           2/2       Running   0          15m
+recommendation-v1-60483540-9snd9     2/2       Running   0          12m
+recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To check if <em>recommendation</em> source code is correct check that <code>getNow</code> method is not active.</p>
+</div>
+<div class="listingblock">
+<div class="title">recommendation/java/vertx/src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        router.get("/").handler(this::getRecommendations);
+//        router.get("/").handler(this::getNow);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You might have a <em>recommendation:v3</em> deployed because of you did <a href="../8egress.html" class="page">Egress Section</a> ad not cleaned up the resources.</p>
+</div>
+<div class="paragraph">
+<p>If it is the case you can follow the <a href="../8egress.html#cleanup" class="page">Egress Clean Up Section</a>.</p>
+</div>
+<div class="paragraph">
+<p>If it is not the case then run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete all -l app=recommendation,version=v3
+or
+kubectl delete all -l app=recommendation,version=v3</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>We can experiment with Istio controlling traffic by making a change to <code>RecommendationVerticle.java</code> like the following and creating a "v3" docker image.</p>
 </div>

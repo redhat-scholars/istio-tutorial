@@ -466,6 +466,7 @@ if so run:</p>
 <p>First change is updating the response string to:</p>
 </div>
 <div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v3 from '%s': %d\n";</code></pre>
 </div>
@@ -483,6 +484,7 @@ if so run:</p>
 <p>From:</p>
 </div>
 <div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        router.get("/").handler(this::getRecommendations);
 //        router.get("/").handler(this::getNow);</code></pre>
@@ -492,6 +494,7 @@ if so run:</p>
 <p>To:</p>
 </div>
 <div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//        router.get("/").handler(this::getRecommendations);
         router.get("/").handler(this::getNow);</code></pre>
@@ -630,7 +633,7 @@ exit</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean up</h3>
+<h3 id="cleanup"><a class="anchor" href="#cleanup"></a>Clean up</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
@@ -644,6 +647,53 @@ istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Undeploy <em>recommendation:v3</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete all -l app=recommendation,version=v3
+or
+kubectl delete all -l app=recommendation,version=v3</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Change <em>recommendation</em> code to version 2:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First change is updating the response string to:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then get back to not depend on <code>egress</code> external service:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//        router.get("/").handler(this::getRecommendations);
+        router.get("/").handler(this::getNow);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        router.get("/").handler(this::getRecommendations);
+//        router.get("/").handler(this::getNow);</code></pre>
 </div>
 </div>
 </div>
