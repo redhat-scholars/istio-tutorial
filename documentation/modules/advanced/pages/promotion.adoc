@@ -1,0 +1,228 @@
+= Istio for Promoting Services (Feature Graduation)
+include::_attributes.adoc[]
+
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice, destinationrule, gateway or policy (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` `istioctl get gateway` `istioctl get policy`
+if so run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----
+====
+
+In this chapter, we are going to see how to use Istio to promote a service to a more wide amount of users depending on their configuration.
+
+[#what-is-promotion]
+== What is a Service Promotion?
+
+The idea behind service promotion is that you are able to promote your different versions of a service so it can be reached gradually by your public traffic.
+
+What you define is different levels where your service is promoted, and in each of this level, the service is meant to be more stable than in the previous one.
+You can think about graduating services to classes of users.
+
+There are several ways of doing it, but one way we are using in http://www.openshift.io[OpenShift IO] is by allowing the user to choose if he wants to try the latest deployed version of the application (experimental level) or a stable version of the application (stable level).
+
+image::promotion-osio.png[Features opt-in in OpenShift IO]
+
+This means that in the public cluster you have more than one version of the same service deployed, and the public traffic is able to reach it as well.
+
+So let's see how to implement this approach using Istio.
+
+[#deploy-recommendation-v3]
+== Create recommendation:v3
+
+[IMPORTANT]
+=====
+You need to be sure that you do not have a _recommendation:v3_ deployed in the cluster and that _recommendation_ code base is correct.
+
+[source, bash]
+----
+oc get pods
+or
+kubectl get pods
+
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preference-243057078-8c5hz           2/2       Running   0          15m
+recommendation-v1-60483540-9snd9     2/2       Running   0          12m
+recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
+----
+
+To check if _recommendation_ source code is correct check that `getNow` method is not active.
+
+[source, java]
+.recommendation/java/vertx/src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java
+----
+        router.get("/").handler(this::getRecommendations);
+//        router.get("/").handler(this::getNow);
+----
+
+You might have a _recommendation:v3_ deployed because of you did xref:ROOT:8egress.adoc[Egress Section] ad not cleaned up the resources.
+
+If it is the case you can follow the xref:ROOT:8egress.adoc#cleanup[Egress Clean Up Section].
+
+If it is not the case then run:
+
+[source, bash]
+----
+oc delete all -l app=recommendation,version=v3
+or
+kubectl delete all -l app=recommendation,version=v3
+----
+
+=====
+
+We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v3" docker image.
+
+[source,java]
+----
+private static final String RESPONSE_STRING_FORMAT = "recommendation v3 from '%s': %d\n";
+----
+
+The "v3" tag during the Docker build is significant.
+
+There is also a second `deployment.yml` file to label things correctly
+
+=== Docker build (if you have access to Docker daemon)
+
+[source,bash]
+----
+cd recommendation/java/vertx
+mvn clean package
+
+docker build -t example/recommendation:v3 .
+
+docker images | grep recommendation
+example/recommendation                  v3                  c31e399a9628        1 seconds ago      438MB
+example/recommendation                  v2                  c31e399a9628        5 seconds ago      438MB
+example/recommendation                  v1                  f072978d9cf6        8 minutes ago      438MB
+----
+
+IMPORTANT: We have a 3rd Deployment to manage the v3 version of recommendation. 
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
+oc get pods -w -n tutorial
+
+or
+
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
+kubectl get pods -w -n tutorial
+----
+
+=== OpenShift S2I strategy (if you DON'T have access to Docker daemon)
+
+[source, bash]
+----
+mvn clean package -f recommendation/java/vertx
+oc new-app -l app=recommendation,version=v3 --name=recommendation-v3 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v3.yml
+oc apply -f <(istioctl kube-inject -f recommendation-v3.yml) -n tutorial
+oc cancel-build bc/recommendation-v3 -n tutorial
+oc delete svc/recommendation-v3 -n tutorial
+oc start-build recommendation-v3 --from-dir=. --follow -n tutorial
+----
+
+=== Wait for v3 to be deployed
+
+Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod.
+
+[source,bash]
+----
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preference-243057078-8c5hz           2/2       Running   0          15m
+recommendation-v1-60483540-9snd9     2/2       Running   0          12m
+recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
+recommendation-v3-9834632434-urd34   2/2       Running   0         15s
+----
+
+and test the customer endpoint until you can see that v3 has been reached.
+
+[source,bash]
+----
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+[#feature-graduation]
+== Feature Graduation
+
+With 3 versions of service _recommendation_ deployed, now we can define 3 different level of access.
+For example _experimental_, _beta_ and _production_.
+
+With Istio, we can use routing for sending traffic depending on users configuration.
+
+[source, bash,subs="+macros,+attributes"]
+----
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2-v3.yml[istiofiles/destination-rule-recommendation-v1-v2-v3.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-promotion-v1-v2-v3.yml[istiofiles/virtual-service-promotion-v1-v2-v3.yml] -n tutorial
+----
+
+Now, we need to set a header named `user-preference` with some specific value:
+
+For version 3:: `123` (_experimental_)
+For version 2:: `12` (_beta_)
+For version 1:: _empty_ (_production_)
+
+The reason behind using these approach is the next one.
+In this example, we have three levels _experimental_, _beta_ and _production_, and we set a number to each level, 3 is the most unstable version while one is the most stable version.
+
+So, for example, a user that sets its preferences to _experimental_ it means that he needs to reach _experimental_ or if no _eperimental_ then __beta_ or by default _production_. 
+This effectively means setting that he wants to reach all levels `123`.
+And the same applies to any other level defined by the user.
+
+[source, bash]
+----
+curl -H "user-preference: 123" customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v3 from '6953441398-tyw25': 1
+
+curl -H "user-preference: 12" customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v2 from '3490080923-usw67': 2
+
+curl customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v1 from '9834514598-knc40': 10
+----
+
+One interesting point here is that if you open link:{github-repo}/{istiofiles-dir}/virtual-service-promotion-v1-v2-v3.yml[istiofiles/virtual-service-promotion-v1-v2-v3.yml] you'll see that the header is set to `baggage-user-preference` meanwhile in `curl` it is set to `user-preference`.
+
+The reason is that in _customer_ service (link:{github-repo}/master/customer/java/springboot/src/main/java/com/redhat/developer/demos/customer/CustomerController.java#L35[CustomerController.java]), `io.opentracing.Tracer` class is used to set as baggage item the `user-preference` header.
+In this way, the header is populated across all services without having to copy it manually in each service, since by default headers are not populated automatically.
+
+Now let's make a promotion of the versions, so _version 1_ is not reachable anymore, _version 2_ is the new _production_ and _version 3_ is the new _beta_.
+
+[source, bash,subs="+macros,+attributes"]
+----
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-promoted-v3.yml[istiofiles/virtual-service-promoted-v3.yml] -n tutorial
+----
+
+[source, bash]
+----
+curl -H "user-preference: 123" customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v3 from '6953441398-tyw25': 2
+
+curl -H "user-preference: 12" customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v3 from '6953441398-tyw25': 3
+
+curl customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v2 from '3490080923-usw67': 3
+----
+
+Notice that now the request with preference set to _experimental_ falls back to _beta_ as there is no _experimental_ version.
+
+So versions of a service are promoted without having to redeploy anything nor changing your code.
+
+[#cleanup]
+== Clean Up
+
+[source, bash]
+----
+oc delete all -l app=recommendation,version=v3
+or
+kubectl delete all -l app=recommendation,version=v3
+
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
+istioctl create -f istiofiles/virtual-service-promoted-v3.yml -n tutorial
+----

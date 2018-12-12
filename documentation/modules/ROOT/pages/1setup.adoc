@@ -29,11 +29,39 @@ You will need in this tutorial:
 ** Fedora: should also be installed already, but just in case... `dnf install curl gzip tar`
 * git
 ** `dnf install git`
+* siege
+** MAC OS: `brew install siege`
+** Fedora: `dnf install siege`
+
+
+[TIP]
+====
+If you want to validate if everything is installed at once, just open a terminal and run:
+
+`curl -sL https://git.io/_has | HAS_ALLOW_UNSAFE=y bash -s`
+
+The output should be something like:
+
+[source, bash]
+----
+✔ minishift
+✔ docker 18.09.0
+✔ oc 22
+✔ kubectl
+✔ git 2.17.2
+✔ mvn 3.5.0
+✔ curl 7.54.0
+✔ stern 1.6.0
+✔ siege 4.0.4
+----
+
+You can check quickly if you are missing any tool and decide if you want to install or not.
+====
 
 [#minishift]
 == Setup minishift
 
-Assumes `minishift`, tested with minishift v1.22.0+7163416
+In case of using Minishift you need at least minishift v1.24.0.
 
 [source,bash]
 ----
@@ -132,13 +160,13 @@ NOTE: Another option would be to add the annotation `sidecar.istio.io/inject: "t
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
 
 # Both:
-pushd istio-1.0.2
+pushd istio-1.0.3
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 popd
@@ -152,7 +180,7 @@ Now your system is prepared and we can install Istio operator
 #!/bin/bash
 
 oc new-project istio-operator
-oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.3/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"
+oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.4/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"
 ----
 
 Wait for the operator to be ready
@@ -179,24 +207,22 @@ metadata:
 spec:
   deployment_type: origin
   istio:
-    authentication: false
+    authentication: true
     community: true
     prefix: maistra/
-    version: 0.3.0
+    version: 0.4.0
   jaeger:
     prefix: jaegertracing/
     version: 1.7.0
     elasticsearch_memory: 2Gi
   kiali:
-    username: kialiadmin
-    password: kialiadmin
+    username: admin
+    password: admin
     prefix: kiali/
-    version: v0.8.1
+    version: v0.9.1
 EOF
 oc create -f /tmp/istio-cr.yaml
 ----
-
-NOTE: if you want mutual TLS enabled by default, change the parameter `authentication` to `true`.
 
 Wait for Istio's components to be ready
 
@@ -232,13 +258,13 @@ prometheus-6ffc56584f-zgbv8                   1/1       Running     0          5
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.2/istio-1.0.2-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
 
 # Both:
-cd istio-1.0.2
+cd istio-1.0.3
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 

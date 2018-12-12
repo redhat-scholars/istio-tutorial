@@ -61,6 +61,7 @@ The most insidious of possible distributed computing faults is not a "down" serv
 [source,bash,subs="+macros,+attributes"]
 ----
 istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial
 ----
 
 And hit the customer endpoint

@@ -43,7 +43,7 @@ Then, install Kiali with the following commands:
 [source, bash]
 ----
 # URLS for Jaeger and Grafana
-JAEGER_URL="https://jaeger-query-istio-system.$(minishift ip).nip.io"
+JAEGER_URL="https://tracing-istio-system.$(minishift ip).nip.io"
 GRAFANA_URL="https://grafana-istio-system.$(minishift ip).nip.io"
 VERSION_LABEL="v0.9.0"
 
