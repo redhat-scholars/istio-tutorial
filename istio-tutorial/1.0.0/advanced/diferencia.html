@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Istio for Promoting Services (Feature Graduation) :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/advanced/promotion.html">
+    <title>Diferencia and Detecting Regressions :: Istio Tutorial Docs</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/advanced/diferencia.html">
     <meta name="generator" content="Antora 1.1.1">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">  </head>
@@ -298,45 +298,45 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="diferencia.html">Diferencia and Detecting Regressions</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="diferencia.html#what-is-diferencia">What is Diferencia?</a>
+    <a class="nav-link" href="#what-is-diferencia">What is Diferencia?</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="diferencia.html#master-candidate">Setting Master Candidate</a>
+    <a class="nav-link" href="#master-candidate">Setting Master Candidate</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="diferencia.html#deploying-diferencia">Deploying Diferencia</a>
+    <a class="nav-link" href="#deploying-diferencia">Deploying Diferencia</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="diferencia.html#shadowing-traffic">Shadowing Traffic</a>
+    <a class="nav-link" href="#shadowing-traffic">Shadowing Traffic</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="diferencia.html#noise-detection">Noise Detection</a>
+    <a class="nav-link" href="#noise-detection">Noise Detection</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="diferencia.html#cleanup">Clean up</a>
+    <a class="nav-link" href="#cleanup">Clean up</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="promotion.html">Istio for Promoting Services</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#what-is-promotion">What is Promotion?</a>
+    <a class="nav-link" href="promotion.html#what-is-promotion">What is Promotion?</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#deploy-recommendation-v3">Deploy Recommendation V3</a>
+    <a class="nav-link" href="promotion.html#deploy-recommendation-v3">Deploy Recommendation V3</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#feature-graduation]">Feature Graduation</a>
+    <a class="nav-link" href="promotion.html#feature-graduation]">Feature Graduation</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#cleanup">Clean Up</a>
+    <a class="nav-link" href="promotion.html#cleanup">Clean Up</a>
   </li>
 </ul>
   </li>
@@ -443,13 +443,13 @@
   <ul>
     <li class="crumb"><a href="../index.html">Istio Tutorial</a></li>
     <li class="crumb"><a href="index.html">Advanced Istio Tutorial</a></li>
-    <li class="crumb"><a href="promotion.html">Istio for Promoting Services</a></li>
+    <li class="crumb"><a href="diferencia.html">Diferencia and Detecting Regressions</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/advanced/pages/promotion.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/advanced/pages/diferencia.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Istio for Promoting Services (Feature Graduation)</h1>
+<h1>Diferencia and Detecting Regressions</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="admonitionblock important">
@@ -461,7 +461,7 @@
 <td class="content">
 <div class="title">Before Start</div>
 <div class="paragraph">
-<p>You should have NO virtualservice, destinationrule, gateway or policy (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> <code>istioctl get gateway</code> <code>istioctl get policy</code>
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
 if so run:</p>
 </div>
 <div class="listingblock">
@@ -473,273 +473,291 @@ if so run:</p>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>In this chapter, we are going to see how to use Istio to promote a service to a more wide amount of users depending on their configuration.</p>
-</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="what-is-promotion"><a class="anchor" href="#what-is-promotion"></a>What is a Service Promotion?</h2>
+<h2 id="what-is-diferencia"><a class="anchor" href="#what-is-diferencia"></a>What is Diferencia?</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The idea behind service promotion is that you are able to promote your different versions of a service so it can be reached gradually by your public traffic.</p>
-</div>
-<div class="paragraph">
-<p>What you define is different levels where your service is promoted, and in each of this level, the service is meant to be more stable than in the previous one.
-You can think about graduating services to classes of users.</p>
-</div>
-<div class="paragraph">
-<p>There are several ways of doing it, but one way we are using in <a href="http://www.openshift.io">OpenShift IO</a> is by allowing the user to choose if he wants to try the latest deployed version of the application (experimental level) or a stable version of the application (stable level).</p>
+<p><a href="https://lordofthejars.github.io/diferencia-docs-site"><strong>Diferencia</strong></a> is designed to act as a proxy which intercepts calls to a service and multicast it to several instances of the same service.
+These instances are an old and new version of the service. Then when the response is returned from each instance, Diferencia will check if both responses are <em>similar</em>, and if it is the case, then the two implementations might be considered compatible and the new version implementation is <strong>regression-free</strong>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="_images/promotion-osio.png" alt="Features opt-in in OpenShift IO">
+<img src="_images/diferencia-simple.png" alt="Overview of Diferencia">
 </div>
 </div>
 <div class="paragraph">
-<p>This means that in the public cluster you have more than one version of the same service deployed, and the public traffic is able to reach it as well.</p>
+<p>In the previous schema, you can see that a request is multicasted to two instances of Service A, one being V1 and to other V2.
+Both return a response and then it is compared by Diferencia.
+Finally, notice that no response is returned (<em>by default</em>) but the result (in form of HTTP Status Code).</p>
 </div>
 <div class="paragraph">
-<p>So let&#8217;s see how to implement this approach using Istio.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="deploy-recommendation-v3"><a class="anchor" href="#deploy-recommendation-v3"></a>Create recommendation:v3</h2>
-<div class="sectionbody">
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>You need to be sure that you do not have a <em>recommendation:v3</em> deployed in the cluster and that <em>recommendation</em> code base is correct.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods
-or
-kubectl get pods
-
-NAME                                  READY     STATUS    RESTARTS   AGE
-customer-3600192384-fpljb             2/2       Running   0          17m
-preference-243057078-8c5hz           2/2       Running   0          15m
-recommendation-v1-60483540-9snd9     2/2       Running   0          12m
-recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To check if <em>recommendation</em> source code is correct check that <code>getNow</code> method is not active.</p>
-</div>
-<div class="listingblock">
-<div class="title">recommendation/java/vertx/src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        router.get("/").handler(this::getRecommendations);
-//        router.get("/").handler(this::getNow);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You might have a <em>recommendation:v3</em> deployed because of you did <a href="../8egress.html" class="page">Egress Section</a> ad not cleaned up the resources.</p>
-</div>
-<div class="paragraph">
-<p>If it is the case you can follow the <a href="../8egress.html#cleanup" class="page">Egress Clean Up Section</a>.</p>
-</div>
-<div class="paragraph">
-<p>If it is not the case then run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete all -l app=recommendation,version=v3
-or
-kubectl delete all -l app=recommendation,version=v3</code></pre>
-</div>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>We can experiment with Istio controlling traffic by making a change to <code>RecommendationVerticle.java</code> like the following and creating a "v3" docker image.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v3 from '%s': %d\n";</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The "v3" tag during the Docker build is significant.</p>
-</div>
-<div class="paragraph">
-<p>There is also a second <code>deployment.yml</code> file to label things correctly</p>
+<p>Since Diferencia does not return a real response, but a comparison, effectively means that it is a perfect fit for <strong>Traffic Shadowing/Mirroring</strong> technique.</p>
 </div>
 <div class="sect2">
-<h3 id="_docker_build_if_you_have_access_to_docker_daemon"><a class="anchor" href="#_docker_build_if_you_have_access_to_docker_daemon"></a>Docker build (if you have access to Docker daemon)</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx
-mvn clean package
-
-docker build -t example/recommendation:v3 .
-
-docker images | grep recommendation
-example/recommendation                  v3                  c31e399a9628        1 seconds ago      438MB
-example/recommendation                  v2                  c31e399a9628        5 seconds ago      438MB
-example/recommendation                  v1                  f072978d9cf6        8 minutes ago      438MB</code></pre>
-</div>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-We have a 3rd Deployment to manage the v3 version of recommendation.
-</td>
-</tr>
-</table>
+<h3 id="master-candidate"><a class="anchor" href="#master-candidate"></a>Selecting Master and Candidate</h3>
+<div class="paragraph">
+<p>The first thing you need to do is selecting a <strong>master</strong> service (the one you know it works) and a <strong>candidate</strong> service (the one you want to release) and create a Kubernetes service.
+For this case, <strong>master</strong> is <code>recommendation:v1</code> and <strong>candidate</strong> is <code>recommendation:v2</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
-oc get pods -w -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-master-svc.yml">diferencia/recommendation-master-svc.yml</a> -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-candidate-svc.yml">diferencia/recommendation-candidate-svc.yml</a> -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
-kubectl get pods -w -n tutorial</code></pre>
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-master-svc.yml">diferencia/recommendation-master-svc.yml</a> -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-candidate-svc.yml">diferencia/recommendation-candidate-svc.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_openshift_s2i_strategy_if_you_don_t_have_access_to_docker_daemon"><a class="anchor" href="#_openshift_s2i_strategy_if_you_don_t_have_access_to_docker_daemon"></a>OpenShift S2I strategy (if you DON&#8217;T have access to Docker daemon)</h3>
+<h3 id="deploying-diferencia"><a class="anchor" href="#deploying-diferencia"></a>Deploying Diferencia</h3>
+<div class="paragraph">
+<p>Next thing is to deploy Diferencia.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v3 --name=recommendation-v3 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v3.yml
-oc apply -f &lt;(istioctl kube-inject -f recommendation-v3.yml) -n tutorial
-oc cancel-build bc/recommendation-v3 -n tutorial
-oc delete svc/recommendation-v3 -n tutorial
-oc start-build recommendation-v3 --from-dir=. --follow -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment.yml">diferencia/Deployment.yml</a>) -n tutorial
+oc create -f diferencia/Service.yml -n tutorial
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment.yml">diferencia/Deployment.yml</a>) -n tutorial
+kubectl create -f diferencia/Service.yml -n tutorial</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_wait_for_v3_to_be_deployed"><a class="anchor" href="#_wait_for_v3_to_be_deployed"></a>Wait for v3 to be deployed</h3>
+<h3 id="shadowing-traffic"><a class="anchor" href="#shadowing-traffic"></a>Shadowing Traffic</h3>
 <div class="paragraph">
-<p>Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod.</p>
+<p>The last thing is to just start shadowing traffic between <code>recommendation:v1</code> and diferencia.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                  READY     STATUS    RESTARTS   AGE
-customer-3600192384-fpljb             2/2       Running   0          17m
-preference-243057078-8c5hz           2/2       Running   0          15m
-recommendation-v1-60483540-9snd9     2/2       Running   0          12m
-recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
-recommendation-v3-9834632434-urd34   2/2       Running   0         15s</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml">diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>and test the customer endpoint until you can see that v3 has been reached.</p>
+<p>And then you can send two requests to the application.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="feature-graduation"><a class="anchor" href="#feature-graduation"></a>Feature Graduation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>With 3 versions of service <em>recommendation</em> deployed, now we can define 3 different level of access.
-For example <em>experimental</em>, <em>beta</em> and <em>production</em>.</p>
-</div>
-<div class="paragraph">
-<p>With Istio, we can use routing for sending traffic depending on users configuration.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2-v3.yml">istiofiles/destination-rule-recommendation-v1-v2-v3.yml</a> -n tutorial
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-promotion-v1-v2-v3.yml">istiofiles/virtual-service-promotion-v1-v2-v3.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io
+customer =&gt; preference =&gt; recommendation v1 from '5f97c568c4-rkb8t': 8
+
+curl customer-tutorial.$(minishift ip).nip.io
+customer =&gt; preference =&gt; recommendation v1 from '5f97c568c4-rkb8t': 10</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now, we need to set a header named <code>user-preference</code> with some specific value:</p>
+<p>Things to notice here is that for each <code>curl</code> request, the counter is incremented by 2.
+Why? Because one request is the one sent to the user and the other one is the one consumed by diferencia.</p>
+</div>
+<div class="paragraph">
+<p>Then how do you check if there is any regression or not?
+Diferencia offers different ways:</p>
 </div>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">For version 3</dt>
+<dt class="hdlist1">logs</dt>
 <dd>
-<p><code>123</code> (<em>experimental</em>)</p>
+<p>If you start Diferencia in <code>debug</code> mode (in this example it is) then you can inspect the results of each request.</p>
 </dd>
-<dt class="hdlist1">For version 2</dt>
+<dt class="hdlist1">API</dt>
 <dd>
-<p><code>12</code> (<em>beta</em>)</p>
+<p>There is an endpoint that returns a JSON document with the stats of each request/response. <code>:8082/stats</code>.</p>
 </dd>
-<dt class="hdlist1">For version 1</dt>
+<dt class="hdlist1">Dashboard</dt>
 <dd>
-<p><em>empty</em> (<em>production</em>)</p>
+<p>There is a simple HTML dashboard to get the stats. <code>:8082/dashboard</code>.</p>
+</dd>
+<dt class="hdlist1">Prometheus</dt>
+<dd>
+<p>All statistics are exposed in Prometheus format. <code>:8081/metrics</code>.</p>
 </dd>
 </dl>
 </div>
 <div class="paragraph">
-<p>The reason behind using these approach is the next one.
-In this example, we have three levels <em>experimental</em>, <em>beta</em> and <em>production</em>, and we set a number to each level, 3 is the most unstable version while one is the most stable version.</p>
-</div>
-<div class="paragraph">
-<p>So, for example, a user that sets its preferences to <em>experimental</em> it means that he needs to reach <em>experimental</em> or if no <em>eperimental</em> then <em>_beta</em> or by default <em>production</em>.
-This effectively means setting that he wants to reach all levels <code>123</code>.
-And the same applies to any other level defined by the user.</p>
+<p>Check the logs of Diferencia.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "user-preference: 123" customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; recommendation v3 from '6953441398-tyw25': 1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods|grep recommendation-diferencia|awk '{ print $1 }'` -c recommendation-diferencia
 
-curl -H "user-preference: 12" customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; recommendation v2 from '3490080923-usw67': 2
+or
+
+kubectl logs -f `kubectl get pods|grep recommendation-diferencia|awk '{ print $1 }'` -c recommendation-diferencia</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And you&#8217;ll see:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">time="2018-11-14T12:07:43Z" level=debug msg="URL / is going to be processed"
+time="2018-11-14T12:07:43Z" level=debug msg="Forwarding call to http://recommendation-master:8080/"
+time="2018-11-14T12:07:43Z" level=debug msg="Forwarding call to http://recommendation-candidate:8080/"
+time="2018-11-14T12:07:43Z" level=debug msg="Forwarding call to http://recommendation-master:8080/"
+time="2018-11-14T12:07:43Z" level=debug msg="Result of comparing http://recommendation-master:8080/ and http://recommendation-candidate:8080/ is false"
+time="2018-11-14T12:07:50Z" level=debug msg="URL / is going to be processed"
+time="2018-11-14T12:07:50Z" level=debug msg="Forwarding call to http://recommendation-master:8080/"
+time="2018-11-14T12:07:50Z" level=debug msg="Forwarding call to http://recommendation-candidate:8080/"
+time="2018-11-14T12:07:50Z" level=debug msg="Forwarding call to http://recommendation-master:8080/"
+time="2018-11-14T12:07:50Z" level=debug msg="Result of comparing http://recommendation-master:8080/ and http://recommendation-candidate:8080/ is false"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And notice that in both cases the response is <code>false</code>.
+This means that recommendation v1 and recommendation v2 are not compatible.
+The reason of that is because of both responses are not equal (<code>recommendation v1 from '5f97c568c4-rkb8t': 8</code>, <code>recommendation v2 from '5f97cab34c4-r348t': 12</code>).</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+This example uses a text comparison which is fine for this case but not in a real use case. Diferencia is built to work perfectly fine in different scenarios where JSON is the content type. You can read more about how Diferencia works when content is JSON <a href="https://lordofthejars.github.io/diferencia-docs-site/diferencia/0.4.0/run-diferencia.html#modes">here</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="noise-detection"><a class="anchor" href="#noise-detection"></a>Noise Detection</h3>
+<div class="paragraph">
+<p>Notice that in the previous example we could agree that if <code>recommendation</code> was present, we could say that both services are compatible and they are regression-free.</p>
+</div>
+<div class="paragraph">
+<p>To not make a simple comparision but something a bit more error-prone, Diferencia implements a <a href="https://lordofthejars.github.io/diferencia-docs-site/diferencia/0.4.1/run-diferencia.html#noise">Noise cancellation</a> approach to remove these parts that are dynamic (for example the hostname).</p>
+</div>
+<div class="paragraph">
+<p>And it works like:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/diferencia-noise.png" alt="Noise Cancellation">
+</div>
+</div>
+<div class="paragraph">
+<p>This algorithm sends the request to not two instances but three. Two are the old instances (primary and secondary) and one to the new instance (candidate).</p>
+</div>
+<div class="paragraph">
+<p>The request to primary and secondary returns a valid request (since old instances are the correct ones), then from their responses, Diferencia checks for the differences between both responses.</p>
+</div>
+<div class="paragraph">
+<p>Since both responses are valid (because the source is the same but different instances), the differences that are between them are just noise that should not take into consideration for response validation.</p>
+</div>
+<div class="paragraph">
+<p>Then detected noise is removed from primary and candidate response, and they are compared, if they are equal, then you know that everything is fine.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Of course this is a simple example but in case of the JSON is where noise cancellation is really useful, for example for skipping fields such as time, random numbers, &#8230;&#8203;
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_removes_old_diferencia_instance"><a class="anchor" href="#_removes_old_diferencia_instance"></a>Removes Old Diferencia instance</h4>
+<div class="paragraph">
+<p>Let&#8217;s remove Diferencia and mirroring.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete deployments recommendation-diferencia
+or
+kubectl delete deployments recommendation-diferencia
+
+istioctl delete -f diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml -n tutorial</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_deploy_diferencia_with_noise_cancellation"><a class="anchor" href="#_deploy_diferencia_with_noise_cancellation"></a>Deploy Diferencia with Noise Cancellation</h4>
+<div class="paragraph">
+<p>Then let&#8217;s add Diferencia with noise cancellation enabled:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment-noise-detection.yml">diferencia/Deployment-noise-detection.yml</a>) -n tutorial
+oc create -f diferencia/Service.yml -n tutorial
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment-noise-detection.yml">diferencia/Deployment-noise-detection.yml</a>) -n tutorial
+kubectl create -f diferencia/Service.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then let&#8217;s enable mirroring again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml">diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then you can send two requests to the application.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io
+customer =&gt; preference =&gt; recommendation v1 from '5f97c568c4-rkb8t': 11
 
 curl customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; recommendation v1 from '9834514598-knc40': 10</code></pre>
+customer =&gt; preference =&gt; recommendation v1 from '5f97c568c4-rkb8t': 14</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>One interesting point here is that if you open <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-promotion-v1-v2-v3.yml">istiofiles/virtual-service-promotion-v1-v2-v3.yml</a> you&#8217;ll see that the header is set to <code>baggage-user-preference</code> meanwhile in <code>curl</code> it is set to <code>user-preference</code>.</p>
+<p>Things to notice here is that for each <code>curl</code> request, the counter is incremented by 3.
+Why? Because one request is the one sent to the user and the other one is the one consumed by diferencia as <em>primary</em> and <em>seconday</em>.</p>
 </div>
 <div class="paragraph">
-<p>The reason is that in <em>customer</em> service (<a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/master/customer/java/springboot/src/main/java/com/redhat/developer/demos/customer/CustomerController.java#L35">CustomerController.java</a>), <code>io.opentracing.Tracer</code> class is used to set as baggage item the <code>user-preference</code> header.
-In this way, the header is populated across all services without having to copy it manually in each service, since by default headers are not populated automatically.</p>
-</div>
-<div class="paragraph">
-<p>Now let&#8217;s make a promotion of the versions, so <em>version 1</em> is not reachable anymore, <em>version 2</em> is the new <em>production</em> and <em>version 3</em> is the new <em>beta</em>.</p>
+<p>Now if you check the logs of Diferencia, you should see something like:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-promoted-v3.yml">istiofiles/virtual-service-promoted-v3.yml</a> -n tutorial</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "user-preference: 123" customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; recommendation v3 from '6953441398-tyw25': 2
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods|grep recommendation-diferencia|awk '{ print $1 }'` -c recommendation-diferencia
 
-curl -H "user-preference: 12" customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; recommendation v3 from '6953441398-tyw25': 3
+or
 
-curl customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; recommendation v2 from '3490080923-usw67': 3</code></pre>
+kubectl logs -f `kubectl get pods|grep recommendation-diferencia|awk '{ print $1 }'` -c recommendation-diferencia
+
+time="2018-11-16T08:57:33Z" level=debug msg="URL / is going to be processed"
+time="2018-11-16T08:57:33Z" level=debug msg="Forwarding call to http://recommendation-master:8080/"
+time="2018-11-16T08:57:33Z" level=debug msg="Forwarding call to http://recommendation-candidate:8080/"
+time="2018-11-16T08:57:33Z" level=debug msg="Forwarding call to http://recommendation-master:8080/"
+time="2018-11-16T08:57:33Z" level=debug msg="Result of comparing http://recommendation-master:8080/ and http://recommendation-candidate:8080/ is true"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Notice that now the request with preference set to <em>experimental</em> falls back to <em>beta</em> as there is no <em>experimental</em> version.</p>
+<p>Notice that now the result is <code>true</code> meaning that both services are equivalent.</p>
 </div>
-<div class="paragraph">
-<p>So versions of a service are promoted without having to redeploy anything nor changing your code.</p>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+This is a simple example using text plain, but <a href="https://lordofthejars.github.io/diferencia-docs-site"><strong>Diferencia</strong></a> is really useful when the output is a JSON format where there can be incompatibilities.
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -748,12 +766,20 @@ customer =&gt; preference =&gt; recommendation v2 from '3490080923-usw67': 3</co
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete all -l app=recommendation,version=v3
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete deployments recommendation-diferencia
 or
-kubectl delete all -l app=recommendation,version=v3
+kubectl delete deployments recommendation-diferencia
 
-istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
-istioctl create -f istiofiles/virtual-service-promoted-v3.yml -n tutorial</code></pre>
+oc delete service recommendation-candidate
+or
+kubectl delete service recommendation-candidate
+
+
+oc delete service recommendation-master
+or
+kubectl delete service recommendation-master
+
+istioctl delete -f diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml -n tutorial</code></pre>
 </div>
 </div>
 </div>
