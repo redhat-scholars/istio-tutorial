@@ -1,0 +1,54 @@
+apiVersion: "config.istio.io/v1alpha2"
+kind: denier
+metadata:
+  name: do-not-pass-go
+spec:
+  status:
+    code: 7
+    message: Customer -> Preference -> Recommendation ONLY
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: checknothing
+metadata:
+  name: just-stop
+spec:
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: no-customer-to-recommendation
+spec:
+  match: source.labels["app"]=="customer" && destination.labels["app"] == "recommendation" 
+  actions:
+  - handler: do-not-pass-go.denier
+    instances: [ just-stop.checknothing ]
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: no-preference-to-customer
+spec:
+  match: source.labels["app"]=="preference" && destination.labels["app"] == "customer" 
+  actions:
+  - handler: do-not-pass-go.denier
+    instances: [ just-stop.checknothing ]
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: no-recommendation-to-customer
+spec:
+  match: source.labels["app"]=="recommendation" && destination.labels["app"] == "customer"
+  actions:
+  - handler: do-not-pass-go.denier
+    instances: [ just-stop.checknothing ]
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: no-recommendation-to-preference
+spec:
+  match: source.labels["app"]=="recommendation" && destination.labels["app"] == "preference"
+  actions:
+  - handler: do-not-pass-go.denier
+    instances: [ just-stop.checknothing ]
