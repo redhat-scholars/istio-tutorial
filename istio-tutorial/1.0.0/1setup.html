@@ -784,7 +784,7 @@ istio-operator-58c45d8f64-jdsrz   1/1       Running   0          10s</code></pre
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 oc project istio-operator
-cat &lt;&lt;EOF &gt;&gt;/tmp/istio-cr.yaml
+cat &lt;&lt;EOF &gt;/tmp/istio-cr.yaml
 apiVersion: "istio.openshift.com/v1alpha1"
 kind: "Installation"
 metadata:
@@ -792,7 +792,7 @@ metadata:
 spec:
   deployment_type: origin
   istio:
-    authentication: true
+    authentication: false
     community: true
     prefix: maistra/
     version: 0.4.0
