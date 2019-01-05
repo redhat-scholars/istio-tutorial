@@ -32,10 +32,10 @@ spec:
           httpGet:
             path: /auth/realms/master
             port: 8080
-            failureThreshold: 10
-            initialDelaySeconds: 30
+          failureThreshold: 10
+          initialDelaySeconds: 30
         livenessProbe:
           httpGet:
             path: /auth/realms/master
             port: 8080
-            initialDelaySeconds: 60
+          initialDelaySeconds: 60
