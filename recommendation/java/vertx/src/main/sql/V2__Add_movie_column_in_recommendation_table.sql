@@ -1,0 +1,1 @@
+ALTER TABLE recommendation ADD movie_name varchar(100);
