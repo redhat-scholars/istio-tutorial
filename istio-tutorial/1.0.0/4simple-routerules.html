@@ -342,6 +342,36 @@
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
+    <a class="nav-link" href="advanced/zero-downtime-database.html">Zero Downtime Migration with Database</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Starting the Migration</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="advanced/zero-downtime-database.html#recommendationv4">Deploy Recommendation V4</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="advanced/zero-downtime-database.html#recommendationv5">Deploy Recommendation V5</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="advanced/zero-downtime-database.html#recommendationv6">Deploy Recommendation V6</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="advanced/zero-downtime-database.html#recommendationv7">Deploy Recommendation V7</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="advanced/zero-downtime-database.html#finalstep">Final Step</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="advanced/zero-downtime-database.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -501,12 +531,12 @@ We have a 2nd Deployment to manage the v2 version of recommendation.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
 kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
