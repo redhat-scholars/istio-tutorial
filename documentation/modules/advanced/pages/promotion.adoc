@@ -105,12 +105,12 @@ IMPORTANT: We have a 3rd Deployment to manage the v3 version of recommendation.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
 kubectl get pods -w -n tutorial
 ----
 
