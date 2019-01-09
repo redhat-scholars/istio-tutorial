@@ -33,9 +33,6 @@
 **** xref:4advanced-routerules.adoc#mobiletov2[All Mobile Users To Recommendation V2]
 *** xref:4advanced-routerules.adoc#mirroringtraffic[Mirroring Traffic]
 *** xref:4advanced-routerules.adoc#loadbalancer[Load Balancer]
-*** xref:4egress.adoc[Egress]
-**** xref:4egress.adoc#createrecommendationv3[Create Recommendation V3]
-**** xref:4egress.adoc#istioegress[Istio-ize Egress]
 
 * xref:5circuit-breaker.adoc[5. Service Resiliency]
 ** xref:5circuit-breaker.adoc#failfast[Fail Fast]
@@ -57,6 +54,9 @@
 ** xref:7policy.adoc#ratelimiting[Rate Limiting]
 
 * 8. Security
+** xref:8egress.adoc[Egress]
+*** xref:8egress.adoc#createrecommendationv3[Create Recommendation V3]
+*** xref:8egress.adoc#istioegress[Istio-ize Egress]
 ** xref:8acl.adoc[Access Control List]
 *** xref:8acl.adoc#whitelist[White List]
 *** xref:8acl.adoc#blacklist[Black List]
