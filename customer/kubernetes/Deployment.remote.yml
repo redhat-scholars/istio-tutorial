@@ -21,7 +21,7 @@ spec:
       - env:
         - name: JAVA_OPTIONS
           value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
-        image: quay.io/rhdevelopers/istio-tutorial-customer:latest
+        image: quay.io/rhdevelopers/istio-tutorial-customer:v1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
