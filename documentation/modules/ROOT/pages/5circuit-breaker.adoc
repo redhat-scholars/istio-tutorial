@@ -1,4 +1,4 @@
-= Circuit Breaker
+= Service Resiliency
 include::_attributes.adoc[]
 
 [IMPORTANT]

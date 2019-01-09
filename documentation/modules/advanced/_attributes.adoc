@@ -1,2 +1,0 @@
-:imagesdir: {moduledir}/assets/images
-:source-highlighter: highlightjs

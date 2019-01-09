@@ -161,7 +161,7 @@ In this chapter you've seen how to enable end-user authentication with JWT.
 
 Obviously, you should also enable mTLS to avoid any attacker could take the token.
 
-Check xref:mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
+Check xref:8mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
 ====
 
 [#cleanup]

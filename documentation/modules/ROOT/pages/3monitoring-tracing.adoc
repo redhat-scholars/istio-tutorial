@@ -1,4 +1,4 @@
-= Monitoring and Tracing
+= Observability
 include::_attributes.adoc[]
 
 [#monitoring]
