@@ -35,6 +35,8 @@
 *** xref:4advanced-routerules.adoc#loadbalancer[Load Balancer]
 
 * xref:5circuit-breaker.adoc[5. Service Resiliency]
+** xref:5circuit-breaker.adoc#retry[Retry]
+** xref:5circuit-breaker.adoc#timeout[Timeout]
 ** xref:5circuit-breaker.adoc#failfast[Fail Fast]
 *** xref:5circuit-breaker.adoc#nocircuitbreaker[No Circuit Breaker]
 *** xref:5circuit-breaker.adoc#circuitbreaker[Circuit Breaker]
