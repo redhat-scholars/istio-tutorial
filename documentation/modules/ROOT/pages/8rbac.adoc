@@ -112,7 +112,7 @@ But one that it is really interesting is its integration with JWT.
 
 In this section, you'll learn how to use a JWT claim to manage the access to the services.
 
-The first thing you need to do is applying all the steps described at xref:jwt.adoc[End-user authentication with JWT] section so you enable JWT authentication logic inside the mesh.
+The first thing you need to do is applying all the steps described at xref:8jwt.adoc[End-user authentication with JWT] section so you enable JWT authentication logic inside the mesh.
 
 After that, you are ready to use JWT in the authorization phase as well.
 
@@ -138,7 +138,7 @@ customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ====
 Remember to have a valid token at `token` variable.
 
-To generate it you need to follow the steps defined at xref:jwt.adoc[End-user authentication with JWT] to install Keycloak and then execute next command changing the IP to your location:
+To generate it you need to follow the steps defined at xref:8jwt.adoc[End-user authentication with JWT] to install Keycloak and then execute next command changing the IP to your location:
 
 [source, bash]
 ----
@@ -189,7 +189,7 @@ But notice that now the access is denied because the `preferred_username` field 
 In this chapter you've seen how to RBAC.
 Obviously, you should also enable mTLS to authenticate also your requests.
 
-Check xref:mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
+Check xref:8mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
 
 In section <<Authorization and JWT>>, you used the `preferred_username` field for the sake of simplicity, but of course any other field can be used.
 In another case, you might want to use the `group` field of JWT so instead of using a `username` field which affects only one user, it affects the group of users that defines this field.
@@ -197,7 +197,7 @@ In another case, you might want to use the `group` field of JWT so instead of us
 [#cleanup]
 == Clean Up
 
-Follow xref:jwt.adoc#cleanup[End-user authentication with JWT Clean Up] steps there to clean all JWT stuff and then call:
+Follow xref:8jwt.adoc#cleanup[End-user authentication with JWT Clean Up] steps there to clean all JWT stuff and then call:
 
 [source, bash]
 ----

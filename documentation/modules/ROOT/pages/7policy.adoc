@@ -1,0 +1,80 @@
+= Policy
+include::_attributes.adoc[]
+
+[IMPORTANT]
+.Before Start
+====
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+if so run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----
+====
+
+[#ratelimiting]
+== Rate Limiting
+
+IMPORTANT: The Rate Limiting rules take some time to be applied and reflected. Be patient here!
+
+Here we will limit the number of concurrent requests into recommendation v2
+
+Now apply the rate limit handler
+
+[source,bash,subs="+macros,+attributes"]
+----
+istioctl create -f link:{github-repo}/{istiofiles-dir}/recommendation_rate_limit_handler.yml[istiofiles/recommendation_rate_limit_handler.yml]
+----
+
+Now setup the requestcount quota
+
+[source,bash,subs="+macros,+attributes"]
+----
+istioctl create -f link:{github-repo}/{istiofiles-dir}/rate_limit_rule.yml[istiofiles/rate_limit_rule.yml]
+----
+
+Throw some requests at customer:
+
+[source, bash]
+----
+./scripts/run.sh
+----
+
+You should see some 429 errors:
+
+[source,bash]
+----
+customer => preference => recommendation v2 from '2819441432-f4ls5': 108
+customer => preference => recommendation v1 from '99634814-d2z2t': 1932
+customer => preference => recommendation v2 from '2819441432-f4ls5': 109
+customer => preference => recommendation v1 from '99634814-d2z2t': 1933
+customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
+customer => preference => recommendation v1 from '99634814-d2z2t': 1934
+customer => preference => recommendation v2 from '2819441432-f4ls5': 110
+customer => preference => recommendation v1 from '99634814-d2z2t': 1935
+customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
+customer => preference => recommendation v1 from '99634814-d2z2t': 1936
+customer => preference => recommendation v2 from '2819441432-f4ls5': 111
+customer => preference => recommendation v1 from '99634814-d2z2t': 1937
+customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
+customer => preference => recommendation v1 from '99634814-d2z2t': 1938
+customer => preference => recommendation v2 from '2819441432-f4ls5': 112
+----
+
+=== Clean up
+
+[source,bash]
+----
+istioctl delete -f istiofiles/rate_limit_rule.yml
+
+istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
+----
+
+or you can run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----
+

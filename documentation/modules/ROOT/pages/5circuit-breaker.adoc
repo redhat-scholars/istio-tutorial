@@ -1,4 +1,4 @@
-= Circuit Breaker
+= Service Resiliency
 include::_attributes.adoc[]
 
 [IMPORTANT]
@@ -12,6 +12,258 @@ if so run:
 ./scripts/clean.sh
 ----
 ====
+
+[#retry]
+== Retry
+
+Instead of failing immediately, retry the Service N more times
+
+We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:
+
+[source,bash]
+----
+oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+----
+
+You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
+
+[source,bash]
+----
+curl localhost:8080/misbehave
+exit
+----
+
+This is a special endpoint that will make our application return only `503`s.
+
+Now, if you hit the customer endpoint several times, you should see some 503's
+
+[source,bash]
+----
+./scripts/run.sh
+
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 864
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 865
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 866
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 867
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 868
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 869
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+----
+
+Now add the retry rule
+
+[source,bash,subs="+macros,+attributes"]
+----
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2_retry.yml[istiofiles/virtual-service-recommendation-v2_retry.yml] -n tutorial
+----
+
+You will see it work every time because Istio will retry the recommendation service and it will land on v1 only.
+
+[source,bash]
+----
+./scripts/run.sh
+
+customer => preference => recommendation v1 from '2036617847-m9glz': 196
+customer => preference => recommendation v1 from '2036617847-m9glz': 197
+customer => preference => recommendation v1 from '2036617847-m9glz': 198
+----
+
+You can see the active Virtual Services via
+
+[source,bash]
+----
+istioctl get virtualservices -n tutorial
+----
+
+Now, delete the retry rule and see the old behavior, where v2 throws 503s
+
+[source,bash]
+----
+istioctl delete virtualservice recommendation -n tutorial
+
+./scripts/run.sh
+
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1118
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1119
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1120
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1121
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1122
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1123
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1124
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1125
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1126
+customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
+----
+
+Now, make the pod v2 behave well again
+
+[source,bash]
+----
+oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+----
+
+You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
+
+[source,bash]
+----
+curl localhost:8080/behave
+exit
+----
+
+The application is back to random load-balancing between v1 and v2
+
+[source,bash]
+----
+./scripts/run.sh
+
+customer => preference => recommendation v1 from '2039379827-h58vw': 129
+customer => preference => recommendation v2 from '2036617847-m9glz': 207
+customer => preference => recommendation v1 from '2039379827-h58vw': 130
+----
+
+[#timeout]
+== Timeout
+
+Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `istioctl get virtualservice` `istioctl get destinationrule` and if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
+
+First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationVerticle.java` making it a slow performer with a 3 second delay.
+
+[source,java]
+----
+@Override
+public void start() throws Exception {
+    Router router = Router.router(vertx);
+    router.get("/").handler(this::logging);
+    router.get("/").handler(this::timeout);
+    router.get("/").handler(this::getRecommendations);
+    router.get("/misbehave").handler(this::misbehave);
+    router.get("/behave").handler(this::behave);
+
+    HealthCheckHandler hc = HealthCheckHandler.create(vertx);
+    hc.register("dummy-health-check", future -> future.complete(Status.OK()));
+    router.get("/health").handler(hc);
+
+    vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+}
+----
+
+Rebuild and redeploy
+
+[source,bash]
+----
+cd recommendation/java/vertx
+
+mvn clean package
+
+docker build -t example/recommendation:v2 .
+
+docker images | grep recommendation
+
+oc delete pod -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..
+----
+
+Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond
+
+[source,bash]
+----
+./scripts/run.sh
+----
+
+Then add the timeout rule
+
+[source,bash,subs="+macros,+attributes"]
+----
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial
+----
+
+You will see it return v1 OR "upstream request timeout" after waiting about 1 second
+
+[source,bash]
+----
+./scripts/run.sh
+
+customer => 503 preference => 504 upstream request timeout
+curl customer-tutorial.$(minishift ip).nip.io
+customer => preference => recommendation v1 from '2039379827-h58vw': 210
+curl customer-tutorial.$(minishift ip).nip.io
+customer => 503 preference => 504 upstream request timeout
+curl customer-tutorial.$(minishift ip).nip.io
+----
+
+=== Clean up
+
+First, let's comment the `timeout()` method again on `recommendation v2`.
+
+[source,java]
+----
+@Override
+public void start() throws Exception {
+    Router router = Router.router(vertx);
+    router.get("/").handler(this::logging);
+    // router.get("/").handler(this::timeout);
+    router.get("/").handler(this::getRecommendations);
+    router.get("/misbehave").handler(this::misbehave);
+    router.get("/behave").handler(this::behave);
+
+    HealthCheckHandler hc = HealthCheckHandler.create(vertx);
+    hc.register("dummy-health-check", future -> future.complete(Status.OK()));
+    router.get("/health").handler(hc);
+
+    vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+}
+----
+
+And rebuild and redeploy the service again:
+
+[source,bash]
+----
+cd recommendation/java/vertx
+
+mvn clean package
+
+docker build -t example/recommendation:v2 .
+
+docker images | grep recommendation
+
+oc delete pod -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..
+----
+
+Then delete the virtual service created for timeout by:
+
+[source,bash]
+----
+istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial
+----
+
+or you can run:
+
+[source, bash]
+----
+./scripts/clean.sh
+----
 
 [#failfast]
 == Fail Fast with Max Connections and Max Pending Requests
@@ -80,7 +332,7 @@ image:siege_cb_503.png[siege output with some 503 requests due to open circuit b
 
 You can run siege multiple times, but in all of the executions you should see some `503` errors being displayed in the results. That's the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the instance/pod.
 
-Clean up
+==== Clean up
 
 [source,bash]
 ----
@@ -350,7 +602,7 @@ customer => preference => recommendation v1 from '2039379827-jmm6x': 554
 
 Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the console, thanks to pool ejection and retry.
 
-Clean up
+=== Clean up
 
 [source,bash]
 ----
