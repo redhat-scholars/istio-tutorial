@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tips :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/9tips.html">
+    <title>Advanced Route Rules :: Istio Tutorial Docs</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/4advanced-routerules.html">
     <meta name="generator" content="Antora 1.1.1">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
@@ -138,30 +138,30 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="4advanced-routerules.html">Advanced Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="4advanced-routerules.html#canarydeploymentuseragent">Canary Deployment based on user-agent</a>
+    <a class="nav-link" href="#canarydeploymentuseragent">Canary Deployment based on user-agent</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
-    <a class="nav-link" href="4advanced-routerules.html#alltorecommendationv1">All Users To Recommendation V1</a>
+    <a class="nav-link" href="#alltorecommendationv1">All Users To Recommendation V1</a>
   </li>
   <li class="nav-item" data-depth="4">
-    <a class="nav-link" href="4advanced-routerules.html#safaritov2">All Safari Users To Recommendation V2</a>
+    <a class="nav-link" href="#safaritov2">All Safari Users To Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="4">
-    <a class="nav-link" href="4advanced-routerules.html#mobiletov2">All Mobile Users To Recommendation V2</a>
+    <a class="nav-link" href="#mobiletov2">All Mobile Users To Recommendation V2</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4advanced-routerules.html#mirroringtraffic">Mirroring Traffic</a>
+    <a class="nav-link" href="#mirroringtraffic">Mirroring Traffic</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4advanced-routerules.html#loadbalancer">Load Balancer</a>
+    <a class="nav-link" href="#loadbalancer">Load Balancer</a>
   </li>
 </ul>
   </li>
@@ -317,7 +317,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <a class="nav-link" href="9tips.html">10. Tips And Tricks</a>
   </li>
 </ul>
@@ -496,293 +496,334 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="9tips.html">10. Tips And Tricks</a></li>
+    <li class="crumb">4. Traffic Control</li>
+    <li class="crumb"><a href="4advanced-routerules.html">Advanced Routing</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/9tips.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/4advanced-routerules.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Tips</h1>
+<h1>Advanced Route Rules</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Before Start</div>
 <div class="paragraph">
-<p>Some tips and tricks that you might find handy</p>
-</div>
-<div class="paragraph">
-<p>You have two containers in a pod</p>
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="canarydeploymentuseragent"><a class="anchor" href="#canarydeploymentuseragent"></a>Smart routing based on user-agent header (Canary Deployment)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>What is your user-agent?</p>
+</div>
+<div class="paragraph">
+<p><a href="https://www.whoishostingthis.com/tools/user-agent/">https://www.whoishostingthis.com/tools/user-agent/</a></p>
+</div>
+<div class="paragraph">
+<p>Note: the "user-agent" header is added to OpenTracing baggage in the Customer service. From
+there it is automatically propagated to all downstream services. To enable automatic
+baggage propagation all intermediate services have to be instrumented with OpenTracing.
+The baggage header for user agent has following form <code>baggage-user-agent: &lt;value&gt;</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="alltorecommendationv1"><a class="anchor" href="#alltorecommendationv1"></a>Set recommendation to all v1</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1.yml">istiofiles/virtual-service-recommendation-v1.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="safaritov2"><a class="anchor" href="#safaritov2"></a>Set Safari users to v2</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-safari-recommendation-v2.yml">istiofiles/virtual-service-safari-recommendation-v2.yml</a> -n tutorial
+
+istioctl get virtualservice -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and test with a Safari (or even Chrome on Mac since it includes Safari in the string). Safari only sees v2 responses from recommendation</p>
+</div>
+<div class="paragraph">
+<p>and test with a Firefox browser, it should only see v1 responses from recommendation.</p>
+</div>
+<div class="paragraph">
+<p>There are two ways to get the URL for your browser:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minishift openshift service customer --in-browser</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That will open the openshift service <code>customer</code> in browser</p>
+</div>
+<div class="paragraph">
+<p>Or</p>
+</div>
+<div class="paragraph">
+<p>if you need just the url alone:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minishift openshift service customer --url
+http://customer-tutorial.192.168.99.102.nip.io</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also attempt to use the curl -A command to test with different user-agent strings.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -A Safari customer-tutorial.$(minishift ip).nip.io
+curl -A Firefox customer-tutorial.$(minishift ip).nip.io</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can describe the virtualservice to see its configuration</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl get virtualservice -o yaml -n tutorial</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_remove_the_safari_rule"><a class="anchor" href="#_remove_the_safari_rule"></a>Remove the Safari rule</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="mobiletov2"><a class="anchor" href="#mobiletov2"></a>Set mobile users to v2</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-mobile-recommendation-v2.yml">istiofiles/virtual-service-mobile-recommendation-v2.yml</a> -n tutorial
+
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" customer-tutorial.$(minishift ip).nip.io</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean up</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="mirroringtraffic"><a class="anchor" href="#mirroringtraffic"></a>Mirroring Traffic (Dark Launch)</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -l app=recommendation -n tutorial
 or
-kubectl get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial</code></pre>
+kubectl get pods -l app=recommendation -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>From these images</p>
+<p>You should have 2 pods for recommendation based on the steps above</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl get virtualservice -n tutorial
+istioctl get destinationrule</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
+if so run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure you are in the main directory of "istio-tutorial"</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml">istiofiles/virtual-service-recommendation-v1-mirror-v2.yml</a> -n tutorial
+
+curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check the logs of recommendation-v2</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation
 or
-kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial</code></pre>
+kubectl logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recommendation</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_clean_up_2"><a class="anchor" href="#_clean_up_2"></a>Clean up</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Get the pod ids</p>
+<p>or you can run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
-PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
-RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
-RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="loadbalancer"><a class="anchor" href="#loadbalancer"></a>Load Balancer</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, you will see "round-robin" style load-balancing, but you can change it up, with the RANDOM option being fairly visible to the naked eye.</p>
+</div>
+<div class="paragraph">
+<p>Add another v2 pod to the mix</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale deployment recommendation-v2 --replicas=2 -n tutorial
+or
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait a bit (oc get pods -w to watch)
+and curl the customer endpoint many times</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add a 3rd v2 pod to the mix</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial
+$ oc get pods -n tutorial
 
 or
 
-CPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
-PPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
-RPOD1=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
-RPOD2=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The pods all see each other&#8217;s services</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://preference:8080
-oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
-oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
+$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial
+$ kubectl get pods -n tutorial
 
-or
 
-kubectl exec $CPOD -c customer -n tutorial curl http://preference:8080
-kubectl exec $CPOD -c customer -n tutorial curl http://recommendation:8080
-kubectl exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json
-or
-kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json</code></pre>
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-1755156816-cjd2z             2/2       Running   0          1h
+preference-3336288630-2cc6f          2/2       Running   0          1h
+recommendation-v1-3719512284-bn42p   2/2       Running   0          59m
+recommendation-v2-2815683430-97nnf   2/2       Running   0          43m
+recommendation-v2-2815683430-d49n6   2/2       Running   0          51m
+recommendation-v2-2815683430-tptf2   2/2       Running   0          33m</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Look for <code>route_config</code>, containing <code>"name": "8080"</code> and you should see entries for customer, preference and recommendation</p>
+<p>Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"virtualHosts": [
-      {
-       "name": "customer.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "customer.tutorial.svc.cluster.local",
-        "customer.tutorial.svc.cluster.local:8080",
-        "customer",
-        "customer:8080",
-        "customer.tutorial.svc.cluster",
-        "customer.tutorial.svc.cluster:8080",
-        "customer.tutorial.svc",
-        "customer.tutorial.svc:8080",
-        "customer.tutorial",
-        "customer.tutorial:8080",
-        "172.30.107.115",
-        "172.30.107.115:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||customer.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "istio-pilot.istio-system.svc.cluster.local:8080",
-       "domains": [
-        "istio-pilot.istio-system.svc.cluster.local",
-        "istio-pilot.istio-system.svc.cluster.local:8080",
-        "istio-pilot.istio-system",
-        "istio-pilot.istio-system:8080",
-        "istio-pilot.istio-system.svc.cluster",
-        "istio-pilot.istio-system.svc.cluster:8080",
-        "istio-pilot.istio-system.svc",
-        "istio-pilot.istio-system.svc:8080",
-        "172.30.142.41",
-        "172.30.142.41:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||istio-pilot.istio-system.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "preference.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "preference.tutorial.svc.cluster.local",
-        "preference.tutorial.svc.cluster.local:8080",
-        "preference",
-        "preference:8080",
-        "preference.tutorial.svc.cluster",
-        "preference.tutorial.svc.cluster:8080",
-        "preference.tutorial.svc",
-        "preference.tutorial.svc:8080",
-        "preference.tutorial",
-        "preference.tutorial:8080",
-        "172.30.26.194",
-        "172.30.26.194:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||preference.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "recommendation.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "recommendation.tutorial.svc.cluster.local",
-        "recommendation.tutorial.svc.cluster.local:8080",
-        "recommendation",
-        "recommendation:8080",
-        "recommendation.tutorial.svc.cluster",
-        "recommendation.tutorial.svc.cluster:8080",
-        "recommendation.tutorial.svc",
-        "recommendation.tutorial.svc:8080",
-        "recommendation.tutorial",
-        "recommendation.tutorial:8080",
-        "172.30.103.127",
-        "172.30.103.127:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||recommendation.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      }
-     ],</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now add a new <code>destinationrule</code> and <code>virtualservice</code>.</p>
+<p>The results should follow a fairly normal round-robin distribution pattern</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a>
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1145
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-525lh': 1
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 2
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-bs5ck': 181
+customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1146
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 3
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 4
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-bs5ck': 182</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The review the routes again</p>
+<p>Now, add the Random LB DestinationPolicy</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json
-or
-kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation_lb_policy_app.yml">istiofiles/destination-rule-recommendation_lb_policy_app.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Here is the Before:</p>
+<p>And you should see a different pattern of which pod is being selected</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"route": {
-				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 10
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-525lh': 3
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 11
+customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1153
+customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1154
+customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1155
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 12
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-525lh': 4
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-525lh': 5
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 13
+customer =&gt; preference =&gt; recommendation v2 from '2819441432-rg45q': 14</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>and</p>
-</div>
+<div class="sect2">
+<h3 id="_clean_up_3"><a class="anchor" href="#_clean_up_3"></a>Clean up</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"decorator": {
-				"operation": "default-route"
-			}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And the After:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"route": {
-          		"cluster": "outbound|8080|version-v2|recommendation.tutorial.svc.cluster.local",
-          	},</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>and</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"decorator": {
-          		"operation": "recommendation"
-         	}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you need the Pod IP</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
-or
-kubectl get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Dive into the istio-proxy container</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
-or
-kubectl exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial
 
-cd /etc/istio/proxy
-ls
-cat envoy-rev0.json</code></pre>
+oc scale deployment recommendation-v2 --replicas=1 -n tutorial
+or
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Snowdrop Troubleshooting</p>
 </div>
-<div class="paragraph">
-<p><a href="https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md">https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md</a></p>
+</div>
 </div>
 </article>
   </main>

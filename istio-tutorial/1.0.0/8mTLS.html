@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tips :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/9tips.html">
+    <title>Mutual TLS and Istio :: Istio Tutorial Docs</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/8mTLS.html">
     <meta name="generator" content="Antora 1.1.1">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
@@ -264,18 +264,18 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
+    <a class="nav-link" href="#preparation">Preparation</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
+    <a class="nav-link" href="#enablingtls">Enabling TLS</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="#restore">Restore Environment</a>
   </li>
 </ul>
   </li>
@@ -317,7 +317,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <a class="nav-link" href="9tips.html">10. Tips And Tricks</a>
   </li>
 </ul>
@@ -496,293 +496,289 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="9tips.html">10. Tips And Tricks</a></li>
+    <li class="crumb">8. Security</li>
+    <li class="crumb"><a href="8mTLS.html">Mutual TLS and Istio</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/9tips.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/8mTLS.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Tips</h1>
+<h1>Mutual TLS and Istio</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Before Start</div>
 <div class="paragraph">
-<p>Some tips and tricks that you might find handy</p>
-</div>
-<div class="paragraph">
-<p>You have two containers in a pod</p>
+<p>You should have NO virtualservice, destinationrule, gateway or policy (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> <code>istioctl get gateway</code> <code>istioctl get policy</code>
+if so run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
-or
-kubectl get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
 </div>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>From these images</p>
+<p>In this chapter, we are going to see how to secure the communication between all services by enabling mutual <em>TLS</em> in Istio.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="preparation"><a class="anchor" href="#preparation"></a>Before Start</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you are running this tutorial in OpenShift (Minishift) you need to remove the <strong>customer</strong> <code>route</code> you created at the beginning of the tutorial.</p>
+</div>
+<div class="paragraph">
+<p>To do it just run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
-or
-kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete route customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Get the pod ids</p>
+<p>Then, you need to enable Istio Ingress to receive all traffic and redirect it to customer service.
+For this reason, let&#8217;s create a <code>Gateway</code> and <code>VirtualService</code> that allows local calls reach the clustered service inside the mesh.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
-PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
-RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
-RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/gateway-customer.yml">istiofiles/gateway-customer.yml</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then configure some environment variables that will help you on testing:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_PORT=$(oc -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 
-or
+or in Kubernetes:
 
-CPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
-PPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
-RPOD1=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
-RPOD2=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)</code></pre>
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>The pods all see each other&#8217;s services</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://preference:8080
-oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
-oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_HOST=$(minishift ip)
+export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can run <code>curl</code> but against <code>GATEWAY_URL</code> and you&#8217;ll see the same messages as before:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="enablingtls"><a class="anchor" href="#enablingtls"></a>Enabling mTLS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that Istio gateway is in place, you can enable <em>mTLS</em> by applying next Istio resources:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/authentication-enable-tls.yml">istiofiles/authentication-enable-tls.yml</a> <i class="conum" data-value="1"></i><b>(1)</b>
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-tls.yml">istiofiles/destination-rule-tls.yml</a> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Enables mTLS into <code>tutorial</code> namespace</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Makes that services withn <code>tutorial</code> namespace communicates with <em>mTLS</em></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And you&#8217;ll see exactly the same but now the communication between the services has been secured.
+How can you check that?</p>
+</div>
+<div class="paragraph">
+<p><strong>First</strong> running next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl authn tls-check | grep tutorial
 
-or
+customer.tutorial.svc.cluster.local:8080                         OK         mTLS       mTLS       default/tutorial                             default/tutorial
+preference.tutorial.svc.cluster.local:8080                       OK         mTLS       mTLS       default/tutorial                             default/tutorial
+recommendation.tutorial.svc.cluster.local:8080                   OK         mTLS       mTLS       default/tutorial                             default/tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Second</strong>, by <em>sniffing</em> traffic between services, which is a bit more tedious, open a new terminal tab and run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">CUSTOMER_POD=$(oc get pod | grep cust | awk '{ print $1}' ) <i class="conum" data-value="1"></i><b>(1)</b>
 
-kubectl exec $CPOD -c customer -n tutorial curl http://preference:8080
-kubectl exec $CPOD -c customer -n tutorial curl http://recommendation:8080
-kubectl exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json
-or
-kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Look for <code>route_config</code>, containing <code>"name": "8080"</code> and you should see entries for customer, preference and recommendation</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"virtualHosts": [
-      {
-       "name": "customer.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "customer.tutorial.svc.cluster.local",
-        "customer.tutorial.svc.cluster.local:8080",
-        "customer",
-        "customer:8080",
-        "customer.tutorial.svc.cluster",
-        "customer.tutorial.svc.cluster:8080",
-        "customer.tutorial.svc",
-        "customer.tutorial.svc:8080",
-        "customer.tutorial",
-        "customer.tutorial:8080",
-        "172.30.107.115",
-        "172.30.107.115:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||customer.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "istio-pilot.istio-system.svc.cluster.local:8080",
-       "domains": [
-        "istio-pilot.istio-system.svc.cluster.local",
-        "istio-pilot.istio-system.svc.cluster.local:8080",
-        "istio-pilot.istio-system",
-        "istio-pilot.istio-system:8080",
-        "istio-pilot.istio-system.svc.cluster",
-        "istio-pilot.istio-system.svc.cluster:8080",
-        "istio-pilot.istio-system.svc",
-        "istio-pilot.istio-system.svc:8080",
-        "172.30.142.41",
-        "172.30.142.41:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||istio-pilot.istio-system.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "preference.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "preference.tutorial.svc.cluster.local",
-        "preference.tutorial.svc.cluster.local:8080",
-        "preference",
-        "preference:8080",
-        "preference.tutorial.svc.cluster",
-        "preference.tutorial.svc.cluster:8080",
-        "preference.tutorial.svc",
-        "preference.tutorial.svc:8080",
-        "preference.tutorial",
-        "preference.tutorial:8080",
-        "172.30.26.194",
-        "172.30.26.194:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||preference.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "recommendation.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "recommendation.tutorial.svc.cluster.local",
-        "recommendation.tutorial.svc.cluster.local:8080",
-        "recommendation",
-        "recommendation:8080",
-        "recommendation.tutorial.svc.cluster",
-        "recommendation.tutorial.svc.cluster:8080",
-        "recommendation.tutorial.svc",
-        "recommendation.tutorial.svc:8080",
-        "recommendation.tutorial",
-        "recommendation.tutorial:8080",
-        "172.30.103.127",
-        "172.30.103.127:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||recommendation.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      }
-     ],</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now add a new <code>destinationrule</code> and <code>virtualservice</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a>
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The review the routes again</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json
-or
-kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Here is the Before:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"route": {
-				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>and</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"decorator": {
-				"operation": "default-route"
-			}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And the After:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"route": {
-          		"cluster": "outbound|8080|version-v2|recommendation.tutorial.svc.cluster.local",
-          	},</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>and</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"decorator": {
-          		"operation": "recommendation"
-         	}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you need the Pod IP</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
-or
-kubectl get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Dive into the istio-proxy container</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
-or
-kubectl exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
+or in Kuberentes:
 
-cd /etc/istio/proxy
-ls
-cat envoy-rev0.json</code></pre>
+CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' )
+
+
+oc exec -it $CUSTOMER_POD -c istio-proxy /bin/bash <i class="conum" data-value="2"></i><b>(2)</b>
+
+or in Kubernetes:
+
+kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash
+
+# Inside pod shell
+
+ifconfig <i class="conum" data-value="3"></i><b>(3)</b>
+sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Get customer pod name</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Open a shell inside pod</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Get IP of current pod (probably the IP represented at <code>eth0</code> interface)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Capture traffic from <code>eth0</code> (or your interface) of port <code>8080</code> and network <code>172.17.0.10</code> (your IP from <code>ifconfig</code>)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now all communication that happens between <code>customer</code> service and <code>preference</code> service is dumped in the console.</p>
+</div>
+<div class="paragraph">
+<p>So now go to a terminal and execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Snowdrop Troubleshooting</p>
+<p>Obviously, the response is exactly the same, but if you go to the terminal where you are executing <code>tcpdump</code>, you should see something like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">14:24:55.078222 IP (tos 0x0, ttl 64, id 32578, offset 0, flags [DF], proto TCP (6), length 967)
+    172.17.0.15.33260 &gt; customer-7dcd544ff9-652ds.8080: Flags [P.], cksum 0x5bf5 (incorrect -&gt; 0x595e), seq 2211080917:2211081832, ack 2232186801, win 391, options [nop,nop,TS val 5958433 ecr 5779275], length 915: HTTP
+E....B@.@._........
+......j...w.....[......
+.Z.!.X/K.............w$.?....&amp;T.`n.....UX.C&amp;)Cj....y..{.&amp;..I..	..&lt;.
+.....A..q.;...o.9+.4..;...6|".......M.4Wm.:}.....^..v..2..?VW[&amp;s........@}.~B.&gt;D.k..H...r.... .L..i,.
+...=..=..y..[.k..g..0..5.f%..vz|..t.....%.`.|...B..%r0.^k.y.....y.@l$O.....?...J..qc&amp;.........Z.^&amp;..F.....w."&gt;7..	...[.......2.&amp;........&gt;......s.....5
+.n$X.....l.#...... ..Q..u..jBI.Z.Eb$9.$.._...!.........~"Xx&lt;....);........Z.
+.y/E]......K......... .@s.3.\.
+.i.v...#.O&lt;..^.F.	...?..:s...).....e......*..F.Kz..i.jk..xx...#....|.U.!.......X.....@......0.....*...l.v..G)T...9...M.....i.H ..=	.a.hp..&amp;8..L..`.s..d_o.~.T ./.......9..	;F81.......S.{.....1rE..o...`..............c+U...}.{7..Y....Q4.#..(.c]Q...[..8..$u.b...=..6.....~..9..H....R
+.9x*q....h0......O......q..Fb)..E..m..=.M.....W.Yk&gt;.......;.2eys..E.....=q.;.k ....R.f.(./^F....4.c..*Y.4....es.....TX`nh..L.z.6....(.X.&gt;c.V.0z........GF%.%..l4P.......@.^Q........46.g.#.n...e.k.._..&gt;.T+.S...t}....</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p><a href="https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md">https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md</a></p>
+<p>Notice that you cannot see any detail about the communication since it happened through TLS.</p>
+</div>
+<div class="paragraph">
+<p>Now, let&#8217;s disable <em>TLS</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/authentication-enable-tls.yml
+istioctl delete -f istiofiles/destination-rule-tls.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And execute again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And again check <code>tcpdump</code> output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">host: 0192.168.64.70:31380
+user-agent: curl/7.54.0
+accept: */*
+x-forwarded-for: 172.17.0.1
+x-forwarded-proto: http
+x-envoy-internal: true
+x-request-id: e5c0b90f-341b-9edc-ac3e-7dd8b33f0e8b
+x-envoy-decorator-operation: customer.tutorial.svc.cluster.local:8080/
+x-b3-traceid: ce289e960a639d11
+x-b3-spanid: ce289e960a639d11
+x-b3-sampled: 1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, you can see that since there is no <em>TLS</em> enabled, the information is not shadowed but in clear.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="restore"><a class="anchor" href="#restore"></a>Clean Up</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>source,bash]</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>istioctl delete -f istiofiles/gateway-customer.yml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally in case of running in OpenShift (Minishift) you can restore the route:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer</code></pre>
+</div>
+</div>
+</div>
 </div>
 </article>
   </main>

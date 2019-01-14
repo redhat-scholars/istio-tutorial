@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fault Injection :: Istio Tutorial Docs</title>
+    <title>Chaos Testing :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/6fault-injection.html">
     <meta name="generator" content="Antora 1.1.1">
     <link rel="stylesheet" href="../../_/css/site.css">
@@ -94,7 +94,7 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="3monitoring-tracing.html">3. Monitoring and Tracing</a>
+    <a class="nav-link" href="3monitoring-tracing.html">3. Observability</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring</a>
@@ -109,26 +109,59 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="4simple-routerules.html">4. Simple Routing</a>
+    <span class="nav-text">4. Traffic Control</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="4simple-routerules.html#istiorouting">Changing Istio Routings</a>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item" data-depth="4">
     <a class="nav-link" href="4simple-routerules.html#alltorecommendationv2">All Users To Recommendation V2</a>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item" data-depth="4">
     <a class="nav-link" href="4simple-routerules.html#alltorecommendationv1">All Users To Recommendation V1</a>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item" data-depth="4">
     <a class="nav-link" href="4simple-routerules.html#alltorecommendationv1v2">All Users To Recommendation V1 and V2</a>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item" data-depth="4">
     <a class="nav-link" href="4simple-routerules.html#canarydeploymentrecommendation">Canary Deployment Between v1 And v2</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="4advanced-routerules.html">Advanced Routing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="4advanced-routerules.html#canarydeploymentuseragent">Canary Deployment based on user-agent</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="4advanced-routerules.html#alltorecommendationv1">All Users To Recommendation V1</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="4advanced-routerules.html#safaritov2">All Safari Users To Recommendation V2</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="4advanced-routerules.html#mobiletov2">All Mobile Users To Recommendation V2</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="4advanced-routerules.html#mirroringtraffic">Mirroring Traffic</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="4advanced-routerules.html#loadbalancer">Load Balancer</a>
   </li>
 </ul>
   </li>
@@ -136,49 +169,49 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="5advanced-routerules.html">5. Advanced Routing</a>
+    <a class="nav-link" href="5circuit-breaker.html">5. Service Resiliency</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5circuit-breaker.html#retry">Retry</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5circuit-breaker.html#timeout">Timeout</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="5advanced-routerules.html#canarydeploymentuseragent">Canary Deployment based on user-agent</a>
+    <a class="nav-link" href="5circuit-breaker.html#failfast">Fail Fast</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5advanced-routerules.html#alltorecommendationv1">All Users To Recommendation V1</a>
+    <a class="nav-link" href="5circuit-breaker.html#nocircuitbreaker">No Circuit Breaker</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5advanced-routerules.html#safaritov2">All Safari Users To Recommendation V2</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5advanced-routerules.html#mobiletov2">All Mobile Users To Recommendation V2</a>
+    <a class="nav-link" href="5circuit-breaker.html#circuitbreaker">Circuit Breaker</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="5advanced-routerules.html#mirroringtraffic">Mirroring Traffic</a>
-  </li>
-  <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="5advanced-routerules.html#accesscontrol">Access Control</a>
+    <a class="nav-link" href="5circuit-breaker.html#poolejection">Pool Ejection</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5advanced-routerules.html#whitelist">White List</a>
+    <a class="nav-link" href="5circuit-breaker.html#nofailinginstances">No Failing Instance</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5advanced-routerules.html#blacklist">Black List</a>
+    <a class="nav-link" href="5circuit-breaker.html#failinginstancesnopoolejection">Failing Instance No Pool Ejection</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="5circuit-breaker.html#failinginstancespoolejection">Failing Instance Pool Ejection</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="5advanced-routerules.html#loadbalancer">Load Balancer</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="5advanced-routerules.html#ratelimiting">Rate Limiting</a>
+    <a class="nav-link" href="5circuit-breaker.html#circuitbreakerandpoolejection">Circuit Breaker + Pool Ejection</a>
   </li>
 </ul>
   </li>
   <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="6fault-injection.html">6. Fault Injection</a>
+    <a class="nav-link" href="6fault-injection.html">6. Chaos Testing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#503error">HTTP 503 Error</a>
@@ -196,54 +229,96 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="7circuit-breaker.html">7. Circuit Breaker</a>
+    <a class="nav-link" href="7policy.html">7. Policy</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="7circuit-breaker.html#failfast">Fail Fast</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="7circuit-breaker.html#nocircuitbreaker">No Circuit Breaker</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="7circuit-breaker.html#circuitbreaker">Circuit Breaker</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="7circuit-breaker.html#poolejection">Pool Ejection</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="7circuit-breaker.html#nofailinginstances">No Failing Instance</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="7circuit-breaker.html#failinginstancesnopoolejection">Failing Instance No Pool Ejection</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="7circuit-breaker.html#failinginstancespoolejection">Failing Instance Pool Ejection</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="7circuit-breaker.html#circuitbreakerandpoolejection">Circuit Breaker + Pool Ejection</a>
+    <a class="nav-link" href="7policy.html#ratelimiting">Rate Limiting</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="8egress.html">8. Egress</a>
+    <span class="nav-text">8. Security</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="8egress.html">Egress</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="8egress.html#createrecommendationv3">Create Recommendation V3</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="8egress.html#istioegress">Istio-ize Egress</a>
   </li>
 </ul>
   </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="8acl.html">Access Control List</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8acl.html#whitelist">White List</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8acl.html#blacklist">Black List</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="8jwt.html">End-user authentication with JWT</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8jwt.html#preparation">Preparation</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8jwt.html#enablingauthentication">Enabling end-user authentication</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8jwt.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="8rbac.html">Istio Role Based Access Control (RBAC)</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8rbac.html#enabling-rbac">Enabling RBAC</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8rbac.html#grant-access">Granting Access</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8rbac.html#authorization-jwt">Authorization and JWT</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8rbac.html#final-notes">Final Notes</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="8rbac.html#cleanup">Clean Up</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="9tips.html">9. Tips And Tricks</a>
+    <a class="nav-link" href="9tips.html">10. Tips And Tricks</a>
   </li>
 </ul>
   </li>
@@ -372,57 +447,6 @@
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
-    <a class="nav-link" href="advanced/mTLS.html">Mutual TLS and Istio</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/mTLS.html#restore">Restore Environment</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="advanced/jwt.html">End-user authentication with JWT</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/jwt.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/jwt.html#enablingauthentication">Enabling end-user authentication</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/jwt.html#cleanup">Clean Up</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="advanced/rbac.html">Istio Role Based Access Control (RBAC)</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/rbac.html#enabling-rbac">Enabling RBAC</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/rbac.html#grant-access">Granting Access</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/rbac.html#authorization-jwt">Authorization and JWT</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/rbac.html#final-notes">Final Notes</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/rbac.html#cleanup">Clean Up</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/cube.html">Dark Launch Automatic Test</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -472,13 +496,13 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="6fault-injection.html">6. Fault Injection</a></li>
+    <li class="crumb"><a href="6fault-injection.html">6. Chaos Testing</a></li>
   </ul>
 </nav>
   <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/6fault-injection.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Fault Injection</h1>
+<h1>Chaos Testing</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
@@ -585,247 +609,13 @@ If you are monitoring the logs for recommendation v1 and v2, you will also see t
 ./kubetail.sh recommendation -n tutorial
 `</p>
 </div>
-<div class="paragraph">
-<p>Clean up</p>
-</div>
+<div class="sect2">
+<h3 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean up</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial</code></pre>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="retry"><a class="anchor" href="#retry"></a>Retry</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Instead of failing immediately, retry the Service N more times</p>
-</div>
-<div class="paragraph">
-<p>We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
-kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/misbehave
-exit</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is a special endpoint that will make our application return only `503`s.</p>
-</div>
-<div class="paragraph">
-<p>Now, if you hit the customer endpoint several times, you should see some 503&#8217;s</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
-
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 864
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 865
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 866
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 867
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 868
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 869
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now add the retry rule</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2_retry.yml">istiofiles/virtual-service-recommendation-v2_retry.yml</a> -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You will see it work every time because Istio will retry the recommendation service and it will land on v1 only.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
-
-customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 196
-customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 197
-customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can see the active Virtual Services via</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl get virtualservices -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now, delete the retry rule and see the old behavior, where v2 throws 503s</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete virtualservice recommendation -n tutorial
-
-./scripts/run.sh
-
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1118
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1119
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1120
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1121
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1122
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1123
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1124
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1125
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-h9r4s': 1126
-customer =&gt; 503 preference =&gt; 503 recommendation misbehavior from '6f64f9c5b-ltrhl'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now, make the pod v2 behave well again</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
-kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/behave
-exit</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The application is back to random load-balancing between v1 and v2</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
-
-customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
-customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 207
-customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 130</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="timeout"><a class="anchor" href="#timeout"></a>Timeout</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in <code>tutorial</code> namespace) should be in effect. To check it run <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> and if so <code>istioctl delete virtualservice virtualservicename -n tutorial</code> and <code>istioctl delete destinationrule destinationrulename -n tutorial</code></p>
-</div>
-<div class="paragraph">
-<p>First, introduce some wait time in <code>recommendation v2</code> by uncommenting the line that calls the <code>timeout()</code> method. Update <code>RecommendationVerticle.java</code> making it a slow performer with a 3 second delay.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Override
-    public void start() throws Exception {
-        Router router = Router.router(vertx);
-        router.get("/").handler(this::logging);
-        router.get("/").handler(this::timeout);
-        router.get("/").handler(this::getRecommendations);
-        router.get("/misbehave").handler(this::misbehave);
-        router.get("/behave").handler(this::behave);
-
-        HealthCheckHandler hc = HealthCheckHandler.create(vertx);
-        hc.register("dummy-health-check", future -&gt; future.complete(Status.OK()));
-        router.get("/health").handler(hc);
-
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-    }</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Rebuild and redeploy</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx
-
-mvn clean package
-
-docker build -t example/recommendation:v2 .
-
-docker images | grep recommendation
-
-oc delete pod -l app=recommendation,version=v2 -n tutorial
-or
-kubectl delete pod -l app=recommendation,version=v2 -n tutorial
-
-cd ../../..</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then add the timeout rule</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-timeout.yml">istiofiles/virtual-service-recommendation-timeout.yml</a> -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You will see it return v1 OR "upstream request timeout" after waiting about 1 second</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh
-
-customer =&gt; 503 preference =&gt; 504 upstream request timeout
-curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.035 total
-customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 210
-curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 36% cpu 0.025 total
-customer =&gt; 503 preference =&gt; 504 upstream request timeout
-curl customer-tutorial.$(minishift ip).nip.io  0.01s user 0.00s system 0% cpu 1.034 total</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Clean up, delete the timeout rule</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or you can run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
 </div>
 </div>
 </div>
