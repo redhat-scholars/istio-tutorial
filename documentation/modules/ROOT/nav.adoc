@@ -49,8 +49,6 @@
 * xref:6fault-injection.adoc[6. Chaos Testing]
 ** xref:6fault-injection.adoc#503error[HTTP 503 Error]
 ** xref:6fault-injection.adoc#delay[Delay]
-** xref:6fault-injection.adoc#retry[Retry]
-** xref:6fault-injection.adoc#timeout[Timeout]
 
 * xref:7policy.adoc[7. Policy]
 ** xref:7policy.adoc#ratelimiting[Rate Limiting]
