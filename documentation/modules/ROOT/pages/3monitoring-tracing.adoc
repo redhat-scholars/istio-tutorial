@@ -6,16 +6,28 @@ include::_attributes.adoc[]
 
 Out of the box, you get monitoring via Prometheus and Grafana. 
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
+ifdef::workshop[]
+open http://grafana-istio-system.{appdomain}/d/1/istio-dashboard?refresh=5s&orgId=1
+endif::workshop[]
+
+ifndef::workshop[]
 open "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5s&orgId=1"
+endif::workshop[]
 ----
 
 image:grafana1.png[alt text]
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
+ifdef::workshop[]
+http://grafana-istio-system.{appdomain}/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
+endif::workshop[]
+
+ifndef::workshop[]
 open "$(minishift openshift service grafana -u)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
+endif::workshop[]
 ----
 
 to check the "Workload of the services"
@@ -27,9 +39,15 @@ image:grafana2.png[alt text]
 
 Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
+ifdef::workshop[]
+open http://prometheus-istio-system.{appdomain}/graph?g0.range_input=5m&g0.expr=&g0.tab=0"
+endif::workshop[]
+
+ifndef::workshop[]
 open "$(minishift openshift service prometheus -u)/graph?g0.range_input=5m&g0.expr=&g0.tab=0"
+endif::workshop[]
 ----
 
 Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then
@@ -52,9 +70,9 @@ image:prometheus_custom_metric.png[alt text]
 
 Then run several requests through the system
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-while true; do curl customer-tutorial.$(minishift ip).nip.io; sleep .5;  done
+while true; do curl customer-tutorial{namespace-suffix}.{appdomain}; sleep .5;  done
 ----
 
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
@@ -70,9 +88,16 @@ Our `customer` and `preference` services are using the https://github.com/jaeger
 
 Let's open the Jaeger console, select `customer` from the list of services and click `Find Traces`
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
+ifdef::workshop[]
+open http://tracing-istio-system.{appdomain}/
+endif::workshop[]
+
+ifndef::workshop[]
 minishift openshift service tracing --in-browser
+endif::workshop[]
+
 ----
 
 image:jaegerUI.png[Trace as seen in Jaeger]

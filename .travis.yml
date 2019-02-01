@@ -30,7 +30,7 @@ before_install:
 
 script:
   - 'if [ $FORCE_DOC_GEN == 0 ] || [ $GENERATE_DOC == 0 ]; then
-      docker run -v $TRAVIS_BUILD_DIR:/antora --rm -t antora/antora:1.1.1 --pull --stacktrace site-gh-pages.yml;
+      docker run -v $TRAVIS_BUILD_DIR:/antora --rm -t antora/antora:2.0.0 --pull --stacktrace site-gh-pages.yml;
     fi'
 
 after_success:

@@ -28,7 +28,7 @@ spec:
             command:
             - curl
             - localhost:8080/health
-          initialDelaySeconds: 20
+          initialDelaySeconds: 60
           periodSeconds: 5
           timeoutSeconds: 1
         name: customer

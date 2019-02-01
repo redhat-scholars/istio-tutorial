@@ -4,6 +4,7 @@ audit.log
 .cache/
 
 docs/
+workshop/
 dependency-reduced-pom.xml
 svm.jar
 

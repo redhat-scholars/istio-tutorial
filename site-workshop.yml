@@ -1,7 +1,7 @@
 runtime:
   cache_dir: ./.cache/antora
 site:
-  title: Istio Tutorial Docs
+  title: Istio Workshop
   url: https://redhat-developer-demos.github.io/istio-tutorial/
   start_page: istio-tutorial::index.adoc
 
@@ -10,10 +10,16 @@ content:
   - url: .
     branches: HEAD
     start_path: documentation
+asciidoc:
+  attributes:
+    workshop: true
+    ocpurl: https://master.testans-def0.openshiftworkshop.com
+    appdomain: apps.testans-def0.openshiftworkshop.com
+    namespace-suffix: -$WORKSHOP_USER
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
   supplemental_files: ./supplemental-ui
 output:
-  dir: ./docs
+  dir: ./workshop

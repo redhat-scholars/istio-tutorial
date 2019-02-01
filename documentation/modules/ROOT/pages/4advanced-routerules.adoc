@@ -7,9 +7,9 @@ include::_attributes.adoc[]
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh
+./scripts/clean.sh tutorial{namespace-suffix}
 ----
 ====
 
@@ -30,8 +30,8 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
 ----
 
 [#safaritov2]
@@ -39,9 +39,9 @@ istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommend
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-safari-recommendation-v2.yml[istiofiles/virtual-service-safari-recommendation-v2.yml] -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-safari-recommendation-v2.yml[istiofiles/virtual-service-safari-recommendation-v2.yml] -n tutorial{namespace-suffix}
 
-istioctl get virtualservice -n tutorial
+istioctl get virtualservice -n tutorial{namespace-suffix}
 ----
 
 and test with a Safari (or even Chrome on Mac since it includes Safari in the string). Safari only sees v2 responses from recommendation
@@ -50,43 +50,28 @@ and test with a Firefox browser, it should only see v1 responses from recommenda
 
 There are two ways to get the URL for your browser:
 
-[source,bash]
-----
-minishift openshift service customer --in-browser
-----
-
-That will open the openshift service `customer` in browser
-
-Or
-
-if you need just the url alone:
-
-[source,bash]
-----
-minishift openshift service customer --url
-http://customer-tutorial.192.168.99.102.nip.io
-----
+Open the url http://customer-tutorial{namespace-suffix}.{appdomain} in your broswer 
 
 You can also attempt to use the curl -A command to test with different user-agent strings. 
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-curl -A Safari customer-tutorial.$(minishift ip).nip.io
-curl -A Firefox customer-tutorial.$(minishift ip).nip.io
+curl -A Safari customer-tutorial{namespace-suffix}.{appdomain}
+curl -A Firefox customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 You can describe the virtualservice to see its configuration
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl get virtualservice -o yaml -n tutorial
+istioctl get virtualservice -o yaml -n tutorial{namespace-suffix}
 ----
 
 ==== Remove the Safari rule
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial{namespace-suffix}
 ----
 
 [#mobiletov2]
@@ -94,60 +79,63 @@ istioctl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tu
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial{namespace-suffix}
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" customer-tutorial.$(minishift ip).nip.io
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 ==== Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
+istioctl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial{namespace-suffix}
 ----
 
 or you can run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh
+./scripts/clean.sh tutorial{namespace-suffix}
 ----
+
 
 [#mirroringtraffic]
 == Mirroring Traffic (Dark Launch)
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-oc get pods -l app=recommendation -n tutorial
+oc get pods -l app=recommendation -n tutorial{namespace-suffix}
 or 
-kubectl get pods -l app=recommendation -n tutorial
+kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
 ----
 
 You should have 2 pods for recommendation based on the steps above
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl get virtualservice -n tutorial
+istioctl get virtualservice -n tutorial{namespace-suffix}
 istioctl get destinationrule
 ----
+
 
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh
+./scripts/clean.sh tutorial{namespace-suffix}
 ----
+
 
 Make sure you are in the main directory of "istio-tutorial"
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial{namespace-suffix}
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 Check the logs of recommendation-v2
@@ -161,18 +149,19 @@ kubectl logs -f `oc get pods|grep recommendation-v2|awk '{ print $1 }'` -c recom
 
 === Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
-istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
+istioctl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial{namespace-suffix}
 ----
 
 or you can run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh
+./scripts/clean.sh tutorial{namespace-suffix}
 ----
+
 
 [#loadbalancer]
 == Load Balancer
@@ -181,32 +170,32 @@ By default, you will see "round-robin" style load-balancing, but you can change 
 
 Add another v2 pod to the mix
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial
+oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
 or
-kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
 ----
 
 Wait a bit (oc get pods -w to watch)
 and curl the customer endpoint many times
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 Add a 3rd v2 pod to the mix
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial
-$ oc get pods -n tutorial
+$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
+$ oc get pods -n tutorial{namespace-suffix}
 
 or 
 
-$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial
-$ kubectl get pods -n tutorial
+$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
+$ kubectl get pods -n tutorial{namespace-suffix}
 
 
 NAME                                  READY     STATUS    RESTARTS   AGE
@@ -220,9 +209,9 @@ recommendation-v2-2815683430-tptf2   2/2       Running   0          33m
 
 Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 The results should follow a fairly normal round-robin distribution pattern
@@ -243,7 +232,7 @@ Now, add the Random LB DestinationPolicy
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_lb_policy_app.yml[istiofiles/destination-rule-recommendation_lb_policy_app.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_lb_policy_app.yml[istiofiles/destination-rule-recommendation_lb_policy_app.yml] -n tutorial{namespace-suffix}
 ----
 
 And you should see a different pattern of which pod is being selected
@@ -265,11 +254,11 @@ customer => preference => recommendation v2 from '2819441432-rg45q': 14
 
 === Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial
+istioctl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial{namespace-suffix}
 
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial
+oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
 or
-kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
 ----

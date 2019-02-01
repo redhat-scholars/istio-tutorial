@@ -8,7 +8,7 @@ site:
 content:
   sources:
   - url: .
-    branches: master
+    branches: HEAD
     start_path: documentation
 asciidoc:
   attributes:
@@ -21,4 +21,4 @@ ui:
     snapshot: true
   supplemental_files: ./supplemental-ui
 output:
-  dir: ./gh-pages
+  dir: ./docs

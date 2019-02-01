@@ -1,3 +1,4 @@
+ifndef::workshop[]
 * xref:index.adoc[Advanced Istio Tutorial]
 
 ** xref:kiali.adoc[Kiali]
@@ -44,3 +45,4 @@
 *** xref:cube.adoc#explanation[Explanation]
 *** xref:cube.adoc#code[Source Code]
 *** xref:cube.adoc#restore[Restore Environment]
+endif::workshop[]

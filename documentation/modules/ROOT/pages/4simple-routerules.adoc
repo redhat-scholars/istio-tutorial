@@ -3,6 +3,8 @@ include::_attributes.adoc[]
 
 For this use case, we need to create a modified version of Recommendations
 
+ifndef::workshop[]
+
 [#deployrecommendationv2]
 == Create recommendation:v2
 
@@ -56,12 +58,25 @@ oc delete svc/recommendation-v2 -n tutorial
 oc start-build recommendation-v2 --from-dir=. --follow -n tutorial
 ----
 
+endif::workshop[]
+
+ifdef::workshop[]
+== Deploy Recommendation microservice V2 using an existing image
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.remote.yml[{recommendation-repo}/kubernetes/Deployment-v2.remote.yml]) -n tutorial{namespace-suffix}
+----
+endif::workshop[]
+
+
 === Wait for v2 to be deployed
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
+oc get pods -w -n tutorial{namespace-suffix}
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preference-243057078-8c5hz           2/2       Running   0          15m
@@ -71,34 +86,34 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
 
 and test the customer endpoint
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 you likely see "customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
 
-[source]
+[source,bash, subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
 Send several requests to see their responses:
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=2 dc/recommendation-v2 -n tutorial
+oc scale --replicas=2 dc/recommendation-v2 -n tutorial{namespace-suffix}
 or
-kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial
+kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 ----
 
 Now, you will see two requests into the v2 and one for v1.
@@ -112,19 +127,21 @@ customer => preference => recommendation v2 from '99634814-sf4cl': 38
 
 Scale back to a single replica of the recommendation-v2 Deployment
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=1 dc/recommendation-v2 -n tutorial
+oc scale --replicas=1 dc/recommendation-v2 -n tutorial{namespace-suffix}
 or
-kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial
+kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 ----
 
+ifndef::workshop[]
 and back to the main directory
 
 [source,bash]
 ----
 cd ../../..
 ----
+endif::workshop[]
 
 [#istiorouting]
 == Changing Istio Routings
@@ -136,10 +153,10 @@ From the main istio-tutorial directory,
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 you should only see v2 being returned
@@ -151,11 +168,11 @@ Note: "replace" instead of "create" since we are overlaying the previous rule
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
 
 istioctl get virtualservice
 
-istioctl get virtualservice -o yaml -n tutorial
+istioctl get virtualservice -o yaml -n tutorial{namespace-suffix}
 ----
 
 [#alltorecommendationv1v2]
@@ -163,16 +180,16 @@ istioctl get virtualservice -o yaml -n tutorial
 
 By simply removing the rule
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial{namespace-suffix}
 ----
 
 and you should see the default behavior of load-balancing between v1 and v2
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 [#canarydeploymentrecommendation]
@@ -180,11 +197,11 @@ curl customer-tutorial.$(minishift ip).nip.io
 
 Canary Deployment scenario: push v2 into the cluster but slowly send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-$ oc get pods -l app=recommendation -n tutorial
+$ oc get pods -l app=recommendation -n tutorial{namespace-suffix}
 or
-$ kubectl get pods -l app=recommendation -n tutorial
+$ kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
 
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
@@ -195,34 +212,35 @@ Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2.yml[istiofiles/virtual-service-recommendation-v1_and_v2.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2.yml[istiofiles/virtual-service-recommendation-v1_and_v2.yml] -n tutorial{namespace-suffix}
 ----
 
 and send in several requests:
 
 [source, bash]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 In another terminal, change the mixture to be 75/25
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_75_25.yml[istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml] -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_75_25.yml[istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml] -n tutorial{namespace-suffix}
 ----
 
 Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial
-istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial
+istioctl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial{namespace-suffix}
+istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
 ----
+
 
 or you can run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh
+./scripts/clean.sh tutorial{namespace-suffix}
 ----
