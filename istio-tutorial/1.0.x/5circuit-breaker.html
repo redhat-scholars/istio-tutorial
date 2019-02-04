@@ -787,7 +787,7 @@ cd ../../..</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial{namespace-suffix}</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -795,7 +795,7 @@ cd ../../..</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial{namespace-suffix}</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -836,7 +836,7 @@ istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tuto
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -870,7 +870,7 @@ istioctl get destinationrule -n tutorial</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -892,7 +892,7 @@ istioctl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -1186,6 +1186,7 @@ oc delete pod -l app=recommendation,version=v2
 or
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
 kubectl delete pod -l app=recommendation,version=v2
+
 
 
 istioctl delete virtualservice recommendation -n tutorial

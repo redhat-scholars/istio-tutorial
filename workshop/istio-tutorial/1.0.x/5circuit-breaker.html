@@ -70,9 +70,6 @@
     <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Custom Metrics</a>
-  </li>
-  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
   </li>
 </ul>
@@ -143,6 +140,21 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#retry">Retry</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#timeout">Timeout</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="#failfast">Fail Fast</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#nocircuitbreaker">No Circuit Breaker</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#circuitbreaker">Circuit Breaker</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
@@ -372,6 +384,170 @@ exit</code></pre>
 customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 207
 customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 130</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="timeout"><a class="anchor" href="#timeout"></a>Timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in <code>tutorial</code> namespace) should be in effect. To check it run <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code> and if so <code>istioctl delete virtualservice virtualservicename -n tutorial</code> and <code>istioctl delete destinationrule destinationrulename -n tutorial</code></p>
+</div>
+<div class="paragraph">
+<p>First, introduce some wait time in <code>recommendation v2</code> by making it a slow performer with a 3 second delay by running the command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then add the timeout rule</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-timeout.yml">istiofiles/virtual-service-recommendation-timeout.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will see it return v1 OR "upstream request timeout" after waiting about 1 second</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com</a>
+
+customer =&gt; 503 preference =&gt; 504 upstream request timeout
+curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com</a>
+customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 210
+curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com</a>
+customer =&gt; 503 preference =&gt; 504 upstream request timeout
+curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com</a></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean up</h3>
+<div class="paragraph">
+<p>Change the implementation of <code>v2</code> back to the image that responds without the delay of 3 seconds:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then delete the virtual service created for timeout by:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="failfast"><a class="anchor" href="#failfast"></a>Fail Fast with Max Connections and Max Pending Requests</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, introduce some wait time in <code>recommendation v2</code> by making it a slow performer with a 3 second delay by running the command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Second, you need to <strong>ensure</strong> you have a <code>destinationrule</code> and <code>virtualservice</code> in place. Let&#8217;s use a 50/50 split of traffic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial-$WORKSHOP_USER
+istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml">istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="nocircuitbreaker"><a class="anchor" href="#nocircuitbreaker"></a>Load test without circuit breaker</h3>
+<div class="paragraph">
+<p>Let&#8217;s perform a load test in our system with <code>siege</code>. We&#8217;ll have 20 clients sending 2 concurrent requests each:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v <a href="http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see an output similar to this:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/siege_ok.png" alt="siege output with all successful requests"></span></p>
+</div>
+<div class="paragraph">
+<p>All of the requests to our system were successful, but it took some time to run the test, as the <code>v2</code> instance/pod was a slow performer.</p>
+</div>
+<div class="paragraph">
+<p>But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same instance/pod. We don&#8217;t want multiple requests getting queued or making the instance/pod even slower. So we&#8217;ll add a circuit breaker that will <strong>open</strong> whenever we have more than 1 request being handled by any instance/pod.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml">istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml</a> -n tutorial-$WORKSHOP_USER
+
+istioctl get destinationrule -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>More information on the fields for the simple circuit-breaker
+<a href="https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy">https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="circuitbreaker"><a class="anchor" href="#circuitbreaker"></a>Load test with circuit breaker</h3>
+<div class="paragraph">
+<p>Now let&#8217;s see what is the behavior of the system running <code>siege</code> again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v <a href="http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.testans-f011.openshiftworkshop.com</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/siege_cb_503.png" alt="siege output with some 503 requests due to open circuit breaker"></span></p>
+</div>
+<div class="paragraph">
+<p>You can run siege multiple times, but in all of the executions you should see some <code>503</code> errors being displayed in the results. That&#8217;s the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the instance/pod.</p>
+</div>
+<div class="sect3">
+<h4 id="_clean_up_2"><a class="anchor" href="#_clean_up_2"></a>Clean up</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete virtualservice recommendation -n tutorial-$WORKSHOP_USER
+istioctl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -655,7 +831,7 @@ customer =&gt; preference =&gt; recommendation v1 from '2039379827-jmm6x': 554</
 <p>Our misbehaving pod <code>recommendation-v2-2036617847-spdrb</code> never shows up in the console, thanks to pool ejection and retry.</p>
 </div>
 <div class="sect2">
-<h3 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean up</h3>
+<h3 id="_clean_up_3"><a class="anchor" href="#_clean_up_3"></a>Clean up</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc scale deployment recommendation-v2 --replicas=1 -n tutorial-$WORKSHOP_USER
@@ -664,6 +840,8 @@ or
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial-$WORKSHOP_USER
 kubectl delete pod -l app=recommendation,version=v2
 
+
+oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial-$WORKSHOP_USER
 
 istioctl delete virtualservice recommendation -n tutorial-$WORKSHOP_USER
 istioctl delete destinationrule recommendation -n tutorial-$WORKSHOP_USER</code></pre>
