@@ -25,7 +25,7 @@ before_install:
       git fetch --unshallow origin gh-pages;
       git worktree add -b gh-pages gh-pages origin/gh-pages;
       GH_REF=$(git remote get-url origin | awk "{sub(/https:\/\//,\"https://${GH_TOKEN}@\")}; 1" | awk "{sub(/\.git/, \"\")} 1");
-      docker pull antora/antora:1.1.1;
+      docker pull antora/antora:2.0.0;
     fi'
 
 script:
