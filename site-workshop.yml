@@ -22,4 +22,4 @@ ui:
     snapshot: true
   supplemental_files: ./supplemental-ui
 output:
-  dir: ./workshop
+  dir: ./docs/workshop
