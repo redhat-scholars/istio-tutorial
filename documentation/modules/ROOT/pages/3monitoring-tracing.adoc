@@ -34,6 +34,8 @@ to check the "Workload of the services"
 
 image:grafana2.png[alt text]
 
+// Custom Metrics removed because it requires access to istio-system.
+ifndef::workshop[] 
 [#custommetrics]
 == Custom Metrics
 
@@ -76,6 +78,8 @@ while true; do curl customer-tutorial{namespace-suffix}.{appdomain}; sleep .5;  
 ----
 
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
+
+endif::workshop[]
 
 [#tracing]
 == Tracing

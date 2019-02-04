@@ -111,7 +111,7 @@ The default Kubernetes/OpenShift behavior is to round-robin load-balance across 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=2 dc/recommendation-v2 -n tutorial{namespace-suffix}
+oc scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 or
 kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 ----
@@ -129,7 +129,7 @@ Scale back to a single replica of the recommendation-v2 Deployment
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=1 dc/recommendation-v2 -n tutorial{namespace-suffix}
+oc scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 or
 kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 ----
@@ -217,7 +217,7 @@ istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommend
 
 and send in several requests:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----

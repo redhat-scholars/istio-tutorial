@@ -136,6 +136,8 @@ customer => preference => recommendation v2 from '2036617847-m9glz': 207
 customer => preference => recommendation v1 from '2039379827-h58vw': 130
 ----
 
+// Needs a modified image
+ifndef::workshop[]
 [#timeout]
 == Timeout
 
@@ -347,6 +349,8 @@ or you can run:
 ./scripts/clean.sh
 ----
 
+endif::workshop[]
+
 [#poolejection]
 == Pool Ejection
 
@@ -356,20 +360,20 @@ First, you need to insure you have a `destinationrule` and `virtualservice` in p
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
 ----
 
 Scale number of instances of `v2` deployment
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial
+oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
 oc get pods -w
 
 or
 
-kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
 kubectl get pods -w
 ----
 
@@ -382,7 +386,7 @@ Throw some requests at the customer endpoint:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 You will see the load balancing 50/50 between the two different versions of the `recommendation` service. And within version `v2`, you will also see that some requests are handled by one pod and some requests are handled by the other pod.
@@ -454,7 +458,7 @@ Throw some requests at the customer endpoint:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 You'll see that whenever the pod `recommendation-v2-2036617847-spdrb` receives a request, you get a `503` error:
@@ -486,14 +490,14 @@ Now let's add the pool ejection behavior:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f  link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_pool_ejection.yml[istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml] -n tutorial
+istioctl replace -f  link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_pool_ejection.yml[istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml] -n tutorial{namespace-suffix}
 ----
 
 Throw some requests at the customer endpoint:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 You will see that whenever you get a failing request with `503` from the pod `recommendation-v2-2036617847-spdrb`, it gets ejected from the pool, and it doesn't receive any more requests until the sleep window expires - which takes at least 15s.
@@ -553,14 +557,14 @@ By simply adding a *retry* configuration to our current `virtualservice`, we'll 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_retry.yml[istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml] -n tutorial
+istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_retry.yml[istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml] -n tutorial{namespace-suffix}
 ----
 
 Throw some requests at the customer endpoint:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 You won't receive `503`s anymore. But the requests from recommendation `v2` are still taking more time to get a response:
@@ -606,13 +610,13 @@ Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the c
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial
+oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
 oc delete pod -l app=recommendation,version=v2
 or
-kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
 kubectl delete pod -l app=recommendation,version=v2
 
 
-istioctl delete virtualservice recommendation -n tutorial
-istioctl delete destinationrule recommendation -n tutorial
+istioctl delete virtualservice recommendation -n tutorial{namespace-suffix}
+istioctl delete destinationrule recommendation -n tutorial{namespace-suffix}
 ----

@@ -7,9 +7,9 @@ include::_attributes.adoc[]
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
 if so run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh
+./scripts/clean.sh tutorial{namespace-suffix}
 ----
 ====
 
@@ -36,9 +36,9 @@ istioctl create -f link:{github-repo}/{istiofiles-dir}/rate_limit_rule.yml[istio
 
 Throw some requests at customer:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 You should see some 429 errors:
@@ -64,7 +64,7 @@ customer => preference => recommendation v2 from '2819441432-f4ls5': 112
 
 === Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 istioctl delete -f istiofiles/rate_limit_rule.yml
 
@@ -73,8 +73,8 @@ istioctl delete -f istiofiles/recommendation_rate_limit_handler.yml
 
 or you can run:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh
+./scripts/clean.sh tutorial{namespace-suffix}
 ----
 

@@ -13,8 +13,8 @@ content:
 asciidoc:
   attributes:
     workshop: true
-    ocpurl: https://master.testans-def0.openshiftworkshop.com
-    appdomain: apps.testans-def0.openshiftworkshop.com
+    ocpurl: https://master.testans-f011.openshiftworkshop.com
+    appdomain: apps.testans-f011.openshiftworkshop.com
     namespace-suffix: -$WORKSHOP_USER
 ui:
   bundle:
