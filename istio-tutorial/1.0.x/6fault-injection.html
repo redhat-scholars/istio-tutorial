@@ -493,7 +493,7 @@
     <li class="crumb"><a href="6fault-injection.html">6. Chaos Testing</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///antora/documentation/modules/ROOT/pages/6fault-injection.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/6fault-injection.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Chaos Testing</h1>
@@ -516,7 +516,7 @@ if so run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial</code></pre>
 </div>
 </div>
 </td>
@@ -550,11 +550,11 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h</code></p
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation.yml">istiofiles/destination-rule-recommendation.yml</a> -n tutorial
 istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-503.yml">istiofiles/virtual-service-recommendation-503.yml</a> -n tutorial
 
-curl customer-tutorial.$(minishift ip).nip.io
+curl <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a>
 customer =&gt; preference =&gt; recommendation v1 from '99634814-sf4cl': 88
-curl customer-tutorial.$(minishift ip).nip.io
+curl <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a>
 customer =&gt; 503 preference =&gt; 503 fault filter abort
-curl customer-tutorial.$(minishift ip).nip.io
+curl <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a>
 customer =&gt; preference =&gt; recommendation v2 from '2819441432-qsp25': 51</code></pre>
 </div>
 </div>
@@ -577,7 +577,7 @@ customer =&gt; preference =&gt; recommendation v2 from '2819441432-qsp25': 51</c
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-delay.yml">istiofiles/virtual-service-recommendation-delay.yml</a> -n tutorial
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation.yml">istiofiles/destination-rule-recommendation.yml</a> -n tutorial</code></pre>
+istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation.yml">istiofiles/destination-rule-recommendation.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -585,7 +585,7 @@ istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tuto
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
