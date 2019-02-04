@@ -21,7 +21,9 @@ endif::workshop[]
 
 * xref:3monitoring-tracing.adoc[3. Observability]
 ** xref:3monitoring-tracing.adoc#monitoring[Monitoring]
+ifndef::workshop[]
 ** xref:3monitoring-tracing.adoc#custommetrics[Custom Metrics]
+endif::workshop[]
 ** xref:3monitoring-tracing.adoc#tracing[Tracing]
 
 * 4. Traffic Control
@@ -43,12 +45,10 @@ endif::workshop[]
 
 * xref:5circuit-breaker.adoc[5. Service Resiliency]
 ** xref:5circuit-breaker.adoc#retry[Retry]
-ifndef::workshop[]
 ** xref:5circuit-breaker.adoc#timeout[Timeout]
 ** xref:5circuit-breaker.adoc#failfast[Fail Fast]
 *** xref:5circuit-breaker.adoc#nocircuitbreaker[No Circuit Breaker]
 *** xref:5circuit-breaker.adoc#circuitbreaker[Circuit Breaker]
-endif::workshop[]
 ** xref:5circuit-breaker.adoc#poolejection[Pool Ejection]
 *** xref:5circuit-breaker.adoc#nofailinginstances[No Failing Instance]
 *** xref:5circuit-breaker.adoc#failinginstancesnopoolejection[Failing Instance No Pool Ejection]
