@@ -493,10 +493,27 @@
     <li class="crumb"><a href="2deploy-microservices.html">Deploy Microservices</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///antora/documentation/modules/workshop/pages/2deploy-microservices.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/workshop/pages/2deploy-microservices.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Deploy Microservices</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create an environment variable for your user and log into OpenShift.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export WORKSHOP_USER=&lt;your-username-number&gt;
+
+#Example:
+export WORKSHOP_USER=1
+
+oc login -u user$WORKSHOP_USER -p openshift </code></pre>
+</div>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="deploycustomer"><a class="anchor" href="#deploycustomer"></a>Deploy customer</h2>
 <div class="sectionbody">
@@ -505,7 +522,9 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami
+or
+kubectl config current-context</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -513,7 +532,12 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project tutorial
+or
+kubectl create namespace tutorial
+kubectl config set-context $(kubectl config current-context) --namespace=tutorial
+
+oc adm policy add-scc-to-user privileged -z default -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -534,23 +558,28 @@ cd istio-tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ istioctl version
-Version: 1.0.3
-GitRevision: a44d4c8bcb427db16ca4a439adfbd8d9361b8ed3
-User: root@0ead81bba27d
+Version: 1.0.5
+GitRevision: c1707e45e71c75d74bf3a5dec8c7086f32f32fad
+User: root@6f6ea1061f2b
 Hub: docker.io/istio
 GolangVersion: go1.10.4
 BuildStatus: Clean</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_deploying_customer_microservices_using_an_existing_image"><a class="anchor" href="#_deploying_customer_microservices_using_an_existing_image"></a>Deploying Customer microservices using an existing image</h3>
+<h3 id="_deploy_customer_deploy_using_existing_images"><a class="anchor" href="#_deploy_customer_deploy_using_existing_images"></a>Deploy Customer deploy using existing images</h3>
 <div class="paragraph">
 <p>Let&#8217;s deploy the customer pod with its sidecar</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.remote.ymml">customer/kubernetes/Deployment.remote.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.remote.yml">customer/kubernetes/Deployment.remote.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.remote.yml">customer/kubernetes/Deployment.remote.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -564,8 +593,25 @@ oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/b
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer -n tutorial
 
 oc get route -n tutorial
-oc get pods -w -n tutorial</code></pre>
+oc get pods -w -n tutorial
+
+or
+
+kubectl get route -o=jsonpath='{.items[0].spec.host}'
+kubectl get pods -w</code></pre>
 </div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that your current terminal isn&#8217;t using the proper Docker Environment. See <a href="#setup-environment">Setup environment</a>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Wait until the status is <code>Running</code> and there are <code>2/2</code> pods in the <code>Ready</code> column. To exit, press <code>Ctrl+C</code></p>
@@ -586,22 +632,6 @@ oc get pods -w -n tutorial</code></pre>
 <pre>customer =&gt; I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Also review the logs</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep customer|awk '{ print $1 }'|head -1) -c customer</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You should see a stacktrace containing this cause:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference</code></pre>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -609,11 +639,16 @@ oc get pods -w -n tutorial</code></pre>
 <h2 id="deploypreference"><a class="anchor" href="#deploypreference"></a>Deploy preference</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_deploying_preference_microservices_v1_using_an_existing_image"><a class="anchor" href="#_deploying_preference_microservices_v1_using_an_existing_image"></a>Deploying Preference microservices V1 using an existing image</h3>
+<h3 id="_deploy_preference_using_existing_image"><a class="anchor" href="#_deploy_preference_using_existing_image"></a>Deploy Preference using existing image</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.remote.yml">preference/kubernetes/Deployment.remote.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.remote.yml">preference/kubernetes/Deployment.remote.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -621,7 +656,9 @@ oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/b
 <h3 id="_wait_preference_to_be_deployed"><a class="anchor" href="#_wait_preference_to_be_deployed"></a>Wait preference to be deployed</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w -n tutorial
+or
+kubectl get pods -w</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -652,22 +689,6 @@ We could make this a bit more resilient in a future iteration of this tutorial
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; 503 preference =&gt; I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>and check out the logs</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep preference|awk '{ print $1 }'|head -1) -c preference</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You should see a stacktrace containing this cause:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation</code></pre>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -675,21 +696,23 @@ We could make this a bit more resilient in a future iteration of this tutorial
 <h2 id="deployrecommendation"><a class="anchor" href="#deployrecommendation"></a>Deploy recommendation</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_deploy_recommendation_microservice_v1_using_an_existing_image"><a class="anchor" href="#_deploy_recommendation_microservice_v1_using_an_existing_image"></a>Deploy Recommendation microservice V1 using an existing image</h3>
+<h3 id="_deploy_recommendation_using_existing_images"><a class="anchor" href="#_deploy_recommendation_using_existing_images"></a>Deploy Recommendation using existing images</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.remote.yml">recommendation/kubernetes/Deployment.remote.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial</code></pre>
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial
+oc get pods -w
+
+or
+
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.remote.yml">recommendation/kubernetes/Deployment.remote.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial
+kubectl get pods -w</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_wait_recommendation_to_be_deployed"><a class="anchor" href="#_wait_recommendation_to_be_deployed"></a>Wait recommendation to be deployed</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w -n tutorial</code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p>Wait until the status is <code>Running</code> and there are <code>2/2</code> pods in the <code>Ready</code> column. To exit, press <code>Ctrl+C</code></p>
 </div>
@@ -704,14 +727,6 @@ oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/b
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from '99634814-sf4cl': 1</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>and you can monitor the <code>recommendation</code> logs with</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation</code></pre>
 </div>
 </div>
 </div>

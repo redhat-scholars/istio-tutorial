@@ -493,7 +493,7 @@
     <li class="crumb"><a href="1setup.html">Setup</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///antora/documentation/modules/workshop/pages/1setup.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/workshop/pages/1setup.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
 <h1>Setup</h1>
@@ -506,24 +506,24 @@
 <div class="ulist">
 <ul>
 <li>
-<p>openshift</p>
+<p>docker</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Mac: <code>brew install openshift-cli</code></p>
+<p><a href="https://www.docker.com/docker-mac">Mac OS</a></p>
 </li>
 <li>
-<p>Linux/Windows: Download from <a href="https://github.com/openshift/origin/releases/tag/v3.11.0">OKD github page</a></p>
+<p>Fedora: <code>dnf install docker</code></p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Istioctl</p>
+<p>oc (Openshift client)</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Follow the instructions at <a href="https://istio.io/docs/setup/kubernetes/download-release/">Istio page</a></p>
+<p><a href="https://github.com/openshift/origin/releases">Openshift Releases</a></p>
 </li>
 </ul>
 </div>
@@ -543,6 +543,49 @@
 </li>
 <li>
 <p><a href="https://github.com/wercker/stern">stern</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Mac OS: <code>brew install stern</code></p>
+</li>
+<li>
+<p>Fedora: <code>sudo curl --output /usr/local/bin/stern -L <a href="https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64" class="bare">https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64</a> &amp;&amp; sudo chmod +x /usr/local/bin/stern</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>istioctl 1.0.5</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/istio/istio/releases/tag/1.0.5">Download 1.0.5 release</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>curl</code>, <code>gunzip</code>, <code>tar</code></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Mac OS: built-in or part of your bash shell</p>
+</li>
+<li>
+<p>Fedora: should also be installed already, but just in case&#8230;&#8203; <code>dnf install curl gzip tar</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>git</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>dnf install git</code></p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>siege</p>
@@ -558,31 +601,6 @@
 </div>
 </li>
 </ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="environment"><a class="anchor" href="#environment"></a>Setup environment</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Login in the cluster with the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export WORKSHOP_USER=&lt;your number&gt;
-oc login  -u user$WORKSHOP_USER -p openshift
-
-Example:
-export WORKSHOP_USER=1</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_istio_installation"><a class="anchor" href="#_istio_installation"></a>Istio installation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The environment at  already contains Istio installed. However, if you want to learn how to install istio on your OpenShift cluster, refer to the document at <a href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.0.0/1setup.html#upstreamistioinstallation">Upstream Istio installation</a></p>
 </div>
 </div>
 </div>
