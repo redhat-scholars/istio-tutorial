@@ -6,20 +6,30 @@ ifdef::workshop[]
 [IMPORTANT]
 .Before Start
 ====
-Ask the admin to prepare the OpenShift instance: 
+Ask an admin to prepare the OpenShift instance using https://maistra.io/docs/install/
 
-Log-in as `admin` and run the following commands:
+- Use Maistra 0.6.0 for Istio 1.0.5
 
-[source, bash]
+- Make sure to use the following file as Control Plane configuration: 
+
+[source,yaml]
 ----
-oc adm policy add-scc-to-group anyuid system:authenticated
-
-oc adm policy add-scc-to-group privileged system:authenticated
-
-oc adm  policy add-role-to-group view system:authenticated -n istio-system
-
-oc adm  policy add-cluster-role-to-group cluster-admin system:authenticated -n istio-system
+include::workshop:example$istio-install.yaml[istio-install.yaml]
 ----
+
+- Give users the capability to see istio-system
+[source,bash,subs="+macros,+attributes"]
+----
+oc adm policy add-role-to-group view system:authenticated -n istio-system
+----
+
+- Give privileged access to containers
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc adm policy add-scc-to-group  privileged system:authenticated
+----
+
 ====
 
 

@@ -8,13 +8,13 @@ site:
 content:
   sources:
   - url: .
-    branches: master
+    branches: HEAD
     start_path: documentation
 asciidoc:
   attributes:
     workshop: true
-    ocpurl: https://master.testans-f011.openshiftworkshop.com
-    appdomain: apps.testans-f011.openshiftworkshop.com
+    ocpurl: https://master.anapolis-5218.openshiftworkshop.com
+    appdomain: apps.anapolis-5218.openshiftworkshop.com
     namespace-suffix: -$WORKSHOP_USER
 ui:
   bundle:

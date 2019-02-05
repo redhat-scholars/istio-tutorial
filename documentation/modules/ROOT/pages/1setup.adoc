@@ -258,10 +258,10 @@ prometheus-6ffc56584f-zgbv8                   1/1       Running     0          5
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-linux.tar.gz | tar xz
 
 # Both:
 cd istio-1.0.5

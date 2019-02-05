@@ -17,7 +17,7 @@ open "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5s&o
 endif::workshop[]
 ----
 
-image:grafana1.png[alt text]
+image:grafana1.png[Gragana 1]
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -32,7 +32,7 @@ endif::workshop[]
 
 to check the "Workload of the services"
 
-image:grafana2.png[alt text]
+image:grafana2.png[Grafana 2]
 
 // Custom Metrics removed because it requires access to istio-system.
 ifndef::workshop[] 

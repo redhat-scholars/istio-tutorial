@@ -1,0 +1,192 @@
+= Deploy Microservices
+include::ROOT:page$_attributes.adoc[]
+
+
+Create an environment variable for your user and log into OpenShift.
+
+[source,bash,subs="+macros,+attributes"]
+----
+export WORKSHOP_USER=<your-username-number>
+
+#Example:
+export WORKSHOP_USER=1
+
+oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
+----
+
+
+[#deploycustomer]
+== Deploy customer
+
+Make sure you are logged in
+
+[source,bash]
+----
+oc whoami
+or
+kubectl config current-context
+----
+
+and you have setup the project/namespace
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc new-project tutorial{namespace-suffix}
+or
+kubectl create namespace tutorial{namespace-suffix}
+kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
+
+ifndef::workshop[]
+oc adm policy add-scc-to-user privileged -z default -n tutorial
+endif::workshop[]
+----
+
+Then clone the git repository
+
+[source,bash]
+----
+git clone https://github.com/redhat-developer-demos/istio-tutorial
+cd istio-tutorial
+----
+
+Start deploying the microservice projects, starting with customer
+
+Make sure `istioctl` is in your `PATH`:
+
+[source,bash]
+----
+$ istioctl version
+Version: 1.0.5
+GitRevision: c1707e45e71c75d74bf3a5dec8c7086f32f32fad
+User: root@6f6ea1061f2b
+Hub: docker.io/istio
+GolangVersion: go1.10.4
+BuildStatus: Clean
+----
+
+=== Deploy Customer deploy using existing images
+
+Let's deploy the customer pod with its sidecar
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+
+or
+
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+
+=== Expose customer
+
+Since the `customer` service is the one our users will interact with, let's add an OpenShift Route that exposes that endpoint.
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc expose service customer -n tutorial{namespace-suffix}
+
+oc get route -n tutorial{namespace-suffix}
+oc get pods -w -n tutorial{namespace-suffix}
+
+or
+
+kubectl get route -o=jsonpath='{.items[0].spec.host}'
+kubectl get pods -w
+----
+
+IMPORTANT: If your pod fails with `ImagePullBackOff`, it's possible that your current terminal isn't using the proper Docker Environment. See link:#setup-environment[Setup environment].
+
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
+
+Then test the customer endpoint
+
+[source,bash,subs="+macros,+attributes"]
+----
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+
+You should see the following error because the services `preference` and `recommendation` are not yet deployed.
+
+----
+customer => I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
+----
+
+
+[#deploypreference]
+== Deploy preference
+
+=== Deploy Preference using existing image
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+
+or
+
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+
+
+=== Wait preference to be deployed
+
+[source, bash,subs="+macros,+attributes"]
+----
+oc get pods -w -n tutorial{namespace-suffix}
+or
+kubectl get pods -w
+----
+
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
+
+[source,bash,subs="+macros,+attributes"]
+----
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+
+It will respond with an error since the service `recommendation` is not yet deployed.
+
+NOTE: We could make this a bit more resilient in a future iteration of this tutorial
+
+[source,bash]
+----
+customer => 503 preference => I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
+----
+
+[#deployrecommendation]
+== Deploy recommendation
+
+=== Deploy Recommendation using existing images
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+oc get pods -w
+
+or 
+
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+kubectl get pods -w
+----
+
+=== Wait recommendation to be deployed
+
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
+
+[source,bash,subs="+macros,+attributes"]
+----
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+
+it should now return
+
+[source,bash]
+----
+customer => preference => recommendation v1 from '99634814-sf4cl': 1
+----
+

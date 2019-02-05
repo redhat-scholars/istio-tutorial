@@ -40,9 +40,9 @@ Make sure `istioctl` is in your `PATH`:
 [source,bash]
 ----
 $ istioctl version
-Version: 1.0.3
-GitRevision: a44d4c8bcb427db16ca4a439adfbd8d9361b8ed3
-User: root@0ead81bba27d
+Version: 1.0.5
+GitRevision: c1707e45e71c75d74bf3a5dec8c7086f32f32fad
+User: root@6f6ea1061f2b
 Hub: docker.io/istio
 GolangVersion: go1.10.4
 BuildStatus: Clean
