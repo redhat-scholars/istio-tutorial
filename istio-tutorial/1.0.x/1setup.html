@@ -791,13 +791,13 @@ Another option would be to add the annotation <code>sidecar.istio.io/inject: "tr
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.3/istio-1.0.3-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-linux.tar.gz | tar xz
 
 # Both:
-pushd istio-1.0.3
+pushd istio-1.0.5
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 popd</code></pre>
@@ -811,7 +811,7 @@ popd</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
 
 oc new-project istio-operator
-oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.4/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"</code></pre>
+oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.6/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -837,22 +837,23 @@ apiVersion: "istio.openshift.com/v1alpha1"
 kind: "Installation"
 metadata:
   name: "istio-installation"
+  namespace: istio-operator
 spec:
-  deployment_type: origin
+  deployment_type: openshift
   istio:
     authentication: false
-    community: true
-    prefix: maistra/
-    version: 0.4.0
+    community: false
+    prefix: openshift-istio-tech-preview/
+    version: 0.6.0
   jaeger:
-    prefix: jaegertracing/
-    version: 1.7.0
-    elasticsearch_memory: 2Gi
+    prefix: distributed-tracing-tech-preview/
+    version: 1.9.0
+    elasticsearch_memory: 1Gi
   kiali:
+    prefix: openshift-istio-tech-preview/
+    version: 0.13.0
     username: admin
     password: admin
-    prefix: kiali/
-    version: v0.9.1
 EOF
 oc create -f /tmp/istio-cr.yaml</code></pre>
 </div>
