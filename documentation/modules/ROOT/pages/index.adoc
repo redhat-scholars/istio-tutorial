@@ -6,7 +6,7 @@ ifdef::workshop[]
 [IMPORTANT]
 .Before Start
 ====
-- Ask an admin to link: http://bit.ly/OCPWorkshops[prepare the OpenShift instance].
+- Ask an admin to link:http://bit.ly/OCPWorkshops[prepare the OpenShift instance].
 
 - Adjust the documentation by modifying these link:https://github.com/redhat-developer-demos/istio-tutorial/blob/master/site-workshop.yml#L16-L17[two variables]
 
