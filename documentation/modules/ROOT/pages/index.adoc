@@ -6,7 +6,7 @@ ifdef::workshop[]
 [IMPORTANT]
 .Before Start
 ====
-Ask an admin to prepare the OpenShift instance using https://maistra.io/docs/install/
+Ask an admin to link: http://bit.ly/OCPWorkshops[prepare the OpenShift instance] using https://maistra.io/docs/install/
 
 - Use Maistra 0.6.0 for Istio 1.0.5
 
