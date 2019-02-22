@@ -711,14 +711,102 @@ In this tutorial, you will often be polling the customer endpoint with <code>cur
 </table>
 </div>
 <div class="paragraph">
-<p>You have two options to install Istio in your environment.
-The option 1 is through the installation of <a href="https://docs.openshift.com/container-platform/3.10/servicemesh-install/servicemesh-install.html">Red Hat OpenShift Service Mesh</a>, which includes Jaeger and Kiali in addition to Istio components.
-The option 2 is using the Istio source code from upstream community.</p>
+<p>You have two options to install Istio in your environment. The option 1 is using the Istio source code from upstream community. The option 2 is through the installation of <a href="https://docs.openshift.com/container-platform/3.10/servicemesh-install/servicemesh-install.html">Red Hat OpenShift Service Mesh</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="redhatistioinstallation"><a class="anchor" href="#redhatistioinstallation"></a>(Option 1) Red Hat OpenShift Service Mesh installation</h2>
+<h2 id="upstreamistioinstallation"><a class="anchor" href="#upstreamistioinstallation"></a>(Option 1) Upstream Istio installation</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
+
+# Mac OS:
+curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-osx.tar.gz | tar xz
+
+# Fedora/RHEL:
+curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-linux.tar.gz | tar xz
+
+# Both:
+cd istio-1.0.5
+export ISTIO_HOME=`pwd`
+export PATH=$ISTIO_HOME/bin:$PATH</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f install/kubernetes/helm/istio/templates/crds.yaml
+or
+kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+
+
+oc apply -f install/kubernetes/istio-demo.yaml
+or
+kubectl apply -f install/kubernetes/istio-demo.yaml
+
+oc project istio-system
+or
+kubectl config set-context $(kubectl config current-context) --namespace=istio-system
+
+oc expose svc istio-ingressgateway
+oc expose svc servicegraph
+oc expose svc grafana
+oc expose svc prometheus
+oc expose svc tracing</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for Istio&#8217;s components to be ready</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -w
+or
+$ kubectl get pods -w
+
+NAME                                        READY     STATUS      RESTARTS   AGE
+grafana-6995b4fbd7-ntp4f                    1/1       Running     0          57m
+istio-citadel-54f4678f86-jnv5s              1/1       Running     0          57m
+istio-cleanup-secrets-nch4k                 0/1       Completed   0          57m
+istio-egressgateway-5d7f8fcc7b-r76gg        1/1       Running     0          57m
+istio-galley-7bd8b5f88f-nlczb               1/1       Running     0          57m
+istio-grafana-post-install-lffq2            0/1       Completed   0          57m
+istio-ingressgateway-6f58fdc8d7-gbzzq       1/1       Running     0          57m
+istio-pilot-d99689994-zh66q                 2/2       Running     0          57m
+istio-policy-766bf4bd6d-skwkp               2/2       Running     0          57m
+istio-sidecar-injector-85ccf84984-crmhv     1/1       Running     0          57m
+istio-statsd-prom-bridge-55965ff9c8-76nx4   1/1       Running     0          57m
+istio-telemetry-55b6b5bbc7-qmf2l            2/2       Running     0          57m
+istio-tracing-77f9f94b98-kknh7              1/1       Running     0          57m
+prometheus-7456f56c96-nxdvv                 1/1       Running     0          57m
+servicegraph-684c85ffb9-f7tjp               1/1       Running     2          57m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And if you need quick access to the OpenShift console</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minishift console</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+On your first launch of the OpenShift console via <code>minishift</code>, you will receive a warning like "Your connection is not private". For our demo, simply select "Proceed to 192.168.xx.xx (unsafe)" to bypass the warning. Both the username and the password are set to <code>admin</code>, thanks to the <code>admin-user</code> add-on.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="redhatistioinstallation"><a class="anchor" href="#redhatistioinstallation"></a>(Option 2) Red Hat OpenShift Service Mesh installation</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The Red Hat OpenShift Service Mesh uses an operator to install all Istio components and to set all permissions. You also get Jaeger and Kaili pre-installed in the bundle.</p>
@@ -884,96 +972,6 @@ kiali-6b8c686d9b-mkxdv                        1/1       Running     0          2
 openshift-ansible-istio-installer-job-rj7pj   0/1       Completed   0          7m
 prometheus-6ffc56584f-zgbv8                   1/1       Running     0          5m</code></pre>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="upstreamistioinstallation"><a class="anchor" href="#upstreamistioinstallation"></a>(Option 2) Upstream Istio installation</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
-
-# Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-osx.tar.gz | tar xz
-
-# Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-linux.tar.gz | tar xz
-
-# Both:
-cd istio-1.0.5
-export ISTIO_HOME=`pwd`
-export PATH=$ISTIO_HOME/bin:$PATH</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f install/kubernetes/helm/istio/templates/crds.yaml
-or
-kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
-
-
-oc apply -f install/kubernetes/istio-demo.yaml
-or
-kubectl apply -f install/kubernetes/istio-demo.yaml
-
-oc project istio-system
-or
-kubectl config set-context $(kubectl config current-context) --namespace=istio-system
-
-oc expose svc istio-ingressgateway
-oc expose svc servicegraph
-oc expose svc grafana
-oc expose svc prometheus
-oc expose svc tracing</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Wait for Istio&#8217;s components to be ready</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -w
-or
-$ kubectl get pods -w
-
-NAME                                        READY     STATUS      RESTARTS   AGE
-grafana-6995b4fbd7-ntp4f                    1/1       Running     0          57m
-istio-citadel-54f4678f86-jnv5s              1/1       Running     0          57m
-istio-cleanup-secrets-nch4k                 0/1       Completed   0          57m
-istio-egressgateway-5d7f8fcc7b-r76gg        1/1       Running     0          57m
-istio-galley-7bd8b5f88f-nlczb               1/1       Running     0          57m
-istio-grafana-post-install-lffq2            0/1       Completed   0          57m
-istio-ingressgateway-6f58fdc8d7-gbzzq       1/1       Running     0          57m
-istio-pilot-d99689994-zh66q                 2/2       Running     0          57m
-istio-policy-766bf4bd6d-skwkp               2/2       Running     0          57m
-istio-sidecar-injector-85ccf84984-crmhv     1/1       Running     0          57m
-istio-statsd-prom-bridge-55965ff9c8-76nx4   1/1       Running     0          57m
-istio-telemetry-55b6b5bbc7-qmf2l            2/2       Running     0          57m
-istio-tracing-77f9f94b98-kknh7              1/1       Running     0          57m
-prometheus-7456f56c96-nxdvv                 1/1       Running     0          57m
-servicegraph-684c85ffb9-f7tjp               1/1       Running     2          57m</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And if you need quick access to the OpenShift console</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minishift console</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-On your first launch of the OpenShift console via <code>minishift</code>, you will receive a warning like "Your connection is not private". For our demo, simply select "Proceed to 192.168.xx.xx (unsafe)" to bypass the warning. Both the username and the password are set to <code>admin</code>, thanks to the <code>admin-user</code> add-on.
-</td>
-</tr>
-</table>
 </div>
 </div>
 </div>
