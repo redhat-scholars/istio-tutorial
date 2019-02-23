@@ -33,6 +33,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.ap4k</groupId>
+            <artifactId>kubernetes-spring-starter</artifactId>
+            <version>0.2.2</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>23.0</version>
