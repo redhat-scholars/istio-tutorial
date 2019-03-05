@@ -8,6 +8,7 @@ Create an environment variable for your user and log into OpenShift.
 ----
 export WORKSHOP_USER=<your-username-number>
 
+
 #Example:
 export WORKSHOP_USER=1
 
@@ -167,7 +168,7 @@ oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/k
 oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 oc get pods -w
 
-or 
+or
 
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
