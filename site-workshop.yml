@@ -13,8 +13,8 @@ content:
 asciidoc:
   attributes:
     workshop: true
-    ocpurl: https://master.anapolis-5218.openshiftworkshop.com
-    appdomain: apps.anapolis-5218.openshiftworkshop.com
+    ocpurl: https://master.atlanta-c952.openshiftworkshop.com/
+    appdomain: apps.atlanta-c952.openshiftworkshop.com
     namespace-suffix: -$WORKSHOP_USER
 ui:
   bundle:
