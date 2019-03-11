@@ -3,12 +3,14 @@
 ifdef::workshop[]
 - This is a Workshop version available at http://bit.ly/the-istio-workshop
 
+- EtherPad URL: {etherpad}
+
 [IMPORTANT]
 .Before Start
 ====
 - Ask an admin to link:http://bit.ly/OCPWorkshops[prepare the OpenShift instance].
 
-- Adjust the documentation by modifying these link:https://github.com/redhat-developer-demos/istio-tutorial/blob/master/site-workshop.yml#L16-L17[two variables]
+- Adjust the documentation by modifying these link:https://github.com/redhat-developer-demos/istio-tutorial/blob/master/site-workshop.yml#L16-L18[three variables]
 
 
 - Install link:https://maistra.io/docs/install/[Maistra 0.6.0] for Istio 1.0.5

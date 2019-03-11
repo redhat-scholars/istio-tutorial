@@ -13,8 +13,9 @@ content:
 asciidoc:
   attributes:
     workshop: true
-    ocpurl: https://master.atlanta-c952.openshiftworkshop.com/
-    appdomain: apps.atlanta-c952.openshiftworkshop.com
+    ocpurl: https://master.istambul-1b3d.openshiftworkshop.com
+    appdomain: apps.istambul-1b3d.openshiftworkshop.com
+    etherpad: https://etherpad.wikimedia.org/p/IstioIstambul
     namespace-suffix: -$WORKSHOP_USER
 ui:
   bundle:

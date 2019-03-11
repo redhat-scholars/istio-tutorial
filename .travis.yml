@@ -16,7 +16,7 @@ jdk:
 before_install:
   - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
   - '[ $(git log --format=%B  $TRAVIS_COMMIT_RANGE | grep -i "#doc" | wc -l) -gt 0 ] && FORCE_DOC_GEN=0 || FORCE_DOC_GEN=1'
-  - MODIFIED_DOCS=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -E 'README.adoc|^documentation/.*.adoc$' | wc -l)
+  - MODIFIED_DOCS=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -E 'site-*|README.adoc|^documentation/.*.adoc$' | wc -l)
   - '[ $BRANCH == "master" ] && [ $MODIFIED_DOCS -ge 1 ] && GENERATE_DOC=0 || GENERATE_DOC=1'
   - 'if [ $FORCE_DOC_GEN == 0 ] || [ $GENERATE_DOC == 0 ]; then
       git config user.name "${GH_USER}";
