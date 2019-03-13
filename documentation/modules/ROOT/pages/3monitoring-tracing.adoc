@@ -6,18 +6,24 @@ include::_attributes.adoc[]
 
 Out of the box, you get monitoring via Prometheus and Grafana. 
 
+NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `siege customer-tutorial.$(minishift ip).nip.io` to produce load.
+
 [source,bash,subs="+macros,+attributes"]
 ----
 ifdef::workshop[]
 open http://grafana-istio-system.{appdomain}/d/1/istio-dashboard?refresh=5s&orgId=1
+or
+firefox http://grafana-istio-system.{appdomain}/d/1/istio-dashboard?refresh=5s&orgId=1
 endif::workshop[]
 
 ifndef::workshop[]
 open "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5s&orgId=1"
+or
+firefox "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5s&orgId=1"
 endif::workshop[]
 ----
 
-image:grafana1.png[Gragana 1]
+image:../assets/images/grafana1.png[Grafana 1]
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -27,12 +33,14 @@ endif::workshop[]
 
 ifndef::workshop[]
 open "$(minishift openshift service grafana -u)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
+or
+firefox "$(minishift openshift service grafana -u)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
 endif::workshop[]
 ----
 
 to check the "Workload of the services"
 
-image:grafana2.png[Grafana 2]
+image:../assets/images/grafana2.png[Grafana 2]
 
 // Custom Metrics removed because it requires access to istio-system.
 ifndef::workshop[] 
@@ -45,10 +53,14 @@ Istio also allows you to specify custom metrics which can be seen inside of the 
 ----
 ifdef::workshop[]
 open http://prometheus-istio-system.{appdomain}/graph?g0.range_input=5m&g0.expr=&g0.tab=0"
+or
+firefox http://prometheus-istio-system.{appdomain}/graph?g0.range_input=5m&g0.expr=&g0.tab=0"
 endif::workshop[]
 
 ifndef::workshop[]
 open "$(minishift openshift service prometheus -u)/graph?g0.range_input=5m&g0.expr=&g0.tab=0"
+or
+firefox "$(minishift openshift service prometheus -u)/graph?g0.range_input=5m&g0.expr=&g0.tab=0"
 endif::workshop[]
 ----
 
@@ -68,7 +80,7 @@ istio_requests_total{destination_service="recommendation.tutorial.svc.cluster.lo
 
 and select `Execute`
 
-image:prometheus_custom_metric.png[alt text]
+image:../assets/images/prometheus_custom_metric.png[alt text]
 
 Then run several requests through the system
 
@@ -96,6 +108,8 @@ Let's open the Jaeger console, select `customer` from the list of services and c
 ----
 ifdef::workshop[]
 open http://tracing-istio-system.{appdomain}/
+or
+firefox http://tracing-istio-system.{appdomain}/
 endif::workshop[]
 
 ifndef::workshop[]
@@ -104,4 +118,4 @@ endif::workshop[]
 
 ----
 
-image:jaegerUI.png[Trace as seen in Jaeger]
+image:../assets/images/jaegerUI.png[Trace as seen in Jaeger]
