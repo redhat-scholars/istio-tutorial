@@ -79,10 +79,13 @@ minishift config set image-caching true
 minishift config set openshift-version v3.11.0
 minishift addon enable admin-user
 minishift addon enable anyuid
+#cdk 3.7 bug - docker url check
+minishift config set skip-startup-checks true
 
 minishift start
 minishift ssh -- sudo setenforce 0
 ----
+
 
 [#environment]
 == Setup environment
@@ -92,6 +95,8 @@ minishift ssh -- sudo setenforce 0
 eval $(minishift oc-env)
 eval $(minishift docker-env)
 oc login $(minishift ip):8443 -u admin -p admin
+#or 
+oc login -u system:admin
 ----
 
 NOTE: In this tutorial, you will often be polling the customer endpoint with `curl`, while simultaneously viewing logs via `stern` or `kubetail.sh` and issuing commands via `oc` and `istioctl`. Consider using three terminal windows.
