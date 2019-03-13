@@ -38,7 +38,7 @@ You will need in this tutorial:
 ====
 If you want to validate if everything is installed at once, just open a terminal and run:
 
-`curl -sL https://git.io/_has | HAS_ALLOW_UNSAFE=y bash -s minishift docker oc kubectl git mvn curl stern siege`
+`curl -sL https://git.io/_has | HAS_ALLOW_UNSAFE=y bash -s`
 
 The output should be something like:
 
