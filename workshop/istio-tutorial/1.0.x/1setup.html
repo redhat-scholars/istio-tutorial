@@ -410,6 +410,8 @@ minishift config set image-caching true
 minishift config set openshift-version v3.11.0
 minishift addon enable admin-user
 minishift addon enable anyuid
+#cdk 3.7 bug - docker url check
+minishift config set skip-startup-checks true
 
 minishift start
 minishift ssh -- sudo setenforce 0</code></pre>
@@ -424,7 +426,9 @@ minishift ssh -- sudo setenforce 0</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift oc-env)
 eval $(minishift docker-env)
-oc login $(minishift ip):8443 -u admin -p admin</code></pre>
+oc login $(minishift ip):8443 -u admin -p admin
+#or
+oc login -u system:admin</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
