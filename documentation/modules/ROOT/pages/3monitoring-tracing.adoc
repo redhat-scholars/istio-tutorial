@@ -23,7 +23,7 @@ firefox "$(minishift openshift service grafana -u)/d/1/istio-dashboard?refresh=5
 endif::workshop[]
 ----
 
-image:../assets/images/grafana1.png[Grafana 1]
+image:grafana1.png[Grafana 1]
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -40,7 +40,7 @@ endif::workshop[]
 
 to check the "Workload of the services"
 
-image:../assets/images/grafana2.png[Grafana 2]
+image:grafana2.png[Grafana 2]
 
 // Custom Metrics removed because it requires access to istio-system.
 ifndef::workshop[] 
@@ -80,7 +80,7 @@ istio_requests_total{destination_service="recommendation.tutorial.svc.cluster.lo
 
 and select `Execute`
 
-image:../assets/images/prometheus_custom_metric.png[alt text]
+image:prometheus_custom_metric.png[alt text]
 
 Then run several requests through the system
 
@@ -118,4 +118,4 @@ endif::workshop[]
 
 ----
 
-image:../assets/images/jaegerUI.png[Trace as seen in Jaeger]
+image:jaegerUI.png[Trace as seen in Jaeger]
