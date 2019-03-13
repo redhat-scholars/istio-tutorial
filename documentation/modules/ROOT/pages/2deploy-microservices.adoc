@@ -123,6 +123,8 @@ Also review the logs
 [source,bash]
 ----
 stern $(kubectl get pods|grep customer|awk '{ print $1 }'|head -1) -c customer
+or
+stern "customer-\w" -c customer
 ----
 
 You should see a stacktrace containing this cause:
@@ -201,6 +203,8 @@ and check out the logs
 [source,bash]
 ----
 stern $(kubectl get pods|grep preference|awk '{ print $1 }'|head -1) -c preference
+or
+stern "preference-\w" -c preference
 ----
 
 You should see a stacktrace containing this cause:
@@ -274,6 +278,8 @@ and you can monitor the `recommendation` logs with
 [source,bash]
 ----
 stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation
+or
+stern "recommendation-v1-\w" -c recommendation-v1
 ----
 
 Back to the main `istio-tutorial` directory
