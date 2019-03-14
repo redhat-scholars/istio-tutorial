@@ -652,7 +652,9 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep customer|awk '{ print $1 }'|head -1) -c customer</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep customer|awk '{ print $1 }'|head -1) -c customer
+or
+stern "customer-\w" -c customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -750,7 +752,9 @@ We could make this a bit more resilient in a future iteration of this tutorial
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep preference|awk '{ print $1 }'|head -1) -c preference</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep preference|awk '{ print $1 }'|head -1) -c preference
+or
+stern "preference-\w" -c preference</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -843,7 +847,9 @@ oc logs bc/recommendation-v1 -f -n tutorial</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation
+or
+stern "recommendation-v1-\w" -c recommendation-v1</code></pre>
 </div>
 </div>
 <div class="paragraph">
