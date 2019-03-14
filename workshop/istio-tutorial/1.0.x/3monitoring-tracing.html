@@ -232,13 +232,27 @@
 <div class="paragraph">
 <p>Out of the box, you get monitoring via Prometheus and Grafana.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You may want to push some load onto the deployed applications in order to see some metrics.  Run <code>siege customer-tutorial.$(minishift ip).nip.io</code> to produce load.
+</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://grafana-istio-system.apps.istambul-1b3d.openshiftworkshop.com/d/1/istio-dashboard?refresh=5s&amp;orgId=1" class="bare">http://grafana-istio-system.apps.istambul-1b3d.openshiftworkshop.com/d/1/istio-dashboard?refresh=5s&amp;orgId=1</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://grafana-istio-system.apps.istambul-1b3d.openshiftworkshop.com/d/1/istio-dashboard?refresh=5s&amp;orgId=1" class="bare">http://grafana-istio-system.apps.istambul-1b3d.openshiftworkshop.com/d/1/istio-dashboard?refresh=5s&amp;orgId=1</a>
+or
+firefox <a href="http://grafana-istio-system.apps.istambul-1b3d.openshiftworkshop.com/d/1/istio-dashboard?refresh=5s&amp;orgId=1" class="bare">http://grafana-istio-system.apps.istambul-1b3d.openshiftworkshop.com/d/1/istio-dashboard?refresh=5s&amp;orgId=1</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/grafana1.png" alt="Gragana 1"></span></p>
+<p><span class="image"><img src="_images/grafana1.png" alt="Grafana 1"></span></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -270,7 +284,9 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://tracing-istio-system.apps.istambul-1b3d.openshiftworkshop.com/" class="bare">http://tracing-istio-system.apps.istambul-1b3d.openshiftworkshop.com/</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://tracing-istio-system.apps.istambul-1b3d.openshiftworkshop.com/" class="bare">http://tracing-istio-system.apps.istambul-1b3d.openshiftworkshop.com/</a>
+or
+firefox <a href="http://tracing-istio-system.apps.istambul-1b3d.openshiftworkshop.com/" class="bare">http://tracing-istio-system.apps.istambul-1b3d.openshiftworkshop.com/</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
