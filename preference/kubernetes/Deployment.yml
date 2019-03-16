@@ -17,38 +17,54 @@ spec:
         app: preference
         version: v1
     spec:
+      serviceAccountName: build-bot
+      initContainers:
+        - name: build-status-checker
+          image: quay.io/rhdevelopers/build-status-checker
+          args:
+            - poll
+            - --buildname=istio-tutorial-preference-build
+            - --namespace=tutorial
       containers:
-      - env:
-        - name: JAVA_OPTIONS
-          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
-        image: example/preference:v1
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 1
-        name: preference
-        ports:
-        - containerPort: 8080
-          name: http
-          protocol: TCP
-        - containerPort: 8778
-          name: jolokia
-          protocol: TCP
-        - containerPort: 9779
-          name: prometheus
-          protocol: TCP
-        readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 1
-        securityContext:
-          privileged: false
+        - env:
+            - name: JAVA_OPTIONS
+              value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+            - name: JAEGER_SERVICE_NAME
+              value: preference
+            - name: JAEGER_ENDPOINT
+              value: http://jaeger-collector.istio-system.svc:14268/api/traces
+            - name: JAEGER_PROPAGATION
+              value: b3
+            - name: JAEGER_SAMPLER_TYPE
+              value: const
+            - name: JAEGER_SAMPLER_PARAM
+              value: "1"
+          image: dev.local/rhdevelopers/preference:v1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /health
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 1
+          name: preference
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            - containerPort: 8778
+              name: jolokia
+              protocol: TCP
+            - containerPort: 9779
+              name: prometheus
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /health
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 1
+          securityContext:
+            privileged: false
