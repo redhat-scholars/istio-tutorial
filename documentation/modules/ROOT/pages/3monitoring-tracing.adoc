@@ -115,7 +115,6 @@ endif::workshop[]
 ifndef::workshop[]
 minishift openshift service tracing --in-browser
 endif::workshop[]
-
 ----
 
 image:jaegerUI.png[Trace as seen in Jaeger]
