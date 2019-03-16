@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RecommendationController {
 
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
+    private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -24,8 +24,8 @@ public class RecommendationController {
      */
     private boolean misbehave = false;
 
-    private static final String HOSTNAME = parseContainerIdFromHostname(
-            System.getenv().getOrDefault("HOSTNAME", "unknown"));
+    private static final String HOSTNAME =
+            parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
 
     static String parseContainerIdFromHostname(String hostname) {
         return hostname.replaceAll("recommendation-v\\d+-", "");
@@ -42,7 +42,8 @@ public class RecommendationController {
         if (misbehave) {
             return doMisbehavior();
         }
-        return ResponseEntity.ok(String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
+        return ResponseEntity.ok(
+                String.format(RecommendationController.RESPONSE_STRING_FORMAT, HOSTNAME, count));
     }
 
     private void timeout() {
