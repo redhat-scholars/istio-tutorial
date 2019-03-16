@@ -107,9 +107,9 @@ Let's open the Jaeger console, select `customer` from the list of services and c
 [source,bash,subs="+macros,+attributes"]
 ----
 ifdef::workshop[]
-open http://jaeger-query-istio-system.{appdomain}/
+open https://jaeger-query-istio-system.{appdomain}/
 or
-firefox http://jaeger-query-istio-system.{appdomain}/
+firefox https://jaeger-query-istio-system.{appdomain}/
 endif::workshop[]
 
 ifndef::workshop[]
