@@ -1,4 +1,4 @@
-package com.redhat.developers;
+package com.redhat.developer.demos.recommendation.rest;
 
 import io.quarkus.test.junit.SubstrateTest;
 

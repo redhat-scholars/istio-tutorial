@@ -1,4 +1,4 @@
-package com.redhat.developers;
+package com.redhat.developer.demos.recommendation.rest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
