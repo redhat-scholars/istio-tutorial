@@ -2,6 +2,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 audit.log
 .cache/
+*.log
 
 docs/
 gh-pages/
