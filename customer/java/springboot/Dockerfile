@@ -1,4 +1,4 @@
-FROM fabric8/java-jboss-openjdk8-jdk:1.3.1
+FROM fabric8/java-jboss-openjdk8-jdk:1.5.2
 ENV JAVA_APP_DIR=/deployments
 ENV JAEGER_SERVICE_NAME=customer\
   JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces\

@@ -54,8 +54,6 @@ public class RecommendationController {
     }
 
     private ResponseEntity<String> doMisbehavior() {
-        count = 0;
-        misbehave = false;
         logger.debug(String.format("Misbehaving %d", count));
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
@@ -66,6 +64,13 @@ public class RecommendationController {
         this.misbehave = true;
         logger.debug("'misbehave' has been set to 'true'");
         return ResponseEntity.ok("Next request to / will return a 503\n");
+    }
+
+    @RequestMapping("/behave")
+    public ResponseEntity<String> flagBehave() {
+        this.misbehave = false;
+        logger.debug("'misbehave' has been set to 'false'");
+        return ResponseEntity.ok("Next request to / will return 200\n");
     }
 
 }

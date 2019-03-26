@@ -4,8 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
@@ -25,6 +26,21 @@ public class PreferencesController {
 
     public PreferencesController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "text/plain")
+    public ResponseEntity<String> addRecommendation(@RequestBody String body) {
+        try {
+            return restTemplate.postForEntity(remoteURL, body, String.class);
+        } catch (HttpStatusCodeException ex) {
+            logger.warn("Exception trying to post to recommendation service.", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(String.format("%d %s", ex.getRawStatusCode(), createHttpErrorResponseString(ex)));
+        } catch (RestClientException ex) {
+            logger.warn("Exception trying to post to recommendation service.", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ex.getMessage());
+        }
     }
 
     @RequestMapping("/")
