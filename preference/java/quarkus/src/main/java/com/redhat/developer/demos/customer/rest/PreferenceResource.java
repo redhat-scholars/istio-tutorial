@@ -22,8 +22,7 @@ public class PreferenceResource {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public Response getCustomer(@HeaderParam("User-Agent") String user) {
-        System.out.println(user);
+    public Response getCustomer() {
         try {
             String response = recommendationService.getPreference();
             return Response.ok(String.format(RESPONSE_STRING_FORMAT, response)).build();

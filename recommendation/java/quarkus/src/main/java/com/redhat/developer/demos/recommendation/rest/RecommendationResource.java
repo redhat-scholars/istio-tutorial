@@ -32,7 +32,7 @@ public class RecommendationResource {
     }
 
     @GET
-    public Response recommendations() {
+    public Response getRecommendations() {
         count++;
         logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
 
