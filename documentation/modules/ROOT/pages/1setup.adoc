@@ -74,16 +74,19 @@ In case of using Minishift you need at least minishift v1.24.0.
 minishift profile set istio-tutorial
 minishift config set memory 8GB
 minishift config set cpus 3
-minishift config set vm-driver virtualbox ## or kvm, for Fedora
 minishift config set image-caching true
 minishift config set openshift-version v3.11.0
 minishift addon enable admin-user
-minishift addon enable anyuid
+
 #cdk 3.7 bug - docker url check
 minishift config set skip-startup-checks true
 
 minishift start
+#This needs to be executed again if you restart minishift.
 minishift ssh -- sudo setenforce 0
+
+# Openshift console bug. anyuid needs to be applied after startup
+minishift addon apply anyuid
 ----
 
 
@@ -101,23 +104,21 @@ oc login -u system:admin
 
 NOTE: In this tutorial, you will often be polling the customer endpoint with `curl`, while simultaneously viewing logs via `stern` or `kubetail.sh` and issuing commands via `oc` and `istioctl`. Consider using three terminal windows.
 
-You have two options to install Istio in your environment. The option 1 is using the Istio source code from upstream community. The option 2 is through the installation of https://docs.openshift.com/container-platform/3.10/servicemesh-install/servicemesh-install.html[Red Hat OpenShift Service Mesh] 
-
 [#upstreamistioinstallation]
-== (Option 1) Upstream Istio installation
+== Upstream Istio installation
 
 [source,bash]
 ----
 #!/bin/bash
 
 # Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-osx.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.1.1/istio-1.1.1-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/1.1.1/istio-1.1.1-linux.tar.gz | tar xz
 
 # Both:
-cd istio-1.0.5
+cd istio-1.1.1
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
 
@@ -126,9 +127,9 @@ export PATH=$ISTIO_HOME/bin:$PATH
 [source,bash]
 ----
 
-oc apply -f install/kubernetes/helm/istio/templates/crds.yaml
+oc apply -f install/kubernetes/helm/istio-init/files/crd-11.yaml
 or
-kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+kubectl apply -f install/kubernetes/helm/istio-init/files/crd-11.yaml
 
 
 oc apply -f install/kubernetes/istio-demo.yaml
@@ -140,7 +141,6 @@ or
 kubectl config set-context $(kubectl config current-context) --namespace=istio-system
 
 oc expose svc istio-ingressgateway
-oc expose svc servicegraph
 oc expose svc grafana
 oc expose svc prometheus
 oc expose svc tracing
@@ -182,130 +182,6 @@ minishift console
 NOTE: On your first launch of the OpenShift console via `minishift`, you will receive a warning like "Your connection is not private". For our demo, simply select "Proceed to 192.168.xx.xx (unsafe)" to bypass the warning. Both the username and the password are set to `admin`, thanks to the `admin-user` add-on.
 
 
-[#redhatistioinstallation]
-== (Option 2) Red Hat OpenShift Service Mesh installation
-
-The Red Hat OpenShift Service Mesh uses an operator to install all Istio components and to set all permissions. You also get Jaeger and Kaili pre-installed in the bundle.
-
-Before start, you have to enable mutating and validating admission webhook plugins
-
-[source,bash]
-----
-#!/bin/bash
-
-minishift openshift config set --target=kube --patch '{
-    "admissionConfig": {
-        "pluginConfig": {
-            "ValidatingAdmissionWebhook": {
-                "configuration": {
-                    "apiVersion": "apiserver.config.k8s.io/v1alpha1",
-                    "kind": "WebhookAdmission",
-                    "kubeConfigFile": "/dev/null"
-                }
-            },
-            "MutatingAdmissionWebhook": {
-                "configuration": {
-                    "apiVersion": "apiserver.config.k8s.io/v1alpha1",
-                    "kind": "WebhookAdmission",
-                    "kubeConfigFile": "/dev/null"
-                }
-            }
-        }
-    }
-}'
-----
-
-You also need to set the system limits on `mmap` counts otherwise Elasticsearch will fail.
-Jaeger uses Elasticsearch and it is part of the Red Hat OpenShift Service Mesh.
-Elasticsearch uses a `mmapfs` directory by default to store its indices.
-The default operating system limits on `mmap` counts is likely to be too low, which may result in out of memory exceptions.
-To fix this you have to login into the minishift instance and do the following
-
-[source,bash]
-----
-$ minishift ssh
-[docker@istio-tutorial ~]$ sudo -i
-[root@istio-tutorial ~]$ echo "vm.max_map_count = 262144" > /etc/sysctl.d/99-elasticsearch.conf
-[root@istio-tutorial ~]$ sysctl vm.max_map_count=262144
-[root@istio-tutorial ~]$ exit
-logout
-[docker@istio-tutorial ~]$ exit
-logout
-----
-
-Download the Istio release and add `istioctl` to your path so later in this tutorial you can use it to manually inject the sidecars.
-
-NOTE: Another option would be to add the annotation `sidecar.istio.io/inject: "true"` in the deployment files so the sidecar is injected automatically.
-
-[source,bash]
-----
-#!/bin/bash
-
-# Mac OS:
-curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-osx.tar.gz | tar xz
-
-# Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/1.0.5/istio-1.0.5-linux.tar.gz | tar xz
-
-# Both:
-pushd istio-1.0.5
-export ISTIO_HOME=`pwd`
-export PATH=$ISTIO_HOME/bin:$PATH
-popd
-
-----
-
-Now your system is prepared and we can install Istio operator
-
-[source,bash]
-----
-#!/bin/bash
-
-oc new-project istio-operator
-oc new-app -f https://raw.githubusercontent.com/Maistra/openshift-ansible/maistra-0.6/istio/istio_community_operator_template.yaml --param=OPENSHIFT_ISTIO_MASTER_PUBLIC_URL="https://$(minishift ip):8443"
-----
-
-Wait for the operator to be ready
-
-[source,bash]
-----
-$ oc get pods -w -n istio-operator
-
-NAME                              READY     STATUS    RESTARTS   AGE
-istio-operator-58c45d8f64-jdsrz   1/1       Running   0          10s
-----
-
-Once operator is ready, create an installation for Istio
-
-[source,bash]
-----
-#!/bin/bash
-oc project istio-operator
-cat <<EOF >/tmp/istio-cr.yaml
-apiVersion: "istio.openshift.com/v1alpha1"
-kind: "Installation"
-metadata:
-  name: "istio-installation"
-  namespace: istio-operator
-spec:
-  deployment_type: openshift
-  istio:
-    authentication: false
-    community: false
-    prefix: openshift-istio-tech-preview/
-    version: 0.6.0
-  jaeger:
-    prefix: distributed-tracing-tech-preview/
-    version: 1.9.0
-    elasticsearch_memory: 1Gi
-  kiali:
-    prefix: openshift-istio-tech-preview/
-    version: 0.13.0
-    username: admin
-    password: admin
-EOF
-oc create -f /tmp/istio-cr.yaml
-----
 
 Wait for Istio's components to be ready
 

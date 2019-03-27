@@ -4,7 +4,7 @@ include::_attributes.adoc[]
 [IMPORTANT]
 .Before Start
 ====
-You should have NO virtualservice, destinationrule, gateway or policy (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` `istioctl get gateway` `istioctl get policy`
+You should have NO virtualservice, destinationrule, gateway or policy (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` `kubectl get gateway{namespace-suffix}` `kubectl get policy{namespace-suffix}`
 if so run:
 
 [source, bash]
@@ -32,7 +32,7 @@ For this reason, let's create a `Gateway` and `VirtualService` that allows local
 
 [source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/gateway-customer.yml[istiofiles/gateway-customer.yml]
+kubectl create -f link:{github-repo}/{istiofiles-dir}/gateway-customer.yml[istiofiles/gateway-customer.yml]
 ----
 
 Then configure some environment variables that will help you on testing:
@@ -67,8 +67,8 @@ Now that Istio gateway is in place, you can enable _mTLS_ by applying next Istio
 
 [source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/authentication-enable-tls.yml[istiofiles/authentication-enable-tls.yml] # <1>
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[istiofiles/destination-rule-tls.yml] # <2>
+kubectl create -f link:{github-repo}/{istiofiles-dir}/authentication-enable-tls.yml[istiofiles/authentication-enable-tls.yml] # <1>
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[istiofiles/destination-rule-tls.yml] # <2>
 ----
 <1> Enables mTLS into `tutorial` namespace
 <2> Makes that services withn `tutorial` namespace communicates with _mTLS_
@@ -84,18 +84,8 @@ customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
 And you'll see exactly the same but now the communication between the services has been secured.
 How can you check that?
 
-*First* running next command:
 
-[source, bash]
-----
-istioctl authn tls-check | grep tutorial
-
-customer.tutorial.svc.cluster.local:8080                         OK         mTLS       mTLS       default/tutorial                             default/tutorial
-preference.tutorial.svc.cluster.local:8080                       OK         mTLS       mTLS       default/tutorial                             default/tutorial
-recommendation.tutorial.svc.cluster.local:8080                   OK         mTLS       mTLS       default/tutorial                             default/tutorial
-----
-
-*Second*, by _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
+By _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
 
 [source, bash]
 ----
@@ -155,8 +145,8 @@ Now, let's disable _TLS_:
 
 [source, bash]
 ----
-istioctl delete -f istiofiles/authentication-enable-tls.yml
-istioctl delete -f istiofiles/destination-rule-tls.yml
+kubectl delete -f istiofiles/authentication-enable-tls.yml
+kubectl delete -f istiofiles/destination-rule-tls.yml
 ----
 
 And execute again:
@@ -191,7 +181,7 @@ Now, you can see that since there is no _TLS_ enabled, the information is not sh
 
 source,bash]
 ----
-istioctl delete -f istiofiles/gateway-customer.yml
+kubectl delete -f istiofiles/gateway-customer.yml
 ----
 
 or you can run:

@@ -4,7 +4,7 @@ include::_attributes.adoc[]
 [IMPORTANT]
 .Before Start
 ====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
 [source, bash]
@@ -22,20 +22,20 @@ We'll create a whitelist on the preference service to only allow requests from t
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofiles/acl-whitelist.yml] -n tutorial
+kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofiles/acl-whitelist.yml] -n tutorial
 ----
 
 [source,bash]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
-customer => 404 NOT_FOUND:preferencewhitelist.listchecker.tutorial:customer is not whitelisted
+customer => 404 customer => Error: 403 - PERMISSION_DENIED:preferencewhitelist.listchecker.tutorial:customer is not whitelisted
 ----
 
 === Clean up
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/acl-whitelist.yml -n tutorial
+kubectl delete -f istiofiles/acl-whitelist.yml -n tutorial
 ----
 
 [#blacklist]
@@ -45,19 +45,19 @@ We'll create a blacklist making the customer service blacklist to the preference
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofiles/acl-blacklist.yml] -n tutorial
+kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofiles/acl-blacklist.yml] -n tutorial
 ----
 
 [source,bash]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
-customer => 403 PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
+customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
 ----
 
 === Clean up
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/acl-blacklist.yml -n tutorial
+kubectl delete -f istiofiles/acl-blacklist.yml -n tutorial
 ----
 

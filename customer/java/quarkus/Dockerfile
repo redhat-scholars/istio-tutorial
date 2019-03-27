@@ -1,4 +1,4 @@
-FROM fabric8/java-jboss-openjdk8-jdk
+FROM fabric8/java-jboss-openjdk8-jdk:1.5.4
 ENV JAVA_OPTIONS=-Dquarkus.http.host=0.0.0.0
 ENV JAEGER_SERVICE_NAME=customer\
   JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces\

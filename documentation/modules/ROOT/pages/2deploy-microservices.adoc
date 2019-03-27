@@ -40,12 +40,7 @@ Make sure `istioctl` is in your `PATH`:
 [source,bash]
 ----
 $ istioctl version
-Version: 1.0.5
-GitRevision: c1707e45e71c75d74bf3a5dec8c7086f32f32fad
-User: root@6f6ea1061f2b
-Hub: docker.io/istio
-GolangVersion: go1.10.4
-BuildStatus: Clean
+version.BuildInfo{Version:"1.1.1", GitRevision:"2b1331886076df103179e3da5dc9077fed59c989", User:"root", Host:"7077232d-4c6c-11e9-813c-0a580a2c0506", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.0-17-g2b13318"}
 ----
 
 === Customer build using Docker daemon 
@@ -54,8 +49,8 @@ NOTE: Your very first Docker build will take a bit of time as it downloads all t
 
 [source,bash]
 ----
-cd customer/java/springboot
-mvn clean package
+cd customer/java/quarkus
+mvn clean package -DskipTests
 docker build -t example/customer .
 docker images | grep customer
 ----
@@ -71,17 +66,6 @@ or
 
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
 kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml] -n tutorial
-----
-
-=== Customer build using OpenShift S2I strategy
-
-[source, bash]
-----
-cd customer/java/springboot
-oc new-app --name=customer --context-dir=customer/java/springboot -e JAEGER_SERVICE_NAME=customer JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > customer.yml
-oc apply -f <(istioctl kube-inject -f customer.yml) -n tutorial
-oc delete svc/customer -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
-oc logs bc/customer -f -n tutorial
 ----
 
 === Expose customer
@@ -115,7 +99,7 @@ curl customer-tutorial.$(minishift ip).nip.io
 You should see the following error because the services `preference` and `recommendation` are not yet deployed.
 
 ----
-customer => I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
+customer => UnknownHostException: preference
 ----
 
 Also review the logs
@@ -131,7 +115,7 @@ You should see a stacktrace containing this cause:
 
 [source,bash]
 ----
-org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
+customer-6fc99b7bfd-5st28 customer Caused by: java.net.UnknownHostException: preference
 ----
 
 Back to the main istio-tutorial directory
@@ -148,8 +132,8 @@ cd ../../..
 
 [source,bash,subs="+macros,+attributes"]
 ----
-cd preference/java/springboot
-mvn clean package
+cd preference/java/quarkus
+mvn clean package -DskipTests
 docker build -t example/preference:v1 .
 docker images | grep preference
 
@@ -160,17 +144,6 @@ or
 
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
 kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
-----
-
-=== Preference build using OpenShift S2I strategy
-
-[source, bash]
-----
-cd preference/java/springboot
-oc new-app -l app=preference,version=v1 --name=preference-v1 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference.yml
-oc apply -f <(istioctl kube-inject -f preference.yml) -n tutorial
-oc delete svc/preference-v1 -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
-oc logs bc/preference-v1 -f -n tutorial
 ----
 
 === Wait preference to be deployed
@@ -195,7 +168,7 @@ NOTE: We could make this a bit more resilient in a future iteration of this tuto
 
 [source,bash]
 ----
-customer => 503 preference => I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
+customer => Error: 503 - preference => UnknownHostException: recommendation
 ----
 
 and check out the logs
@@ -211,7 +184,7 @@ You should see a stacktrace containing this cause:
 
 [source,bash]
 ----
-org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
+preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostException: recommendation
 ----
 
 Back to the main istio-tutorial directory
@@ -230,8 +203,8 @@ IMPORTANT: The tag `v1` at the end of the image name matters. We will be creatin
 
 [source,bash,subs="+macros,+attributes"]
 ----
-cd recommendation/java/vertx
-mvn clean package
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
 docker build -t example/recommendation:v1 .
 docker images | grep recommendation
 
@@ -244,17 +217,6 @@ or
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
 kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
 kubectl get pods -w
-----
-
-=== Recommendation build using OpenShift S2I strategy
-
-[source, bash]
-----
-cd recommendation/java/vertx
-oc new-app -l app=recommendation,version=v1 --name=recommendation-v1 --context-dir=recommendation/java/vertx JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation.yml
-oc apply -f <(istioctl kube-inject -f recommendation.yml) -n tutorial
-oc delete svc/recommendation-v1 -n tutorial; oc create -f ../../kubernetes/Service.yml -n tutorial
-oc logs bc/recommendation-v1 -f -n tutorial
 ----
 
 === Wait recommendation to be deployed
@@ -296,7 +258,7 @@ When you wish to change code (e.g. editing the .java files) and wish to "redeplo
 
 [source,bash]
 ----
-cd {servicename}/java/{springboot|vertx}
+cd {servicename}/java/{quarkus|springboot|vertx}
 
 vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controller|Verticle}.java
 ----

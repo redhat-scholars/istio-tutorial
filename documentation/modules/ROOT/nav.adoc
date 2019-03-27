@@ -49,11 +49,11 @@ endif::workshop[]
 ** xref:5circuit-breaker.adoc#failfast[Fail Fast]
 *** xref:5circuit-breaker.adoc#nocircuitbreaker[No Circuit Breaker]
 *** xref:5circuit-breaker.adoc#circuitbreaker[Circuit Breaker]
-** xref:5circuit-breaker.adoc#poolejection[Pool Ejection]
+** xref:5circuit-breaker.adoc#poolejection[Pool Ejection - not neeed in 1.1]
 *** xref:5circuit-breaker.adoc#nofailinginstances[No Failing Instance]
 *** xref:5circuit-breaker.adoc#failinginstancesnopoolejection[Failing Instance No Pool Ejection]
 *** xref:5circuit-breaker.adoc#failinginstancespoolejection[Failing Instance Pool Ejection]
-** xref:5circuit-breaker.adoc#circuitbreakerandpoolejection[Circuit Breaker + Pool Ejection]
+** xref:5circuit-breaker.adoc#circuitbreakerandpoolejection[Circuit Breaker + Pool Ejection - not needed with 1.1 ]
 
 * xref:6fault-injection.adoc[6. Chaos Testing]
 ** xref:6fault-injection.adoc#503error[HTTP 503 Error]
@@ -61,7 +61,7 @@ endif::workshop[]
 
 ifndef::workshop[]
 * xref:7policy.adoc[7. Policy]
-** xref:7policy.adoc#ratelimiting[Rate Limiting]
+** xref:7policy.adoc#ratelimiting[Rate Limiting - Not working yet]
 
 * 8. Security
 ** xref:8egress.adoc[Egress]

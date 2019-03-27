@@ -6,7 +6,7 @@ Apply some chaos engineering by throwing in some HTTP errors or network delays. 
 [IMPORTANT]
 .Before Start
 ====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
 [source, bash,subs="+macros,+attributes"]
@@ -35,22 +35,29 @@ You can inject 503's, for approximately 50% of the requests
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-503.yml[istiofiles/virtual-service-recommendation-503.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-503.yml[istiofiles/virtual-service-recommendation-503.yml] -n tutorial{namespace-suffix}
 
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-customer => preference => recommendation v1 from '99634814-sf4cl': 88
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-customer => 503 preference => 503 fault filter abort
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-customer => preference => recommendation v2 from '2819441432-qsp25': 51
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+
+customer => preference => recommendation v2 from '7778d6fb89-j6lts': 138
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => preference => recommendation v1 from '6976858b48-dswhz': 139
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => preference => recommendation v2 from '7778d6fb89-j6lts': 139
+customer => preference => recommendation v1 from '6976858b48-dswhz': 140
+customer => preference => recommendation v2 from '7778d6fb89-j6lts': 140
+customer => preference => recommendation v1 from '6976858b48-dswhz': 141
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => preference => recommendation v2 from '7778d6fb89-j6lts': 141
 ----
 
 Clean up
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial{namespace-suffix}
 ----
 
 [#delay]
@@ -60,8 +67,8 @@ The most insidious of possible distributed computing faults is not a "down" serv
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial{namespace-suffix}
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial{namespace-suffix}
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
 ----
 
 And hit the customer endpoint
@@ -88,6 +95,6 @@ or
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial{namespace-suffix}
-istioctl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial{namespace-suffix}
 ----

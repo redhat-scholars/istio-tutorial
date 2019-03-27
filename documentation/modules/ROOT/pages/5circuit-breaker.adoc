@@ -4,7 +4,7 @@ include::_attributes.adoc[]
 [IMPORTANT]
 .Before Start
 ====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `istioctl get virtualservice` `istioctl get destinationrule` 
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
 [source, bash,subs="+macros,+attributes"]
@@ -22,9 +22,9 @@ We will make pod recommendation-v2 fail 100% of the time. Get one of the pod nam
 
 [source,bash]
 ----
-oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -37,34 +37,7 @@ exit
 
 This is a special endpoint that will make our application return only `503`s.
 
-Now, if you hit the customer endpoint several times, you should see some 503's
-
-[source,bash, subs="+macros,+attributes"]
-----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 864
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 865
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 866
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 867
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 868
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 869
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-----
-
-Now add the retry rule
-
-[source,bash,subs="+macros,+attributes"]
-----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2_retry.yml[istiofiles/virtual-service-recommendation-v2_retry.yml] -n tutorial{namespace-suffix}
-----
-
-You will see it work every time because Istio will retry the recommendation service and it will land on v1 only.
+You will see it works every time because Istio will retry the recommendation service *automatically* and it will land on v1 only.
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -75,46 +48,13 @@ customer => preference => recommendation v1 from '2036617847-m9glz': 197
 customer => preference => recommendation v1 from '2036617847-m9glz': 198
 ----
 
-You can see the active Virtual Services via
-
-[source,bash,subs="+macros,+attributes"]
-----
-istioctl get virtualservices -n tutorial{namespace-suffix}
-----
-
-Now, delete the retry rule and see the old behavior, where v2 throws 503s
-
-[source,bash,subs="+macros,+attributes"]
-----
-istioctl delete virtualservice recommendation -n tutorial{namespace-suffix}
-
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1118
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1119
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1120
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1121
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1122
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1123
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1124
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1125
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-customer => preference => recommendation v1 from 'b87789c58-h9r4s': 1126
-customer => 503 preference => 503 recommendation misbehavior from '6f64f9c5b-ltrhl'
-----
-
 Now, make the pod v2 behave well again
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it  -n tutorial{namespace-suffix}$(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -140,27 +80,25 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 [#timeout]
 == Timeout
 
-Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `istioctl get virtualservice` `istioctl get destinationrule` and if so `istioctl delete virtualservice virtualservicename -n tutorial` and `istioctl delete destinationrule destinationrulename -n tutorial`
+Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `kubectl get virtualservice` `kubectl get destinationrule` and if so `kubectl delete virtualservice virtualservicename -n tutorial{namespace-suffix}` and `kubectl delete destinationrule destinationrulename -n tutorial{namespace-suffix}`
 
 ifndef::workshop[]
-First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationVerticle.java` making it a slow performer with a 3 second delay.
+First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationResource.java` making it a slow performer with a 3 second delay.
 
 [source,java]
 ----
-@Override
-public void start() throws Exception {
-    Router router = Router.router(vertx);
-    router.get("/").handler(this::logging);
-    router.get("/").handler(this::timeout);
-    router.get("/").handler(this::getRecommendations);
-    router.get("/misbehave").handler(this::misbehave);
-    router.get("/behave").handler(this::behave);
+@@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
 
-    HealthCheckHandler hc = HealthCheckHandler.create(vertx);
-    hc.register("dummy-health-check", future -> future.complete(Status.OK()));
-    router.get("/health").handler(hc);
+    timeout();
 
-    vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
 }
 ----
 
@@ -168,17 +106,17 @@ Rebuild and redeploy
 
 [source,bash]
 ----
-cd recommendation/java/vertx
+cd recommendation/java/quarkus
 
-mvn clean package
+mvn clean package -DskipTests
 
 docker build -t example/recommendation:v2 .
 
 docker images | grep recommendation
 
-oc delete pod -l app=recommendation,version=v2 -n tutorial
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 or
-kubectl delete pod -l app=recommendation,version=v2 -n tutorial
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
 ----
@@ -206,21 +144,17 @@ Then add the timeout rule
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial{namespace-suffix}
 ----
 
-You will see it return v1 OR "upstream request timeout" after waiting about 1 second
+You will see it return v1 after waiting about 1 second. You don't see v2 anymore, because the response from v2 expires after the timeout period and it is never returned.
 
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-
-customer => 503 preference => 504 upstream request timeout
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-customer => preference => recommendation v1 from '2039379827-h58vw': 210
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-customer => 503 preference => 504 upstream request timeout
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
+customer => preference => recommendation v1 from '6976858b48-cs2rt': 2907
+customer => preference => recommendation v1 from '6976858b48-cs2rt': 2908
+customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
 ----
 
 === Clean up
@@ -230,20 +164,18 @@ First, let's comment the `timeout()` method again on `recommendation v2`.
 
 [source,java]
 ----
-@Override
-public void start() throws Exception {
-    Router router = Router.router(vertx);
-    router.get("/").handler(this::logging);
-    // router.get("/").handler(this::timeout);
-    router.get("/").handler(this::getRecommendations);
-    router.get("/misbehave").handler(this::misbehave);
-    router.get("/behave").handler(this::behave);
+@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
 
-    HealthCheckHandler hc = HealthCheckHandler.create(vertx);
-    hc.register("dummy-health-check", future -> future.complete(Status.OK()));
-    router.get("/health").handler(hc);
+    // timeout();
 
-    vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
 }
 ----
 
@@ -251,17 +183,17 @@ And rebuild and redeploy the service again:
 
 [source,bash]
 ----
-cd recommendation/java/vertx
+cd recommendation/java/quarkus
 
-mvn clean package
+mvn clean package -DskipTests
 
 docker build -t example/recommendation:v2 .
 
 docker images | grep recommendation
 
-oc delete pod -l app=recommendation,version=v2 -n tutorial
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 or
-kubectl delete pod -l app=recommendation,version=v2 -n tutorial
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
 ----
@@ -281,7 +213,7 @@ Then delete the virtual service created for timeout by:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial{namespace-suffix}
 ----
 
 or you can run:
@@ -295,16 +227,23 @@ or you can run:
 == Fail Fast with Max Connections and Max Pending Requests
 
 ifndef::workshop[]
-First, make sure to uncomment `router.get(&quot;/&quot;).handler(this::timeout);` in the RecommendationVerticle.java:
+First, make sure to uncomment the `timeout()` method in the RecommendationResource.java:
 
 [source,java]
 ----
-    Router router = Router.router(vertx);
-    router.get("/").handler(this::logging);
-    router.get("/").handler(this::timeout);
-    router.get("/").handler(this::getRecommendations);
-    router.get("/misbehave").handler(this::misbehave);
-    router.get("/behave").handler(this::behave);
+@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}
 ----
 
 And follow the Updating &amp; redeploying code steps to get this slower v2 deployed.
@@ -325,8 +264,8 @@ Second, you need to *ensure* you have a `destinationrule` and `virtualservice` i
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
 ----
 
 [#nocircuitbreaker]
@@ -349,9 +288,9 @@ But suppose that in a production system this 3s delay was caused by too many con
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
 
-istioctl get destinationrule -n tutorial{namespace-suffix}
+kubectl get destinationrule -n tutorial{namespace-suffix}
 ----
 
 More information on the fields for the simple circuit-breaker
@@ -375,8 +314,8 @@ You can run siege multiple times, but in all of the executions you should see so
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl delete virtualservice recommendation -n tutorial{namespace-suffix}
-istioctl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial{namespace-suffix}
+kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial{namespace-suffix}
 ----
 
 or you can run:
@@ -387,7 +326,7 @@ or you can run:
 ----
 
 [#poolejection]
-== Pool Ejection
+== Pool Ejection (Not needed with 1.1)
 
 Pool ejection or _outlier detection_ is a resilience strategy that takes place whenever we have a pool of instances/pods to serve a client request. If the request is forwarded to a certain instance and it fails (e.g. returns a 50x error code), then Istio will eject this instance from the pool for a certain _sleep window_. In our example the sleep window is configured to be 15s. This increases the overall availability by making sure that only healthy pods participate in the pool of instances.
 
@@ -395,8 +334,8 @@ First, you need to insure you have a `destinationrule` and `virtualservice` in p
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
 ----
 
 Scale number of instances of `v2` deployment
@@ -474,9 +413,9 @@ Now we'll get into one the pods and add some erratic behavior on it. Get one of 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+oc exec -it  -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it $(oc get pods|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it  -n tutorial{namespace-suffix} $(oc get pods  -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -525,7 +464,7 @@ Now let's add the pool ejection behavior:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f  link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_pool_ejection.yml[istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml] -n tutorial{namespace-suffix}
+kubectl replace -f  link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_pool_ejection.yml[istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml] -n tutorial{namespace-suffix}
 ----
 
 Throw some requests at the customer endpoint:
@@ -581,7 +520,7 @@ customer => preference => recommendation v2 from '2036617847-hdjv2': 270
 ----
 
 [#circuitbreakerandpoolejection]
-== Ultimate resilience with retries, circuit breaker, and pool ejection
+== Ultimate resilience with retries, circuit breaker, and pool ejection (Not needed in 1.1)
 
 Even with pool ejection your application doesn't _look_ that resilient. That's probably because we're still letting some errors to be propagated to our clients. But we can improve this. If we have enough instances and/or versions of a specific service running into our system, we can combine multiple Istio capabilities to achieve the ultimate backend resilience:
 - *Circuit Breaker* to avoid multiple concurrent requests to an instance;
@@ -592,7 +531,7 @@ By simply adding a *retry* configuration to our current `virtualservice`, we'll 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_retry.yml[istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml] -n tutorial{namespace-suffix}
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_retry.yml[istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml] -n tutorial{namespace-suffix}
 ----
 
 Throw some requests at the customer endpoint:
@@ -656,7 +595,7 @@ ifdef::workshop[]
 oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
 endif::workshop[]
 
-istioctl delete virtualservice recommendation -n tutorial{namespace-suffix}
-istioctl delete destinationrule recommendation -n tutorial{namespace-suffix}
+kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
+kubectl delete destinationrule recommendation -n tutorial{namespace-suffix}
 
 ----
