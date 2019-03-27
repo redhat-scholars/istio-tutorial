@@ -232,7 +232,7 @@
 <p>Let&#8217;s see an example of using egress route by deploying a recommendation:v3 version. Egress service entry allow you to apply rules to how internal services interact with external APIs/services.</p>
 </div>
 <div class="paragraph">
-<p>In this case, we are going to configure Istio to access <a href="http://now.httpbin.org" class="bare">http://now.httpbin.org</a> from internal service (recommendation:v3).</p>
+<p>In this case, we are going to configure Istio to access <a href="http://worldclockapi.com/api/json/cet/now" class="bare">http://worldclockapi.com/api/json/cet/now</a> from internal service (recommendation:v3).</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -279,7 +279,7 @@ if so run:</p>
 <p>There is also a third <code>deployment.yml</code> file to label things correctly</p>
 </div>
 <div class="paragraph">
-<p>The second change is to change the default output to make a call to <a href="http://now.httpbin.org" class="bare">http://now.httpbin.org</a>.</p>
+<p>The second change is to change the default output to make a call to <a href="http://worldclockapi.com/api/json/cet/now" class="bare">http://worldclockapi.com/api/json/cet/now</a>.</p>
 </div>
 <div class="paragraph">
 <p>From:</p>
@@ -405,16 +405,16 @@ curl: (28) Operation timed out after 5000 milliseconds with 0 bytes received</co
 </div>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s fix it by registering a service entry to allow access to <code>httpbin</code>.</p>
+<p>Let&#8217;s fix it by registering a service entry to allow access to <code>worldclockapi</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/service-entry-egress-httpbin.yml">istiofiles/service-entry-egress-httpbin.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/service-entry-egress-worldclockapi.yml">istiofiles/service-entry-egress-worldclockapi.yml</a> -n tutorial
 
 istioctl get serviceentry
 
 curl customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; Mon, 16 Jul 2018 12:03:38 GMT recommendation v3 from '7b445dd469-j6rkg': 1</code></pre>
+customer =&gt; preference =&gt; 2019-03-27T16:01+01:00 recommendation v3 from '7b445dd469-j6rkg': 1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -428,7 +428,7 @@ or
 
 kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
 
-curl http://now.httpbin.org
+curl http://worldclockapi.com/api/json/cet/now
 
 exit</code></pre>
 </div>
@@ -437,7 +437,7 @@ exit</code></pre>
 <h3 id="cleanup"><a class="anchor" href="#cleanup"></a>Clean up</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/service-entry-egress-worldclockapi.yml -n tutorial
 istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml</code></pre>
 </div>
