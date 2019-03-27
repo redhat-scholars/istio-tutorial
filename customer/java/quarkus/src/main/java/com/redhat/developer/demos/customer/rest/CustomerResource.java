@@ -24,7 +24,7 @@ public class CustomerResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response getCustomer() {
         try {
-            String response = preferenceService.getPreference();
+            String response = preferenceService.getPreference().trim();
             return Response.ok(String.format(RESPONSE_STRING_FORMAT, response)).build();
         } catch (WebApplicationException ex) {
             Response response = ex.getResponse();
