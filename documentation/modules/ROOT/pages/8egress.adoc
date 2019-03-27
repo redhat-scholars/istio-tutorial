@@ -3,7 +3,7 @@ include::_attributes.adoc[]
 
 Let's see an example of using egress route by deploying a recommendation:v3 version. Egress service entry allow you to apply rules to how internal services interact with external APIs/services.
 
-In this case, we are going to configure Istio to access http://now.httpbin.org from internal service (recommendation:v3).
+In this case, we are going to configure Istio to access http://worldclockapi.com/api/json/cet/now from internal service (recommendation:v3).
 
 [IMPORTANT]
 .Before Start
@@ -34,7 +34,7 @@ The "v3" tag during the Docker build is significant.
 
 There is also a third `deployment.yml` file to label things correctly
 
-The second change is to change the default output to make a call to http://now.httpbin.org.
+The second change is to change the default output to make a call to http://worldclockapi.com/api/json/cet/now.
 
 From:
 
@@ -138,16 +138,16 @@ $ curl -m 5 customer-tutorial.$(minishift ip).nip.io
 curl: (28) Operation timed out after 5000 milliseconds with 0 bytes received
 ----
 
-Let's fix it by registering a service entry to allow access to `httpbin`.
+Let's fix it by registering a service entry to allow access to `worldclockapi`.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/service-entry-egress-httpbin.yml[istiofiles/service-entry-egress-httpbin.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/service-entry-egress-worldclockapi.yml[istiofiles/service-entry-egress-worldclockapi.yml] -n tutorial
 
 istioctl get serviceentry
 
 curl customer-tutorial.$(minishift ip).nip.io
-customer => preference => Mon, 16 Jul 2018 12:03:38 GMT recommendation v3 from '7b445dd469-j6rkg': 1
+customer => preference => 2019-03-27T16:01+01:00 recommendation v3 from '7b445dd469-j6rkg': 1
 ----
 
 or shell into the pod by getting its name and then using that name with oc exec
@@ -160,7 +160,7 @@ or
 
 kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
 
-curl http://now.httpbin.org
+curl http://worldclockapi.com/api/json/cet/now
 
 exit
 ----
@@ -171,7 +171,7 @@ exit
 
 [source,bash]
 ----
-istioctl delete -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
+istioctl delete -f istiofiles/service-entry-egress-worldclockapi.yml -n tutorial
 istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml
 ----

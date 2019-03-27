@@ -1,5 +1,11 @@
 package com.redhat.developer.demos.recommendation.rest;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +17,8 @@ import javax.ws.rs.core.Response;
 public class RecommendationResource {
 
     private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
+
+    private static final String RESPONSE_STRING_NOW_FORMAT = "recommendation v1 %s from '%s': %d\n";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -43,6 +51,7 @@ public class RecommendationResource {
             return doMisbehavior();
         }
         return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+        // return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
     }
 
     private void timeout() {
@@ -73,6 +82,13 @@ public class RecommendationResource {
         this.misbehave = false;
         logger.debug("'misbehave' has been set to 'false'");
         return Response.ok("Following requests to / will return 200\n").build();
+    }
+
+    private String getNow() {
+        final Client client = ClientBuilder.newClient();
+        final Response res = client.target("http://worldclockapi.com/api/json/cet/now").request().get();
+        final String jsonObject = res.readEntity(String.class);
+        return Json.createReader(new ByteArrayInputStream(jsonObject.getBytes())).readObject().getString("currentDateTime");
     }
 
 }
