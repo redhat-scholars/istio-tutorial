@@ -543,9 +543,9 @@ if so run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it -n tutorial $(oc get pods -n tutorial|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+kubectl exec -it -n tutorial $(oc get pods -n tutorial|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
 </div>
 <div class="paragraph">

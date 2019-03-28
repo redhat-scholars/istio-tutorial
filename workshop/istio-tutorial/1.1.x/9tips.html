@@ -272,22 +272,22 @@ RPOD2=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommen
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://preference:8080
-oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
-oc exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl <a href="http://preference:8080" class="bare">http://preference:8080</a>
+oc exec $CPOD -c customer -n tutorial curl <a href="http://recommendation:8080" class="bare">http://recommendation:8080</a>
+oc exec $RPOD2 -c recommendation -n tutorial curl <a href="http://customer:8080" class="bare">http://customer:8080</a>
 
 or
 
-kubectl exec $CPOD -c customer -n tutorial curl http://preference:8080
-kubectl exec $CPOD -c customer -n tutorial curl http://recommendation:8080
-kubectl exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080</code></pre>
+kubectl exec $CPOD -c customer -n tutorial curl <a href="http://preference:8080" class="bare">http://preference:8080</a>
+kubectl exec $CPOD -c customer -n tutorial curl <a href="http://recommendation:8080" class="bare">http://recommendation:8080</a>
+kubectl exec $RPOD2 -c recommendation -n tutorial curl <a href="http://customer:8080" class="bare">http://customer:8080</a></code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; afile.json
 or
-kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; afile.json</code></pre>
+kubectl exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; afile.json</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -431,9 +431,9 @@ istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tuto
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; bfile.json
 or
-kubectl exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump &gt; bfile.json</code></pre>
+kubectl exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; bfile.json</code></pre>
 </div>
 </div>
 <div class="paragraph">

@@ -677,9 +677,9 @@ curl customer-tutorial.$(minishift ip).nip.io</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -f `oc get pods -n tutorial|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial
 or
-kubectl logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}</code></pre>
+kubectl logs -f `oc get pods -n tutorial|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial</code></pre>
 </div>
 </div>
 <div class="sect2">

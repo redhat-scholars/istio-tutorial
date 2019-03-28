@@ -684,7 +684,7 @@ or
 
 kubectl exec -it -n tutorial $(oc get pods -n tutorial -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
 
-curl http://worldclockapi.com/api/json/cet/now
+curl <a href="http://worldclockapi.com/api/json/cet/now" class="bare">http://worldclockapi.com/api/json/cet/now</a>
 
 exit</code></pre>
 </div>
