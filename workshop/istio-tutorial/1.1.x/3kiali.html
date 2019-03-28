@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tips :: Istio Workshop</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.1.x/9tips.html">
+    <title>Observing microservice meshes with Kiali :: Istio Workshop</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.1.x/3kiali.html">
     <meta name="generator" content="Antora 2.0.0">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
@@ -72,33 +72,33 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="3kiali.html">Kiali</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#howkiali">How Kiali Work</a>
+    <a class="nav-link" href="#howkiali">How Kiali Work</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#updatekiali">Update Kiali</a>
+    <a class="nav-link" href="#updatekiali">Update Kiali</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#generatingdata">Generating Data</a>
+    <a class="nav-link" href="#generatingdata">Generating Data</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#servicegraph">Service Graph</a>
+    <a class="nav-link" href="#servicegraph">Service Graph</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#servicelistening">Service Listening</a>
+    <a class="nav-link" href="#servicelistening">Service Listening</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#istioconf">Istio Config</a>
+    <a class="nav-link" href="#istioconf">Istio Config</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#distributedtracing">Distributed Tracing</a>
+    <a class="nav-link" href="#distributedtracing">Distributed Tracing</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#cleanup">Uninstall Kiali</a>
+    <a class="nav-link" href="#cleanup">Uninstall Kiali</a>
   </li>
 </ul>
   </li>
@@ -249,293 +249,243 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="9tips.html">Tips</a></li>
+    <li class="crumb"><a href="3monitoring-tracing.html">3. Observability</a></li>
+    <li class="crumb"><a href="3kiali.html">Kiali</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///antora/documentation/modules/ROOT/pages/9tips.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///antora/documentation/modules/ROOT/pages/3kiali.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Tips</h1>
+<h1>Observing microservice meshes with Kiali</h1>
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p>Some tips and tricks that you might find handy</p>
+<p>At some point when you are developing your microservice architecture, you will
+need to visualize what is happening in your service mesh. You will have
+questions like “Which service is connected to which other service?” and “How
+much traffic goes to each microservice?” But because of the loosely tied nature
+of microservice architectures , these questions can be difficult to answer.</p>
 </div>
 <div class="paragraph">
-<p>You have two containers in a pod</p>
+<p>Those are the kinds of question that Kiali has the ability to answer, by giving
+you a big picture of the mesh, and showing the whole flow of your requests and
+data.</p>
+</div>
+<div class="paragraph">
+<p>Kiali builds upon the same concepts as Istio, and you can check the
+<a href="https://www.kiali.io/documentation/glossary/concepts/">glossary</a> for a
+refresher.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="howkiali"><a class="anchor" href="#howkiali"></a>How does Kiali work?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kiali taps into the data provided by Istio and OpenShift to generate its
+visualizations. It fetches ingress data (such as request tracing with Jaeger),
+the listing and data of the services, health indexes, and so on.</p>
+</div>
+<div class="paragraph">
+<p>Kiali runs as a service together with Istio, and does not require any changes
+to Istio or Openshift configuration (besides the ones required to install
+Istio).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="updatekiali"><a class="anchor" href="#updatekiali"></a>Update kiali?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A prerequisite for installing Kiali is that you must have OpenShift and Istio
+installed and configured.</p>
+</div>
+<div class="paragraph">
+<p>Update Kiali with the following commands:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
-or
-kubectl get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>From these images</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
-or
-kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Get the pod ids</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
-PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
-RPOD1=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
-RPOD2=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># URLS for Jaeger and Grafana
+export JAEGER_URL="http://tracing-istio-system.$(minishift ip).nip.io"
+export GRAFANA_URL="http://grafana-istio-system.$(minishift ip).nip.io"
 
-or
-
-CPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
-PPOD=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
-RPOD1=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v1 -n tutorial)
-RPOD2=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommendation,version=v2 -n tutorial)</code></pre>
+echo "apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiali
+  namespace: istio-system
+  labels:
+    app: kiali
+    chart: kiali
+    heritage: Tiller
+    release: istio
+data:
+  config.yaml: |
+    istio_namespace: istio-system
+    server:
+      port: 20001
+    external_services:
+      istio:
+        url_service_version: http://istio-pilot:8080/version
+      jaeger:
+        url: $JAEGER_URL
+      grafana:
+        url:  $GRAFANA_URL"| kubectl apply -f -; oc delete pod -l app=kiali -n istio-system</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The pods all see each other&#8217;s services</p>
+<p>So now we can access Kiali at <code>kiali-istio-system.$(minishift ip).nip.io</code>, so
+let&#8217;s do it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl <a href="http://preference:8080" class="bare">http://preference:8080</a>
-oc exec $CPOD -c customer -n tutorial curl <a href="http://recommendation:8080" class="bare">http://recommendation:8080</a>
-oc exec $RPOD2 -c recommendation -n tutorial curl <a href="http://customer:8080" class="bare">http://customer:8080</a>
-
-or
-
-kubectl exec $CPOD -c customer -n tutorial curl <a href="http://preference:8080" class="bare">http://preference:8080</a>
-kubectl exec $CPOD -c customer -n tutorial curl <a href="http://recommendation:8080" class="bare">http://recommendation:8080</a>
-kubectl exec $RPOD2 -c recommendation -n tutorial curl <a href="http://customer:8080" class="bare">http://customer:8080</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://kiali-istio-system.$(minishift ip).nip.io/kiali</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-login.png" alt="Login Page"></span></p>
+</div>
+<div class="paragraph">
+<p>The default credentials are "admin/admin", but it&#8217;s recommended to change them
+before using it in production.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="generatingdata"><a class="anchor" href="#generatingdata"></a>Generating Sample Data</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To show the capabilities of Kiali, you&#8217;ll need an Istio-enabled application to
+be running. For this, we can use the <code>customer-tutorial</code> application we created
+earlier.</p>
+</div>
+<div class="paragraph">
+<p>To generate data for it, we can <code>curl</code> it with this command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; afile.json
-or
-kubectl exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; afile.json</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="servicegraph"><a class="anchor" href="#servicegraph"></a>Service Graph</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>After you login, you should see the Service Graph page:</p>
 </div>
 <div class="paragraph">
-<p>Look for <code>route_config</code>, containing <code>"name": "8080"</code> and you should see entries for customer, preference and recommendation</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"virtualHosts": [
-      {
-       "name": "customer.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "customer.tutorial.svc.cluster.local",
-        "customer.tutorial.svc.cluster.local:8080",
-        "customer",
-        "customer:8080",
-        "customer.tutorial.svc.cluster",
-        "customer.tutorial.svc.cluster:8080",
-        "customer.tutorial.svc",
-        "customer.tutorial.svc:8080",
-        "customer.tutorial",
-        "customer.tutorial:8080",
-        "172.30.107.115",
-        "172.30.107.115:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||customer.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "istio-pilot.istio-system.svc.cluster.local:8080",
-       "domains": [
-        "istio-pilot.istio-system.svc.cluster.local",
-        "istio-pilot.istio-system.svc.cluster.local:8080",
-        "istio-pilot.istio-system",
-        "istio-pilot.istio-system:8080",
-        "istio-pilot.istio-system.svc.cluster",
-        "istio-pilot.istio-system.svc.cluster:8080",
-        "istio-pilot.istio-system.svc",
-        "istio-pilot.istio-system.svc:8080",
-        "172.30.142.41",
-        "172.30.142.41:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||istio-pilot.istio-system.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "preference.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "preference.tutorial.svc.cluster.local",
-        "preference.tutorial.svc.cluster.local:8080",
-        "preference",
-        "preference:8080",
-        "preference.tutorial.svc.cluster",
-        "preference.tutorial.svc.cluster:8080",
-        "preference.tutorial.svc",
-        "preference.tutorial.svc:8080",
-        "preference.tutorial",
-        "preference.tutorial:8080",
-        "172.30.26.194",
-        "172.30.26.194:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||preference.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      },
-      {
-       "name": "recommendation.tutorial.svc.cluster.local:8080",
-       "domains": [
-        "recommendation.tutorial.svc.cluster.local",
-        "recommendation.tutorial.svc.cluster.local:8080",
-        "recommendation",
-        "recommendation:8080",
-        "recommendation.tutorial.svc.cluster",
-        "recommendation.tutorial.svc.cluster:8080",
-        "recommendation.tutorial.svc",
-        "recommendation.tutorial.svc:8080",
-        "recommendation.tutorial",
-        "recommendation.tutorial:8080",
-        "172.30.103.127",
-        "172.30.103.127:8080"
-       ],
-       "routes": [
-        {
-         "match": {
-          "prefix": "/"
-         },
-         "route": {
-          "cluster": "outbound|8080||recommendation.tutorial.svc.cluster.local"
-         },
-         "decorator": {
-          "operation": "default-route"
-         }
-        }
-       ]
-      }
-     ],</code></pre>
-</div>
+<p><span class="image"><img src="_images/kiali-service-graph.png" alt="Service Graph Page"></span></p>
 </div>
 <div class="paragraph">
-<p>Now add a new <code>destinationrule</code> and <code>virtualservice</code>.</p>
+<p>It shows a graph with all the microservices, connected by the requests going
+through then. On this page, you can see how the services interact with each
+other.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a>
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a></code></pre>
 </div>
+</div>
+<div class="sect1">
+<h2 id="applications"><a class="anchor" href="#applications"></a>Applications</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Click the <code>Applications</code> link in the left navigation. On this page you can
+view a listing of all the services that are running in the cluster, and
+additional information about them, such as health status.</p>
 </div>
 <div class="paragraph">
-<p>The review the routes again</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; bfile.json
-or
-kubectl exec $CPOD -c customer -n tutorial curl <a href="http://localhost:15000/config_dump" class="bare">http://localhost:15000/config_dump</a> &gt; bfile.json</code></pre>
-</div>
+<p><span class="image"><img src="_images/kiali-application-list.png" alt="Application Listing Page"></span></p>
 </div>
 <div class="paragraph">
-<p>Here is the Before:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"route": {
-				"cluster": "out.recommendation.springistio.svc.cluster.local|http",
-				"timeout": "0s"
-			},</code></pre>
-</div>
+<p>Click on the "customer" application to see its details:</p>
 </div>
 <div class="paragraph">
-<p>and</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"decorator": {
-				"operation": "default-route"
-			}</code></pre>
-</div>
+<p><span class="image"><img src="_images/kiali-application-details.png" alt="Service Details"></span></p>
 </div>
 <div class="paragraph">
-<p>And the After:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"route": {
-          		"cluster": "outbound|8080|version-v2|recommendation.tutorial.svc.cluster.local",
-          	},</code></pre>
-</div>
+<p>By hovering the icon on the Health section, you can see the health of a service
+(a service is considered healthy) when it&#8217;s online and responding to requests
+without errors:</p>
 </div>
 <div class="paragraph">
-<p>and</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">			"decorator": {
-          		"operation": "recommendation"
-         	}</code></pre>
-</div>
+<p><span class="image"><img src="_images/kiali-application-health.png" alt="Health Status"></span></p>
 </div>
 <div class="paragraph">
-<p>If you need the Pod IP</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
-or
-kubectl get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial</code></pre>
-</div>
+<p>By clicking on <code>Outbound Metrics</code> or <code>Inbound Metrics</code>, you can also see the
+metrics for an application, like so:</p>
 </div>
 <div class="paragraph">
-<p>Dive into the istio-proxy container</p>
+<p><span class="image"><img src="_images/kiali-application-metrics.png" alt="Application Metrics"></span></p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
-or
-kubectl exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
-
-cd /etc/istio/proxy
-ls
-cat envoy-rev0.json</code></pre>
 </div>
+</div>
+<div class="sect1">
+<h2 id="workloads"><a class="anchor" href="#workloads"></a>Workloads</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Click the <code>Workloads</code> link in the left navigation. On this page you can view
+a listing of all the workloads are present on your applications.</p>
 </div>
 <div class="paragraph">
-<p>Snowdrop Troubleshooting</p>
+<p><span class="image"><img src="_images/kiali-workload-list.png" alt="Workload Listing"></span></p>
 </div>
 <div class="paragraph">
-<p><a href="https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md">https://github.com/snowdrop/spring-boot-quickstart-istio/blob/master/TROUBLESHOOT.md</a></p>
+<p>Click on the <code>customer</code> workload. Here you can see details for the workload,
+such as the pods and services that are included in it:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-workload-details.png" alt="Workload Details"></span></p>
+</div>
+<div class="paragraph">
+<p>By clicking <code>Outbound Metrics</code> and <code>Inbound Metrics</code>, you can check the
+metrics for the workload. The metrics are the same as the <code>Application</code> ones.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="services"><a class="anchor" href="#services"></a>Services</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Click on the <code>Services</code> link in the left navigation. Here, you can see the
+listing of all services.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-service-list.png" alt="Service Listing"></span></p>
+</div>
+<div class="paragraph">
+<p>Click on the <code>customer</code> service. You can, on this page, see the details of
+the service, such as metrics, traces, workloads, virtual services,
+destination rules and so on:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-service-details.png" alt="Service Details"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="distributedtracing"><a class="anchor" href="#distributedtracing"></a>Distributed Tracing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Click on the Distributed Tracing link in the left navigation. The distributed
+tracing, provided by Jaeger, will open in a new page.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The tracing page opens in a new browser window/tab, so if it doesn&#8217;t
+open, please check if your browser didn&#8217;t block it from opening.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-distributed-tracing.png" alt="Distributed Tracing Page"></span></p>
+</div>
+</div>
 </div>
 </article>
   </main>
