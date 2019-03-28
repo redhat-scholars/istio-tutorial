@@ -43,7 +43,7 @@ Throw some requests at customer:
 
 You should see some 429 errors:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v2 from '2819441432-f4ls5': 108
 customer => preference => recommendation v1 from '99634814-d2z2t': 1932

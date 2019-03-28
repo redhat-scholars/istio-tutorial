@@ -191,7 +191,7 @@ In this way when you deploy a new service, you can mirror the traffic without wo
 [#cleanup]
 == Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 istioctl delete -f istiofiles/destination-rule-recommendation-v1.yml -n tutorial
 istioctl delete -f istiofiles/virtual-service-recommendation-virtualized.yml -n tutorial

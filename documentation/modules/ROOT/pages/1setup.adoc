@@ -63,7 +63,7 @@ You can check quickly if you are missing any tool and decide if you want to inst
 
 In case of using Minishift you need at least minishift v1.24.0.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 #!/bin/bash
 
@@ -93,7 +93,7 @@ minishift addon apply anyuid
 [#environment]
 == Setup environment
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 eval $(minishift oc-env)
 eval $(minishift docker-env)
@@ -107,7 +107,7 @@ NOTE: In this tutorial, you will often be polling the customer endpoint with `cu
 [#upstreamistioinstallation]
 == Upstream Istio installation
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 #!/bin/bash
 
@@ -124,7 +124,7 @@ export PATH=$ISTIO_HOME/bin:$PATH
 
 ----
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 
 oc apply -f install/kubernetes/helm/istio-init/files/crd-11.yaml
@@ -148,7 +148,7 @@ oc expose svc tracing
 
 Wait for Istio's components to be ready
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 $ oc get pods -w
 or
@@ -174,7 +174,7 @@ servicegraph-684c85ffb9-f7tjp               1/1       Running     2          57m
 
 And if you need quick access to the OpenShift console
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 minishift console
 ----
@@ -185,7 +185,7 @@ NOTE: On your first launch of the OpenShift console via `minishift`, you will re
 
 Wait for Istio's components to be ready
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 $ oc get pods -n istio-system
 

@@ -6,7 +6,7 @@ include::_attributes.adoc[]
 
 Make sure you are logged in
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc whoami
 or
@@ -15,7 +15,7 @@ kubectl config current-context
 
 and you have setup the project/namespace
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc new-project tutorial
 or
@@ -27,7 +27,7 @@ oc adm policy add-scc-to-user privileged -z default -n tutorial
 
 Then clone the git repository
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
@@ -37,7 +37,7 @@ Start deploying the microservice projects, starting with customer
 
 Make sure `istioctl` is in your `PATH`:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 $ istioctl version
 version.BuildInfo{Version:"1.1.1", GitRevision:"2b1331886076df103179e3da5dc9077fed59c989", User:"root", Host:"7077232d-4c6c-11e9-813c-0a580a2c0506", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.0-17-g2b13318"}
@@ -47,7 +47,7 @@ version.BuildInfo{Version:"1.1.1", GitRevision:"2b1331886076df103179e3da5dc9077f
 
 NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd customer/java/quarkus
 mvn clean package -DskipTests
@@ -72,7 +72,7 @@ kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[../.
 
 Since the `customer` service is the one our users will interact with, let's add an OpenShift Route that exposes that endpoint.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc expose service customer -n tutorial
 
@@ -91,7 +91,7 @@ Wait until the status is `Running` and there are `2/2` pods in the `Ready` colum
 
 Then test the customer endpoint
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -104,7 +104,7 @@ customer => UnknownHostException: preference
 
 Also review the logs
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 stern $(kubectl get pods|grep customer|awk '{ print $1 }'|head -1) -c customer
 or
@@ -113,14 +113,14 @@ stern "customer-\w" -c customer
 
 You should see a stacktrace containing this cause:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer-6fc99b7bfd-5st28 customer Caused by: java.net.UnknownHostException: preference
 ----
 
 Back to the main istio-tutorial directory
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd ../../..
 ----
@@ -157,7 +157,7 @@ kubectl get pods -w
 
 Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 ----
@@ -166,14 +166,14 @@ It will respond with an error since the service `recommendation` is not yet depl
 
 NOTE: We could make this a bit more resilient in a future iteration of this tutorial
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => Error: 503 - preference => UnknownHostException: recommendation
 ----
 
 and check out the logs
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 stern $(kubectl get pods|grep preference|awk '{ print $1 }'|head -1) -c preference
 or
@@ -182,14 +182,14 @@ stern "preference-\w" -c preference
 
 You should see a stacktrace containing this cause:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostException: recommendation
 ----
 
 Back to the main istio-tutorial directory
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd ../../..
 ----
@@ -223,21 +223,21 @@ kubectl get pods -w
 
 Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 ----
 
 it should now return
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '99634814-sf4cl': 1
 ----
 
 and you can monitor the `recommendation` logs with
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation
 or
@@ -246,7 +246,7 @@ stern "recommendation-v1-\w" -c recommendation-v1
 
 Back to the main `istio-tutorial` directory
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd ../../..
 ----
@@ -256,7 +256,7 @@ cd ../../..
 
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd {servicename}/java/{quarkus|springboot|vertx}
 
@@ -265,7 +265,7 @@ vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controll
 
 Make your changes, save it and then:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 mvn clean package
 docker build -t example/{servicename}:v1 .
@@ -285,7 +285,7 @@ Why the delete pod?
 
 Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image as it attempts to keep the desired replicas available
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc describe deployment {servicename} | grep Replicas
 or

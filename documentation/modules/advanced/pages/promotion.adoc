@@ -88,7 +88,7 @@ There is also a second `deployment.yml` file to label things correctly
 
 === Docker build (if you have access to Docker daemon)
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd recommendation/java/vertx
 mvn clean package
@@ -130,7 +130,7 @@ oc start-build recommendation-v3 --from-dir=. --follow -n tutorial
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
@@ -142,7 +142,7 @@ recommendation-v3-9834632434-urd34   2/2       Running   0         15s
 
 and test the customer endpoint until you can see that v3 has been reached.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 ----

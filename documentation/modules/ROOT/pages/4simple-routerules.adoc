@@ -21,7 +21,7 @@ There is also a second `deployment.yml` file to label things correctly
 
 === Docker build (if you have access to Docker daemon)
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd recommendation/java/quarkus
 mvn clean package -DskipTests
@@ -59,7 +59,7 @@ endif::workshop[]
 
 Back to the main `istio-tutorial` directory
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd ../../..
 ----
@@ -113,7 +113,7 @@ kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-su
 
 Now, you will see two requests into the v2 and one for v1.
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '2819441432-qsp25': 29
 customer => preference => recommendation v2 from '99634814-sf4cl': 37

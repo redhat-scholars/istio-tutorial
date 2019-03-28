@@ -5,7 +5,7 @@ Some tips and tricks that you might find handy
 
 You have two containers in a pod
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=customer -n tutorial
 or
@@ -14,7 +14,7 @@ kubectl get pods -o jsonpath="{.items[*].spec.containers[*].name}" -l app=custom
 
 From these images
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=customer -n tutorial
 or
@@ -23,7 +23,7 @@ kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}" -l app=custo
 
 Get the pod ids
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 CPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=customer -n tutorial)
 PPOD=$(oc get pods -o jsonpath='{.items[*].metadata.name}' -l app=preference -n tutorial)
@@ -40,7 +40,7 @@ RPOD2=$(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app=recommen
 
 The pods all see each other's services
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc exec $CPOD -c customer -n tutorial curl http://preference:8080
 oc exec $CPOD -c customer -n tutorial curl http://recommendation:8080
@@ -53,7 +53,7 @@ kubectl exec $CPOD -c customer -n tutorial curl http://recommendation:8080
 kubectl exec $RPOD2 -c recommendation -n tutorial curl http://customer:8080
 ----
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > afile.json
 or
@@ -196,7 +196,7 @@ istioctl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommend
 
 The review the routes again
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc exec $CPOD -c customer -n tutorial curl http://localhost:15000/config_dump > bfile.json
 or
@@ -242,7 +242,7 @@ and
 
 If you need the Pod IP
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutorial
 or
@@ -251,7 +251,7 @@ kubectl get pods -o jsonpath='{.items[*].status.podIP}' -l app=customer -n tutor
 
 Dive into the istio-proxy container
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc exec -it $CPOD -c istio-proxy -n tutorial /bin/bash
 or

@@ -21,7 +21,7 @@ oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
 
 Make sure you are logged in
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc whoami
 or
@@ -44,7 +44,7 @@ endif::workshop[]
 
 Then clone the git repository
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
@@ -54,7 +54,7 @@ Start deploying the microservice projects, starting with customer
 
 Make sure `istioctl` is in your `PATH`:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 $ istioctl version
 Version: 1.0.5
@@ -152,7 +152,7 @@ It will respond with an error since the service `recommendation` is not yet depl
 
 NOTE: We could make this a bit more resilient in a future iteration of this tutorial
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => 503 preference => I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
 ----
@@ -186,7 +186,7 @@ curl http://customer-tutorial{namespace-suffix}.{appdomain}
 
 it should now return
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '99634814-sf4cl': 1
 ----

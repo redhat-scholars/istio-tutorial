@@ -20,7 +20,7 @@ Instead of failing immediately, retry the Service N more times
 
 We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
@@ -29,7 +29,7 @@ kubectl exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespa
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/misbehave
 exit
@@ -59,7 +59,7 @@ kubectl exec -it  -n tutorial{namespace-suffix}$(oc get pods -n tutorial{namespa
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/behave
 exit
@@ -104,7 +104,7 @@ public Response recommendations() {
 
 Rebuild and redeploy
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd recommendation/java/quarkus
 
@@ -181,7 +181,7 @@ public Response recommendations() {
 
 And rebuild and redeploy the service again:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd recommendation/java/quarkus
 
@@ -403,7 +403,7 @@ kubectl get pods -l app=recommendation,version=v2
 
 You should see something like this:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 recommendation-v2-2036617847-hdjv2   2/2       Running   0          1h
 recommendation-v2-2036617847-spdrb   2/2       Running   0          7m
@@ -420,7 +420,7 @@ kubectl exec -it  -n tutorial{namespace-suffix} $(oc get pods  -n tutorial{names
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/misbehave
 exit

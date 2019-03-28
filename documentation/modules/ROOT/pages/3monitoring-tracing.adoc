@@ -82,7 +82,7 @@ while true; do curl customer-tutorial{namespace-suffix}.{appdomain}; sleep .5;  
 
 In the Prometheus dashboard, add the following
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 istio_requests_total{destination_service="recommendation.tutorial.svc.cluster.local"}
 ----

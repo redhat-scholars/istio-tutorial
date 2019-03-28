@@ -130,7 +130,7 @@ After:
 
 ==== Docker build (if you have access to Docker daemon)
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 mvn clean package
 
@@ -175,7 +175,7 @@ oc start-build recommendation-v4 --from-dir=. --follow -n tutorial
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
@@ -185,7 +185,7 @@ recommendation-v4-60483540-9snd9     2/2       Running   0          12m
 
 and test the customer endpoint
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 
@@ -286,7 +286,7 @@ And then let's build the new version and deploy it to the cluster.
 
 ==== Docker build (if you have access to Docker daemon)
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 mvn clean package
 
@@ -328,7 +328,7 @@ oc start-build recommendation-v5 --from-dir=. --follow -n tutorial
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
@@ -452,7 +452,7 @@ And then let's build the new version and deploy it to the cluster.
 
 ==== Docker build (if you have access to Docker daemon)
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 mvn clean package
 
@@ -495,7 +495,7 @@ oc start-build recommendation-v6 --from-dir=. --follow -n tutorial
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
@@ -599,7 +599,7 @@ And then let's build the new version and deploy it to the cluster.
 
 ==== Docker build (if you have access to Docker daemon)
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 mvn clean package
 
@@ -643,7 +643,7 @@ oc start-build recommendation-v7 --from-dir=. --follow -n tutorial
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m

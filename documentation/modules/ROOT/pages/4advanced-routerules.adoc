@@ -140,7 +140,7 @@ curl customer-tutorial{namespace-suffix}.{appdomain}
 
 Check the logs of recommendation-v2
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
 or
@@ -216,7 +216,7 @@ Wait for those 2/2 (two containers in each pod) and then poll the customer endpo
 
 The results should follow a fairly normal round-robin distribution pattern
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '99634814-d2z2t': 1145
 customer => preference => recommendation v2 from '2819441432-525lh': 1
@@ -237,7 +237,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommend
 
 And you should see a different pattern of which pod is being selected
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v2 from '2819441432-rg45q': 10
 customer => preference => recommendation v2 from '2819441432-525lh': 3

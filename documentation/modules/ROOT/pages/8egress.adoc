@@ -46,7 +46,7 @@ The "v3" tag during the Docker build is significant.
 
 === Docker build 
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 cd recommendation/java/quarkus
 mvn clean package -DskipTests
@@ -76,7 +76,7 @@ kubectl get pods -w -n
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
@@ -130,7 +130,7 @@ customer => preference => recommendation v3 2019-03-28T00:24+01:00 from '57cd88c
 
 or shell into the pod by getting its name and then using that name with oc exec
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 oc exec -it -n tutorial $(oc get pods -n tutorial -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
 or
@@ -146,7 +146,7 @@ exit
 [#cleanup]
 === Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/service-entry-egress-worldclockapi.yml -n tutorial
 kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial

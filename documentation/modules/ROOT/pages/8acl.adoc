@@ -25,7 +25,7 @@ We'll create a whitelist on the preference service to only allow requests from t
 kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofiles/acl-whitelist.yml] -n tutorial
 ----
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 customer => 404 customer => Error: 403 - PERMISSION_DENIED:preferencewhitelist.listchecker.tutorial:customer is not whitelisted
@@ -33,7 +33,7 @@ customer => 404 customer => Error: 403 - PERMISSION_DENIED:preferencewhitelist.l
 
 === Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/acl-whitelist.yml -n tutorial
 ----
@@ -48,7 +48,7 @@ We'll create a blacklist making the customer service blacklist to the preference
 kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofiles/acl-blacklist.yml] -n tutorial
 ----
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial.$(minishift ip).nip.io
 customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
@@ -56,7 +56,7 @@ customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:N
 
 === Clean up
 
-[source,bash]
+[source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/acl-blacklist.yml -n tutorial
 ----
