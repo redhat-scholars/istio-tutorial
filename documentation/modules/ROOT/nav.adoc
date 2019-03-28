@@ -25,6 +25,16 @@ ifndef::workshop[]
 ** xref:3monitoring-tracing.adoc#custommetrics[Custom Metrics]
 endif::workshop[]
 ** xref:3monitoring-tracing.adoc#tracing[Tracing]
+** xref:3kiali.adoc[Kiali]
+*** xref:3kiali.adoc#howkiali[How Kiali Work]
+*** xref:3kiali.adoc#updatekiali[Update Kiali]
+*** xref:3kiali.adoc#generatingdata[Generating Data]
+*** xref:3kiali.adoc#servicegraph[Service Graph]
+*** xref:3kiali.adoc#servicelistening[Service Listening]
+*** xref:3kiali.adoc#istioconf[Istio Config]
+*** xref:3kiali.adoc#distributedtracing[Distributed Tracing]
+*** xref:3kiali.adoc#cleanup[Uninstall Kiali]
+
 
 * 4. Traffic Control
 ** xref:4simple-routerules.adoc[Simple Routing]

@@ -1,16 +1,6 @@
 ifndef::workshop[]
 * xref:index.adoc[Advanced Istio Tutorial]
 
-** xref:kiali.adoc[Kiali]
-*** xref:kiali.adoc#howkiali[How Kiali Work]
-*** xref:kiali.adoc#installkiali[Install Kiali]
-*** xref:kiali.adoc#generatingdata[Generating Data]
-*** xref:kiali.adoc#servicegraph[Service Graph]
-*** xref:kiali.adoc#servicelistening[Service Listening]
-*** xref:kiali.adoc#istioconf[Istio Config]
-*** xref:kiali.adoc#distributedtracing[Distributed Tracing]
-*** xref:kiali.adoc#cleanup[Uninstall Kiali]
-
 ** xref:virtualization.adoc[Service Virtualization and Istio]
 *** xref:virtualization.adoc#deploypreferencev2[Deploy Preference V2]
 *** xref:virtualization.adoc#servicevirtualization[Adding Service Virtualization]

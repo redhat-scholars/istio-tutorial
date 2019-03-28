@@ -26,77 +26,54 @@ Kiali runs as a service together with Istio, and does not require any changes
 to Istio or Openshift configuration (besides the ones required to install
 Istio).
 
-[#installkiali]
-== How to install Kiali?
+[#updatekiali]
+== Update kiali?
 
 A prerequisite for installing Kiali is that you must have OpenShift and Istio
 installed and configured.
 
-To install it, you're going to need the `envsubst` command, that is available
-on `dnf` for Fedora, and on `homebrew` for OS X, like so:
-
-* Fedora: `dnf install gettext`
-* OS X: `brew install gettext`
-
-Then, install Kiali with the following commands:
+Update Kiali with the following commands:
 
 [source, bash]
 ----
 # URLS for Jaeger and Grafana
 export JAEGER_URL="http://tracing-istio-system.$(minishift ip).nip.io"
 export GRAFANA_URL="http://grafana-istio-system.$(minishift ip).nip.io"
-export VERSION_LABEL="v0.16.0"
 
-git clone -b ${VERSION_LABEL} https://github.com/kiali/kiali
+echo "apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiali
+  namespace: istio-system
+  labels:
+    app: kiali
+    chart: kiali
+    heritage: Tiller
+    release: istio
+data:
+  config.yaml: |
+    istio_namespace: istio-system
+    server:
+      port: 20001
+    external_services:
+      istio:
+        url_service_version: http://istio-pilot:8080/version
+      jaeger:
+        url: $JAEGER_URL
+      grafana:
+        url:  $GRAFANA_URL"| kubectl apply -f -; oc delete pod -l app=kiali -n istio-system
 
-cd kiali/deploy/openshift
-./deploy-kiali-to-openshift.sh
-----
 
-Installing Kiali may take a minute or two. You can use the following commands
-to see if the service is running:
-
-[source, bash]
-----
-oc project istio-system
-oc get pods -w
-----
-
-Wait until the status for Kiali is `Running` and there are `1/1` pods in the
-`Ready` column. To exit, press `Ctrl+C`.
-
-[source, bash]
-----
-oc project istio-system
-oc get routes
-----
-
-And you'll see a result that's something like this:
-
-[source, bash]
-----
-NAME                                          READY     STATUS      RESTARTS   AGE
-elasticsearch-0                               1/1       Running     0          2h
-grafana-6d5c5477-25qfz                        1/1       Running     0          2h
-istio-citadel-b9b8d7589-nttjg                 1/1       Running     0          3h
-istio-egressgateway-7f987dc785-sfpxt          1/1       Running     0          3h
-istio-galley-745db694bb-f4chz                 1/1       Running     0          3h
-istio-ingressgateway-5bd8ffd968-vgvt7         1/1       Running     0          3h
-istio-pilot-cf76476d4-hdq55                   2/2       Running     0          3h
-istio-policy-7cd858cc78-rs7rm                 2/2       Running     0          3h
-istio-sidecar-injector-86c5d87f-9jvgd         1/1       Running     0          3h
-istio-statsd-prom-bridge-7f44bb5ddb-7mhvm     1/1       Running     0          3h
-istio-telemetry-f757b89c5-sl67n               2/2       Running     0          3h
-jaeger-agent-nc68q                            1/1       Running     0          2h
-jaeger-collector-d8b97d664-fn8b6              1/1       Running     0          2h
-jaeger-query-7745b957bb-9bd8h                 1/1       Running     0          2h
-kiali-7b4dbdd448-xshkt                        1/1       Running     0          2h
-openshift-ansible-istio-installer-job-mcz42   0/1       Completed   0          3h
-prometheus-84bd4b9796-7wkv6                   1/1       Running     0          3h
 ----
 
 So now we can access Kiali at `kiali-istio-system.$(minishift ip).nip.io`, so
 let's do it:
+
+[source, bash]
+----
+open http://kiali-istio-system.$(minishift ip).nip.io/kiali
+----
+
 
 image:kiali-login.png[Login Page]
 
@@ -192,13 +169,3 @@ NOTE: The tracing page opens in a new browser window/tab, so if it doesn't
 open, please check if your browser didn't block it from opening.
 
 image:kiali-distributed-tracing.png[Distributed Tracing Page]
-
-[#cleanup]
-== Cleanup (Uninstalling Kiali)
-
-To uninstall Kiali from your cluster, run the following command:
-
-[source, bash]
-----
-oc delete all,secrets,sa,templates,configmaps,deployments,clusterroles,clusterrolebindings,virtualservices,destinationrules --selector=app=kiali -n istio-system
-----
