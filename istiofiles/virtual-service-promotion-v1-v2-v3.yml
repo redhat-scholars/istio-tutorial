@@ -8,8 +8,16 @@ spec:
   http:
   - match:
     - headers:
-        baggage-user-agent:
-          regex: .*Firefox.*
+        baggage-user-preference:
+          prefix: "123"
+    route:
+    - destination:
+        host: recommendation
+        subset: version-v3
+  - match:
+    - headers:
+        baggage-user-preference:
+          prefix: "12"
     route:
     - destination:
         host: recommendation

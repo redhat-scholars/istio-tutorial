@@ -6,12 +6,15 @@ spec:
   host: recommendation
   subsets:
   - labels:
-      version: v1
-    name: version-v1
+      version: v4
+    name: version-v4
   - labels:
-      version: v2
-    name: version-v2
+      version: v5
+    name: version-v5
   - labels:
-      version: v3
-    name: version-v3
+      version: v6
+    name: version-v6
+  - labels:
+      version: v7
+    name: version-v7
 ---

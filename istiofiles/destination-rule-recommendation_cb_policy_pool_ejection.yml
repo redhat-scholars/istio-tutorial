@@ -3,7 +3,6 @@ kind: DestinationRule
 metadata:
   creationTimestamp: null
   name: recommendation
-  namespace: tutorial
 spec:
   host: recommendation
   subsets:

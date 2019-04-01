@@ -9,6 +9,6 @@ spec:
   - route:
     - destination:
         host: recommendation
-        subset: version-v1
+        subset: version-v6
       weight: 100
 ---
