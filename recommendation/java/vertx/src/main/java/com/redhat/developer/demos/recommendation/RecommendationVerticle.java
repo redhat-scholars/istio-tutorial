@@ -16,7 +16,8 @@ import io.vertx.ext.web.codec.BodyCodec;
 public class RecommendationVerticle extends AbstractVerticle {
 
     private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
-    private static final String HTTP_NOW = "now.httpbin.org";
+
+    private static final String HTTP_NOW = "worldclockapi.com";
 
     private static final String HOSTNAME = parseContainerIdFromHostname(
         System.getenv().getOrDefault("HOSTNAME", "unknown")
@@ -82,14 +83,15 @@ public class RecommendationVerticle extends AbstractVerticle {
     private void getNow(RoutingContext ctx) {
         count++;
         final WebClient client = WebClient.create(vertx);
-        client.get(80, HTTP_NOW, "/")
+        client.get(80, HTTP_NOW, "/api/json/cet/now")
         .timeout(5000)
         .as(BodyCodec.jsonObject())
             .send(ar -> {
                 if (ar.succeeded()) {
                     HttpResponse<JsonObject> response = ar.result();
                     JsonObject body = response.body();
-                    String now = body.getJsonObject("now").getString("rfc2822");
+                    String now = body.getString("currentDateTime");
+
                     ctx.response().end(now + " " + String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
                 } else {
                     ctx.response().setStatusCode(503).end(ar.cause().getMessage());

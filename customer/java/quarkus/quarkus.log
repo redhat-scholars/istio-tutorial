@@ -1,0 +1,7 @@
+2019-03-26 15:41:47,159 titanium customer-1.0-SNAPSHOT-runner.jar[16467] WARN  [io.qua.jae.run.JaegerDeploymentTemplate] (main) Jaeger service name has not been defined (e.g. JAEGER_SERVICE_NAME environment variable or system properties)
+2019-03-26 15:41:47,210 titanium customer-1.0-SNAPSHOT-runner.jar[16467] DEBUG [org.xnio] (main) XNIO version 3.7.0.Final
+2019-03-26 15:41:47,231 titanium customer-1.0-SNAPSHOT-runner.jar[16467] DEBUG [org.xni.nio] (main) XNIO NIO Implementation Version 3.7.0.Final
+2019-03-26 15:41:47,356 titanium customer-1.0-SNAPSHOT-runner.jar[16467] DEBUG [org.jbo.threads] (main) JBoss Threads version 3.0.0.Alpha4
+2019-03-26 15:41:47,489 titanium customer-1.0-SNAPSHOT-runner.jar[16467] INFO  [io.quarkus] (main) Quarkus 0.12.0 started in 1.268s. Listening on: http://[::]:8080
+2019-03-26 15:41:47,492 titanium customer-1.0-SNAPSHOT-runner.jar[16467] INFO  [io.quarkus] (main) Installed features: [cdi, jaeger, resteasy, smallrye-health, smallrye-opentracing, smallrye-rest-client]
+2019-03-26 15:41:49,591 titanium customer-1.0-SNAPSHOT-runner.jar[16467] INFO  [io.quarkus] (main) Quarkus stopped in 0.013s
