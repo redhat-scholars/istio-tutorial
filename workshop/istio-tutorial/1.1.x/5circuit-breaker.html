@@ -294,7 +294,7 @@ if so run:</p>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it -n tutorial-$WORKSHOP_USER $(oc get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it -n tutorial-$WORKSHOP_USER $(oc get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+kubectl exec -it -n tutorial-$WORKSHOP_USER $(kubectl get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -328,7 +328,7 @@ customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it -n tutorial-$WORKSHOP_USER $(oc get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it  -n tutorial-$WORKSHOP_USER$(oc get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+kubectl exec -it -n tutorial-$WORKSHOP_USER $(kubectl get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -612,7 +612,7 @@ recommendation-v2-2036617847-spdrb   2/2       Running   0          7m</code></p
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it  -n tutorial-$WORKSHOP_USER $(oc get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it  -n tutorial-$WORKSHOP_USER $(oc get pods  -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
+kubectl exec -it -n tutorial-$WORKSHOP_USER $(kubectl get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
 </div>
 <div class="paragraph">
