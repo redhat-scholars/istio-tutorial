@@ -24,7 +24,7 @@ We will make pod recommendation-v2 fail 100% of the time. Get one of the pod nam
 ----
 oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -54,7 +54,7 @@ Now, make the pod v2 behave well again
 ----
 oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it  -n tutorial{namespace-suffix}$(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -415,7 +415,7 @@ Now we'll get into one the pods and add some erratic behavior on it. Get one of 
 ----
 oc exec -it  -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it  -n tutorial{namespace-suffix} $(oc get pods  -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
