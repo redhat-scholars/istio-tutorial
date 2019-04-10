@@ -2,7 +2,7 @@
 include::_attributes.adoc[]
 
 [#monitoring]
-== Monitoring
+== Monitoring with Grafana
 
 Out of the box, you get monitoring via Prometheus and Grafana. 
 
@@ -42,12 +42,10 @@ to check the "Workload of the services"
 
 image:grafana2.png[Grafana 2]
 
-// Custom Metrics removed because it requires access to istio-system.
-ifndef::workshop[] 
-[#custommetrics]
-== Custom Metrics
+[#prometheus]
+== Prometheus
 
-Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard
+Explore Prometheus:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -64,6 +62,13 @@ firefox "$(minishift openshift service prometheus -u -n istio-system)/graph?g0.r
 endif::workshop[]
 ----
 
+
+// Custom Metrics removed from Workshop because it requires access to istio-system.
+ifndef::workshop[] 
+[#custommetrics]
+=== Custom Metrics
+
+Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard
 
 Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then
 
@@ -95,6 +100,48 @@ image:prometheus_custom_metric.png[alt text]
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
 
 endif::workshop[]
+
+[#containermemory]
+=== Containers memory
+
+Istio allows also to see the RSS memory consumed by the containers.
+
+In the Prometheus dashboard, add the following
+
+[source,bash,subs="+macros,+attributes"]
+----
+container_memory_rss{namespace="tutorial",container_name =~ "customer|preference|recommendation"}
+----
+
+and select `Execute`
+
+image:prometheus-memory.png[Prometheus memory]
+
+[#applicationmetrics]
+=== Application metrics
+
+The deployment file for each microservice contains the following annotations:
+
+[source,yaml,subs="+macros,+attributes"]
+----
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/scheme: "http"
+----
+
+These annotations cause Prometheus to query the "/metrics" path and collect the data.
+
+In the Prometheus dashboard, add the following expression to look at one of these metrics
+
+[source,bash,subs="+macros,+attributes"]
+----
+base:memory_used_heap_bytes
+----
+
+and select `Execute`
+
+image:prometheus-appmetrics.png[application metrics]
 
 [#tracing]
 == Tracing

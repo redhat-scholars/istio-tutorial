@@ -2,9 +2,9 @@
 :branch: master
 :github-repo: https://github.com/redhat-developer-demos/istio-tutorial/blob/{branch}
 :customer-repo: customer
-:customer-java: java/springboot
+:customer-java: java/quarkus
 :preference-repo: preference
-:preference-java: java/springboot
+:preference-java: java/quarkus
 :recommendation-repo: recommendation
-:recommendation-java: java/vertx
+:recommendation-java: java/quarkus
 :istiofiles-dir: istiofiles
