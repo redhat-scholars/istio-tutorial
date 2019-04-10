@@ -1,4 +1,4 @@
-= Java (Spring Boot, Vert.x and Microprofile) + Istio on Kubernetes/OpenShift
+= Polyglot microservices (Java, Node, .NET) + Istio on Kubernetes/OpenShift
 This content is brought to you by http://developers.redhat.com - Register today!
 :toc: macro
 :toc-title: Table of Contents
