@@ -97,10 +97,22 @@
     <a class="nav-link" href="3monitoring-tracing.html">3. Observability</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#monitoring">Monitoring</a>
+    <a class="nav-link" href="#monitoring">Monitoring with Grafana</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#custommetrics">Custom Metrics</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="#prometheus">Prometheus</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#custommetrics">Custom metrics</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#containermemory">Container memory</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#applicationmetrics">Application metrics</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#tracing">Tracing</a>
@@ -508,7 +520,7 @@
 <article class="doc">
 <h1>Observability</h1>
 <div class="sect1">
-<h2 id="monitoring"><a class="anchor" href="#monitoring"></a>Monitoring</h2>
+<h2 id="monitoring"><a class="anchor" href="#monitoring"></a>Monitoring with Grafana</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Out of the box, you get monitoring via Prometheus and Grafana.</p>
@@ -551,10 +563,10 @@ firefox "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/i
 </div>
 </div>
 <div class="sect1">
-<h2 id="custommetrics"><a class="anchor" href="#custommetrics"></a>Custom Metrics</h2>
+<h2 id="prometheus"><a class="anchor" href="#prometheus"></a>Prometheus</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard</p>
+<p>Explore Prometheus:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -562,6 +574,11 @@ firefox "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/i
 or
 firefox "$(minishift openshift service prometheus -u -n istio-system)/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"</code></pre>
 </div>
+</div>
+<div class="sect2">
+<h3 id="custommetrics"><a class="anchor" href="#custommetrics"></a>Custom Metrics</h3>
+<div class="paragraph">
+<p>Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard</p>
 </div>
 <div class="paragraph">
 <p>Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then</p>
@@ -604,6 +621,58 @@ You may have to refresh the browser for the Prometheus graph to update. And you 
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="containermemory"><a class="anchor" href="#containermemory"></a>Containers memory</h3>
+<div class="paragraph">
+<p>Istio allows also to see the RSS memory consumed by the containers.</p>
+</div>
+<div class="paragraph">
+<p>In the Prometheus dashboard, add the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">container_memory_rss{namespace="tutorial",container_name =~ "customer|preference|recommendation"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and select <code>Execute</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/prometheus-memory.png" alt="Prometheus memory"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="applicationmetrics"><a class="anchor" href="#applicationmetrics"></a>Application metrics</h3>
+<div class="paragraph">
+<p>The deployment file for each microservice contains the following annotations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/scheme: "http"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These annotations cause Prometheus to query the "/metrics" path and collect the data.</p>
+</div>
+<div class="paragraph">
+<p>In the Prometheus dashboard, add the following expression to look at one of these metrics</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">base:memory_used_heap_bytes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and select <code>Execute</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/prometheus-appmetrics.png" alt="application metrics"></span></p>
+</div>
 </div>
 </div>
 </div>
