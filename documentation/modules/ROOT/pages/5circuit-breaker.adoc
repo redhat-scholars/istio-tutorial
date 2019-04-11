@@ -48,6 +48,18 @@ customer => preference => recommendation v1 from '2036617847-m9glz': 197
 customer => preference => recommendation v1 from '2036617847-m9glz': 198
 ----
 
+If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as `preference` will retry to establish the connection with `recommendation`, and v1 will reply.
+
+[source, bash]
+----
+open http://kiali-istio-system.$(minishift ip).nip.io/kiali
+----
+
+In Kiali, go to `Graph`, select the `recommendation` square, and place the mouse over the red sign, like the picture bellow.
+
+image:kiali-retry.png[Kiali Retry]
+
+
 Now, make the pod v2 behave well again
 
 [source,bash,subs="+macros,+attributes"]
