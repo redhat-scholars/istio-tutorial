@@ -334,6 +334,20 @@ customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</
 </div>
 </div>
 <div class="paragraph">
+<p>If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as <code>preference</code> will retry to establish the connection with <code>recommendation</code>, and v1 will reply.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://kiali-istio-system.$(minishift ip).nip.io/kiali</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In Kiali, go to <code>Graph</code>, select the <code>recommendation</code> square, and place the mouse over the red sign, like the picture bellow.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/kiali-retry.png" alt="Kiali Retry"></span></p>
+</div>
+<div class="paragraph">
 <p>Now, make the pod v2 behave well again</p>
 </div>
 <div class="listingblock">
