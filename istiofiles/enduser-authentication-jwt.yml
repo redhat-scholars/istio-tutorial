@@ -4,11 +4,11 @@ metadata:
   name: "customerjwt"
 spec:
   targets:
-  - name: customer
+    - name: customer
+    - name: preference
+    - name: recommendation
   origins:
-  - jwt:
-      issuer: "http://keycloak-tutorial.192.168.64.14.nip.io/auth/realms/istio"
-      jwksUri: "http://keycloak-tutorial.192.168.64.14.nip.io/auth/realms/istio/protocol/openid-connect/certs"
-      audiences:
-      - customer-tutorial  
+    - jwt:
+        issuer: "testing@secure.istio.io"
+        jwksUri: "https://gist.githubusercontent.com/lordofthejars/7dad589384612d7a6e18398ac0f10065/raw/ea0f8e7b729fb1df25d4dc60bf17dee409aad204/jwks.json"
   principalBinding: USE_ORIGIN
