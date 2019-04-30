@@ -320,9 +320,6 @@
     <a class="nav-link" href="8jwt.html">End-user authentication with JWT</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="#enablingauthentication">Enabling end-user authentication</a>
   </li>
   <li class="nav-item" data-depth="3">
@@ -336,9 +333,6 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="8rbac.html#enabling-rbac">Enabling RBAC</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8rbac.html#grant-access">Granting Access</a>
   </li>
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="8rbac.html#authorization-jwt">Authorization and JWT</a>
@@ -553,93 +547,6 @@ At the time of writing this chapter, only the JWT mechanism is supported.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="preparation"><a class="anchor" href="#preparation"></a>Before Start</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To use JWT end-user authentication, we need a JWT issuer.
-In this case, we are going to use <a href="https://www.keycloak.org/">Keycloak</a> but notice that any other one is valid as well.</p>
-</div>
-<div class="paragraph">
-<p>Before starting let&#8217;s deploy Keycloak in our <code>tutorial</code> namespace.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f keycloak/Deployment.yml -n tutorial
-oc create -f keycloak/Service.yml -n tutorial
-
-oc expose service keycloak</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Follow the deployment of Keycloak using the command</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -w</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Wait until the status is Running and there is 1/1 pod in the Ready column. To exit, press Ctrl+C</p>
-</div>
-<div class="paragraph">
-<p>Now we need to configure Keycloak with realms, users, passwords, roles &#8230;&#8203;</p>
-</div>
-<div class="paragraph">
-<p>So open Keycloak administration web page by opening a browser to</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://keycloak-tutorial.$(minishift ip).nip.io/</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then select <code>administration console</code> option and use <code>admin/admin</code> as login/password.</p>
-</div>
-<div class="paragraph">
-<p>And you&#8217;ll get something like:</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-initial.png" alt="Initial Administration Page"></span></p>
-</div>
-<div class="paragraph">
-<p>Then create a new <code>realm</code>. Just move the pointer over <code>Master</code> section which is found in upper-left section and click on <code>Add realm</code> button.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-create_realm.png" alt="Create Realm"></span></p>
-</div>
-<div class="paragraph">
-<p>Select the file "keycloak/istio-realm.json" and click on "Create".</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-import.png" alt="Create Realm"></span></p>
-</div>
-<div class="paragraph">
-<p>And finally, go to "Users" and create a user called <code>demo</code> under the previous role.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-create_user.png" alt="Create User"></span></p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-assign_user_role.png" alt="Assign Role User"></span></p>
-</div>
-<div class="paragraph">
-<p>Select the role from <code>Available Roles</code> section and push <code>Add selected</code>.</p>
-</div>
-<div class="paragraph">
-<p>Then go to Credentials and set <code>demo</code> as the password.</p>
-</div>
-<div class="paragraph">
-<p>Finally, go again to Details tab and in Required User Actions input, remove the Update Password action.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-details_user.png" alt="User Details"></span></p>
-</div>
-<div class="paragraph">
-<p>And finally push Save button.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
 <h2 id="enablingauthentication"><a class="anchor" href="#enablingauthentication"></a>Enabling User-End Authentication</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -656,23 +563,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 </div>
 </div>
 <div class="paragraph">
-<p>After that open the file <code>istiofiles/enduser-authentication-jwt.yml</code> and replace the IP of fields <code>issuer</code> and <code>jwksUri</code> by your minishift IP (<code>minishift ip</code>).</p>
-</div>
-<div class="listingblock">
-<div class="title">istiofiles/enduser-authentication-jwt.yml</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">spec:
-  origins:
-  - jwt:
-      issuer: "http://keycloak-tutorial.192.168.64.87.nip.io/auth/realms/istio"
-      jwksUri: "http://keycloak-tutorial.192.168.64.87.nip.io/auth/realms/istio/protocol/openid-connect/certs"
-      audiences:
-      - customer-tutorial
-  principalBinding: USE_ORIGIN</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And then run:</p>
+<p>Then run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -697,22 +588,13 @@ Origin authentication failed.%`</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl http://keycloak-tutorial.$(minishift ip).nip.io/auth/realms/istio/protocol/openid-connect/token -d 'username=demo&amp;password=demo&amp;grant_type=password&amp;client_id=customer-tutorial'| python -c "import json,sys;obj=json.load(sys.stdin);print obj['access_token'];")
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl https://gist.githubusercontent.com/lordofthejars/a02485d70c99eba70980e0a92b2c97ed/raw/f16b938464b01a2e721567217f672f11dc4ef565/token.simple.jwt -s)
 
 echo $token</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>And set the content of attribute <code>access_token</code> into <code>token</code> variable in your terminal.</p>
-</div>
-<div class="paragraph">
-<p>If you want to see what is inside the token just go to <a href="https://jwt.io/">jwt.io</a> in <em>Debugger</em> section and paste the token.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/keycloak-jwt_token.png" alt="keycloak jwt token"></span></p>
-</div>
-<div class="paragraph">
-<p>Notice how <code>aud</code> field is set to <code>customer-tutorial.</code></p>
+<p>Then let&#8217;s repeat the request but passing the token stored in <code>token</code> variable.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -751,10 +633,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/enduser-authentication-jwt.yml
-oc delete -f keycloak/Deployment.yml -n tutorial
-oc delete -f keycloak/Service.yml -n tutorial
-oc delete route keycloak</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/enduser-authentication-jwt.yml</code></pre>
 </div>
 </div>
 </div>
