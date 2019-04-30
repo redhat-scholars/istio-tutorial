@@ -18,7 +18,7 @@ In this chapter, we are going to see how to use Istio's authorization feature to
 [#enabling-rbac]
 == Enabling RBAC
 
-The first thing to do is enable Istio Authorization by using `RbacConfig` object.
+The first thing to do is enable Istio Authorization by using `ClusterRbacConfig` object.
 
 [source, bash,subs="+macros,+attributes"]
 ----
@@ -37,78 +37,8 @@ RBAC: access denied
 
 By default, Istio uses a _deny by default_ strategy, meaning that nothing is permitted until you explicitly define access control policy to grant access to any service.
 
-[#grant-access]
-== Granting Access
-
-Let's grant access to any user to any service of our mesh (`customer`, `preference`, `recommendation`) only and only if the communication goes through `GET` method.
-
-[source, bash,subs="+macros,+attributes"]
-----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy.yml[istiofiles/namespace-rbac-policy.yml] -n tutorial
-----
-
-Let's send a request now:
-
-[source, bash]
-----
-curl customer-tutorial.$(minishift ip).nip.io
-
-customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 6
-----
-
-The communication now is possible.
-
-Now open link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy.yml[istiofiles/namespace-rbac-policy.yml] file and change the `method` field form `GET` to `POST` and save it.
-
-[source, yaml]
-.istiofiles/namespace-rbac-policy.yml
-----
-spec:
-  rules:
-  - services: ["*"]
-    methods: ["POST"]
-----
-
-And update the Istio resource in the mesh:
-
-[source, bash,subs="+macros,+attributes"]
-----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy.yml[istiofiles/namespace-rbac-policy.yml] -n tutorial
-----
-
-And if you run again:
-
-[source, bash]
-----
-curl customer-tutorial.$(minishift ip).nip.io
-
-RBAC: access denied
-----
-
-Obviously, you'll get an access denied error since all requests in our application is done using `GET` method.
-
-Restore again the `method` value to `GET` and update the Istio resouce in the mesh:
-
-[source, bash,subs="+macros,+attributes"]
-----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy.yml[istiofiles/namespace-rbac-policy.yml] -n tutorial
-----
-
-Validate that now the communication is granted.
-
-[source, bash]
-----
-curl customer-tutorial.$(minishift ip).nip.io
-
-customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 6
-----
-
 [#authorization-jwt]
-=== Authorization and JWT
-
-In <<Granting Access>>, you have added all users access to all services, but you can also specify a list of `subjects` that are assigned to a role.
-Istio supports several ways to specify them, from using a Kubernetes service account to a range of IPs, request headers or request auths.
-But one that it is really interesting is its integration with JWT.
+== Authorization and JWT
 
 In this section, you'll learn how to use a JWT claim to manage the access to the services.
 
@@ -116,44 +46,29 @@ The first thing you need to do is applying all the steps described at xref:8jwt.
 
 After that, you are ready to use JWT in the authorization phase as well.
 
-Now apply next Istio resource which makes that only tokens that contain a field named `preferred_username` with value `demo` (notice that when you were setting up Keycloak you created this user), then the access is granted, in any other cases, the access is rejected.
+Now apply next Istio resource which makes that only tokens that contain a field named `role` with value `customer`.
 
 [source, bash,subs="+macros,+attributes"]
 ----
 istioctl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
 ----
 
-and then you can do a new call with the token:
+and then you can do a new call with the new token containing the `role` claim with value `customer``:
 
 [source, bash]
 ----
-token="eyJhbGciOiJSUzI1NiIsInR5cCIg....."
+token=$(curl https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt -s)
 
 curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
 
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
 
-[IMPORTANT] 
-====
-Remember to have a valid token at `token` variable.
-
-To generate it you need to follow the steps defined at xref:8jwt.adoc[End-user authentication with JWT] to install Keycloak and then execute next command changing the IP to your location:
-
-[source, bash]
-----
-token=$(curl http://keycloak-tutorial.$(minishift ip).nip.io/auth/realms/istio/protocol/openid-connect/token -d 'username=demo&password=demo&grant_type=password&client_id=customer-tutorial'| python -c "import json,sys;obj=json.load(sys.stdin);print obj['access_token'];")
-
-echo $token
-----
-
-====
-
-So far, nothing new right, just that now the role to authorize a request comes from a JWT token instead of statically set in an Istio file.
+Notice that now only valid JWT tokens containing the claim `role` set to `customer` will suceed, the rest you'll get an access denied.
 
 To validate that this is working correctly, do next thing:
 
-Open `istiofiles/namespace-rbac-policy-jwt.yml` and change the `preferred_username` with value `xxx` and save the file.
+Open `istiofiles/namespace-rbac-policy-jwt.yml` and change the `role` with value `xxx` and save the file.
 
 [source, yaml]
 .istiofiles/namespace-rbac-policy-jwt.yml
@@ -162,7 +77,7 @@ spec:
   subjects:
   - user: "*"
     properties:
-      request.auth.claims[preferred_username]: "xxx"
+      request.auth.claims[role]: "xxx"
 ----
 
 And then replace it:
@@ -181,7 +96,7 @@ curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
 RBAC: access denied
 ----
 
-But notice that now the access is denied because the `preferred_username` field value in the token is `demo` instead of `xxx`.
+But notice that now the access is denied because the `role` field value in the token is `customer` instead of `xxx`.
 
 [#final-notes]
 == Final Notes
@@ -190,9 +105,6 @@ In this chapter you've seen how to RBAC.
 Obviously, you should also enable mTLS to authenticate also your requests.
 
 Check xref:8mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
-
-In section <<Authorization and JWT>>, you used the `preferred_username` field for the sake of simplicity, but of course any other field can be used.
-In another case, you might want to use the `group` field of JWT so instead of using a `username` field which affects only one user, it affects the group of users that defines this field.
 
 [#cleanup]
 == Clean Up

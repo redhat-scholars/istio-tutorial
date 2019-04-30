@@ -133,3 +133,19 @@ else
     done
     
 fi
+
+contentrbc=`kubectl get clusterrbacconfig -n "$namespace" 2>/dev/null`
+
+if [ -z "$contentcrbc" ]; then
+    echo "No ClusterRbacConfig in $namespace namespace."
+else
+    contentcrbc=`awk 'NR>1' <<< "$contentcrbc"`
+
+    names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentcrbc"`
+
+    for name in "${names[@]}"
+    do
+        kubectl delete clusterrbacconfig "$name" -n "$namespace"
+    done
+    
+fi

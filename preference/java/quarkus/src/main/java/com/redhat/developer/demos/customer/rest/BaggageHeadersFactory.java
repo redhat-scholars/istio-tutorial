@@ -1,14 +1,12 @@
 package com.redhat.developer.demos.customer.rest;
 
-import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
-
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 
 @RegisterForReflection
 public class BaggageHeadersFactory implements ClientHeadersFactory {
-  
 
     @Override
     public MultivaluedMap<String, String> update(MultivaluedMap<String, String> incomingHeaders, MultivaluedMap<String, String> clientOutgoingHeaders) {
