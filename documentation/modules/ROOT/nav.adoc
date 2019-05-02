@@ -55,7 +55,6 @@ endif::workshop[]
 *** xref:4advanced-routerules.adoc#mirroringtraffic[Mirroring Traffic]
 *** xref:4advanced-routerules.adoc#loadbalancer[Load Balancer]
 
-ifndef::workshop[]
 * xref:5circuit-breaker.adoc[5. Service Resiliency]
 ** xref:5circuit-breaker.adoc#retry[Retry]
 ** xref:5circuit-breaker.adoc#timeout[Timeout]
@@ -73,6 +72,7 @@ ifndef::workshop[]
 ** xref:6fault-injection.adoc#delay[Delay]
 
 
+ifndef::workshop[]
 * xref:7policy.adoc[7. Policy]
 ** xref:7policy.adoc#ratelimiting[Rate Limiting - Not working yet]
 
