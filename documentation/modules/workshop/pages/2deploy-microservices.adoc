@@ -10,9 +10,9 @@ export WORKSHOP_USER=<your-username-number>
 
 
 #Example:
-export WORKSHOP_USER=1
+export WORKSHOP_USER=dev001
 
-oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
+oc login -u $WORKSHOP_USER -p openshift {ocpurl}
 ----
 
 

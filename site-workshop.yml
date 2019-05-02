@@ -13,8 +13,8 @@ content:
 asciidoc:
   attributes:
     workshop: true
-    ocpurl: https://master.istambul-1b3d.openshiftworkshop.com
-    appdomain: apps.istambul-1b3d.openshiftworkshop.com
+    ocpurl: https://api.guru.devx.red:6443
+    appdomain: apps.guru.devx.red
     etherpad: https://etherpad.wikimedia.org/p/IstioIstambul
     namespace-suffix: -$WORKSHOP_USER
 ui:

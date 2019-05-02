@@ -15,8 +15,7 @@ ifndef::workshop[]
 endif::workshop[]
 
 ifdef::workshop[]
-* xref:workshop:1setup.adoc[1. Setup]
-* xref:workshop:2deploy-microservices.adoc[2. Deploy Microservices]
+* xref:workshop:2deploy-microservices.adoc[1. Deploy Microservices]
 endif::workshop[]
 
 * xref:3monitoring-tracing.adoc[3. Observability]
@@ -56,6 +55,7 @@ endif::workshop[]
 *** xref:4advanced-routerules.adoc#mirroringtraffic[Mirroring Traffic]
 *** xref:4advanced-routerules.adoc#loadbalancer[Load Balancer]
 
+ifndef::workshop[]
 * xref:5circuit-breaker.adoc[5. Service Resiliency]
 ** xref:5circuit-breaker.adoc#retry[Retry]
 ** xref:5circuit-breaker.adoc#timeout[Timeout]
@@ -72,7 +72,7 @@ endif::workshop[]
 ** xref:6fault-injection.adoc#503error[HTTP 503 Error]
 ** xref:6fault-injection.adoc#delay[Delay]
 
-ifndef::workshop[]
+
 * xref:7policy.adoc[7. Policy]
 ** xref:7policy.adoc#ratelimiting[Rate Limiting - Not working yet]
 
