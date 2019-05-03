@@ -7,6 +7,9 @@ ifndef::workshop[]
 ** xref:1setup.adoc#environment[Setup Environment]
 ** xref:1setup.adoc#istioinstallation[Install Istio]
 
+endif::[]
+
+ifndef::workshop[]
 * xref:2deploy-microservices.adoc[2. Deploy Microservices]
 ** xref:2deploy-microservices.adoc#deploycustomer[Deploy Customer]
 ** xref:2deploy-microservices.adoc#deploypreference[Deploy Preference]
@@ -18,7 +21,12 @@ ifdef::workshop[]
 * xref:workshop:2deploy-microservices.adoc[1. Deploy Microservices]
 endif::workshop[]
 
+ifdef::workshop[]
+* xref:3monitoring-tracing.adoc[2. Observability]
+endif::workshop[]
+ifndef::workshop[]
 * xref:3monitoring-tracing.adoc[3. Observability]
+endif::workshop[]
 ** xref:3monitoring-tracing.adoc#monitoring[Monitoring with Grafana]
 ** xref:3monitoring-tracing.adoc#prometheus[Prometheus]
 ifndef::workshop[]
@@ -38,7 +46,12 @@ endif::workshop[]
 *** xref:3kiali.adoc#cleanup[Uninstall Kiali]
 
 
+ifdef::workshop[]
+* 3. Traffic Control
+endif::workshop[]
+ifndef::workshop[]
 * 4. Traffic Control
+endif::workshop[]
 ** xref:4simple-routerules.adoc[Simple Routing]
 *** xref:4simple-routerules.adoc#deployrecommendationv2[Create Recommendation V2]
 *** xref:4simple-routerules.adoc#istiorouting[Changing Istio Routings]
@@ -55,8 +68,12 @@ endif::workshop[]
 *** xref:4advanced-routerules.adoc#mirroringtraffic[Mirroring Traffic]
 *** xref:4advanced-routerules.adoc#loadbalancer[Load Balancer]
 
-* xref:5circuit-breaker.adoc[5. Service Resiliency]
+ifdef::workshop[]
+* xref:5circuit-breaker.adoc[4. Service Resiliency]
 ** xref:5circuit-breaker.adoc#retry[Retry]
+endif:[]
+ifndef::workshop[]
+* xref:5circuit-breaker.adoc[5. Service Resiliency]
 ** xref:5circuit-breaker.adoc#timeout[Timeout]
 ** xref:5circuit-breaker.adoc#failfast[Fail Fast]
 *** xref:5circuit-breaker.adoc#nocircuitbreaker[No Circuit Breaker]
@@ -72,7 +89,6 @@ endif::workshop[]
 ** xref:6fault-injection.adoc#delay[Delay]
 
 
-ifndef::workshop[]
 * xref:7policy.adoc[7. Policy]
 ** xref:7policy.adoc#ratelimiting[Rate Limiting - Not working yet]
 
