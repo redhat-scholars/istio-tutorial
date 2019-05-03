@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traffic-generator-config
+data:
+  duration: "0s"
+  route: "http://istio-ingressgateway.istio-system.svc.cluster.local/"
+  rate: "1"
