@@ -6,20 +6,20 @@ include::_attributes.adoc[]
 
 Out of the box, you get monitoring via Prometheus and Grafana. 
 
-NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `siege customer-tutorial.$(minishift ip).nip.io` to produce load.
+NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `siege $CUSTOMER_URL` to produce load.
 
 [source,bash,subs="+macros,+attributes"]
 ----
 ifdef::workshop[]
-open http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1
+open http://grafana-istio-system.{appdomain}/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1
 or
-firefox http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1
+firefox http://grafana-istio-system.{appdomain}/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1
 endif::workshop[]
 
 ifndef::workshop[]
-open "$(minishift openshift service grafana -u -n istio-system)/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1"
+open "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
 or
-firefox "$(minishift openshift service grafana -u -n istio-system)/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1"
+firefox "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
 endif::workshop[]
 ----
 
@@ -38,7 +38,7 @@ firefox "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/i
 endif::workshop[]
 ----
 
-to check the "Workload of the services"
+Make sure to select your $WORKSHOP_USER-istiotutorial namespace and customer, preference-v1 or recommendation-v1
 
 image:grafana2.png[Grafana 2]
 
@@ -110,13 +110,16 @@ In the Prometheus dashboard, add the following
 
 [source,bash,subs="+macros,+attributes"]
 ----
-container_memory_rss{namespace="tutorial",container_name =~ "customer|preference|recommendation"}
+container_memory_rss{namespace="$WORKSHOP_USER-istiotutorial",container_name =~ "customer|preference|recommendation"}
 ----
 
 and select `Execute`
 
 image:prometheus-memory.png[Prometheus memory]
 
+// Application Metrics removed from Workshop because it breaks kiali
+// https://issues.jboss.org/browse/KIALI-2811
+ifndef::workshop[] 
 [#applicationmetrics]
 === Application metrics
 
@@ -142,6 +145,9 @@ base:memory_used_heap_bytes
 and select `Execute`
 
 image:prometheus-appmetrics.png[application metrics]
+
+endif::workshop[]
+
 
 [#tracing]
 == Tracing
