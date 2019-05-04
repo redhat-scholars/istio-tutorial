@@ -4,12 +4,12 @@ include::_attributes.adoc[]
 [IMPORTANT]
 .Before Start
 ====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
+You should have NO virtualservice nor destinationrule (in `istiotutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` 
 if so run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+./scripts/clean.sh $WORKSHOP_USER-istiotutorial
 ----
 ====
 
@@ -30,8 +30,8 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] 
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] 
 ----
 
 [#safaritov2]
@@ -50,28 +50,29 @@ and test with a Firefox browser, it should only see v1 responses from recommenda
 
 There are two ways to get the URL for your browser:
 
-Open the url http://customer-tutorial{namespace-suffix}.{appdomain} in your broswer 
+Open the url http://customer-$WORKSHOP_USER-istiotutorial.{appdomain} in your broswer 
 
 You can also attempt to use the curl -A command to test with different user-agent strings. 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl -A Safari customer-tutorial{namespace-suffix}.{appdomain}
-curl -A Firefox customer-tutorial{namespace-suffix}.{appdomain}
+CUSTOMER_URL=$(oc get route/customer -o jsonpath="{.spec.host}")
+curl -A Safari $CUSTOMER_URL
+curl -A Firefox $CUSTOMER_URL
 ----
 
 You can describe the virtualservice to see its configuration
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get virtualservice -o yaml -n tutorial{namespace-suffix}
+kubectl get virtualservice recommendation -o yaml 
 ----
 
 ==== Remove the Safari rule
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial{namespace-suffix}
+kubectl delete vs/recommendation
 ----
 
 [#mobiletov2]
@@ -81,22 +82,22 @@ kubectl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tut
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial{namespace-suffix}
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-tutorial{namespace-suffix}.{appdomain}
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" $CUSTOMER_URL
 ----
 
 ==== Clean up
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial{namespace-suffix}
+kubectl delete virtualservice recommendation
+kubectl delete destinationrule recommendation
 ----
 
 or you can run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+./scripts/clean.sh $WORKSHOP_USER-istiotutorial
 ----
 
 
@@ -105,26 +106,26 @@ or you can run:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc get pods -l app=recommendation -n tutorial{namespace-suffix}
+oc get pods -l app=recommendation 
 or 
-kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
+kubectl get pods -l app=recommendation 
 ----
 
 You should have 2 pods for recommendation based on the steps above
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get virtualservice -n tutorial{namespace-suffix}
+kubectl get virtualservice 
 kubectl get destinationrule
 ----
 
 
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` 
+You should have NO virtualservice nor destinationrule (in `istiotutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` 
 if so run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+./scripts/clean.sh $WORKSHOP_USER-istiotutorial
 ----
 
 
@@ -132,34 +133,34 @@ Make sure you are in the main directory of "istio-tutorial"
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] 
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] 
 
-curl customer-tutorial{namespace-suffix}.{appdomain}
+curl $CUSTOMER_URL
 ----
 
 Check the logs of recommendation-v2
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
+oc logs -f `oc get pods |grep recommendation-v2|awk '{ print $1 }'` -c recommendation 
 or
-kubectl logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
+kubectl logs -f `oc get pods |grep recommendation-v2|awk '{ print $1 }'` -c recommendation 
 ----
 
 === Clean up
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml 
+kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml 
 ----
 
 or you can run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+./scripts/clean.sh $WORKSHOP_USER-istiotutorial
 ----
 
 
@@ -172,9 +173,9 @@ Add another v2 pod to the mix
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
+oc scale deployment recommendation-v2 --replicas=2 
 or
-kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
+kubectl scale deployment recommendation-v2 --replicas=2 
 ----
 
 Wait a bit (oc get pods -w to watch)
@@ -182,36 +183,31 @@ and curl the customer endpoint many times
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial{namespace-suffix}.{appdomain}
+CUSTOMER_URL=$(oc get route/customer -o jsonpath="{.spec.host}")
+curl $CUSTOMER_URL
 ----
 
 Add a 3rd v2 pod to the mix
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
-$ oc get pods -n tutorial{namespace-suffix}
+oc scale deployment recommendation-v2 --replicas=3
+oc get pods 
 
-or 
-
-$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
-$ kubectl get pods -n tutorial{namespace-suffix}
-
-
-NAME                                  READY     STATUS    RESTARTS   AGE
-customer-1755156816-cjd2z             2/2       Running   0          1h
+NAME                                 READY     STATUS    RESTARTS   AGE
+customer-1755156816-cjd2z            2/2       Running   0          1h
 preference-3336288630-2cc6f          2/2       Running   0          1h
 recommendation-v1-3719512284-bn42p   2/2       Running   0          59m
 recommendation-v2-2815683430-97nnf   2/2       Running   0          43m
-recommendation-v2-2815683430-d49n6   2/2       Running   0          51m
-recommendation-v2-2815683430-tptf2   2/2       Running   0          33m
+recommendation-v2-2815683430-d49n6   2/2       Running   0          8m
+recommendation-v2-2815683430-tptf2   2/2       Running   0          1m
 ----
 
 Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh $CUSTOMER_URL
 ----
 
 The results should follow a fairly normal round-robin distribution pattern
@@ -219,7 +215,7 @@ The results should follow a fairly normal round-robin distribution pattern
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '99634814-d2z2t': 1145
-customer => preference => recommendation v2 from '2819441432-525lh': 1
+customer => preference => recommendation v2 from '2819441432-525lh': 5
 customer => preference => recommendation v2 from '2819441432-rg45q': 2
 customer => preference => recommendation v2 from '2819441432-bs5ck': 181
 customer => preference => recommendation v1 from '99634814-d2z2t': 1146
@@ -232,7 +228,7 @@ Now, add the Random LB DestinationPolicy
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_lb_policy_app.yml[istiofiles/destination-rule-recommendation_lb_policy_app.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_lb_policy_app.yml[istiofiles/destination-rule-recommendation_lb_policy_app.yml] 
 ----
 
 And you should see a different pattern of which pod is being selected
@@ -256,9 +252,7 @@ customer => preference => recommendation v2 from '2819441432-rg45q': 14
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml 
 
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
-or
-kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
+oc scale deployment recommendation-v2 --replicas=1 
 ----
