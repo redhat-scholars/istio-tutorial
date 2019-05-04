@@ -26,6 +26,7 @@ Kiali runs as a service together with Istio, and does not require any changes
 to Istio or Openshift configuration (besides the ones required to install
 Istio).
 
+ifndef::workshop[] 
 [#updatekiali]
 == Update kiali?
 
@@ -65,33 +66,39 @@ data:
 
 
 ----
+endif::workshop[]
 
-So now we can access Kiali at `kiali-istio-system.$(minishift ip).nip.io`, so
+We can access Kiali at `kiali-istio-system.{appdomain}/console/`, so
 let's do it:
 
 [source, bash]
 ----
-open http://kiali-istio-system.$(minishift ip).nip.io/kiali
+open https://kiali-istio-system.{appdomain}/console/
 ----
 
 
 image:kiali-login.png[Login Page]
 
-The default credentials are "admin/admin", but it's recommended to change them
-before using it in production.
+The default credentials are "admin/admin", but for the workshop the proper credentials will be provided by your instructor.
 
 [#generatingdata]
 == Generating Sample Data
 
 To show the capabilities of Kiali, you'll need an Istio-enabled application to
-be running. For this, we can use the `customer-tutorial` application we created
+be running. For this, we can use the `customer` application we created
 earlier.
 
-To generate data for it, we can `curl` it with this command:
+To generate data for it, we can `curl` customer repeatedly with this command:
 
 [source, bash]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+#!/bin/bash
+
+CUSTOMER_URL=$(oc get route/customer -o jsonpath="{.spec.host}")
+while true
+do curl $CUSTOMER_URL
+sleep .5
+done
 ----
 
 [#servicegraph]

@@ -6,7 +6,7 @@ include::_attributes.adoc[]
 
 Out of the box, you get monitoring via Prometheus and Grafana. 
 
-NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `siege $CUSTOMER_URL` to produce load.
+NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `siege $CUSTOMER_URL` to produce load.  Setting CUSTOMER_URL with `CUSTOMER_URL=$(oc get route/customer -o jsonpath="{.spec.host}")`.
 
 [source,bash,subs="+macros,+attributes"]
 ----
