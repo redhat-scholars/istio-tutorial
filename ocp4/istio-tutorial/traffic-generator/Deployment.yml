@@ -14,8 +14,6 @@ spec:
       labels:
         app: customer-traffic-generator
         version: v1
-      annotations:
-        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - image: kiali/kiali-test-mesh-traffic-generator:latest
