@@ -4,12 +4,12 @@ include::_attributes.adoc[]
 [IMPORTANT]
 .Before Start
 ====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
+You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` 
 if so run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+./scripts/clean.sh $WORKSHOP_USER-istiotutorial
 ----
 ====
 
@@ -18,13 +18,13 @@ if so run:
 
 Instead of failing immediately, retry the Service N more times
 
-We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:
+We will make pod recommendation-v2 fail 100% of the time. Use the fancy command below to find a recommendation-v2 pod and then exec into it:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+oc exec -it $(oc get pods |grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it $(kubectl get pods |grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -41,7 +41,7 @@ You will see it works every time because Istio will retry the recommendation ser
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh $CUSTOMER_URL
 
 customer => preference => recommendation v1 from '2036617847-m9glz': 196
 customer => preference => recommendation v1 from '2036617847-m9glz': 197
@@ -52,7 +52,7 @@ If you open Kiali, you will notice that v2 receives requests, but that failing r
 
 [source, bash]
 ----
-open http://kiali-istio-system.$(minishift ip).nip.io/kiali
+open https://kiali-istio-system.{appdomain}/console/
 ----
 
 In Kiali, go to `Graph`, select the `recommendation` square, and place the mouse over the red sign, like the picture bellow.
@@ -64,9 +64,9 @@ Now, make the pod v2 behave well again
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+oc exec -it $(oc get pods |grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 or
-kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+kubectl exec -it $(kubectl get pods |grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -77,11 +77,11 @@ curl localhost:8080/behave
 exit
 ----
 
-The application is back to random load-balancing between v1 and v2
+The application is back to load-balancing between v1 and v2
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh $CUSTOMER_URL
 
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
@@ -92,7 +92,7 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 [#timeout]
 == Timeout
 
-Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `kubectl get virtualservice` `kubectl get destinationrule` and if so `kubectl delete virtualservice virtualservicename -n tutorial{namespace-suffix}` and `kubectl delete destinationrule destinationrulename -n tutorial{namespace-suffix}`
+Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `kubectl get virtualservice` `kubectl get destinationrule` and if so `kubectl delete virtualservice virtualservicename` and `kubectl delete destinationrule destinationrulename`
 
 ifndef::workshop[]
 First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationResource.java` making it a slow performer with a 3 second delay.
@@ -140,7 +140,7 @@ First, introduce some wait time in `recommendation v2` by making it a slow perfo
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
+oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}'
 ----
 
 endif::workshop[]
@@ -149,21 +149,21 @@ Hit the customer endpoint a few times, to see the load-balancing between v1 and 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh $CUSTOMER_URL
 ----
 
 Then add the timeout rule
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] 
 ----
 
 You will see it return v1 after waiting about 1 second. You don't see v2 anymore, because the response from v2 expires after the timeout period and it is never returned.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh $CUSTOMER_URL
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2907
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2908
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
@@ -217,7 +217,7 @@ Change the implementation of `v2` back to the image that responds without the de
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
+oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}'
 ----
 endif::workshop[]
 
@@ -225,14 +225,14 @@ Then delete the virtual service created for timeout by:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial{namespace-suffix}
+kubectl delete -f istiofiles/virtual-service-recommendation-timeout.yml 
 ----
 
 or you can run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+./scripts/clean.sh $WORKSHOP_USER-istiotutorial
 ----
 
 [#failfast]
@@ -267,7 +267,7 @@ First, introduce some wait time in `recommendation v2` by making it a slow perfo
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
+oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' 
 ----
 
 endif::workshop[]
@@ -276,8 +276,8 @@ Second, you need to *ensure* you have a `destinationrule` and `virtualservice` i
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml]
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] 
 ----
 
 [#nocircuitbreaker]
@@ -287,7 +287,8 @@ Let's perform a load test in our system with `siege`. We'll have 20 clients send
 
 [source,bash,subs="+macros,+attributes"]
 ----
-siege -r 2 -c 20 -v http://customer-tutorial{namespace-suffix}.{appdomain}
+CUSTOMER_URL=$(oc get route/customer -o jsonpath="{.spec.host}")
+siege -r 2 -c 20 -v $CUSTOMER_URL
 ----
 
 You should see an output similar to this:
@@ -300,9 +301,9 @@ But suppose that in a production system this 3s delay was caused by too many con
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] 
 
-kubectl get destinationrule -n tutorial{namespace-suffix}
+kubectl get destinationrule 
 ----
 
 More information on the fields for the simple circuit-breaker
@@ -315,7 +316,7 @@ Now let's see what is the behavior of the system running `siege` again:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-siege -r 2 -c 20 -v http://customer-tutorial{namespace-suffix}.{appdomain}
+siege -r 2 -c 20 -v $CUSTOMER_URL
 ----
 
 image:siege_cb_503.png[siege output with some 503 requests due to open circuit breaker]
@@ -326,17 +327,18 @@ You can run siege multiple times, but in all of the executions you should see so
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial{namespace-suffix}
+kubectl delete virtualservice recommendation 
+kubectl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml 
 ----
 
 or you can run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+./scripts/clean.sh $WORKSHOP_USER-istiotutorial
 ----
 
+ifndef::workshop[]
 [#poolejection]
 == Pool Ejection (Not needed with 1.1)
 
@@ -592,22 +594,25 @@ customer => preference => recommendation v1 from '2039379827-jmm6x': 554
 
 Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the console, thanks to pool ejection and retry.
 
+endif::workshop[]
+
 === Clean up
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
+oc scale deployment recommendation-v2 --replicas=1 
 oc delete pod -l app=recommendation,version=v2
 or
-kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
+kubectl scale deployment recommendation-v2 --replicas=1 
 kubectl delete pod -l app=recommendation,version=v2
 
 
+
 ifdef::workshop[]
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
+oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' 
 endif::workshop[]
 
-kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
-kubectl delete destinationrule recommendation -n tutorial{namespace-suffix}
+kubectl delete virtualservice recommendation 
+kubectl delete destinationrule recommendation 
 
 ----
