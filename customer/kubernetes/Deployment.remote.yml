@@ -17,25 +17,15 @@ spec:
         app: customer
         version: v1
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/scheme: "http"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
+          value: -Xms8m -Xmx8m -Xmn8m
+        name: customer          
         image: quay.io/rhdevelopers/istio-tutorial-customer:v1
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 60
-          periodSeconds: 5
-          timeoutSeconds: 1
-        name: customer
         ports:
         - containerPort: 8080
           name: http
@@ -43,14 +33,24 @@ spec:
         - containerPort: 8778
           name: jolokia
           protocol: TCP
-        - containerPort: 9779
-          name: prometheus
-          protocol: TCP
+        resources:
+          requests: 
+            memory: "20Mi" 
+            cpu: "200m" # 1/5 core
+          limits:
+            memory: "40Mi"
+            cpu: "500m" 
+        livenessProbe:
+          httpGet:            
+            port: 8080
+            path: /health
+          initialDelaySeconds: 7
+          periodSeconds: 5
+          timeoutSeconds: 1
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
+          httpGet:            
+            port: 8080
+            path: /health
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 1

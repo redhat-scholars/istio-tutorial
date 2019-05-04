@@ -17,24 +17,14 @@ spec:
         app: recommendation
         version: v2
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/scheme: "http"
+        sidecar.istio.io/inject: "true"      
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xmx256m
+          value: -Xmx80m
         image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
-          initialDelaySeconds: 20
-          periodSeconds: 5
-          timeoutSeconds: 10
         name: recommendation
         ports:
         - containerPort: 8080
@@ -43,14 +33,24 @@ spec:
         - containerPort: 8778
           name: jolokia
           protocol: TCP
-        - containerPort: 9779
-          name: prometheus
-          protocol: TCP
+        resources:
+          requests: 
+            memory: "50Mi" 
+            cpu: "250m" # 1/4 core
+          limits:
+            memory: "120Mi"
+            cpu: "500m" 
+        livenessProbe:
+          httpGet:            
+            port: 8080
+            path: /health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
+          httpGet:            
+            port: 8080
+            path: /health
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 10
