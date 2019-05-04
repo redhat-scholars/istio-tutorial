@@ -8,11 +8,12 @@ Create an environment variable for your user and log into OpenShift.
 ----
 export WORKSHOP_USER=<your-username-number>
 
-
-#Example:
-export WORKSHOP_USER=dev001
+# Example:
+# export WORKSHOP_USER=dev001
 
 oc login -u $WORKSHOP_USER -p openshift {ocpurl}
+
+# Note: the actual password will be provided by your instructor
 ----
 
 
@@ -32,10 +33,9 @@ and you have setup the project/namespace
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc new-project tutorial{namespace-suffix}
+oc project $WORKSHOP_USER-istiotutorial
 or
-kubectl create namespace tutorial{namespace-suffix}
-kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
+kubectl config set-context $(kubectl config current-context) --namespace=$WORKSHOP_USER-istiotutorial
 
 ifndef::workshop[]
 oc adm policy add-scc-to-user privileged -z default -n tutorial
@@ -48,22 +48,25 @@ Then clone the git repository
 ----
 git clone https://github.com/redhat-developer-demos/istio-tutorial
 cd istio-tutorial
+git checkout workshop/1.1.x
+
+# verify you in the right branch
+git branch -a
+  master
+* workshop/1.1.x
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/book
+  remotes/origin/book-1.0.4
+  remotes/origin/gh-pages
+  remotes/origin/k8s-builds
+  remotes/origin/katacoda
+  remotes/origin/master
+  remotes/origin/recommendation-v2
+  remotes/origin/workshop/1.1.x
+
 ----
 
 Start deploying the microservice projects, starting with customer
-
-Make sure `istioctl` is in your `PATH`:
-
-[source,bash,subs="+macros,+attributes"]
-----
-$ istioctl version
-Version: 1.0.5
-GitRevision: c1707e45e71c75d74bf3a5dec8c7086f32f32fad
-User: root@6f6ea1061f2b
-Hub: docker.io/istio
-GolangVersion: go1.10.4
-BuildStatus: Clean
-----
 
 === Deploy Customer deploy using existing images
 
@@ -71,13 +74,14 @@ Let's deploy the customer pod with its sidecar
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+oc apply -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]
+oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml]
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+kubectl apply -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml]
+
 ----
 
 === Expose customer
@@ -86,10 +90,10 @@ Since the `customer` service is the one our users will interact with, let's add 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc expose service customer -n tutorial{namespace-suffix}
+oc expose service customer 
 
-oc get route -n tutorial{namespace-suffix}
-oc get pods -w -n tutorial{namespace-suffix}
+oc get route 
+oc get pods -w 
 
 or
 
@@ -97,23 +101,21 @@ kubectl get route -o=jsonpath='{.items[0].spec.host}'
 kubectl get pods -w
 ----
 
-IMPORTANT: If your pod fails with `ImagePullBackOff`, it's possible that your current terminal isn't using the proper Docker Environment. See link:#setup-environment[Setup environment].
-
-Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
+IMPORTANT: Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
 Then test the customer endpoint
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
+CUSTOMER_URL=$(oc get route/customer -o jsonpath="{.spec.host}")
+curl $CUSTOMER_URL
 ----
 
 You should see the following error because the services `preference` and `recommendation` are not yet deployed.
 
 ----
-customer => I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference
+customer => Error: 503 - no healthy upstream
 ----
-
 
 [#deploypreference]
 == Deploy preference
@@ -122,13 +124,15 @@ customer => I/O error on GET request for "http://preference:8080": preference; n
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+oc apply -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]
+
+oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] 
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+kubectl apply -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]
+
+kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] 
 ----
 
 
@@ -136,7 +140,7 @@ kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{p
 
 [source, bash,subs="+macros,+attributes"]
 ----
-oc get pods -w -n tutorial{namespace-suffix}
+oc get pods -w 
 or
 kubectl get pods -w
 ----
@@ -145,7 +149,7 @@ Wait until the status is `Running` and there are `2/2` pods in the `Ready` colum
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
+curl $CUSTOMER_URL
 ----
 
 It will respond with an error since the service `recommendation` is not yet deployed.
@@ -154,7 +158,7 @@ NOTE: We could make this a bit more resilient in a future iteration of this tuto
 
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => 503 preference => I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation
+customer => Error: 503 - preference => Error: 503 - no healthy upstream
 ----
 
 [#deployrecommendation]
@@ -164,14 +168,18 @@ customer => 503 preference => I/O error on GET request for "http://recommendatio
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+oc apply -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]
+
+oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] 
+
 oc get pods -w
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+kubectl apply -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]
+
+kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] 
+
 kubectl get pods -w
 ----
 
@@ -181,13 +189,13 @@ Wait until the status is `Running` and there are `2/2` pods in the `Ready` colum
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
+curl $CUSTOMER_URL
 ----
 
 it should now return
 
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from '99634814-sf4cl': 1
+customer => preference => recommendation v1 from '5996759996-pnwvh': 1
 ----
 
