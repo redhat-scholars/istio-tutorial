@@ -50,7 +50,7 @@ Now apply next Istio resource which makes that only tokens that contain a field 
 
 [source, bash,subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
+istioctl create -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
 ----
 
 and then you can do a new call with the new token containing the `role` claim with value `customer``:
