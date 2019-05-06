@@ -1,17 +1,14 @@
 package com.redhat.developer.demos.recommendation.rest;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import javax.json.Json;
-import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import org.jboss.logging.Logger;
 
 @Path("/")
 public class RecommendationResource {
@@ -20,7 +17,7 @@ public class RecommendationResource {
 
     private static final String RESPONSE_STRING_NOW_FORMAT = "recommendation v3 %s from '%s': %d\n";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * Counter to help us see the lifecycle
