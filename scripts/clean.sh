@@ -134,7 +134,7 @@ else
     
 fi
 
-contentrbc=`kubectl get clusterrbacconfig -n "$namespace" 2>/dev/null`
+contentcrbc=`kubectl get ClusterRbacConfig -n "$namespace" 2>/dev/null`
 
 if [ -z "$contentcrbc" ]; then
     echo "No ClusterRbacConfig in $namespace namespace."
@@ -145,7 +145,7 @@ else
 
     for name in "${names[@]}"
     do
-        kubectl delete clusterrbacconfig "$name" -n "$namespace"
+        kubectl delete ClusterRbacConfig "$name" -n "$namespace"
     done
     
 fi
