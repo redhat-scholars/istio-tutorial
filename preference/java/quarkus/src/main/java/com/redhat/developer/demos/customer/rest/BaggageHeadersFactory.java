@@ -20,6 +20,11 @@ public class BaggageHeadersFactory implements ClientHeadersFactory {
             headers.putSingle("Authorization", authorization);
         }
 
+        String userPreference = incomingHeaders.getFirst("user-preference");
+        if (userPreference != null) {
+            headers.putSingle("user-preference", userPreference);
+        }
+
         return headers;
     }
 

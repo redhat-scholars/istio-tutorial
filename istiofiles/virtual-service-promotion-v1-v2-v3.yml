@@ -8,7 +8,7 @@ spec:
   http:
   - match:
     - headers:
-        baggage-user-preference:
+        user-preference:
           prefix: "123"
     route:
     - destination:
@@ -16,7 +16,7 @@ spec:
         subset: version-v3
   - match:
     - headers:
-        baggage-user-preference:
+        user-preference:
           prefix: "12"
     route:
     - destination:
