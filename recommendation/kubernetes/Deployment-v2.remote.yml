@@ -20,7 +20,7 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
         prometheus.io/scheme: "http"
-        sidecar.istio.io: "true"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - env:
