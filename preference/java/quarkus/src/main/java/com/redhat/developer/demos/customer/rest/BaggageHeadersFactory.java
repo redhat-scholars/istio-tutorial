@@ -11,7 +11,7 @@ public class BaggageHeadersFactory implements ClientHeadersFactory {
     @Override
     public MultivaluedMap<String, String> update(MultivaluedMap<String, String> incomingHeaders, MultivaluedMap<String, String> clientOutgoingHeaders) {
         MultivaluedHashMap<String, String> headers = new MultivaluedHashMap<>();
-        String userAgent = incomingHeaders.getFirst("user-agent");
+        String userAgent = incomingHeaders.getFirst("baggage-user-agent");
         headers.putSingle("baggage-user-agent", userAgent);
 
         String authorization = incomingHeaders.getFirst("Authorization");
