@@ -20,6 +20,7 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
         prometheus.io/scheme: "http"
+        sidecar.istio.io: "true"
     spec:
       containers:
       - env:
@@ -28,10 +29,9 @@ spec:
         image: quay.io/rhdevelopers/istio-tutorial-customer:v1
         imagePullPolicy: IfNotPresent
         livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
+          httpGet:
+            path: /health
+            port: 8080
           initialDelaySeconds: 60
           periodSeconds: 5
           timeoutSeconds: 1
@@ -47,10 +47,9 @@ spec:
           name: prometheus
           protocol: TCP
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
+          httpGet:
+            path: /health
+            port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 1

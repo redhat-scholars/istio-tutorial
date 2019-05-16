@@ -33,4 +33,10 @@ nbdist/
 
 .DS_Store
 .vscode
-
+istio-1.1.1
+firebase*
+yarn*
+package*
+node_modules
+.firebaserc
+.firebase
