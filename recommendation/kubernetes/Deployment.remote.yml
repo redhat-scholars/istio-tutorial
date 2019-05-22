@@ -17,25 +17,18 @@ spec:
         app: recommendation
         version: v1
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/scheme: "http"
+#        prometheus.io/scrape: "true"
+#        prometheus.io/port: "8080"
+#        prometheus.io/scheme: "http"
         sidecar.istio.io/inject: "true"
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xmx256m
+          value: -Xms8m -Xmx8m -Xmn8m
+        name: recommendation          
         image: quay.io/rhdevelopers/istio-tutorial-recommendation:v1
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 5
-          timeoutSeconds: 1
-        name: recommendation
         ports:
         - containerPort: 8080
           name: http
@@ -46,11 +39,18 @@ spec:
         - containerPort: 9779
           name: prometheus
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 1
         readinessProbe:
           httpGet:
             path: /health
             port: 8080
-          initialDelaySeconds: 10
+          initialDelaySeconds: 7
           periodSeconds: 5
           timeoutSeconds: 1
         securityContext:
