@@ -70,49 +70,10 @@
     <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring with Grafana</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
     <a class="nav-link" href="3monitoring-tracing.html#prometheus">Prometheus</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#containermemory">Container memory</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#applicationmetrics">Application metrics</a>
-  </li>
-</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="3kiali.html">Kiali</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#howkiali">How Kiali Work</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#updatekiali">Update Kiali</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#generatingdata">Generating Data</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#servicegraph">Service Graph</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#servicelistening">Service Listening</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#istioconf">Istio Config</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#distributedtracing">Distributed Tracing</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#cleanup">Uninstall Kiali</a>
-  </li>
-</ul>
   </li>
 </ul>
   </li>
@@ -198,24 +159,6 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="5circuit-breaker.html#poolejection">Pool Ejection - not neeed in 1.1</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#nofailinginstances">No Failing Instance</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#failinginstancesnopoolejection">Failing Instance No Pool Ejection</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#failinginstancespoolejection">Failing Instance Pool Ejection</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="5circuit-breaker.html#circuitbreakerandpoolejection">Circuit Breaker + Pool Ejection - not needed with 1.1 </a>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -287,11 +230,6 @@
 <div class="paragraph">
 <p>Back to the main <code>istio-tutorial</code> directory</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd ../../..</code></pre>
-</div>
-</div>
 <div class="sect2">
 <h3 id="_wait_for_v2_to_be_deployed"><a class="anchor" href="#_wait_for_v2_to_be_deployed"></a>Wait for v2 to be deployed</h3>
 <div class="paragraph">
@@ -312,7 +250,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -320,7 +258,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -331,7 +269,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -380,7 +318,7 @@ kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial-$WORKSHOP_US
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial-$WORKSHOP_USER
 kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER
 
-./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -417,7 +355,7 @@ kubectl get virtualservice -o yaml -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 </div>
@@ -450,7 +388,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">

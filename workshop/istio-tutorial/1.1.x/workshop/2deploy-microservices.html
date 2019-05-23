@@ -70,49 +70,10 @@
     <a class="nav-link" href="../3monitoring-tracing.html#monitoring">Monitoring with Grafana</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
     <a class="nav-link" href="../3monitoring-tracing.html#prometheus">Prometheus</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3monitoring-tracing.html#containermemory">Container memory</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3monitoring-tracing.html#applicationmetrics">Application metrics</a>
-  </li>
-</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../3monitoring-tracing.html#tracing">Tracing</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="../3kiali.html">Kiali</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#howkiali">How Kiali Work</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#updatekiali">Update Kiali</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#generatingdata">Generating Data</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#servicegraph">Service Graph</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#servicelistening">Service Listening</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#istioconf">Istio Config</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#distributedtracing">Distributed Tracing</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../3kiali.html#cleanup">Uninstall Kiali</a>
-  </li>
-</ul>
   </li>
 </ul>
   </li>
@@ -198,24 +159,6 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="../5circuit-breaker.html#poolejection">Pool Ejection - not neeed in 1.1</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../5circuit-breaker.html#nofailinginstances">No Failing Instance</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../5circuit-breaker.html#failinginstancesnopoolejection">Failing Instance No Pool Ejection</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../5circuit-breaker.html#failinginstancespoolejection">Failing Instance Pool Ejection</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../5circuit-breaker.html#circuitbreakerandpoolejection">Circuit Breaker + Pool Ejection - not needed with 1.1 </a>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -281,7 +224,7 @@
 #Example:
 export WORKSHOP_USER=1
 
-oc login -u user$WORKSHOP_USER -p openshift https://master.istambul-1b3d.openshiftworkshop.com</code></pre>
+oc login -u user$WORKSHOP_USER -p openshift https://master.barcelona-b6f3.openshiftworkshop.com</code></pre>
 </div>
 </div>
 </div>
@@ -328,12 +271,7 @@ cd istio-tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ istioctl version
-Version: 1.0.5
-GitRevision: c1707e45e71c75d74bf3a5dec8c7086f32f32fad
-User: root@6f6ea1061f2b
-Hub: docker.io/istio
-GolangVersion: go1.10.4
-BuildStatus: Clean</code></pre>
+version.BuildInfo{Version:"1.1.7", GitRevision:"eec7a74473deee98cad0a996f41a32a47dd453c2", User:"root", Host:"341b3bf0-76ac-11e9-b644-0a580a2c0404", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.6-6-geec7a74"}</code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -391,7 +329,7 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -399,7 +337,7 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>customer =&gt; I/O error on GET request for "http://preference:8080": preference; nested exception is java.net.UnknownHostException: preference</pre>
+<pre>customer =&gt; UnknownHostException: preference</pre>
 </div>
 </div>
 </div>
@@ -436,7 +374,7 @@ kubectl get pods -w</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -456,7 +394,7 @@ We could make this a bit more resilient in a future iteration of this tutorial
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; 503 preference =&gt; I/O error on GET request for "http://recommendation:8080": recommendation; nested exception is java.net.UnknownHostException: recommendation</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; Error: 503 - preference =&gt; UnknownHostException: recommendation</code></pre>
 </div>
 </div>
 </div>
@@ -488,7 +426,7 @@ kubectl get pods -w</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.istambul-1b3d.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-b6f3.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">

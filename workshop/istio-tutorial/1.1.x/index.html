@@ -70,49 +70,10 @@
     <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring with Grafana</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
     <a class="nav-link" href="3monitoring-tracing.html#prometheus">Prometheus</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#containermemory">Container memory</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#applicationmetrics">Application metrics</a>
-  </li>
-</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="3kiali.html">Kiali</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#howkiali">How Kiali Work</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#updatekiali">Update Kiali</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#generatingdata">Generating Data</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#servicegraph">Service Graph</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#servicelistening">Service Listening</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#istioconf">Istio Config</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#distributedtracing">Distributed Tracing</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3kiali.html#cleanup">Uninstall Kiali</a>
-  </li>
-</ul>
   </li>
 </ul>
   </li>
@@ -198,24 +159,6 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="5circuit-breaker.html#poolejection">Pool Ejection - not neeed in 1.1</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#nofailinginstances">No Failing Instance</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#failinginstancesnopoolejection">Failing Instance No Pool Ejection</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#failinginstancespoolejection">Failing Instance Pool Ejection</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="5circuit-breaker.html#circuitbreakerandpoolejection">Circuit Breaker + Pool Ejection - not needed with 1.1 </a>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -274,7 +217,7 @@
 <p>This is a Workshop version available at <a href="http://bit.ly/the-istio-workshop" class="bare">http://bit.ly/the-istio-workshop</a></p>
 </li>
 <li>
-<p>EtherPad URL: <a href="https://etherpad.wikimedia.org/p/IstioIstambul" class="bare">https://etherpad.wikimedia.org/p/IstioIstambul</a></p>
+<p>EtherPad URL: <a href="https://etherpad.wikimedia.org/p/IstioJBCN" class="bare">https://etherpad.wikimedia.org/p/IstioJBCN</a></p>
 </li>
 </ul>
 </div>
@@ -295,8 +238,23 @@
 <p>Adjust the documentation by modifying these <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/site-workshop.yml#L16-L18">three variables</a></p>
 </li>
 <li>
-<p>Install <a href="https://maistra.io/docs/install/">Maistra 0.6.0</a> for Istio 1.0.5</p>
+<p>Install of <a href="https://maistra.io/docs/getting_started/install/">Maistra 0.10</a> for Istio 1.1.7</p>
 </li>
+<li>
+<p>To update the nodes, follow the commands:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ssh -i ocp-workshop.pem ec2-user@bastion......
+sudo su -
+for A in {1..$(oc get nodes|grep \\bnode|wc|awk '{print $1}')}; do ssh ec2-user@node1.$(oc get nodes|grep master|perl -lne 'print $1 if /(...............internal)/') echo "vm.max_map_count = 262144" | sudo tee /etc/sysctl.d/99-elasticsearch.conf; sudo sysctl vm.max_map_count=262144; done
+exit</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p>Make sure to use the following file as Control Plane configuration:</p>
 </li>
@@ -304,28 +262,55 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: "istio.openshift.com/v1alpha1"
-kind: "Installation"
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: istio.openshift.com/v1alpha3
+kind: ControlPlane
 metadata:
-  name: "istio-installation"
-  namespace: istio-operator
+  name: basic-install
 spec:
-  deployment_type: openshift
   istio:
-    authentication: false
-    community: false
-    prefix: openshift-istio-tech-preview/
-    version: 0.6.0
-  jaeger:
-    prefix: distributed-tracing-tech-preview/
-    version: 1.9.0
-    elasticsearch_memory: 1Gi
-  kiali:
-    prefix: openshift-istio-tech-preview/
-    version: 0.14.0
-    username: admin
-    password: admin</code></pre>
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 128Mi
+
+    gateways:
+      istio-egressgateway:
+        autoscaleEnabled: false
+      istio-ingressgateway:
+        autoscaleEnabled: false
+        ior_enabled: false
+
+    mixer:
+      policy:
+        autoscaleEnabled: false
+
+      telemetry:
+        autoscaleEnabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1G
+          limits:
+            cpu: 500m
+            memory: 4G
+
+    pilot:
+      autoscaleEnabled: false
+      traceSampling: 100.0
+
+    kiali:
+     dashboard:
+        user: admin
+        passphrase: admin</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>After the installation:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -349,6 +334,19 @@ spec:
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-scc-to-group  privileged system:authenticated</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Remove weird resource limit</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete -n istio-system limitrange  istio-system-core-resource-limits
+oc delete pods -n istio-system --all --grace-period=0 --force</code></pre>
 </div>
 </div>
 </td>
