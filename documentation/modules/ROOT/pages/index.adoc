@@ -13,7 +13,17 @@ ifdef::workshop[]
 - Adjust the documentation by modifying these link:https://github.com/redhat-developer-demos/istio-tutorial/blob/master/site-workshop.yml#L16-L18[three variables]
 
 
-- Install link:https://maistra.io/docs/install/[Maistra 0.6.0] for Istio 1.0.5
+- Install of link:https://maistra.io/docs/getting_started/install/[Maistra 0.10] for Istio 1.1.7
+
+- To update the nodes, follow the commands:
+[source,bash]
+----
+ssh -i ocp-workshop.pem ec2-user@bastion......
+sudo su -
+for A in {1..$(oc get nodes|grep \\bnode|wc|awk '{print $1}')}; do ssh ec2-user@node1.$(oc get nodes|grep master|perl -lne 'print $1 if /(...............internal)/') echo "vm.max_map_count = 262144" | sudo tee /etc/sysctl.d/99-elasticsearch.conf; sudo sysctl vm.max_map_count=262144; done
+exit
+----
+
 
 - Make sure to use the following file as Control Plane configuration: 
 
@@ -21,6 +31,8 @@ ifdef::workshop[]
 ----
 include::workshop:example$istio-install.yaml[istio-install.yaml]
 ----
+
+After the installation:
 
 - Give users the capability to see istio-system
 [source,bash,subs="+macros,+attributes"]
@@ -33,6 +45,14 @@ oc adm policy add-role-to-group view system:authenticated -n istio-system
 [source,bash,subs="+macros,+attributes"]
 ----
 oc adm policy add-scc-to-group  privileged system:authenticated
+----
+
+- Remove weird resource limit
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc delete -n istio-system limitrange  istio-system-core-resource-limits
+oc delete pods -n istio-system --all --grace-period=0 --force
 ----
 
 ====

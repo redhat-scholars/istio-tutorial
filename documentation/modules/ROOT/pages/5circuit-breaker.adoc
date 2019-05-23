@@ -48,6 +48,7 @@ customer => preference => recommendation v1 from '2036617847-m9glz': 197
 customer => preference => recommendation v1 from '2036617847-m9glz': 198
 ----
 
+ifndef::workshop[]
 If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as `preference` will retry to establish the connection with `recommendation`, and v1 will reply.
 
 [source, bash]
@@ -59,6 +60,7 @@ In Kiali, go to `Graph`, select the `recommendation` square, and place the mouse
 
 image:kiali-retry.png[Kiali Retry]
 
+endif::workshop[]
 
 Now, make the pod v2 behave well again
 
@@ -81,7 +83,7 @@ The application is back to random load-balancing between v1 and v2
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh
+./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
@@ -324,6 +326,16 @@ You can run siege multiple times, but in all of the executions you should see so
 
 ==== Clean up
 
+ifdef::workshop[]
+Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
+----
+endif::workshop[]
+
+
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
@@ -337,277 +349,3 @@ or you can run:
 ./scripts/clean.sh tutorial{namespace-suffix}
 ----
 
-[#poolejection]
-== Pool Ejection (Not needed with 1.1)
-
-Pool ejection or _outlier detection_ is a resilience strategy that takes place whenever we have a pool of instances/pods to serve a client request. If the request is forwarded to a certain instance and it fails (e.g. returns a 50x error code), then Istio will eject this instance from the pool for a certain _sleep window_. In our example the sleep window is configured to be 15s. This increases the overall availability by making sure that only healthy pods participate in the pool of instances.
-
-First, you need to insure you have a `destinationrule` and `virtualservice` in place to send traffic to the services. Let's use a 50/50 split of traffic:
-
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
-----
-
-Scale number of instances of `v2` deployment
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
-oc get pods -w
-
-or
-
-kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
-kubectl get pods -w
-----
-
-Wait for all the pods to be in the ready state.
-
-[#nofailinginstances]
-=== Test behavior without failing instances
-
-Throw some requests at the customer endpoint:
-
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-----
-
-You will see the load balancing 50/50 between the two different versions of the `recommendation` service. And within version `v2`, you will also see that some requests are handled by one pod and some requests are handled by the other pod.
-
-[source,bash,subs="+macros,+attributes"]
-----
-customer => preference => recommendation v1 from '2039379827-jmm6x': 447
-customer => preference => recommendation v2 from '2036617847-spdrb': 26
-customer => preference => recommendation v1 from '2039379827-jmm6x': 448
-customer => preference => recommendation v2 from '2036617847-spdrb': 27
-customer => preference => recommendation v1 from '2039379827-jmm6x': 449
-customer => preference => recommendation v1 from '2039379827-jmm6x': 450
-customer => preference => recommendation v2 from '2036617847-spdrb': 28
-customer => preference => recommendation v1 from '2039379827-jmm6x': 451
-customer => preference => recommendation v1 from '2039379827-jmm6x': 452
-customer => preference => recommendation v2 from '2036617847-spdrb': 29
-customer => preference => recommendation v2 from '2036617847-spdrb': 30
-customer => preference => recommendation v2 from '2036617847-hdjv2': 216
-customer => preference => recommendation v1 from '2039379827-jmm6x': 453
-customer => preference => recommendation v2 from '2036617847-spdrb': 31
-customer => preference => recommendation v2 from '2036617847-hdjv2': 217
-customer => preference => recommendation v2 from '2036617847-hdjv2': 218
-customer => preference => recommendation v1 from '2039379827-jmm6x': 454
-customer => preference => recommendation v1 from '2039379827-jmm6x': 455
-customer => preference => recommendation v2 from '2036617847-hdjv2': 219
-customer => preference => recommendation v2 from '2036617847-hdjv2': 220
-----
-
-[#failinginstancesnopoolejection]
-=== Test behavior with failing instance and without pool ejection
-
-Let's get the name of the pods from recommendation `v2`:
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc get pods -l app=recommendation,version=v2
-or
-kubectl get pods -l app=recommendation,version=v2
-----
-
-You should see something like this:
-
-[source,bash,subs="+macros,+attributes"]
-----
-recommendation-v2-2036617847-hdjv2   2/2       Running   0          1h
-recommendation-v2-2036617847-spdrb   2/2       Running   0          7m
-----
-
-Now we'll get into one the pods and add some erratic behavior on it. Get one of the pod names from your system and replace on the following command accordingly:
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc exec -it  -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
-kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-----
-
-You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
-
-[source,bash,subs="+macros,+attributes"]
-----
-curl localhost:8080/misbehave
-exit
-----
-
-This is a special endpoint that will make our application return only `503`s.
-
-Throw some requests at the customer endpoint:
-
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-----
-
-You'll see that whenever the pod `recommendation-v2-2036617847-spdrb` receives a request, you get a `503` error:
-
-[source,bash,subs="+macros,+attributes"]
-----
-customer => preference => recommendation v1 from '2039379827-jmm6x': 494
-customer => preference => recommendation v1 from '2039379827-jmm6x': 495
-customer => preference => recommendation v2 from '2036617847-hdjv2': 248
-customer => preference => recommendation v1 from '2039379827-jmm6x': 496
-customer => preference => recommendation v1 from '2039379827-jmm6x': 497
-customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
-customer => preference => recommendation v2 from '2036617847-hdjv2': 249
-customer => preference => recommendation v1 from '2039379827-jmm6x': 498
-customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
-customer => preference => recommendation v2 from '2036617847-hdjv2': 250
-customer => preference => recommendation v1 from '2039379827-jmm6x': 499
-customer => preference => recommendation v1 from '2039379827-jmm6x': 500
-customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
-customer => preference => recommendation v1 from '2039379827-jmm6x': 501
-customer => preference => recommendation v2 from '2036617847-hdjv2': 251
-customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
-----
-
-[#failinginstancespoolejection]
-=== Test behavior with failing instance and with pool ejection
-
-Now let's add the pool ejection behavior:
-
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl replace -f  link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_pool_ejection.yml[istiofiles/destination-rule-recommendation_cb_policy_pool_ejection.yml] -n tutorial{namespace-suffix}
-----
-
-Throw some requests at the customer endpoint:
-
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-----
-
-You will see that whenever you get a failing request with `503` from the pod `recommendation-v2-2036617847-spdrb`, it gets ejected from the pool, and it doesn't receive any more requests until the sleep window expires - which takes at least 15s.
-
-[source,bash,subs="+macros,+attributes"]
-----
-customer => preference => recommendation v1 from '2039379827-jmm6x': 509
-customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
-customer => preference => recommendation v1 from '2039379827-jmm6x': 510
-customer => preference => recommendation v1 from '2039379827-jmm6x': 511
-customer => preference => recommendation v1 from '2039379827-jmm6x': 512
-customer => preference => recommendation v1 from '2039379827-jmm6x': 513
-customer => preference => recommendation v1 from '2039379827-jmm6x': 514
-customer => preference => recommendation v2 from '2036617847-hdjv2': 256
-customer => preference => recommendation v2 from '2036617847-hdjv2': 257
-customer => preference => recommendation v1 from '2039379827-jmm6x': 515
-customer => preference => recommendation v2 from '2036617847-hdjv2': 258
-customer => preference => recommendation v2 from '2036617847-hdjv2': 259
-customer => preference => recommendation v2 from '2036617847-hdjv2': 260
-customer => preference => recommendation v1 from '2039379827-jmm6x': 516
-customer => preference => recommendation v1 from '2039379827-jmm6x': 517
-customer => preference => recommendation v1 from '2039379827-jmm6x': 518
-customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
-customer => preference => recommendation v1 from '2039379827-jmm6x': 519
-customer => preference => recommendation v1 from '2039379827-jmm6x': 520
-customer => preference => recommendation v1 from '2039379827-jmm6x': 521
-customer => preference => recommendation v2 from '2036617847-hdjv2': 261
-customer => preference => recommendation v2 from '2036617847-hdjv2': 262
-customer => preference => recommendation v2 from '2036617847-hdjv2': 263
-customer => preference => recommendation v1 from '2039379827-jmm6x': 522
-customer => preference => recommendation v1 from '2039379827-jmm6x': 523
-customer => preference => recommendation v2 from '2036617847-hdjv2': 264
-customer => preference => recommendation v1 from '2039379827-jmm6x': 524
-customer => preference => recommendation v1 from '2039379827-jmm6x': 525
-customer => preference => recommendation v1 from '2039379827-jmm6x': 526
-customer => preference => recommendation v1 from '2039379827-jmm6x': 527
-customer => preference => recommendation v2 from '2036617847-hdjv2': 265
-customer => preference => recommendation v2 from '2036617847-hdjv2': 266
-customer => preference => recommendation v1 from '2039379827-jmm6x': 528
-customer => preference => recommendation v2 from '2036617847-hdjv2': 267
-customer => preference => recommendation v2 from '2036617847-hdjv2': 268
-customer => preference => recommendation v2 from '2036617847-hdjv2': 269
-customer => 503 preference => 503 recommendation misbehavior from '2036617847-spdrb'
-customer => preference => recommendation v1 from '2039379827-jmm6x': 529
-customer => preference => recommendation v2 from '2036617847-hdjv2': 270
-----
-
-[#circuitbreakerandpoolejection]
-== Ultimate resilience with retries, circuit breaker, and pool ejection (Not needed in 1.1)
-
-Even with pool ejection your application doesn't _look_ that resilient. That's probably because we're still letting some errors to be propagated to our clients. But we can improve this. If we have enough instances and/or versions of a specific service running into our system, we can combine multiple Istio capabilities to achieve the ultimate backend resilience:
-- *Circuit Breaker* to avoid multiple concurrent requests to an instance;
-- *Pool Ejection* to remove failing instances from the pool of responding instances;
-- *Retries* to forward the request to another instance just in case we get an open circuit breaker and/or pool ejection;
-
-By simply adding a *retry* configuration to our current `virtualservice`, we'll be able to get rid completely of our `503`s requests. This means that whenever we receive a failed request from an ejected instance, Istio will forward the request to another supposably healthy instance.
-
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_retry.yml[istiofiles/virtual-service-recommendation-v1_and_v2_retry.yml] -n tutorial{namespace-suffix}
-----
-
-Throw some requests at the customer endpoint:
-
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-----
-
-You won't receive `503`s anymore. But the requests from recommendation `v2` are still taking more time to get a response:
-
-[source,bash,subs="+macros,+attributes"]
-----
-customer => preference => recommendation v1 from '2039379827-jmm6x': 538
-customer => preference => recommendation v1 from '2039379827-jmm6x': 539
-customer => preference => recommendation v1 from '2039379827-jmm6x': 540
-customer => preference => recommendation v2 from '2036617847-hdjv2': 281
-customer => preference => recommendation v1 from '2039379827-jmm6x': 541
-customer => preference => recommendation v2 from '2036617847-hdjv2': 282
-customer => preference => recommendation v1 from '2039379827-jmm6x': 542
-customer => preference => recommendation v1 from '2039379827-jmm6x': 543
-customer => preference => recommendation v1 from '2039379827-jmm6x': 544
-customer => preference => recommendation v2 from '2036617847-hdjv2': 283
-customer => preference => recommendation v2 from '2036617847-hdjv2': 284
-customer => preference => recommendation v1 from '2039379827-jmm6x': 545
-customer => preference => recommendation v1 from '2039379827-jmm6x': 546
-customer => preference => recommendation v1 from '2039379827-jmm6x': 547
-customer => preference => recommendation v2 from '2036617847-hdjv2': 285
-customer => preference => recommendation v2 from '2036617847-hdjv2': 286
-customer => preference => recommendation v1 from '2039379827-jmm6x': 548
-customer => preference => recommendation v2 from '2036617847-hdjv2': 287
-customer => preference => recommendation v2 from '2036617847-hdjv2': 288
-customer => preference => recommendation v1 from '2039379827-jmm6x': 549
-customer => preference => recommendation v2 from '2036617847-hdjv2': 289
-customer => preference => recommendation v2 from '2036617847-hdjv2': 290
-customer => preference => recommendation v2 from '2036617847-hdjv2': 291
-customer => preference => recommendation v2 from '2036617847-hdjv2': 292
-customer => preference => recommendation v1 from '2039379827-jmm6x': 550
-customer => preference => recommendation v1 from '2039379827-jmm6x': 551
-customer => preference => recommendation v1 from '2039379827-jmm6x': 552
-customer => preference => recommendation v1 from '2039379827-jmm6x': 553
-customer => preference => recommendation v2 from '2036617847-hdjv2': 293
-customer => preference => recommendation v2 from '2036617847-hdjv2': 294
-customer => preference => recommendation v1 from '2039379827-jmm6x': 554
-----
-
-Our misbehaving pod `recommendation-v2-2036617847-spdrb` never shows up in the console, thanks to pool ejection and retry.
-
-=== Clean up
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
-oc delete pod -l app=recommendation,version=v2
-or
-kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
-kubectl delete pod -l app=recommendation,version=v2
-
-
-ifdef::workshop[]
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
-endif::workshop[]
-
-kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
-kubectl delete destinationrule recommendation -n tutorial{namespace-suffix}
-
-----

@@ -17,9 +17,9 @@ spec:
         app: preference
         version: v1
       annotations:
-#        prometheus.io/scrape: "true"
-#        prometheus.io/port: "8080"
-#        prometheus.io/scheme: "http"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/scheme: "http"
         sidecar.istio.io/inject: "true"
     spec:
       containers:

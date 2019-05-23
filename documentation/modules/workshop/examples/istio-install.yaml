@@ -1,21 +1,45 @@
-apiVersion: "istio.openshift.com/v1alpha1"
-kind: "Installation"
+apiVersion: istio.openshift.com/v1alpha3
+kind: ControlPlane
 metadata:
-  name: "istio-installation"
-  namespace: istio-operator
+  name: basic-install
 spec:
-  deployment_type: openshift
   istio:
-    authentication: false
-    community: false
-    prefix: openshift-istio-tech-preview/
-    version: 0.6.0
-  jaeger:
-    prefix: distributed-tracing-tech-preview/
-    version: 1.9.0
-    elasticsearch_memory: 1Gi
-  kiali:
-    prefix: openshift-istio-tech-preview/
-    version: 0.14.0
-    username: admin
-    password: admin
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 128Mi
+
+    gateways:
+      istio-egressgateway:
+        autoscaleEnabled: false
+      istio-ingressgateway:
+        autoscaleEnabled: false
+        ior_enabled: false
+
+    mixer:
+      policy:
+        autoscaleEnabled: false
+
+      telemetry:
+        autoscaleEnabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1G
+          limits:
+            cpu: 500m
+            memory: 4G
+
+    pilot:
+      autoscaleEnabled: false
+      traceSampling: 100.0
+
+    kiali:
+     dashboard:
+        user: admin
+        passphrase: admin

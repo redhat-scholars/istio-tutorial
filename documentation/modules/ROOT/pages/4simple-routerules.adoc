@@ -59,11 +59,12 @@ endif::workshop[]
 
 Back to the main `istio-tutorial` directory
 
+ifndef::workshop[]
 [source,bash,subs="+macros,+attributes"]
 ----
 cd ../../..
 ----
-
+endif::workshop[]
 
 === Wait for v2 to be deployed
 

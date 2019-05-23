@@ -6,7 +6,7 @@ include::_attributes.adoc[]
 
 Out of the box, you get monitoring via Prometheus and Grafana. 
 
-NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `siege customer-tutorial.$(minishift ip).nip.io` to produce load.
+NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}` to produce load.
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -99,7 +99,7 @@ image:prometheus_custom_metric.png[alt text]
 
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
 
-endif::workshop[]
+
 
 [#containermemory]
 === Containers memory
@@ -143,6 +143,7 @@ and select `Execute`
 
 image:prometheus-appmetrics.png[application metrics]
 
+endif::workshop[]
 [#tracing]
 == Tracing
 

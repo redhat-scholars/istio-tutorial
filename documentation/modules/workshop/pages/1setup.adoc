@@ -6,12 +6,13 @@ include::ROOT:page$_attributes.adoc[]
 
 You will need in this tutorial:
 
-* docker
-** https://www.docker.com/docker-mac[Mac OS]
-** Fedora: `dnf install docker`
+* Kubernetes
+** https://github.com/kubernetes/kubernetes/releases[Kubernetes Releases]
+** Mac OS: `brew install kubernetes-cli`
 
 * oc (Openshift client)
 ** https://github.com/openshift/origin/releases[Openshift Releases]
+** Mac OS: `brew install openshift-cli`
 
 * Apache Maven
 ** https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[Mac OS]
@@ -20,8 +21,8 @@ You will need in this tutorial:
 ** Mac OS: `brew install stern`
 ** Fedora: `sudo curl --output /usr/local/bin/stern -L https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64 && sudo chmod +x /usr/local/bin/stern`
 
-* istioctl 1.0.5
-** https://github.com/istio/istio/releases/tag/1.0.5[Download 1.0.5 release]
+* istioctl 1.1.7
+** https://github.com/istio/istio/releases/tag/1.1.7[Download 1.1.7 release]
 
 * `curl`, `gunzip`, `tar`
 ** Mac OS: built-in or part of your bash shell
