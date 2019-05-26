@@ -17,7 +17,7 @@ ifdef::workshop[]
 ----
 ssh -i ocp-workshop.pem ec2-user@bastion......
 sudo su -
-for A in {1..$(oc get nodes|grep \\bnode|wc|awk '{print $1}')}; do ssh ec2-user@node1.$(oc get nodes|grep master|perl -lne 'print $1 if /(...............internal)/') echo "vm.max_map_count = 262144" | sudo tee /etc/sysctl.d/99-elasticsearch.conf; sudo sysctl vm.max_map_count=262144; done
+for A in {1..<NUM_NODES>}; do ssh ec2-user@node$A.$(oc get nodes|grep master|perl -lne 'print $1 if /(...............internal)/') echo "vm.max_map_count = 262144" | sudo tee /etc/sysctl.d/99-elasticsearch.conf; sudo sysctl vm.max_map_count=262144; done
 exit
 ----
 
