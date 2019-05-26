@@ -1,9 +1,6 @@
 = Java (Spring Boot, Vert.x and Microprofile) + Istio on Kubernetes/OpenShift
 
 ifdef::workshop[]
-- This is a Workshop version available at http://bit.ly/the-istio-workshop
-
-- EtherPad URL: {etherpad}
 
 [IMPORTANT]
 .Before Start

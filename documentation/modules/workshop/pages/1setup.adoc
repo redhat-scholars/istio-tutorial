@@ -1,6 +1,10 @@
 = Setup
 include::ROOT:page$_attributes.adoc[]
 
+- This is a Workshop version available at http://bit.ly/istio-workshop-11
+
+- EtherPad URL: {etherpad}
+
 [#prerequisite]
 == Prerequisite CLI tools
 
