@@ -13,8 +13,8 @@ content:
 asciidoc:
   attributes:
     workshop: true
-    ocpurl: https://master.barcelona-b6f3.openshiftworkshop.com
-    appdomain: apps.barcelona-b6f3.openshiftworkshop.com
+    ocpurl: https://master.barcelona-e7a4.openshiftworkshop.com
+    appdomain: apps.barcelona-e7a4.openshiftworkshop.com
     etherpad: https://etherpad.wikimedia.org/p/IstioJBCN
     namespace-suffix: -$WORKSHOP_USER
 ui:

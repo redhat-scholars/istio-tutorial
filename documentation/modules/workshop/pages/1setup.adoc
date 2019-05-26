@@ -14,13 +14,6 @@ You will need in this tutorial:
 ** https://github.com/openshift/origin/releases[Openshift Releases]
 ** Mac OS: `brew install openshift-cli`
 
-* Apache Maven
-** https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[Mac OS]
-** Fedora: `dnf install maven`
-* link:https://github.com/wercker/stern[stern]
-** Mac OS: `brew install stern`
-** Fedora: `sudo curl --output /usr/local/bin/stern -L https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64 && sudo chmod +x /usr/local/bin/stern`
-
 * istioctl 1.1.7
 ** https://github.com/istio/istio/releases/tag/1.1.7[Download 1.1.7 release]
 
