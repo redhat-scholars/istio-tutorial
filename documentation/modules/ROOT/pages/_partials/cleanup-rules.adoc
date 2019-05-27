@@ -1,0 +1,34 @@
+You should have NO virtualservice nor destinationrule in `tutorial{namespace-suffix}` namespace, check it by running :
+
+[tabs]
+====
+kubectl::
++
+--
+[#cb-{doc-sec}-check-rules-exists]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
+----
+copyToClipboard::cb-{doc-sec}-check-rules-exists[]
+--
+oc::
++
+--
+[#cb-{doc-sec}-oc-check-rules-exists]
+[source,bash,subs="+macros,+attributes"]
+----
+oc get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
+----
+copyToClipboard::cb-{doc-sec}-oc-check-rules-exists[]
+--
+====
+
+If you find any:
+
+[#cb-{doc-sec}-cleanup]
+[source, bash,subs="+macros,+attributes"]
+----
+./scripts/clean.sh tutorial{namespace-suffix}
+----
+copyToClipboard::cb-{doc-sec}-cleanup[]

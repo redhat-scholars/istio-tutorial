@@ -10,7 +10,7 @@ Set the workshop user e.g  `export WORKSHOP_USER=<your-username-number>`
 [source,bash,subs="+macros,+attributes"]
 ----
 #Example:
-export WORKSHOP_USER=1
+export WORKSHOP_USER=1 && \
 oc login -u user$WORKSHOP_USER \
    openshift {ocpurl}
 ----
@@ -115,29 +115,43 @@ include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
 
 Since the `customer` service is the one our users will interact with, let's add an OpenShift Route that exposes that endpoint.
 
+[tabs]
+====
+kubectl::
++
+--
+[#deploy-ms-customer]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc expose service customer -n tutorial{namespace-suffix}
-
-oc get route -n tutorial{namespace-suffix}
-oc get pods -w -n tutorial{namespace-suffix}
-
-or
-
-kubectl get route -o=jsonpath='{.items[0].spec.host}'
+kubectl get route -o=jsonpath='{.items[0].spec.host}' &&\
 kubectl get pods -w
 ----
+copyToClipboard::deploy-ms-customer[]
+--
+oc::
++
+--
+[#deploy-ms-oc-customer]
+[source,bash,subs="+macros,+attributes"]
+----
+oc expose service customer -n tutorial{namespace-suffix} && \
+oc get route -n tutorial{namespace-suffix} && \
+oc get pods -w -n tutorial{namespace-suffix}
+----
+copyToClipboard::deploy-ms-oc-customer[]
+--
+====
 
+ifndef::workshop[]
 IMPORTANT: If your pod fails with `ImagePullBackOff`, it's possible that your current terminal isn't using the proper Docker Environment. See link:#setup-environment[Setup environment].
+endif::[]
 
-Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press kbd:[Ctrl+C]
 
 Then test the customer endpoint
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-----
+:doc-sec: cust
+include::ROOT:partial$command-snippets.adoc[tag=call-customer-svc]
 
 You should see the following error because the services `preference` and `recommendation` are not yet deployed.
 
@@ -156,20 +170,11 @@ customer => UnknownHostException: preference
 include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
 
 === Wait preference to be deployed
+:doc-sec: pref
+include::ROOT:partial$command-snippets.adoc[tag=kgpow]
 
-[source, bash,subs="+macros,+attributes"]
-----
-oc get pods -w -n tutorial{namespace-suffix}
-or
-kubectl get pods -w
-----
-
-Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
-
-[source,bash,subs="+macros,+attributes"]
-----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-----
+:doc-sec: pref
+include::ROOT:partial$command-snippets.adoc[tag=call-customer-svc]
 
 It will respond with an error since the service `recommendation` is not yet deployed.
 
@@ -191,13 +196,8 @@ include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
 
 === Wait recommendation to be deployed
 
-Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
-
-[source,bash,subs="+macros,+attributes"]
-----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-----
-
+:doc-sec: recommendation
+include::ROOT:partial$command-snippets.adoc[tag=call-customer-svc]
 it should now return
 
 [source,bash,subs="+macros,+attributes"]

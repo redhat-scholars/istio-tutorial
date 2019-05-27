@@ -1,0 +1,110 @@
+#tag::kgpow[]
+[tabs]
+====
+kubectl::
++
+--
+[#cmd-kgpow-{doc-sec}]
+ifdef::k8s-labels[]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl -n tutorial{namespace-suffix} get pods -l {k8s-labels} -w
+----
+endif::[]
+ifndef::k8s-labels[]
+[source, bash,subs="+macros,+attributes"]
+----
+kubectl -n tutorial{namespace-suffix} get pods -w
+----
+endif::[]
+copyToClipboard::cmd-kgpow-{doc-sec}-oc[]
+--
+oc::
++
+--
+[#cmd-kgpow-{doc-sec}-oc]
+ifdef::k8s-labels[]
+[source, bash,subs="+macros,+attributes"]
+----
+oc -n tutorial{namespace-suffix} get pods -l {k8s-labels} -w
+----
+endif::[]
+ifndef::k8s-labels[]
+[source, bash,subs="+macros,+attributes"]
+----
+oc -n tutorial{namespace-suffix} get pods -w
+----
+endif::[]
+copyToClipboard::cmd-kgpow-{doc-sec}-oc[]
+--
+====
+#end::kgpow[]
+
+#tag::call-customer-svc[]
+
+Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press kbd:[Ctrl+C]
+
+[#invoke{doc-sec}-customer-endpoint]
+[source,bash,subs="+macros,+attributes"]
+----
+curl http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+copyToClipboard::invoke{doc-sec}-customer-endpoint[]
+
+#end::call-customer-svc[]
+
+#tag::istio-rules[]
+[tabs]
+=====
+kubectl::
++
+--
+[#istio-rules-{doc-sec}-{istio-file}]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl -n tutorial{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
+----
+copyToClipboard::istio-rules-{doc-sec}-{istio-file}[]
+--
+oc::
++
+--
+[#istio-rules-oc-{doc-sec}-{istio-file}]
+[source,bash,subs="+macros,+attributes"]
+----
+oc -n {tutorial}{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
+----
+copyToClipboard::istio-rules-oc-{doc-sec}-{istio-file}[]
+--
+=====
+#end::istio-rules[]
+
+#tag::pod-ssh-exec[]
+[tabs]
+====
+kubectl::
++
+--
+[#cb-{doc-sec}-{deployment}-trigger-misbehave]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl exec -it -n tutorial{namespace-suffix} \
+  $(kubectl get pods -n tutorial{namespace-suffix} \
+  |grep {deployment}|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+----
+copyToClipboard::cb-{doc-sec}-{deployment}-trigger-misbehave[]
+--
+oc::
++
+--
+[#cb-oc-{doc-sec}-{deployment}-trigger-misbehave]
+[source,bash,subs="+macros,+attributes"]
+----
+oc exec -it -n tutorial{namespace-suffix} \
+ $(oc get pods -n tutorial{namespace-suffix} \
+ |grep {deployment}|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+----
+copyToClipboard::cb-oc-{doc-sec}-{deployment}-trigger-misbehave[]
+--
+====
+#end::pod-ssh-exec[]

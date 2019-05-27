@@ -3,15 +3,10 @@ include::_attributes.adoc[]
 
 [IMPORTANT]
 .Before Start
-====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
-if so run:
-
-[source, bash,subs="+macros,+attributes"]
-----
-./scripts/clean.sh tutorial{namespace-suffix}
-----
-====
+=====
+:doc-sec: cb-start
+include::ROOT:partial$cleanup-rules.adoc[]
+=====
 
 [#retry]
 == Retry
@@ -20,41 +15,46 @@ Instead of failing immediately, retry the Service N more times
 
 We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
-kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-----
+:doc-sec: misbehave
+:deployment: recommendation-v2
+include::ROOT:partial$command-snippets.adoc[tag=pod-ssh-exec]
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
+[#cb-run-misbehave]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/misbehave
 exit
 ----
+copyToClipboard::cb-run-misbehave[]
 
 This is a special endpoint that will make our application return only `503`s.
 
 You will see it works every time because Istio will retry the recommendation service *automatically* and it will land on v1 only.
 
+[#cb-run-many-requests]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+copyToClipboard::cb-run-many-requests[]
 
+```
 customer => preference => recommendation v1 from '2036617847-m9glz': 196
 customer => preference => recommendation v1 from '2036617847-m9glz': 197
 customer => preference => recommendation v1 from '2036617847-m9glz': 198
-----
+```
 
 ifndef::workshop[]
 If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as `preference` will retry to establish the connection with `recommendation`, and v1 will reply.
 
-[source, bash]
+[#cb-open-kiali]
+[source, bash,subs="+macros,+attributes"]
 ----
 open http://kiali-istio-system.$(minishift ip).nip.io/kiali
 ----
+copyClipboard::cb-open-kiali[]
 
 In Kiali, go to `Graph`, select the `recommendation` square, and place the mouse over the red sign, like the picture bellow.
 
@@ -64,37 +64,43 @@ endif::workshop[]
 
 Now, make the pod v2 behave well again
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
-kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-----
+:doc-sec: behave
+:deployment: recommendation-v2
+include::ROOT:partial$command-snippets.adoc[tag=pod-ssh-exec]
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
+[#cb-run-behave]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/behave
 exit
 ----
+copyToClipboard::cb-run-behave[]
 
 The application is back to random load-balancing between v1 and v2
 
+[#cb-behave-run-many-requests]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+copyToClipboard::cb-behave-run-many-requests[]
 
+```
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
 customer => preference => recommendation v1 from '2039379827-h58vw': 130
-----
+```
 
 // Needs a modified image
 [#timeout]
 == Timeout
 
-Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `kubectl get virtualservice` `kubectl get destinationrule` and if so `kubectl delete virtualservice virtualservicename -n tutorial{namespace-suffix}` and `kubectl delete destinationrule destinationrulename -n tutorial{namespace-suffix}`
+Wait only N seconds before giving up and failing. 
+
+:doc-sec: cb-timeout-start
+include::ROOT:partial$cleanup-rules.adoc[]
 
 ifndef::workshop[]
 First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationResource.java` making it a slow performer with a 3 second delay.
@@ -118,58 +124,114 @@ public Response recommendations() {
 
 Rebuild and redeploy
 
+[#cb-timeout-rebuild]
 [source,bash,subs="+macros,+attributes"]
 ----
-cd recommendation/java/quarkus
-
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v2 .
-
+cd recommendation/java/quarkus && \
+mvn clean package -DskipTests && \
+docker build -t example/recommendation:v2 . && \
 docker images | grep recommendation
+----
 
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
+[tabs]
+====
+kubectl::
++
+--
+[#cb-timeout-redeploy]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+----
+copyToClipboard::cb-timeout-redeploy[]
+--
+oc::
++
+--
+[#cb-timeout-oc-redeploy]
+[source,bash,subs="+macros,+attributes"]
+----
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+----
+copyToClipboard::cb-timeout-oc-redeploy[]
+--
+====
 
+[#cb-timeout-backto-home]
+[source,bash]
+----
 cd ../../..
 ----
+copyToClipboard::cb-timeout-backto-home[]
 
 endif::workshop[]
 
 ifdef::workshop[]
 First, introduce some wait time in `recommendation v2` by making it a slow performer with a 3 second delay by running the command
 
+[tabs]
+====
+kubectl::
++
+--
+[#cb-timeout-patch-deployment]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
+kubectl patch deployment -n tutorial{namespace-suffix} recommendation-v2 \
+ -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' 
 ----
+copyToClipboard::cb-timeout-patch-deployment[]
+--
+oc::
++
+--
+[#cb-timeout-oc-patch-deployment]
+[source,bash,subs="+macros,+attributes"]
+----
+oc patch deployment -n tutorial{namespace-suffix} recommendation-v2 \
+ -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' 
+----
+copyToClipboard::cb-timeout-oc-patch-deployment[]
+--
+====
 
 endif::workshop[]
 
 Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond
 
+[#cb-timeout-run-after-patch]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::cb-timeout-run-after-patch[]
 
 Then add the timeout rule
 
-[source,bash,subs="+macros,+attributes"]
-----
+
+:doc-sec: cb-timeout
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-timeout.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+....
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial{namespace-suffix}
-----
+....
 
 You will see it return v1 after waiting about 1 second. You don't see v2 anymore, because the response from v2 expires after the timeout period and it is never returned.
 
+[#cb-timeout-run-after-timeout]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+copyToClipboard::cb-timeout-run-after-timeout[]
+
+```
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2907
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2908
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
-----
+```
 
 === Clean up
 
@@ -195,47 +257,92 @@ public Response recommendations() {
 
 And rebuild and redeploy the service again:
 
+[#cb-timeout-cleanup]
 [source,bash,subs="+macros,+attributes"]
 ----
-cd recommendation/java/quarkus
-
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v2 .
-
+cd recommendation/java/quarkus && \
+mvn clean package -DskipTests && \
+docker build -t example/recommendation:v2 . && \
 docker images | grep recommendation
+----
 
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
+[tabs]
+====
+kubectl::
++
+--
+[#cb-timeout-pod-cleanup]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+----
+copyToClipboard::cb-timeout-pod-cleanup[]
+--
+oc::
+--
+[#cb-timeout-oc-pod-cleanup]
+[source,bash,subs="+macros,+attributes"]
+----
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+----
+copyToClipboard::cb-timeout-oc-pod-cleanup[]
+--
+====
 
+[#cb-timeout-nav-back]
+[source,bash,subs="+macros,+attributes"]
+----
 cd ../../..
 ----
+copyToClipboard::cb-timeout-nav-back[]
 
 endif::workshop[]
 
 ifdef::workshop[]
 Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
 
+[tabs]
+====
+kubectl::
++
+--
+[#cb-timeout-undo-patch]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
+kubectl patch deployment -n tutorial{namespace-suffix} recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}'
 ----
+copyToClipboard::cb-timeout-undo-patch[]
+--
+oc::
++
+--
+[#cb-timeout-oc-undo-patch]
+[source,bash,subs="+macros,+attributes"]
+----
+oc patch deployment  -n tutorial{namespace-suffix} recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}'
+----
+copyToClipboard::cb-timeout-oc-undo-patch[]
+--
+====
+
+
 endif::workshop[]
 
 Then delete the virtual service created for timeout by:
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial{namespace-suffix}
-----
+:doc-sec: cb-timeout-cleanup
+:k8s-cmd-opt: delete
+:istio-file: virtual-service-recommendation-timeout.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 or you can run:
 
+[#cb-timeout-cleanup-script]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
 ----
+copyToClipboard::cb-timeout-cleanup-script[]
 
 [#failfast]
 == Fail Fast with Max Connections and Max Pending Requests
@@ -267,14 +374,46 @@ endif::workshop[]
 ifdef::workshop[]
 First, introduce some wait time in `recommendation v2` by making it a slow performer with a 3 second delay by running the command
 
+[tabs]
+====
+kubectl::
++
+--
+[#cb-retry-patch]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
+kubectl patch deployment -n tutorial{namespace-suffix} recommendation-v2 \
+ -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}'
 ----
+copyToClipboard::cb-retry-patch[]
+--
+oc::
++
+--
+[#cb-retry-oc-patch]
+[source,bash,subs="+macros,+attributes"]
+----
+oc patch deployment -n tutorial{namespace-suffix} recommendation-v2 \
+ -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}'
+----
+copyToClipboard::cb-retry-oc-patch[]
+--
+====
 
 endif::workshop[]
 
 Second, you need to *ensure* you have a `destinationrule` and `virtualservice` in place. Let's use a 50/50 split of traffic:
+
+:doc-sec: cb-retry
+:k8s-cmd-opt: create
+:istio-file: destination-rule-recommendation-v1-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+
+:doc-sec: cb-retry
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-v1_and_v2_50_50.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -287,10 +426,12 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommenda
 
 Let's perform a load test in our system with `siege`. We'll have 20 clients sending 2 concurrent requests each:
 
+[#cb-retry-load-run]
 [source,bash,subs="+macros,+attributes"]
 ----
 siege -r 2 -c 20 -v http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::cb-retry-load-run[]
 
 You should see an output similar to this:
 
@@ -300,12 +441,23 @@ All of the requests to our system were successful, but it took some time to run 
 
 But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same instance/pod. We don't want multiple requests getting queued or making the instance/pod even slower. So we'll add a circuit breaker that will *open* whenever we have more than 1 request being handled by any instance/pod.
 
+
+:doc-sec: cb-retry
+:k8s-cmd-opt: replace
+:istio-file: destination-rule-recommendation_cb_policy_version_v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+
+....
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
+....
+
+[#cb-retry-get-dr]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
-
 kubectl get destinationrule -n tutorial{namespace-suffix}
 ----
+copyToClipboard::cb-retry-get-dr[]
 
 More information on the fields for the simple circuit-breaker
 https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy[https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy]
@@ -315,10 +467,12 @@ https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreake
 
 Now let's see what is the behavior of the system running `siege` again:
 
+[#cb-load-run-with-cb]
 [source,bash,subs="+macros,+attributes"]
 ----
 siege -r 2 -c 20 -v http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::cb-load-run-with-cb[]
 
 image:siege_cb_503.png[siege output with some 503 requests due to open circuit breaker]
 
@@ -329,23 +483,74 @@ You can run siege multiple times, but in all of the executions you should see so
 ifdef::workshop[]
 Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
 
+[tabs]
+====
+kubectl::
++
+--
+[#cb-undo-cb-patch]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
+----
+copyToClipboard::cb-undo-cb-patch[]
+--
+oc::
++
+--
+[#cb-undo-oc-cb-patch]
 [source,bash,subs="+macros,+attributes"]
 ----
 oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
 ----
+copyToClipboard::cb-undo-oc-cb-patch[]
+--
+====
+
 endif::workshop[]
 
+Delete virtual service and circuit breaker policy:
 
+[tabs]
+====
+kubectl::
++
+--
+[#cb-all-clean-del-vs]
 [source,bash,subs="+macros,+attributes"]
 ----
+kubectl delete -n tutorial{namespace-suffix} virtualservice recommendation 
+----
+copyToClipboard::cb-all-clean-del-vs[]
+--
+oc::
++
+--
+[#cb-all-clean-oc-del-vs]
+[source,bash,subs="+macros,+attributes"]
+----
+oc delete -n tutorial{namespace-suffix} virtualservice recommendation 
+----
+copyToClipboard::cb-all-clean-oc-del-vs[]
+--
+====
+
+:doc-sec: cb-cleanup
+:k8s-cmd-opt: delete
+:istio-file: destination-rule-recommendation_cb_policy_version_v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+....
 kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
 kubectl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial{namespace-suffix}
-----
+....
 
 or you can run:
 
+[#cb-all-clean-up]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
 ----
+copyToClipboard::cb-all-clean-up[]
 

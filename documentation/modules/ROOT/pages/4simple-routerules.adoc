@@ -10,10 +10,12 @@ ifndef::workshop[]
 
 We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
 
-[source,java]
+[#srr-update-recommendation-v2]
+[source,java,subs="+macros,+attributes"]
 ----
 private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
 ----
+copyToClipboard::srr-update-recommendation-v2[]
 
 The "v2" tag during the Docker build is significant.
 
@@ -21,40 +23,39 @@ There is also a second `deployment.yml` file to label things correctly
 
 === Docker build (if you have access to Docker daemon)
 
+[#srr-rebuild-recommendation-v2]
 [source,bash,subs="+macros,+attributes"]
 ----
-cd recommendation/java/quarkus
-mvn clean package -DskipTests
-
+cd recommendation/java/quarkus && \
+mvn clean package -DskipTests  && \
 docker build -t example/recommendation:v2 .
-
 docker images | grep recommendation
+----
+copyToClipboard::srr-rebuild-recommendation-v2[]
+
+A successful build will show the following container images:
+
+[source,bash,subs="+macros,+attributes"]
+----
 example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
 example/recommendation                  v1                  f072978d9cf6        8 minutes ago      438MB
 ----
 
 IMPORTANT: We have a 2nd Deployment to manage the v2 version of recommendation. 
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[../../kubernetes/Deployment-v2.yml]) -n tutorial
-oc get pods -w -n tutorial
-
-or
-
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[../../kubernetes/Deployment-v2.yml]) -n tutorial
-kubectl get pods -w -n tutorial
-----
+:svc-name: recommendation
+:svc-repo: {recommendation-repo}
+include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
 
 endif::workshop[]
 
 ifdef::workshop[]
 == Deploy Recommendation microservice V2 using an existing image
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.remote.yml[{recommendation-repo}/kubernetes/Deployment-v2.remote.yml]) -n tutorial{namespace-suffix}
-----
+:svc-name: recommendation
+:svc-repo: {recommendation-repo}
+include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
+
 endif::workshop[]
 
 Back to the main `istio-tutorial` directory
@@ -70,9 +71,13 @@ endif::workshop[]
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
+:doc-sec: recommendation-v2
+include::ROOT:partial$command-snippets.adoc[tag=kgpow]
+
+The get pods command show now list the pods as shown below:
+
 [source,bash,subs="+macros,+attributes"]
 ----
-oc get pods -w -n tutorial{namespace-suffix}
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preference-243057078-8c5hz           2/2       Running   0          15m
@@ -82,35 +87,49 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
 
 and test the customer endpoint
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-----
+:doc-sec: recommendation-v2
+include::ROOT:partial$command-snippets.adoc[tag=call-customer-svc]
 
 you likely see "customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
 
-[source,bash, subs="+macros,+attributes"]
-----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
-----
-
+:doc-sec: recommendation-v2-v2
+include::ROOT:partial$command-snippets.adoc[tag=call-customer-svc]
 you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
 Send several requests to see their responses:
 
+[#srr-several-requests]
 [source, bash, subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::srr-several-requests[]
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
 
+[tabs]
+====
+kubectl::
++
+--
+[#srr-scale-recommendation-v2]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
-or
-kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
+kubectl -n tutorial{namespace-suffix} scale --replicas=2 deployment/recommendation-v2 
 ----
+copyToClipboard::srr-scale-recommendation-v2[]
+--
+oc::
++
+--
+[#srr-oc-scale-recommendation-v2]
+[source,bash,subs="+macros,+attributes"]
+----
+oc scale  -n tutorial{namespace-suffix} --replicas=2 deployment/recommendation-v2
+----
+copyToClipboard::srr-oc-scale-recommendation-v2[]
+--
+====
 
 Now, you will see two requests into the v2 and one for v1.
 
@@ -123,12 +142,29 @@ customer => preference => recommendation v2 from '99634814-sf4cl': 38
 
 Scale back to a single replica of the recommendation-v2 Deployment
 
+[tabs]
+====
+kubectl::
++
+--
+[#srr-scale-one-recommendation-v2]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
-or
-kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
+kubectl -n tutorial{namespace-suffix} scale --replicas=1 deployment/recommendation-v2 
 ----
+copyToClipboard::srr-scale-recommendation-v2[]
+--
+oc::
++
+--
+[#srr-oc-scale-one-recommendation-v2]
+[source,bash,subs="+macros,+attributes"]
+----
+oc scale  -n tutorial{namespace-suffix} --replicas=1 deployment/recommendation-v2
+----
+copyToClipboard::srr-oc-scale-recommendation-v2[]
+--
+====
 
 [#istiorouting]
 == Changing Istio Routings
@@ -138,6 +174,17 @@ kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-su
 
 From the main istio-tutorial directory,
 
+:doc-sec: recommendation-v2
+:k8s-cmd-opt: create
+:istio-file: destination-rule-recommendation-v1-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+:doc-sec: recommendation-v2 
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+[#srr-run-many-requests]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
@@ -145,6 +192,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommenda
 
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::srr-run-many-requests[]
 
 you should only see v2 being returned
 
@@ -153,43 +201,63 @@ you should only see v2 being returned
 
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
+:doc-sec: recommendation-all-v1
+:k8s-cmd-opt: replace
+:istio-file: virtual-service-recommendation-v1.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+....
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
+....
+
+[#srr-get-vsvc]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
-
-kubectl get virtualservice -n tutorial{namespace-suffix}
-
-kubectl get virtualservice -o yaml -n tutorial{namespace-suffix}
+kubectl -n tutorial{namespace-suffix} get virtualservice 
 ----
+copyToClipboard::srr-get-vsvc[]
+
+[#srr-get-vsvc-yaml]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl -n tutorial{namespace-suffix} get virtualservice -o yaml 
+----
+copyToClipboard::srr-get-vsvc-yaml[]
 
 [#alltorecommendationv1v2]
 === All users to recommendation v1 and v2
 
 By simply removing the rule
 
-[source,bash,subs="+macros,+attributes"]
-----
+:doc-sec: recommendation-v1-v2
+:k8s-cmd-opt: delete
+:istio-file: virtual-service-recommendation-v1.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+....
 kubectl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial{namespace-suffix}
-----
+....
 
 and you should see the default behavior of load-balancing between v1 and v2
 
+[#sarr-v1-v2-run-many]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::srr-v1-v2-run-many[]
 
 [#canarydeploymentrecommendation]
 === Canary deployment: Split traffic between v1 and v2
 
 Canary Deployment scenario: push v2 into the cluster but slowly send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
 
+:doc-sec: canary
+:k8s-labels: app=recommendation
+include::ROOT:partial$command-snippets.adoc[tag=kgpow]
+
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc get pods -l app=recommendation -n tutorial{namespace-suffix}
-or
-$ kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
-
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
@@ -197,37 +265,52 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 
 Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 
-[source,bash,subs="+macros,+attributes"]
-----
+:doc-sec: canary-90-10
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-v1_and_v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+....
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2.yml[istiofiles/virtual-service-recommendation-v1_and_v2.yml] -n tutorial{namespace-suffix}
-----
+....
 
 and send in several requests:
 
+[#srr-canary-recommendation-many]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::srr-canary-recommendation-many[]
 
 In another terminal, change the mixture to be 75/25
 
-[source,bash,subs="+macros,+attributes"]
-----
+:doc-sec: canary-75-25
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-v1_and_v2_75_25.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+....
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_75_25.yml[istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml] -n tutorial{namespace-suffix}
-----
+....
 
 Clean up
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
-----
+:doc-sec: srr-cleanup
+:k8s-cmd-opt: delete
+:istio-file: virtual-service-recommendation-v1_and_v2_75_25.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
+:doc-sec: srr-cleanup-1
+:k8s-cmd-opt: delete
+:istio-file: destination-rule-recommendation-v1-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 or you can run:
 
+[#srr-script-cleanup]
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+pass:[$TUTORIAL_HOME]/scripts/clean.sh tutorial{namespace-suffix}
 ----
+copyToClipboard::srr-script-cleanup[]
