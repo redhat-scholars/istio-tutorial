@@ -1,0 +1,30 @@
+#tag::deploy[]
+
+Let's deploy the {svc-name} pod with its sidecar
+
+[tabs]
+====
+oc::
++
+--
+[#oc-deploy-{svc-name}]
+[source,bash,subs="+macros,+attributes"]
+----
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{svc-repo}/kubernetes/Deployment.remote.yml[{svc-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+oc create -f link:{github-repo}/{svc-repo}/kubernetes/Service.yml[{svc-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+copyToClipboard::oc-deploy-{svc-name}[]
+--
+kubectl::
++
+--
+[#k8s-deploy-{svc-name}]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{svc-repo}/kubernetes/Deployment.remote.yml[{svc-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{svc-repo}/kubernetes/Service.yml[{svc-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+copyToClipboard::k8s-deploy-{svc-name}[]
+--
+====
+#end::deploy[]

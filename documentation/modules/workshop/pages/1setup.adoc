@@ -8,26 +8,52 @@ include::ROOT:page$_attributes.adoc[]
 [#prerequisite]
 == Prerequisite CLI tools
 
-You will need in this tutorial:
+The following CLI tools are required for running the exercises in this tutorial. Please have them installed and configured before you get started with any of the tutorial chapters.
 
-* Kubernetes
-** https://github.com/kubernetes/kubernetes/releases[Kubernetes Releases]
-** Mac OS: `brew install kubernetes-cli`
+[cols="4*^,4*.",options="header"]
+|===
+|Tool|macOS|Fedora|Windows
 
-* oc (Openshift client)
-** https://github.com/openshift/origin/releases[Openshift Releases]
-** Mac OS: `brew install openshift-cli`
+|Kubernetes
+| `brew install kubernetes-cli`
+| https://github.com/kubernetes/kubernetes/releases[Kubernetes Releases]
+| https://github.com/kubernetes/kubernetes/releases[Kubernetes Releases]
 
-* istioctl 1.1.7
-** https://github.com/istio/istio/releases/tag/1.1.7[Download 1.1.7 release]
+| oc (Openshift client)
+| https://github.com/openshift/origin/releases[Openshift Releases]
+| `brew install openshift-cli`
+| https://github.com/openshift/origin/releases[Openshift Releases]
 
-* `curl`, `gunzip`, `tar`
-** Mac OS: built-in or part of your bash shell
-** Fedora: should also be installed already, but just in case... `dnf install curl gzip tar`
+| `git`
+| https://git-scm.com/download/mac
+| `dnf install git`
+| https://git-scm.com/download/windows
 
-* git
-** `dnf install git`
+| `Docker`
+| https://docs.docker.com/docker-for-mac/install
+| `dnf install docker`
+| https://docs.docker.com/docker-for-windows/install/
 
-* siege
-** MAC OS: `brew install siege`
-** Fedora: `dnf install siege`
+| `stern`
+| `brew install stern`
+| https://github.com/wercker/stern[stern]
+| https://github.com/wercker/stern[stern]
+
+
+| httpie
+| `brew install httpie`
+| `dnf install httpie`
+| https://httpie.org/[httpie]
+
+| https://github.com/JoeDog/siege[siege]
+| `brew install siege`
+| `dnf install siege`
+| https://github.com/JoeDog/siege[siege]
+
+| kubectx and kubens
+| `brew install kubectx`
+| https://github.com/ahmetb/kubectx
+|
+
+|===
+

@@ -17,9 +17,12 @@ asciidoc:
     appdomain: apps.singapore-9e13.openshiftworkshop.com
     etherpad: https://etherpad.wikimedia.org/p/IstioSingapore
     namespace-suffix: -$WORKSHOP_USER
+  extensions:
+    - ./lib/copy-to-clipboard.js
+    - ./lib/tab-block.js
 ui:
   bundle:
-    url: https://github.com/redhat-developer-demos/rhd-tutorial-ui/releases/download/v0.0.2/ui-bundle.zip
+    url: ../rhd-tutorial-ui/build/ui-bundle.zip
   supplemental_files: ./supplemental-ui
 output:
   dir: ./gh-pages/workshop

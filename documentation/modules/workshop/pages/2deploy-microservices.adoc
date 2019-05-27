@@ -4,16 +4,17 @@ include::ROOT:page$_attributes.adoc[]
 
 Create an environment variable for your user and log into OpenShift.
 
+Set the workshop user e.g  `export WORKSHOP_USER=<your-username-number>`
+
+[#workshop-set-env]
 [source,bash,subs="+macros,+attributes"]
 ----
-export WORKSHOP_USER=<your-username-number>
-
-
 #Example:
 export WORKSHOP_USER=1
-
-oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
+oc login -u user$WORKSHOP_USER \
+   openshift {ocpurl}
 ----
+copyToClipboard::workshop-set-env[]
 
 
 [#deploycustomer]
@@ -21,59 +22,94 @@ oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
 
 Make sure you are logged in
 
+[tabs]
+====
+oc::
++
+--
+[#workshop-ocp-login]
 [source,bash,subs="+macros,+attributes"]
 ----
 oc whoami
-or
-kubectl config current-context
 ----
+copyToClipboard::workshop-ocp-login[]
 
-and you have setup the project/namespace
-
+Create workshop project 
+[#workshop-set-project]
 [source,bash,subs="+macros,+attributes"]
 ----
 oc new-project tutorial{namespace-suffix}
-or
-kubectl create namespace tutorial{namespace-suffix}
-kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
+----
+copyToClipboard::workshop-set-project[]
 
 ifndef::workshop[]
-oc adm policy add-scc-to-user privileged -z default -n tutorial
-endif::workshop[]
-----
-
-Then clone the git repository
-
+[#workshop-set-scc]
 [source,bash,subs="+macros,+attributes"]
 ----
-git clone https://github.com/redhat-developer-demos/istio-tutorial
-cd istio-tutorial
+oc adm policy add-scc-to-user privileged -z default -n tutorial{namespace-suffix}
 ----
+copyToClipboard::workshop-set-scc[]
+endif::workshop[]
+--
+kubectl::
++
+--
+[#workshop-kubectl-login]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl config current-context
+----
+copyToClipboard::workshop-kubectl-login[]
+
+Create workshop namespace
+
+[#workshop-set-ns]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl create namespace tutorial{namespace-suffix} && \
+kubectl config set-context $(kubectl config current-context) \
+  --namespace=tutorial{namespace-suffix}
+----
+copyToClipboard::workshop-set-ns[]
+[TIP]
+=====
+If you have installed https://github.com/ahmetb/kubectx[kubens], then you can change the namespace like:
+[#workshop-set-kubens]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl create namespace tutorial{namespace-suffix} && \
+kubens tutorial{namespace-suffix} 
+----
+copyToClipboard::workshop-set-kubens[]
+=====
+--
+====
+
+Download the tutorial sources
+
+[#workshop-download-sources]
+[source,bash,subs="+macros,+attributes"]
+----
+git clone https://github.com/redhat-developer-demos/istio-tutorial && cd `basename $_`
+----
+copyToClipboard::workshop-download-sources[]
 
 Start deploying the microservice projects, starting with customer
 
-Make sure `istioctl` is in your `PATH`:
+Make sure `istioctl` is in your `PATH` and it is of version `1.1.7`
 
+[#workshop-check-istioctl]
 [source,bash,subs="+macros,+attributes"]
 ----
 $ istioctl version
-version.BuildInfo{Version:"1.1.7", GitRevision:"eec7a74473deee98cad0a996f41a32a47dd453c2", User:"root", Host:"341b3bf0-76ac-11e9-b644-0a580a2c0404", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.6-6-geec7a74"}
 ----
+copyToClipboard::workshop-check-istioctl[]
 
 === Deploy Customer deploy using existing images
 
-Let's deploy the customer pod with its sidecar
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-
-or
-
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.remote.yml[{customer-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-----
+:svc-name: customer
+:svc-repo: {customer-repo}
+include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
 
 === Expose customer
 
@@ -115,17 +151,9 @@ customer => UnknownHostException: preference
 
 === Deploy Preference using existing image
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-
-or
-
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.remote.yml[{preference-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-----
-
+:svc-name: preference
+:svc-repo: {preference-repo}
+include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
 
 === Wait preference to be deployed
 
@@ -157,18 +185,9 @@ customer => Error: 503 - preference => UnknownHostException: recommendation
 
 === Deploy Recommendation using existing images
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-oc get pods -w
-
-or
-
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.remote.yml[{recommendation-repo}/kubernetes/Deployment.remote.yml]) -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-kubectl get pods -w
-----
+:svc-name: recommendation
+:svc-repo: {recommendation-repo}
+include::ROOT:partial$deploy-microservice.adoc[tag=deploy]
 
 === Wait recommendation to be deployed
 
