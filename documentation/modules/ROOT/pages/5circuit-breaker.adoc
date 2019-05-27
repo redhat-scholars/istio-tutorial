@@ -16,7 +16,7 @@ Instead of failing immediately, retry the Service N more times
 We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:
 
 :doc-sec: misbehave
-:deployment: recommendation-v2
+:deployment: recommendationv2
 include::ROOT:partial$command-snippets.adoc[tag=pod-ssh-exec]
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
@@ -65,7 +65,7 @@ endif::workshop[]
 Now, make the pod v2 behave well again
 
 :doc-sec: behave
-:deployment: recommendation-v2
+:deployment: recommendationv2
 include::ROOT:partial$command-snippets.adoc[tag=pod-ssh-exec]
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:

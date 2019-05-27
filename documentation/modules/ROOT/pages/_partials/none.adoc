@@ -1,0 +1,3 @@
+//Nasty solution - need to find better way for some reason need to throw one of the variables out to get 
+//variables processed
++++<div data='{k8s-cmd-opt}' style="display: hidden"></div> +++

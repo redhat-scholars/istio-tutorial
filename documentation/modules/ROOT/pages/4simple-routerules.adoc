@@ -1,12 +1,13 @@
 = Simple Route Rules
 include::_attributes.adoc[]
+:svc-version: v2
 
 For this use case, we need to create a modified version of Recommendations
 
-ifndef::workshop[]
-
 [#deployrecommendationv2]
 == Create recommendation:v2
+
+ifndef::workshop[]
 
 We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
 
@@ -187,9 +188,6 @@ include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 [#srr-run-many-requests]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
-
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 copyToClipboard::srr-run-many-requests[]
@@ -205,10 +203,6 @@ Note: "replace" instead of "create" since we are overlaying the previous rule
 :k8s-cmd-opt: replace
 :istio-file: virtual-service-recommendation-v1.yml
 include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
-
-....
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
-....
 
 [#srr-get-vsvc]
 [source,bash,subs="+macros,+attributes"]
@@ -233,10 +227,6 @@ By simply removing the rule
 :k8s-cmd-opt: delete
 :istio-file: virtual-service-recommendation-v1.yml
 include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
-
-....
-kubectl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial{namespace-suffix}
-....
 
 and you should see the default behavior of load-balancing between v1 and v2
 

@@ -1,6 +1,7 @@
 #tag::kgpow[]
 [tabs]
 ====
+include::ROOT:partial$none.adoc[]
 kubectl::
 +
 --
@@ -41,7 +42,7 @@ copyToClipboard::cmd-kgpow-{doc-sec}-oc[]
 #end::kgpow[]
 
 #tag::call-customer-svc[]
-
+include::ROOT:partial$none.adoc[]
 Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press kbd:[Ctrl+C]
 
 [#invoke{doc-sec}-customer-endpoint]
@@ -54,25 +55,24 @@ copyToClipboard::invoke{doc-sec}-customer-endpoint[]
 #end::call-customer-svc[]
 
 #tag::istio-rules[]
+include::ROOT:partial$none.adoc[]
 [tabs]
 =====
 kubectl::
 +
---
-[#istio-rules-{doc-sec}-{istio-file}]
-[source,bash,subs="+macros,+attributes"]
+[id='istio-rules-{doc-sec}-{istio-file}']
+[source,bash,subs="+attributes,+macros"]
 ----
 kubectl -n tutorial{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
 ----
 copyToClipboard::istio-rules-{doc-sec}-{istio-file}[]
---
 oc::
 +
 --
 [#istio-rules-oc-{doc-sec}-{istio-file}]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc -n {tutorial}{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
+oc -n tutorial{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
 ----
 copyToClipboard::istio-rules-oc-{doc-sec}-{istio-file}[]
 --
@@ -80,6 +80,7 @@ copyToClipboard::istio-rules-oc-{doc-sec}-{istio-file}[]
 #end::istio-rules[]
 
 #tag::pod-ssh-exec[]
+include::ROOT:partial$none.adoc[]
 [tabs]
 ====
 kubectl::

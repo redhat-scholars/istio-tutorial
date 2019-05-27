@@ -1,0 +1,23 @@
+[tabs]
+=====
+kubectl::
++
+--
+[id='istio-rules-{doc-sec}-{istio-file}']
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl -n tutorial{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
+----
+copyToClipboard::istio-rules-{doc-sec}-{istio-file}[]
+--
+oc::
++
+--
+[#istio-rules-oc-{doc-sec}-{istio-file}]
+[source,bash,subs="+macros,+attributes"]
+----
+oc -n tutorial{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
+----
+copyToClipboard::istio-rules-oc-{doc-sec}-{istio-file}[]
+--
+=====
