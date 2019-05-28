@@ -13,13 +13,17 @@ content:
 asciidoc:
   attributes:
     workshop: true
-    ocpurl: https://master.singapore-9e13.openshiftworkshop.com
-    appdomain: apps.singapore-9e13.openshiftworkshop.com
-    etherpad: https://etherpad.wikimedia.org/p/IstioSingapore
+    ocpurl:  https://master.singapore-f92e.openshiftworkshop.com
+    appdomain: apps.singapore-f92e.openshiftworkshop.com
+    etherpad: https://etherpad.wikimedia.org/p/IstioSingapore2
     namespace-suffix: -$WORKSHOP_USER
+    experimental: ''
+  extensions:
+    - ./lib/copy-to-clipboard.js
+    - ./lib/tab-block.js
 ui:
   bundle:
-    url: https://github.com/redhat-developer-demos/rhd-tutorial-ui/releases/download/v0.0.2/ui-bundle.zip
+    url: https://github.com/redhat-developer-demos/rhd-tutorial-ui/releases/download/v0.0.3/ui-bundle.zip
   supplemental_files: ./supplemental-ui
 output:
   dir: ./gh-pages/workshop

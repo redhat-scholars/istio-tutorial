@@ -108,29 +108,10 @@ copyToClipboard::srr-several-requests[]
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
 
-[tabs]
-====
-kubectl::
-+
---
-[#srr-scale-recommendation-v2]
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl -n tutorial{namespace-suffix} scale --replicas=2 deployment/recommendation-v2 
-----
-copyToClipboard::srr-scale-recommendation-v2[]
---
-oc::
-+
---
-[#srr-oc-scale-recommendation-v2]
-[source,bash,subs="+macros,+attributes"]
-----
-oc scale  -n tutorial{namespace-suffix} --replicas=2 deployment/recommendation-v2
-----
-copyToClipboard::srr-oc-scale-recommendation-v2[]
---
-====
+:doc-sec: srr-scale-2
+:deployment: recommendation-v2
+:replicas: 2
+include::ROOT:partial$command-snippets.adoc[tag=scale-deployment]
 
 Now, you will see two requests into the v2 and one for v1.
 
@@ -143,29 +124,10 @@ customer => preference => recommendation v2 from '99634814-sf4cl': 38
 
 Scale back to a single replica of the recommendation-v2 Deployment
 
-[tabs]
-====
-kubectl::
-+
---
-[#srr-scale-one-recommendation-v2]
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl -n tutorial{namespace-suffix} scale --replicas=1 deployment/recommendation-v2 
-----
-copyToClipboard::srr-scale-recommendation-v2[]
---
-oc::
-+
---
-[#srr-oc-scale-one-recommendation-v2]
-[source,bash,subs="+macros,+attributes"]
-----
-oc scale  -n tutorial{namespace-suffix} --replicas=1 deployment/recommendation-v2
-----
-copyToClipboard::srr-oc-scale-recommendation-v2[]
---
-====
+:doc-sec: srr-scale-1
+:deployment: recommendation-v2
+:replicas: 1
+include::ROOT:partial$command-snippets.adoc[tag=scale-deployment]
 
 [#istiorouting]
 == Changing Istio Routings

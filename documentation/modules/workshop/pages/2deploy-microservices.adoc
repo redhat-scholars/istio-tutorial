@@ -11,8 +11,8 @@ Set the workshop user e.g  `export WORKSHOP_USER=<your-username-number>`
 ----
 #Example:
 export WORKSHOP_USER=1 && \
-oc login -u user$WORKSHOP_USER \
-   openshift {ocpurl}
+oc login -u user$WORKSHOP_USER  -p  openshift \
+   --server {ocpurl}
 ----
 copyToClipboard::workshop-set-env[]
 
@@ -34,6 +34,7 @@ oc whoami
 ----
 copyToClipboard::workshop-ocp-login[]
 
+ifndef::workshop[]
 Create workshop project 
 [#workshop-set-project]
 [source,bash,subs="+macros,+attributes"]
@@ -41,6 +42,17 @@ Create workshop project
 oc new-project tutorial{namespace-suffix}
 ----
 copyToClipboard::workshop-set-project[]
+endif::[]
+
+ifdef::workshop[]
+Go to workshop project 
+[#workshop-set-project]
+[source,bash,subs="+macros,+attributes"]
+----
+oc project tutorial{namespace-suffix}
+----
+copyToClipboard::workshop-set-project[]
+endif::[]
 
 ifndef::workshop[]
 [#workshop-set-scc]
@@ -90,7 +102,8 @@ Download the tutorial sources
 [#workshop-download-sources]
 [source,bash,subs="+macros,+attributes"]
 ----
-git clone https://github.com/redhat-developer-demos/istio-tutorial && cd `basename $_`
+git clone https://github.com/redhat-developer-demos/istio-tutorial && cd `basename $_` && \
+export TUTORIAL_HOME=`pwd`
 ----
 copyToClipboard::workshop-download-sources[]
 

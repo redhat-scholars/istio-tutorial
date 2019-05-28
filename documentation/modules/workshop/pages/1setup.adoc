@@ -14,15 +14,25 @@ The following CLI tools are required for running the exercises in this tutorial.
 |===
 |Tool|macOS|Fedora|Windows
 
-|Kubernetes
+| `Kubernetes`
 | `brew install kubernetes-cli`
 | https://github.com/kubernetes/kubernetes/releases[Kubernetes Releases]
 | https://github.com/kubernetes/kubernetes/releases[Kubernetes Releases]
 
-| oc (Openshift client)
+|
+| **(OR)**
+|
+|
+
+| `oc (Openshift client)` 
 | https://github.com/openshift/origin/releases[Openshift Releases]
 | `brew install openshift-cli`
 | https://github.com/openshift/origin/releases[Openshift Releases]
+
+|`istioctl`
+| https://github.com/istio/istio/releases/tag/1.1.7[istioctl]
+| https://github.com/istio/istio/releases/tag/1.1.7[istioctl]
+| https://github.com/istio/istio/releases/tag/1.1.7[istioctl]
 
 | `git`
 | https://git-scm.com/download/mac
@@ -38,12 +48,6 @@ The following CLI tools are required for running the exercises in this tutorial.
 | `brew install stern`
 | https://github.com/wercker/stern[stern]
 | https://github.com/wercker/stern[stern]
-
-
-| httpie
-| `brew install httpie`
-| `dnf install httpie`
-| https://httpie.org/[httpie]
 
 | https://github.com/JoeDog/siege[siege]
 | `brew install siege`

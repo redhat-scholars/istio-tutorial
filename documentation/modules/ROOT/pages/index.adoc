@@ -21,6 +21,8 @@ for A in {1..<NUM_NODES>}; do ssh ec2-user@node$A.$(oc get nodes|grep master|per
 exit
 ----
 
+TIP: You can find the `NUM_NODES` using the command `oc get nodes` and ignore the master from the count. 
+
 
 - Make sure to use the following file as Control Plane configuration: 
 
