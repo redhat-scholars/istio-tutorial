@@ -3,15 +3,10 @@ include::_attributes.adoc[]
 
 [IMPORTANT]
 .Before Start
-====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
-if so run:
-
-[source, bash,subs="+macros,+attributes"]
-----
-./scripts/clean.sh tutorial{namespace-suffix}
-----
-====
+=====
+:doc-sec: advrr-start
+include::ROOT:partial$cleanup-rules.adoc[]
+=====
 
 [#canarydeploymentuseragent]
 == Smart routing based on user-agent header (Canary Deployment)
@@ -28,21 +23,47 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 [#alltorecommendationv1]
 === Set recommendation to all v1
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
-----
+Create Destination rule:
+
+:doc-sec: advrr-recommendation-allv1
+:k8s-cmd-opt: create
+:istio-file: destination-rule-recommendation-v1-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+Create Virtual Service:
+
+:doc-sec: advrr-recommendation-allv1
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-v1.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 [#safaritov2]
 === Set Safari users to v2
 
+:doc-sec: advrr-recommendation-v2-safari
+:k8s-cmd-opt: replace
+:istio-file: virtual-service-safari-recommendation-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+[tabs]
+====
+kubectl::
++
+[#advrr-get-vs]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-safari-recommendation-v2.yml[istiofiles/virtual-service-safari-recommendation-v2.yml] -n tutorial{namespace-suffix}
-
 kubectl get virtualservice -n tutorial{namespace-suffix}
 ----
+copyToClipboard::advrr-get-vs[]
+oc::
++
+[#advrr-oc-get-vs]
+[source,bash,subs="+macros,+attributes"]
+----
+oc get virtualservice -n tutorial{namespace-suffix}
+----
+copyToClipboard::advrr-oc-get-vs[]
+====
 
 and test with a Safari (or even Chrome on Mac since it includes Safari in the string). Safari only sees v2 responses from recommendation
 
@@ -50,118 +71,175 @@ and test with a Firefox browser, it should only see v1 responses from recommenda
 
 There are two ways to get the URL for your browser:
 
-Open the url http://customer-tutorial{namespace-suffix}.{appdomain} in your broswer 
+Open the url http://customer-tutorial{namespace-suffix}.{appdomain} in your browser.
 
 You can also attempt to use the curl -A command to test with different user-agent strings. 
 
+[#advrr-curl-to-v2]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl -A Safari customer-tutorial{namespace-suffix}.{appdomain}
+----
+copyToClipboard::advrr-curl-to-v2[]
+
+[#advrr-curl-to-v1]
+[source,bash,subs="+macros,+attributes"]
+----
 curl -A Firefox customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::advrr-curl-to-v1[]
 
 You can describe the virtualservice to see its configuration
 
+[tabs]
+====
+kubectl::
++
+[#advrr-desc-vs]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl get virtualservice -o yaml -n tutorial{namespace-suffix}
 ----
+copyToClipboard::advrr-desc-vs[]
+oc::
++
+[#advrr-oc-desc-vs]
+[source,bash,subs="+macros,+attributes"]
+----
+oc get virtualservice -o yaml -n tutorial{namespace-suffix}
+----
+copyToClipboard::advrr-oc-desc-vs[]
+====
 
 ==== Remove the Safari rule
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial{namespace-suffix}
-----
+:doc-sec: advrr-remove-safari-rule
+:k8s-cmd-opt: delete
+:istio-file: virtual-service-safari-recommendation-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 [#mobiletov2]
 === Set mobile users to v2
 
+:doc-sec: advrr-all-to-v2
+:k8s-cmd-opt: create
+:istio-file: virtual-service-mobile-recommendation-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+[#advrr-curl-mobile]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial{namespace-suffix}
-
 curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::advrr-curl-mobile[]
 
 ==== Clean up
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial{namespace-suffix}
-----
+Delete Destination Rule:
+
+:doc-sec: advrr-cleanup
+:k8s-cmd-opt: delete
+:istio-file: destination-rule-recommendation-v1-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+Delete Virtual Service :
+
+:doc-sec: advrr-cleanup
+:k8s-cmd-opt: delete
+:istio-file: virtual-service-mobile-recommendation-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 or you can run:
 
+[#advrr-script-cleanup]
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/clean.sh tutorial{namespace-suffix}
+pass:[$TUTORIAL_HOME]/scripts/clean.sh tutorial{namespace-suffix}
 ----
-
+copyToClipboard::advrr-script-cleanup[]
 
 [#mirroringtraffic]
 == Mirroring Traffic (Dark Launch)
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc get pods -l app=recommendation -n tutorial{namespace-suffix}
-or 
-kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
-----
+:doc-sec: advmir
+:k8s-labels: app=recommendation
+include::ROOT:partial$command-snippets.adoc[tag=kgpow]
+
 
 You should have 2 pods for recommendation based on the steps above
 
+:doc-sec: advmir-start
+include::ROOT:partial$cleanup-rules.adoc[]
+
+Make sure you are in the main directory of "istio-tutorial" i.e. pass:[$TUTORIAL_HOME]
+
+Create destination rule:
+
+:doc-sec: advmir
+:k8s-cmd-opt: create
+:istio-file: destination-rule-recommendation-v1-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+Create virtual service:
+
+:doc-sec: advmir
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-v1-mirror-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+[#advmir-curl]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get virtualservice -n tutorial{namespace-suffix}
-kubectl get destinationrule
-----
-
-
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` 
-if so run:
-
-[source, bash,subs="+macros,+attributes"]
-----
-./scripts/clean.sh tutorial{namespace-suffix}
-----
-
-
-Make sure you are in the main directory of "istio-tutorial"
-
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial{namespace-suffix}
-
 curl customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::advmir-curl[]
 
 Check the logs of recommendation-v2
-
+[tabs]
+====
+kubectl::
++
 [source,bash,subs="+macros,+attributes"]
 ----
-oc logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
-or
-kubectl logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
+kubectl logs -n tutorial{namespace-suffix} -f \
+`kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` \
+-c recommendation
 ----
+oc::
++
+[source,bash,subs="+macros,+attributes"]
+----
+oc logs -n tutorial{namespace-suffix} -f \
+`oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` \
+-c recommendation
+----
+====
 
 === Clean up
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial{namespace-suffix}
-----
+
+Delete Destination Rule:
+
+:doc-sec: advmir-cleanup
+:k8s-cmd-opt: create
+:istio-file: destination-rule-recommendation-v1-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+Delete Virtual Service:
+
+:doc-sec: advmir-cleanup
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-v1-mirror-v2.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 or you can run:
 
+[#advmir-cleanup]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
 ----
-
+copyToClipboard::advmir-cleanup[]
 
 [#loadbalancer]
 == Load Balancer
@@ -170,34 +248,29 @@ By default, you will see "round-robin" style load-balancing, but you can change 
 
 Add another v2 pod to the mix
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
-or
-kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
-----
+:doc-sec: advlb-scale-2
+:deployment: recommendation-v2
+:replicas: 2
+include::ROOT:partial$command-snippets.adoc[tag=scale-deployment]
 
-Wait a bit (oc get pods -w to watch)
-and curl the customer endpoint many times
+Wait a bit `kubectl get pods -w` or `oc get pods -w` to watch and curl the customer endpoint many times
 
+[#advlb-run-req]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::advlb-run-req[]
 
 Add a 3rd v2 pod to the mix
 
+:doc-sec: advlb-scale-3
+:deployment: recommendation-v2
+:replicas: 3
+include::ROOT:partial$command-snippets.adoc[tag=scale-deployment]
+
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
-$ oc get pods -n tutorial{namespace-suffix}
-
-or 
-
-$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
-$ kubectl get pods -n tutorial{namespace-suffix}
-
-
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-1755156816-cjd2z             2/2       Running   0          1h
 preference-3336288630-2cc6f          2/2       Running   0          1h
@@ -209,10 +282,12 @@ recommendation-v2-2815683430-tptf2   2/2       Running   0          33m
 
 Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint:
 
+[#advlb-run-many-req]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::advlb-run-many-req[]
 
 The results should follow a fairly normal round-robin distribution pattern
 
@@ -230,10 +305,10 @@ customer => preference => recommendation v2 from '2819441432-bs5ck': 182
 
 Now, add the Random LB DestinationPolicy
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_lb_policy_app.yml[istiofiles/destination-rule-recommendation_lb_policy_app.yml] -n tutorial{namespace-suffix}
-----
+:doc-sec: advlb
+:k8s-cmd-opt: create
+:istio-file: destination-rule-recommendation_lb_policy_app.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 And you should see a different pattern of which pod is being selected
 
@@ -254,11 +329,13 @@ customer => preference => recommendation v2 from '2819441432-rg45q': 14
 
 === Clean up
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial{namespace-suffix}
+:doc-sec: advlb-cleanup
+:k8s-cmd-opt: delete
+:istio-file: destination-rule-recommendation_lb_policy_app.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
-or
-kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
-----
+Scale down replicas:
+:doc-sec: advlb-cleanup
+:deployment: recommendation-v2
+:replicas: 1
+include::ROOT:partial$command-snippets.adoc[tag=scale-deployment]

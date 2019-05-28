@@ -5,27 +5,22 @@ Apply some chaos engineering by throwing in some HTTP errors or network delays. 
 
 [IMPORTANT]
 .Before Start
-====
-You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
-if so run:
-
-[source, bash,subs="+macros,+attributes"]
-----
-./scripts/clean.sh tutorial{namespace-suffix}
-----
-====
+=====
+:doc-sec: ct-start
+include::ROOT:partial$cleanup-rules.adoc[]
+=====
 
 [#503error]
 == HTTP Error 503
 
 By default, recommendation v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift
 
+:doc-sec: ct-start-kgpow
+:k8s-labels: app=recommendation
+include::ROOT:partial$command-snippets.adoc[tag=kgpow]
+
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc get pods -l app=recommendation -n tutorial{namespace-suffix}
-or
-$ kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
-
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          18h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
@@ -33,13 +28,29 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
 
 You can inject 503's, for approximately 50% of the requests
 
+Create Destination Rule:
+
+:doc-sec: ct-503
+:k8s-cmd-opt: create
+:istio-file: destination-rule-recommendation.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+Create Virtual Service: 
+
+:doc-sec: ct-503
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-503.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+[#ct-run-many-503-req]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-503.yml[istiofiles/virtual-service-recommendation-503.yml] -n tutorial{namespace-suffix}
-
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+----
+copyToClipboard::ct-run-many-503-req[]
 
+[source]
+----
 customer => preference => recommendation v2 from '7778d6fb89-j6lts': 138
 customer => Error: 503 - preference => Error: 503 - fault filter abort
 customer => preference => recommendation v1 from '6976858b48-dswhz': 139
@@ -55,46 +66,61 @@ customer => preference => recommendation v2 from '7778d6fb89-j6lts': 141
 
 Clean up
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial{namespace-suffix}
-----
+:doc-sec: ct-503-cleanup
+:k8s-cmd-opt: delete
+:istio-file: virtual-service-recommendation-503.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 [#delay]
 == Delay
 
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slowly, potentially causing a cascading failure in your network of services.
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial{namespace-suffix}
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
-----
+Create Virtual Service:
+
+:doc-sec: ct-delay
+:k8s-cmd-opt: create
+:istio-file: virtual-service-recommendation-delay.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+Replace Destination Rule:
+
+:doc-sec: ct-delay
+:k8s-cmd-opt: replace
+:istio-file: destination-rule-recommendation.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
 And hit the customer endpoint
 
+[#ct-delay-run-many-req]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
+copyToClipboard::ct-delay-run-many-req[]
 
 You will notice many requests to the customer endpoint now have a delay.
 If you are monitoring the logs for recommendation v1 and v2, you will also see the delay happens BEFORE the recommendation service is actually called
 
+[#ct-delay-stern]
 [source,bash,subs="+macros,+attributes"]
 ----
 stern recommendation -n tutorial{namespace-suffix}
 ----
-
-or
-`bash
-./kubetail.sh recommendation -n tutorial{namespace-suffix}
-`
+copyToClipboard::ct-delay-stern[]
 
 === Clean up
 
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial{namespace-suffix}
-----
+Delete Virtual Service:
+
+:doc-sec: ct-delay-cleanup
+:k8s-cmd-opt: delete
+:istio-file: virtual-service-recommendation-delay.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
+
+Delete Destination Rule:
+
+:doc-sec: ct-delay-cleanup
+:k8s-cmd-opt: delete
+:istio-file: destination-rule-recommendation.yml
+include::ROOT:partial$command-snippets.adoc[tag=istio-rules]

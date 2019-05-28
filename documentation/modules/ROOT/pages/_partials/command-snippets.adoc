@@ -1,36 +1,38 @@
 #tag::kgpow[]
+include::ROOT:partial$none.adoc[]
 [tabs]
 ====
-include::ROOT:partial$none.adoc[]
 kubectl::
 +
 --
-[#cmd-kgpow-{doc-sec}]
 ifdef::k8s-labels[]
+[#cmd-kgpow-{doc-sec}]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl -n tutorial{namespace-suffix} get pods -l {k8s-labels} -w
 ----
 endif::[]
 ifndef::k8s-labels[]
+[#cmd-kgpow-{doc-sec}]
 [source, bash,subs="+macros,+attributes"]
 ----
 kubectl -n tutorial{namespace-suffix} get pods -w
 ----
 endif::[]
-copyToClipboard::cmd-kgpow-{doc-sec}-oc[]
+copyToClipboard::cmd-kgpow-{doc-sec}[]
 --
 oc::
 +
 --
-[#cmd-kgpow-{doc-sec}-oc]
 ifdef::k8s-labels[]
+[#cmd-kgpow-{doc-sec}-oc]
 [source, bash,subs="+macros,+attributes"]
 ----
 oc -n tutorial{namespace-suffix} get pods -l {k8s-labels} -w
 ----
 endif::[]
 ifndef::k8s-labels[]
+[#cmd-kgpow-{doc-sec}-oc]
 [source, bash,subs="+macros,+attributes"]
 ----
 oc -n tutorial{namespace-suffix} get pods -w
@@ -60,8 +62,8 @@ include::ROOT:partial$none.adoc[]
 =====
 kubectl::
 +
-[id='istio-rules-{doc-sec}-{istio-file}']
-[source,bash,subs="+attributes,+macros"]
+[#istio-rules-{doc-sec}-{istio-file}]
+[source,bash,subs="attributes+,+macros"]
 ----
 kubectl -n tutorial{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
 ----
@@ -70,7 +72,7 @@ oc::
 +
 --
 [#istio-rules-oc-{doc-sec}-{istio-file}]
-[source,bash,subs="+macros,+attributes"]
+[source,bash,subs="attributes+,+macros"]
 ----
 oc -n tutorial{namespace-suffix} {k8s-cmd-opt} -f link:{github-repo}/{istiofiles-dir}/{istio-file}[istiofiles/{istio-file}]
 ----
@@ -109,3 +111,26 @@ copyToClipboard::cb-oc-{doc-sec}-{deployment}-trigger-misbehave[]
 --
 ====
 #end::pod-ssh-exec[]
+
+#tag::scale-deployment[]
+include::ROOT:partial$none.adoc[]
+[tabs]
+====
+kubectl::
++
+[#scale-{doc-sec}-{deployment}]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl scale deployment {deployment} --replicas={replicas} -n tutorial{namespace-suffix}
+----
+copyToClipboard::scale-{doc-sec}-{deployment}[]
+oc::
++
+[#oc-scale-{doc-sec}-{deployment}]
+[source,bash,subs="+macros,+attributes"]
+----
+oc scale deployment {deployment}--replicas={replicas} -n tutorial{namespace-suffix}
+----
+copyToClipboard::oc-scale-{doc-sec}-{deployment}[]
+====
+#end::scale-deployment[]

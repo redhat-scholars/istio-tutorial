@@ -8,7 +8,8 @@ kubectl::
 [#cb-{doc-sec}-check-rules-exists]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
+kubectl get virtualservice{namespace-suffix} 
+kubectl get destinationrule{namespace-suffix}
 ----
 copyToClipboard::cb-{doc-sec}-check-rules-exists[]
 --
@@ -18,13 +19,14 @@ oc::
 [#cb-{doc-sec}-oc-check-rules-exists]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
+oc get virtualservice{namespace-suffix} 
+oc get destinationrule{namespace-suffix}
 ----
 copyToClipboard::cb-{doc-sec}-oc-check-rules-exists[]
 --
 ====
 
-If you find any:
+If you find any run the follow script to clean it up:
 
 [#cb-{doc-sec}-cleanup]
 [source, bash,subs="+macros,+attributes"]
