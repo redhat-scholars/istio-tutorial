@@ -222,10 +222,6 @@ Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 :istio-file: virtual-service-recommendation-v1_and_v2.yml
 include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
 
-....
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2.yml[istiofiles/virtual-service-recommendation-v1_and_v2.yml] -n tutorial{namespace-suffix}
-....
-
 and send in several requests:
 
 [#srr-canary-recommendation-many]
@@ -241,10 +237,6 @@ In another terminal, change the mixture to be 75/25
 :k8s-cmd-opt: create
 :istio-file: virtual-service-recommendation-v1_and_v2_75_25.yml
 include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
-
-....
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_75_25.yml[istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml] -n tutorial{namespace-suffix}
-....
 
 Clean up
 
