@@ -208,15 +208,10 @@ copyToClipboard::cb-timeout-run-after-patch[]
 
 Then add the timeout rule
 
-
 :doc-sec: cb-timeout
 :k8s-cmd-opt: create
 :istio-file: virtual-service-recommendation-timeout.yml
 include::ROOT:partial$command-snippets.adoc[tag=istio-rules]
-
-....
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial{namespace-suffix}
-....
 
 You will see it return v1 after waiting about 1 second. You don't see v2 anymore, because the response from v2 expires after the timeout period and it is never returned.
 
