@@ -145,8 +145,6 @@ curl http://customer-tutorial{namespace-suffix}.{appdomain}
 
 It will respond with an error since the service `recommendation` is not yet deployed.
 
-NOTE: We could make this a bit more resilient in a future iteration of this tutorial
-
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => Error: 503 - preference => UnknownHostException: recommendation
