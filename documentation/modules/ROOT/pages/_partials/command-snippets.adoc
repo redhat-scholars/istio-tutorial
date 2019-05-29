@@ -129,7 +129,7 @@ oc::
 [#oc-scale-{doc-sec}-{deployment}]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment {deployment}--replicas={replicas} -n tutorial{namespace-suffix}
+oc scale deployment {deployment} --replicas={replicas} -n tutorial{namespace-suffix}
 ----
 copyToClipboard::oc-scale-{doc-sec}-{deployment}[]
 ====
