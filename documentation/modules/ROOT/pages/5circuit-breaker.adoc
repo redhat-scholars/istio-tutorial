@@ -41,14 +41,13 @@ You will see it works every time because Istio will retry the recommendation ser
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 customer => preference => recommendation v1 from '2036617847-m9glz': 196
 customer => preference => recommendation v1 from '2036617847-m9glz': 197
 customer => preference => recommendation v1 from '2036617847-m9glz': 198
 ----
 
-ifndef::workshop[]
 If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as `preference` will retry to establish the connection with `recommendation`, and v1 will reply.
 
 [source, bash]
@@ -59,8 +58,6 @@ open http://kiali-istio-system.$(minishift ip).nip.io/kiali
 In Kiali, go to `Graph`, select the `recommendation` square, and place the mouse over the red sign, like the picture bellow.
 
 image:kiali-retry.png[Kiali Retry]
-
-endif::workshop[]
 
 Now, make the pod v2 behave well again
 
@@ -83,7 +80,7 @@ The application is back to random load-balancing between v1 and v2
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
@@ -96,48 +93,8 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 
 Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `kubectl get virtualservice` `kubectl get destinationrule` and if so `kubectl delete virtualservice virtualservicename -n tutorial{namespace-suffix}` and `kubectl delete destinationrule destinationrulename -n tutorial{namespace-suffix}`
 
-ifndef::workshop[]
-First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationResource.java` making it a slow performer with a 3 second delay.
+NOTE: You will deploy docker images that were privously built. If you want to build recommendation to add a timeout visit: xref:2build-microservices.adoc#buildrecommendationv2-timeout[Modify recommendation:v2 to have timeout]
 
-[source,java]
-----
-@@GET
-public Response recommendations() {
-    count++;
-    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
-
-    timeout();
-
-    logger.debug("recommendation service ready to return");
-    if (misbehave) {
-        return doMisbehavior();
-    }
-    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-}
-----
-
-Rebuild and redeploy
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd recommendation/java/quarkus
-
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v2 .
-
-docker images | grep recommendation
-
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
-kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-
-cd ../../..
-----
-
-endif::workshop[]
-
-ifdef::workshop[]
 First, introduce some wait time in `recommendation v2` by making it a slow performer with a 3 second delay by running the command
 
 [source,bash,subs="+macros,+attributes"]
@@ -145,13 +102,11 @@ First, introduce some wait time in `recommendation v2` by making it a slow perfo
 oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
 ----
 
-endif::workshop[]
-
 Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 Then add the timeout rule
@@ -165,7 +120,7 @@ You will see it return v1 after waiting about 1 second. You don't see v2 anymore
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2907
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2908
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
@@ -173,55 +128,14 @@ customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
 
 === Clean up
 
-ifndef::workshop[]
-First, let's comment the `timeout()` method again on `recommendation v2`.
+NOTE: You will deploy docker images that were privously built. If you want to build recommendation to remove the timeout visit: xref:2build-microservices.adoc#timeout-clenup[Modify recommendation:v2 to remove timeout]
 
-[source,java]
-----
-@GET
-public Response recommendations() {
-    count++;
-    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
-
-    // timeout();
-
-    logger.debug("recommendation service ready to return");
-    if (misbehave) {
-        return doMisbehavior();
-    }
-    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-}
-----
-
-And rebuild and redeploy the service again:
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd recommendation/java/quarkus
-
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v2 .
-
-docker images | grep recommendation
-
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
-kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-
-cd ../../..
-----
-
-endif::workshop[]
-
-ifdef::workshop[]
 Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
 
 [source,bash,subs="+macros,+attributes"]
 ----
 oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
 ----
-endif::workshop[]
 
 Then delete the virtual service created for timeout by:
 
@@ -240,80 +154,26 @@ or you can run:
 [#failfast]
 == Fail Fast with Max Connections and Max Pending Requests
 
-ifndef::workshop[]
-First, make sure to uncomment the `timeout()` method in the RecommendationResource.java:
-
-[source,java]
-----
-@GET
-public Response recommendations() {
-    count++;
-    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
-
-    timeout();
-
-    logger.debug("recommendation service ready to return");
-    if (misbehave) {
-        return doMisbehavior();
-    }
-    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-}
-----
-
-And follow the Updating &amp; redeploying code steps to get this slower v2 deployed.
-
-endif::workshop[]
-
-ifdef::workshop[]
-First, introduce some wait time in `recommendation v2` by making it a slow performer with a 3 second delay by running the command
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
-----
-
-endif::workshop[]
-
-Second, you need to *ensure* you have a `destinationrule` and `virtualservice` in place. Let's use a 50/50 split of traffic:
-
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_50_50.yml[istiofiles/virtual-service-recommendation-v1_and_v2_50_50.yml] -n tutorial{namespace-suffix}
-----
-
 [#nocircuitbreaker]
 === Load test without circuit breaker
 
-Let's perform a load test in our system with `siege`. We'll have 20 clients sending 2 concurrent requests each:
+Let's perform a load test in our system with `siege`. We'll have 40 clients sending 1 concurrent requests each:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-siege -r 2 -c 20 -v http://customer-tutorial{namespace-suffix}.{appdomain}
+siege -r 40 -c 1 -v http://customer-tutorial{namespace-suffix}.{appdomain}
 ----
 
 You should see an output similar to this:
 
 image:siege_ok.png[siege output with all successful requests]
 
-All of the requests to our system were successful, but it took some time to run the test, as the `v2` instance/pod was a slow performer.
-
-But suppose that in a production system this 3s delay was caused by too many concurrent requests to the same instance/pod. We don't want multiple requests getting queued or making the instance/pod even slower. So we'll add a circuit breaker that will *open* whenever we have more than 1 request being handled by any instance/pod.
-
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
-
-kubectl get destinationrule -n tutorial{namespace-suffix}
-----
-
-More information on the fields for the simple circuit-breaker
-https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy[https://istio.io/docs/reference/config/istio.routing.v1alpha1.html#CircuitBreaker.SimpleCircuitBreakerPolicy]
+All of the requests to our system were successful.
 
 [#circuitbreaker]
 === Load test with circuit breaker
 
-Now let's see what is the behavior of the system running `siege` again:
+Now let's see what is the behavior of the system running `siege` again but having 20 concurrent requests.
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -324,28 +184,4 @@ image:siege_cb_503.png[siege output with some 503 requests due to open circuit b
 
 You can run siege multiple times, but in all of the executions you should see some `503` errors being displayed in the results. That's the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the instance/pod.
 
-==== Clean up
-
-ifdef::workshop[]
-Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
-----
-endif::workshop[]
-
-
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete virtualservice recommendation -n tutorial{namespace-suffix}
-kubectl delete -f istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml -n tutorial{namespace-suffix}
-----
-
-or you can run:
-
-[source, bash,subs="+macros,+attributes"]
-----
-./scripts/clean.sh tutorial{namespace-suffix}
-----
 

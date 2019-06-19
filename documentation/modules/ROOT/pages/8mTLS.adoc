@@ -15,77 +15,11 @@ if so run:
 
 In this chapter, we are going to see how to secure the communication between all services by enabling mutual _TLS_ in Istio.
 
-[#preparation]
-== Before Start
-
-If you are running this tutorial in OpenShift (Minishift) you need to remove the *customer* `route` you created at the beginning of the tutorial.
-
-To do it just run:
-
-[source, bash]
-----
-oc delete route customer
-----
-
-Then, you need to enable Istio Ingress to receive all traffic and redirect it to customer service.
-For this reason, let's create a `Gateway` and `VirtualService` that allows local calls reach the clustered service inside the mesh.
-
-[source, bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/gateway-customer.yml[istiofiles/gateway-customer.yml]
-----
-
-Then configure some environment variables that will help you on testing:
-
-[source, bash]
-----
-export INGRESS_PORT=$(oc -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-
-or in Kubernetes:
-
-export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-----
-
-[source, bash]
-----
-export INGRESS_HOST=$(minishift ip)
-export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
-----
-
-Now you can run `curl` but against `GATEWAY_URL` and you'll see the same messages as before:
-
-[source, bash]
-----
-curl http://${GATEWAY_URL}/
-customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
-----
-
-[#enablingtls]
-== Enabling mTLS
-
-Now that Istio gateway is in place, you can enable _mTLS_ by applying next Istio resources:
-
-[source, bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/authentication-enable-tls.yml[istiofiles/authentication-enable-tls.yml] # <1>
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[istiofiles/destination-rule-tls.yml] # <2>
-----
-<1> Enables mTLS into `tutorial` namespace
-<2> Makes that services withn `tutorial` namespace communicates with _mTLS_
-
-Then you can run:
-
-[source, bash]
-----
-curl http://${GATEWAY_URL}/
-customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
-----
-
-And you'll see exactly the same but now the communication between the services has been secured.
-How can you check that?
+[#testingtls]
+== Testing mTLS
 
 
-By _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
+Check the mTLS by _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
 
 [source, bash]
 ----
@@ -116,9 +50,9 @@ Now all communication that happens between `customer` service and `preference` s
 
 So now go to a terminal and execute:
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
-curl http://${GATEWAY_URL}/
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
 ----
 
@@ -145,15 +79,14 @@ Now, let's disable _TLS_:
 
 [source, bash]
 ----
-kubectl delete -f istiofiles/authentication-enable-tls.yml
-kubectl delete -f istiofiles/destination-rule-tls.yml
+kubectl create -f istiofiles/disable-mtls.yml
 ----
 
 And execute again:
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
-curl http://${GATEWAY_URL}/
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
 ----
 
@@ -179,9 +112,9 @@ Now, you can see that since there is no _TLS_ enabled, the information is not sh
 [#restore]
 == Clean Up
 
-source,bash]
+[source,bash]
 ----
-kubectl delete -f istiofiles/gateway-customer.yml
+kubectl delete -f istiofiles/disable-mtls.yml
 ----
 
 or you can run:
@@ -189,11 +122,4 @@ or you can run:
 [source, bash]
 ----
 ./scripts/clean.sh
-----
-
-And finally in case of running in OpenShift (Minishift) you can restore the route:
-
-[source, bash]
-----
-oc expose service customer
 ----

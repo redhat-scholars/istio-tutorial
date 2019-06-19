@@ -6,14 +6,21 @@ include::_attributes.adoc[]
 
 Out of the box, you get monitoring via Prometheus and Grafana. 
 
-NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  Run `./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}` to produce load.
+NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  
+
+Run the following command to produce load.
+
+[source,bash,subs="+macros,+attributes"]
+----
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/customer
+----
 
 [source,bash,subs="+macros,+attributes"]
 ----
 ifdef::workshop[]
-open http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1
+open http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?orgId=1
 or
-firefox http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1
+firefox http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?orgId=1
 endif::workshop[]
 
 ifndef::workshop[]
@@ -32,9 +39,9 @@ http://grafana-istio-system.{appdomain}/d/UbsSZTDik/istio-workload-dashboard?ref
 endif::workshop[]
 
 ifndef::workshop[]
-open "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
+open "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?orgId=1&refresh=10s"
 or
-firefox "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
+firefox "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?orgId=1&refresh=10s"
 endif::workshop[]
 ----
 
@@ -82,7 +89,7 @@ Then run several requests through the system
 
 [source,bash,subs="+macros,+attributes"]
 ----
-while true; do curl customer-tutorial{namespace-suffix}.{appdomain}; sleep .5;  done
+while true; do curl istio-ingressgateway-istio-system.{appdomain}/{path}; sleep .5;  done
 ----
 
 In the Prometheus dashboard, add the following
@@ -116,32 +123,6 @@ container_memory_rss{namespace="tutorial",container_name =~ "customer|preference
 and select `Execute`
 
 image:prometheus-memory.png[Prometheus memory]
-
-[#applicationmetrics]
-=== Application metrics
-
-The deployment file for each microservice contains the following annotations:
-
-[source,yaml,subs="+macros,+attributes"]
-----
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/scheme: "http"
-----
-
-These annotations cause Prometheus to query the "/metrics" path and collect the data.
-
-In the Prometheus dashboard, add the following expression to look at one of these metrics
-
-[source,bash,subs="+macros,+attributes"]
-----
-base:memory_used_heap_bytes
-----
-
-and select `Execute`
-
-image:prometheus-appmetrics.png[application metrics]
 
 endif::workshop[]
 [#tracing]

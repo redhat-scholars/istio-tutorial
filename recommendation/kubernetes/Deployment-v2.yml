@@ -17,24 +17,22 @@ spec:
         app: recommendation
         version: v2
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/scheme: "http"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xmx256m
-        image: example/recommendation:v2
+          value: -Xms15m -Xmx15m -Xmn15m
+        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
             command:
             - curl
-            - localhost:8080/health
-          initialDelaySeconds: 20
+            - localhost:8080/health          
+          initialDelaySeconds: 3
           periodSeconds: 5
-          timeoutSeconds: 10
+          timeoutSeconds: 5
         name: recommendation
         ports:
         - containerPort: 8080
@@ -50,9 +48,9 @@ spec:
           exec:
             command:
             - curl
-            - localhost:8080/health
-          initialDelaySeconds: 10
+            - localhost:8080/health          
+          initialDelaySeconds: 3
           periodSeconds: 5
-          timeoutSeconds: 10
+          timeoutSeconds: 5
         securityContext:
           privileged: false

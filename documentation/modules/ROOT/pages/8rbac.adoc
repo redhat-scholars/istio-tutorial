@@ -22,15 +22,15 @@ The first thing to do is enable Istio Authorization by using `ClusterRbacConfig`
 
 [source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/authorization-enable-rbac.yml[istiofiles/authorization-enable-rbac.yml] -n tutorial
+kubectl create -f link:{github-repo}/{istiofiles-dir}/authorization-enable-rbac.yml[istiofiles/authorization-enable-rbac.yml] -n tutorial
 ----
 
 Now RBAC is enabled on your mesh.
 Run next command:
 
-[source, bash]
+[source, bash ,subs="+macros,+attributes" ]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 RBAC: access denied
 ----
@@ -50,16 +50,16 @@ Now apply next Istio resource which makes that only tokens that contain a field 
 
 [source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
+kubectl create -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
 ----
 
 and then you can do a new call with the new token containing the `role` claim with value `customer``:
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
 token=$(curl https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt -s)
 
-curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+curl -H "Authorization: Bearer $token" http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
@@ -82,16 +82,16 @@ spec:
 
 And then replace it:
 
-[source, bash,subs="+macros,+attributes"]
+[source, bash, subs="+macros,+attributes"]
 ----
-istioctl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
 ----
 
 After that, repeat the same request as before:
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
-curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+curl -H "Authorization: Bearer $token" http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 RBAC: access denied
 ----
@@ -113,6 +113,6 @@ Follow xref:8jwt.adoc#cleanup[End-user authentication with JWT Clean Up] steps t
 
 [source, bash]
 ----
-istioctl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
-istioctl create -f istiofiles/authorization-enable-rbac.yml -n tutorial
+kubectl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
+kubectl create -f istiofiles/authorization-enable-rbac.yml -n tutorial
 ----

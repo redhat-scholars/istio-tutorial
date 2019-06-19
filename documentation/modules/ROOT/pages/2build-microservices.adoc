@@ -1,0 +1,212 @@
+[#buildcustomer]
+== Build Customer
+
+If you want to build Customer from the sources type the following commands
+
+IMPORTANT: The tag `v1` at the end of the image name matters. 
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd customer/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1 .
+docker images | grep customer
+cd ../../..
+----
+
+[#buildpreference]
+== Build Preference
+
+If you want to build Preference from the sources type the following commands
+
+IMPORTANT: The tag `v1` at the end of the image name matters. 
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd preference/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1 .
+docker images | grep preference
+cd ../../..
+----
+
+[#buildrecommendation]
+== Build Recommendation
+
+IMPORTANT: The tag `v1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1 .
+docker images | grep recommendation
+cd ../../..
+----
+
+[#buildrecommendationv2]
+== Create recommendation:v2
+
+We can experiment with Istio controlling traffic by making a change to `RecommendationResource.java` like the following and creating a "v2" docker image.
+
+[source,java]
+----
+private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+----
+
+The "v2" tag during the Docker build is significant.
+
+There is also a second `deployment.yml` file to label things correctly
+
+=== Docker build 
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+
+docker images | grep recommendation
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2                   46d2aa9d46c4        3 seconds ago       454MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v1                   5db0e5dee4f6        About an hour ago   454MB
+
+cd ../../..
+----
+
+[#buildrecommendationv2-timeout]
+== Modify recommendation:v2 to have timeout
+
+First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationResource.java` making it a slow performer with a 3 second delay.
+
+[source,java]
+----
+@@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}
+----
+
+Rebuild and redeploy
+
+[source,bash,subs="+macros,+attributes"]
+----
+cd recommendation/java/quarkus
+
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout .
+
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..
+----
+
+[#timeout-clenup]
+== Modify recommendation:v2 to remove timeout
+
+First, let's comment the `timeout()` method again on `recommendation v2`.
+
+[source,java]
+----
+@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    // timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}
+----
+
+And rebuild and redeploy the service again:
+
+[source,bash,subs="+macros,+attributes"]
+----
+cd recommendation/java/quarkus
+
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..
+----
+
+[#createrecommendationv3]
+== Create recommendation:v3
+
+We can experiment with Egress service entry by making two changes to `RecommendationResource.java` like the following and creating a "v3" docker image.
+
+Change the default output to make a call to http://worldclockapi.com/api/json/cet/now.
+
+From:
+
+[source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java
+----
+return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+// return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
+----
+
+To:
+
+[source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java
+----
+// return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
+----
+
+The "v3" tag during the Docker build is significant.
+
+=== Docker build 
+
+[source,bash,subs="+macros,+attributes"]
+----
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3 .
+
+docker images | grep recommendation
+quay.io/rhdevelopers/istio-tutorial-recommendation   v3                  416d254a3692        About a minute ago   463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2-timeout          b82f7d5add2f        About an hour ago    463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2                  5852f5823257        About an hour ago    463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v1                  84738c27a06c        About an hour ago    463MB
+cd ../../..
+----
+

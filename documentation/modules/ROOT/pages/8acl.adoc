@@ -28,7 +28,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofil
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => 404 customer => Error: 403 - PERMISSION_DENIED:preferencewhitelist.listchecker.tutorial:customer is not whitelisted
 ----
 
@@ -51,7 +51,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofil
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
 ----
 

@@ -24,35 +24,3 @@ There are three different and super simple microservices in this system and they
 customer → preference → recommendation
 ```
 
-For now, they have a simple exception handling solution for dealing with a missing dependent service: it just returns the error message to the end-user.
-
-toc::[]
-
-include::documentation/modules/ROOT/pages/1setup.adoc[]
-
-include::documentation/modules/ROOT/pages/2deploy-microservices.adoc[]
-
-include::documentation/modules/ROOT/pages/3monitoring-tracing.adoc[]
-
-include::documentation/modules/ROOT/pages/4simple-routerules.adoc[]
-
-include::documentation/modules/ROOT/pages/5advanced-routerules.adoc[]
-
-include::documentation/modules/ROOT/pages/6fault-injection.adoc[]
-
-include::documentation/modules/ROOT/pages/7circuit-breaker.adoc[]
-
-include::documentation/modules/ROOT/pages/8egress.adoc[]
-
-== Advanced use cases
-
-include::documentation/modules/advanced/pages/kiali.adoc[]
-
-include::documentation/modules/advanced/pages/virtualization.adoc[]
-
-include::documentation/modules/advanced/pages/mTLS.adoc[]
-
-== Tips &amp; Tricks
-
-include::documentation/modules/ROOT/pages/9tips.adoc[]
-

@@ -38,7 +38,7 @@ You can inject 503's, for approximately 50% of the requests
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-503.yml[istiofiles/virtual-service-recommendation-503.yml] -n tutorial{namespace-suffix}
 
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 customer => preference => recommendation v2 from '7778d6fb89-j6lts': 138
 customer => Error: 503 - preference => Error: 503 - fault filter abort
@@ -75,7 +75,7 @@ And hit the customer endpoint
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 You will notice many requests to the customer endpoint now have a delay.

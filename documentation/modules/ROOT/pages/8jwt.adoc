@@ -23,11 +23,11 @@ At the time of writing this chapter, only the JWT mechanism is supported.
 
 Now it is time to enable end-user authentication.
 
-The first thing you need to do is run `curl customer-tutorial.$(minishift ip).nip.io` and validate that now it is still possible to communicate between all services without been authenticated.
+The first thing you need to do is run `curl istio-ingressgateway-istio-system.$(minishift ip).nip.io` and validate that now it is still possible to communicate between all services without been authenticated.
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
@@ -36,14 +36,14 @@ Then run:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-istioctl create -f link:{github-repo}/{istiofiles-dir}/enduser-authentication-jwt.yml[istiofiles/enduser-authentication-jwt.yml]
+kubectl create -f link:{github-repo}/{istiofiles-dir}/enduser-authentication-jwt.yml[istiofiles/enduser-authentication-jwt.yml]
 ----
 
 Then let's run the curl again:
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 Origin authentication failed.%`
 ----
@@ -61,9 +61,9 @@ echo $token
 
 Then let's repeat the request but passing the token stored in `token` variable.
 
-[source, bash]
+[source, bash, subs="+macros,+attributes"]
 ----
-curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+curl -H "Authorization: Bearer $token" http://istio-ingressgateway-istio-system.{appdomain}/{path}
 
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
@@ -74,7 +74,7 @@ Now just change some part of the token and send the request again, you'll notice
 ====
 In this chapter you've seen how to enable end-user authentication with JWT.
 
-Obviously, you should also enable mTLS to avoid any attacker could take the token.
+Obviously, you should also keep enabled mTLS to avoid any attacker could take the token.
 
 Check xref:8mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
 ====
@@ -84,6 +84,6 @@ Check xref:8mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
 
 [source, bash]
 ----
-istioctl delete -f istiofiles/enduser-authentication-jwt.yml
+kubectl delete -f istiofiles/enduser-authentication-jwt.yml
 ----
 

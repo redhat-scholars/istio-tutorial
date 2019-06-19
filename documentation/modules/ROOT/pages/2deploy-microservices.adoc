@@ -40,32 +40,24 @@ Make sure `istioctl` is in your `PATH`:
 [source,bash,subs="+macros,+attributes"]
 ----
 $ istioctl version
-version.BuildInfo{Version:"1.1.1", GitRevision:"2b1331886076df103179e3da5dc9077fed59c989", User:"root", Host:"7077232d-4c6c-11e9-813c-0a580a2c0506", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.0-17-g2b13318"}
+version.BuildInfo{Version:"1.1.9", GitRevision:"879413c25b871ae6fd0df82bea1605baf12cba2e", User:"root", Host:"161bf1f4-8ef6-11e9-887b-0a580a2c0403", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.8-4-g879413c"}
 ----
 
-=== Customer build using Docker daemon 
+=== Deploy Customer 
 
-NOTE: Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd customer/java/quarkus
-mvn clean package -DskipTests
-docker build -t example/customer .
-docker images | grep customer
-----
+NOTE: You will deploy docker images that were privously built. If you want to build customer visit: xref:2build-microservices.adoc#buildcustomer[Build Customer]
 
 Now let's deploy the customer pod with its sidecar
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
-oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml] -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial
+oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
-kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml] -n tutorial
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial
 ----
 
 === Expose customer
@@ -74,14 +66,12 @@ Since the `customer` service is the one our users will interact with, let's add 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc expose service customer -n tutorial
-
-oc get route -n tutorial
-oc get pods -w -n tutorial
-
+oc create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial
 or
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial
 
-kubectl get route -o=jsonpath='{.items[0].spec.host}'
+oc get pods -w -n tutorial
+or
 kubectl get pods -w
 ----
 
@@ -93,7 +83,7 @@ Then test the customer endpoint
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 You should see the following error because the services `preference` and `recommendation` are not yet deployed.
@@ -118,32 +108,22 @@ You should see a stacktrace containing this cause:
 customer-6fc99b7bfd-5st28 customer Caused by: java.net.UnknownHostException: preference
 ----
 
-Back to the main istio-tutorial directory
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd ../../..
-----
-
 [#deploypreference]
-== Deploy preference
+== Deploy Preference
 
-=== Preference build using Docker daemon
+NOTE: You will deploy docker images that were privously built. If you want to build preference visit: xref:2build-microservices.adoc#buildpreference[Build Preference]
+
+Now let's deploy the preference pod with its sidecar
 
 [source,bash,subs="+macros,+attributes"]
 ----
-cd preference/java/quarkus
-mvn clean package -DskipTests
-docker build -t example/preference:v1 .
-docker images | grep preference
-
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
-oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml]) -n tutorial
+oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml]
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
-kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml]) -n tutorial
+kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml]
 ----
 
 === Wait preference to be deployed
@@ -159,7 +139,7 @@ Wait until the status is `Running` and there are `2/2` pods in the `Ready` colum
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 It will respond with an error since the service `recommendation` is not yet deployed.
@@ -187,35 +167,23 @@ You should see a stacktrace containing this cause:
 preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostException: recommendation
 ----
 
-Back to the main istio-tutorial directory
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd ../../..
-----
-
 [#deployrecommendation]
-== Deploy recommendation
+== Deploy Recommendation
 
-IMPORTANT: The tag `v1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
+NOTE: You will deploy docker images that were privously built. If you want to build recommendation visit: xref:2build-microservices.adoc#buildrecommendation[Build Recommendation]
 
-=== Recommendation build using Docker daemon
+Now let's deploy the recommendation pod with its sidecar
 
 [source,bash,subs="+macros,+attributes"]
 ----
-cd recommendation/java/quarkus
-mvn clean package -DskipTests
-docker build -t example/recommendation:v1 .
-docker images | grep recommendation
-
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
-oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml] -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial
+oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial
 oc get pods -w
 
 or 
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[../../kubernetes/Deployment.yml]) -n tutorial
-kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[../../kubernetes/Service.yml]
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial
+kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml]
 kubectl get pods -w
 ----
 
@@ -225,7 +193,7 @@ Wait until the status is `Running` and there are `2/2` pods in the `Ready` colum
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 it should now return
@@ -244,12 +212,6 @@ or
 stern "recommendation-v1-\w" -c recommendation-v1
 ----
 
-Back to the main `istio-tutorial` directory
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd ../../..
-----
 
 [#redeployingcode]
 == Updating Redeploying Code

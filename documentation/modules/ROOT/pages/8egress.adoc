@@ -17,62 +17,20 @@ if so run:
 ----
 ====
 
-[#createrecommendationv3]
-== Create recommendation:v3
-
-We can experiment with Egress service entry by making two changes to `RecommendationResource.java` like the following and creating a "v3" docker image.
-
-Change the default output to make a call to http://worldclockapi.com/api/json/cet/now.
-
-From:
-
-[source, java]
-.src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java
-----
-return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-// return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
-----
-
-To:
-
-[source, java]
-.src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java
-----
-// return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
-----
-
-The "v3" tag during the Docker build is significant.
-
-=== Docker build 
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd recommendation/java/quarkus
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v3 .
-
-docker images | grep recommendation
-example/recommendation                  v3                  0671dfb295df        3 seconds ago       443MB
-example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendation                  v1                  f072978d9cf6        8 minutes ago       438MB
-----
-
 _Important:_ We have a 3rd Deployment to manage the v3 version of recommendation. 
 
 [source,bash, subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml]) -n tutorial
 oc get pods -w
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[../../kubernetes/Deployment-v3.yml]) -n tutorial
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml]) -n tutorial
 kubectl get pods -w -n
 ----
 
-=== Wait for v3 to be deployed
+== Wait for v3 to be deployed
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
@@ -86,13 +44,15 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0          15s
 recommendation-v3-7b445dd469-j6rkg   2/2       Running   0          2m
 ----
 
-[source, terminal]
-----
-cd ../../..
-----
-
 [#istioegress]
 == Istio-ize Egress
+
+Configure Istio to allow only registered traffic:
+
+[source, bash,subs="+macros,+attributes"]
+----
+kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: ALLOW_ANY/mode: REGISTRY_ONLY/g' | kubectl replace -n istio-system -f -
+----
 
 Be sure you do not have any previous destination rule nor virtual service installed.
 

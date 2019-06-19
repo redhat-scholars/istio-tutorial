@@ -50,14 +50,14 @@ and test with a Firefox browser, it should only see v1 responses from recommenda
 
 There are two ways to get the URL for your browser:
 
-Open the url http://customer-tutorial{namespace-suffix}.{appdomain} in your broswer 
+Open the url http://istio-ingressgateway-istio-system.{appdomain} in your broswer 
 
 You can also attempt to use the curl -A command to test with different user-agent strings. 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl -A Safari customer-tutorial{namespace-suffix}.{appdomain}
-curl -A Firefox customer-tutorial{namespace-suffix}.{appdomain}
+curl -A Safari istio-ingressgateway-istio-system.{appdomain}/{path}
+curl -A Firefox istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 You can describe the virtualservice to see its configuration
@@ -81,7 +81,7 @@ kubectl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tut
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial{namespace-suffix}
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://customer-tutorial{namespace-suffix}.{appdomain}
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 ==== Clean up
@@ -135,7 +135,7 @@ Make sure you are in the main directory of "istio-tutorial"
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial{namespace-suffix}
 
-curl customer-tutorial{namespace-suffix}.{appdomain}
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 Check the logs of recommendation-v2
@@ -182,7 +182,7 @@ and curl the customer endpoint many times
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial{namespace-suffix}.{appdomain}
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 Add a 3rd v2 pod to the mix

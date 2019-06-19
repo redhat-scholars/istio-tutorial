@@ -17,7 +17,9 @@ else
 
     for name in "${names[@]}"
     do
-        kubectl delete virtualservice "$name" -n "$namespace"
+        if [ "$name" != "customer-gateway" ]; then
+            kubectl delete virtualservice "$name" -n "$namespace"
+        fi
     done
     
 fi
@@ -50,22 +52,6 @@ else
     for name in "${names[@]}"
     do
         kubectl delete serviceentry "$name" -n "$namespace"
-    done
-    
-fi
-
-contentgw=`kubectl get gateway -n "$namespace" 2>/dev/null`
-
-if [ -z "$contentgw" ]; then
-    echo "No Gateway in $namespace namespace."
-else
-    contentgw=`awk 'NR>1' <<< "$contentgw"`
-
-    names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentgw"`
-
-    for name in "${names[@]}"
-    do
-        kubectl delete gateway "$name" -n "$namespace"
     done
     
 fi

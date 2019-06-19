@@ -29,6 +29,7 @@ public class PreferenceResource {
         } catch (WebApplicationException ex) {
             Response response = ex.getResponse();
             logger.warn("Non HTTP 20x trying to get the response from recommendation service: " + response.getStatus());
+            ex.printStackTrace();
             return Response
                     .status(Response.Status.SERVICE_UNAVAILABLE)
                     .entity(String.format(RESPONSE_STRING_FORMAT,

@@ -1,70 +1,25 @@
 = Simple Route Rules
 include::_attributes.adoc[]
 
-For this use case, we need to create a modified version of Recommendations
-
-ifndef::workshop[]
+For this use case, we need to use a modified version of Recommendations
 
 [#deployrecommendationv2]
-== Create recommendation:v2
+== Deploy recommendation:v2
 
-We can experiment with Istio controlling traffic by making a change to `RecommendationVerticle.java` like the following and creating a "v2" docker image.
+NOTE: You will deploy docker images that were privously built. If you want to build recommendation V2 visit: xref:2build-microservices.adoc#buildrecommendationv2[Create Recommendation V2]
 
-[source,java]
-----
-private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
-----
-
-The "v2" tag during the Docker build is significant.
-
-There is also a second `deployment.yml` file to label things correctly
-
-=== Docker build (if you have access to Docker daemon)
-
-[source,bash,subs="+macros,+attributes"]
-----
-cd recommendation/java/quarkus
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v2 .
-
-docker images | grep recommendation
-example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendation                  v1                  f072978d9cf6        8 minutes ago      438MB
-----
 
 IMPORTANT: We have a 2nd Deployment to manage the v2 version of recommendation. 
 
-[source,bash,subs="+macros,+attributes"]
-----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[../../kubernetes/Deployment-v2.yml]) -n tutorial
-oc get pods -w -n tutorial
-
-or
-
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[../../kubernetes/Deployment-v2.yml]) -n tutorial
-kubectl get pods -w -n tutorial
-----
-
-endif::workshop[]
-
-ifdef::workshop[]
 == Deploy Recommendation microservice V2 using an existing image
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.remote.yml[{recommendation-repo}/kubernetes/Deployment-v2.remote.yml]) -n tutorial{namespace-suffix}
-----
-endif::workshop[]
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml]) -n tutorial{namespace-suffix}
+or
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml]) -n tutorial{namespace-suffix}
 
-Back to the main `istio-tutorial` directory
-
-ifndef::workshop[]
-[source,bash,subs="+macros,+attributes"]
 ----
-cd ../../..
-----
-endif::workshop[]
 
 === Wait for v2 to be deployed
 
@@ -84,14 +39,14 @@ and test the customer endpoint
 
 [source,bash,subs="+macros,+attributes"]
 ----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 you likely see "customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
 
 [source,bash, subs="+macros,+attributes"]
 ----
-curl http://customer-tutorial{namespace-suffix}.{appdomain}
+curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
@@ -100,7 +55,7 @@ Send several requests to see their responses:
 
 [source, bash, subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
@@ -143,7 +98,7 @@ From the main istio-tutorial directory,
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
 
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 you should only see v2 being returned
@@ -176,7 +131,7 @@ and you should see the default behavior of load-balancing between v1 and v2
 
 [source,bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 [#canarydeploymentrecommendation]
@@ -206,7 +161,7 @@ and send in several requests:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 In another terminal, change the mixture to be 75/25

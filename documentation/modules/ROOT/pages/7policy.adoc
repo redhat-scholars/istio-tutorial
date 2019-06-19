@@ -38,7 +38,7 @@ Throw some requests at customer:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
+./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 You should see some 429 errors:
