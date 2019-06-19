@@ -158,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -287,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="8mTLS.html#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -499,40 +493,24 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>For this use case, we need to create a modified version of Recommendations</p>
+<p>For this use case, we need to use a modified version of Recommendations</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="deployrecommendationv2"><a class="anchor" href="#deployrecommendationv2"></a>Create recommendation:v2</h2>
+<h2 id="deployrecommendationv2"><a class="anchor" href="#deployrecommendationv2"></a>Deploy recommendation:v2</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>We can experiment with Istio controlling traffic by making a change to <code>RecommendationVerticle.java</code> like the following and creating a "v2" docker image.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The "v2" tag during the Docker build is significant.</p>
-</div>
-<div class="paragraph">
-<p>There is also a second <code>deployment.yml</code> file to label things correctly</p>
-</div>
-<div class="sect2">
-<h3 id="_docker_build_if_you_have_access_to_docker_daemon"><a class="anchor" href="#_docker_build_if_you_have_access_to_docker_daemon"></a>Docker build (if you have access to Docker daemon)</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v2 .
-
-docker images | grep recommendation
-example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendation                  v1                  f072978d9cf6        8 minutes ago      438MB</code></pre>
-</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You will deploy docker images that were privously built. If you want to build recommendation V2 visit: <a href="2build-microservices.html#buildrecommendationv2" class="page">Create Recommendation V2</a>
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -546,24 +524,16 @@ We have a 2nd Deployment to manage the v2 version of recommendation.
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_deploy_recommendation_microservice_v2_using_an_existing_image"><a class="anchor" href="#_deploy_recommendation_microservice_v2_using_an_existing_image"></a>Deploy Recommendation microservice V2 using an existing image</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
-oc get pods -w -n tutorial
-
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">recommendation/kubernetes/Deployment-v2.yml</a>) -n tutorial
 or
-
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
-kubectl get pods -w -n tutorial</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Back to the main <code>istio-tutorial</code> directory</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd ../../..</code></pre>
-</div>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">recommendation/kubernetes/Deployment-v2.yml</a>) -n tutorial</code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -586,7 +556,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -594,7 +564,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -605,7 +575,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -654,7 +624,7 @@ kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
 kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial
 
-./scripts/run.sh <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+./scripts/run.sh istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -691,7 +661,7 @@ kubectl get virtualservice -o yaml -n tutorial</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 </div>
@@ -724,7 +694,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -762,7 +732,6 @@ kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutori
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

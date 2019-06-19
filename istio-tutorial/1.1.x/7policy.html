@@ -158,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -287,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="8mTLS.html#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -559,7 +553,7 @@ The Rate Limiting rules take some time to be applied and reflected. Be patient h
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -611,7 +605,6 @@ kubectl delete -f istiofiles/recommendation_rate_limit_handler.yml</code></pre>
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

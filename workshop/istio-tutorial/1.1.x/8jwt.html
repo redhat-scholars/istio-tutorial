@@ -86,7 +86,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -250,11 +250,11 @@ At the time of writing this chapter, only the JWT mechanism is supported.</p>
 <p>Now it is time to enable end-user authentication.</p>
 </div>
 <div class="paragraph">
-<p>The first thing you need to do is run <code>curl customer-tutorial.$(minishift ip).nip.io</code> and validate that now it is still possible to communicate between all services without been authenticated.</p>
+<p>The first thing you need to do is run <code>curl istio-ingressgateway-istio-system.$(minishift ip).nip.io</code> and validate that now it is still possible to communicate between all services without been authenticated.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
 
 customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</code></pre>
 </div>
@@ -264,7 +264,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/enduser-authentication-jwt.yml">istiofiles/enduser-authentication-jwt.yml</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/enduser-authentication-jwt.yml">istiofiles/enduser-authentication-jwt.yml</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -272,7 +272,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
 
 Origin authentication failed.%`</code></pre>
 </div>
@@ -295,7 +295,7 @@ echo $token</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
 
 customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</code></pre>
 </div>
@@ -314,7 +314,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 <p>In this chapter you&#8217;ve seen how to enable end-user authentication with JWT.</p>
 </div>
 <div class="paragraph">
-<p>Obviously, you should also enable mTLS to avoid any attacker could take the token.</p>
+<p>Obviously, you should also keep enabled mTLS to avoid any attacker could take the token.</p>
 </div>
 <div class="paragraph">
 <p>Check <a href="8mTLS.html" class="page">mTLS section</a> to learn more about mTLS and Istio.</p>
@@ -330,7 +330,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/enduser-authentication-jwt.yml</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/enduser-authentication-jwt.yml</code></pre>
 </div>
 </div>
 </div>
@@ -342,7 +342,6 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

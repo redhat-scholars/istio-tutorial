@@ -158,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -287,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="8mTLS.html#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -564,15 +558,15 @@ kubectl get virtualservice -n tutorial</code></pre>
 <p>There are two ways to get the URL for your browser:</p>
 </div>
 <div class="paragraph">
-<p>Open the url <a href="http://customer-tutorial.$(minishift" class="bare">http://customer-tutorial.$(minishift</a> ip).nip.io in your broswer</p>
+<p>Open the url <a href="http://istio-ingressgateway-istio-system.$(minishift" class="bare">http://istio-ingressgateway-istio-system.$(minishift</a> ip).nip.io in your broswer</p>
 </div>
 <div class="paragraph">
 <p>You can also attempt to use the curl -A command to test with different user-agent strings.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -A Safari customer-tutorial.$(minishift ip).nip.io
-curl -A Firefox customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -A Safari istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer
+curl -A Firefox istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -598,7 +592,7 @@ curl -A Firefox customer-tutorial.$(minishift ip).nip.io</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-mobile-recommendation-v2.yml">istiofiles/virtual-service-mobile-recommendation-v2.yml</a> -n tutorial
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" <a href="http://customer-tutorial.$(minishift ip).nip.io" class="bare">http://customer-tutorial.$(minishift ip).nip.io</a></code></pre>
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a></code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -657,7 +651,7 @@ if so run:</p>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
 kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml">istiofiles/virtual-service-recommendation-v1-mirror-v2.yml</a> -n tutorial
 
-curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+curl istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -711,7 +705,7 @@ and curl the customer endpoint many times</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -807,7 +801,6 @@ kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial</code></pre>
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

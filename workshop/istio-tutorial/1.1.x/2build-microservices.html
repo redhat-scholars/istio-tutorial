@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Policy :: Istio Workshop</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.1.x/7policy.html">
+    <title>Untitled :: Istio Workshop</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.1.x/2build-microservices.html">
     <meta name="generator" content="Antora 2.0.0">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
@@ -202,17 +202,16 @@
   <button class="navigation-toggle"></button>
   <a href="index.html" class="home-link"></a>
 <nav class="crumbs" aria-label="breadcrumbs">
-  <ul>
-    <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="7policy.html">Policy</a></li>
-  </ul>
 </nav>
-  <div class="edit-this-page"><a href="file:///antora/documentation/modules/ROOT/pages/7policy.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="file:///antora/documentation/modules/ROOT/pages/2build-microservices.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Policy</h1>
-<div id="preamble">
+<div class="sect1">
+<h2 id="buildcustomer"><a class="anchor" href="#buildcustomer"></a>Build Customer</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>If you want to build Customer from the sources type the following commands</p>
+</div>
 <div class="admonitionblock important">
 <table>
 <tr>
@@ -220,24 +219,55 @@
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-<div class="title">Before Start</div>
-<div class="paragraph">
-<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>kubectl get virtualservice-$WORKSHOP_USER</code> <code>kubectl get destinationrule-$WORKSHOP_USER</code>
-if so run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial-$WORKSHOP_USER</code></pre>
-</div>
-</div>
+The tag <code>v1</code> at the end of the image name matters.
 </td>
 </tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd customer/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1 .
+docker images | grep customer
+cd ../../..</code></pre>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="ratelimiting"><a class="anchor" href="#ratelimiting"></a>Rate Limiting (Not working yet in 1.1)</h2>
+<h2 id="buildpreference"><a class="anchor" href="#buildpreference"></a>Build Preference</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you want to build Preference from the sources type the following commands</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The tag <code>v1</code> at the end of the image name matters.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd preference/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1 .
+docker images | grep preference
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendation"><a class="anchor" href="#buildrecommendation"></a>Build Recommendation</h2>
 <div class="sectionbody">
 <div class="admonitionblock important">
 <table>
@@ -246,75 +276,203 @@ if so run:</p>
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-The Rate Limiting rules take some time to be applied and reflected. Be patient here!
+The tag <code>v1</code> at the end of the image name matters. We will be creating a <code>v2</code> version of <code>recommendation</code> later in this tutorial. Having both a <code>v1</code> and <code>v2</code> version of the <code>recommendation</code> code will allow us to exercise some interesting aspects of Istio&#8217;s capabilities.
 </td>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>Here we will limit the number of concurrent requests into recommendation v2</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1 .
+docker images | grep recommendation
+cd ../../..</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendationv2"><a class="anchor" href="#buildrecommendationv2"></a>Create recommendation:v2</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Now apply the rate limit handler</p>
+<p>We can experiment with Istio controlling traffic by making a change to <code>RecommendationResource.java</code> like the following and creating a "v2" docker image.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/recommendation_rate_limit_handler.yml">istiofiles/recommendation_rate_limit_handler.yml</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Now setup the requestcount quota</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/rate_limit_rule.yml">istiofiles/rate_limit_rule.yml</a></code></pre>
-</div>
+<p>The "v2" tag during the Docker build is significant.</p>
 </div>
 <div class="paragraph">
-<p>Throw some requests at customer:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You should see some 429 errors:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v2 from '2819441432-f4ls5': 108
-customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1932
-customer =&gt; preference =&gt; recommendation v2 from '2819441432-f4ls5': 109
-customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1933
-customer =&gt; 503 preference =&gt; 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
-customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1934
-customer =&gt; preference =&gt; recommendation v2 from '2819441432-f4ls5': 110
-customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1935
-customer =&gt; 503 preference =&gt; 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
-customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1936
-customer =&gt; preference =&gt; recommendation v2 from '2819441432-f4ls5': 111
-customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1937
-customer =&gt; 503 preference =&gt; 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
-customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 1938
-customer =&gt; preference =&gt; recommendation v2 from '2819441432-f4ls5': 112</code></pre>
-</div>
+<p>There is also a second <code>deployment.yml</code> file to label things correctly</p>
 </div>
 <div class="sect2">
-<h3 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean up</h3>
+<h3 id="_docker_build"><a class="anchor" href="#_docker_build"></a>Docker build</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/rate_limit_rule.yml
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
 
-kubectl delete -f istiofiles/recommendation_rate_limit_handler.yml</code></pre>
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+
+docker images | grep recommendation
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2                   46d2aa9d46c4        3 seconds ago       454MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v1                   5db0e5dee4f6        About an hour ago   454MB
+
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendationv2-timeout"><a class="anchor" href="#buildrecommendationv2-timeout"></a>Modify recommendation:v2 to have timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, introduce some wait time in <code>recommendation v2</code> by uncommenting the line that calls the <code>timeout()</code> method. Update <code>RecommendationResource.java</code> making it a slow performer with a 3 second delay.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or you can run:</p>
+<p>Rebuild and redeploy</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
+
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout .
+
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="timeout-clenup"><a class="anchor" href="#timeout-clenup"></a>Modify recommendation:v2 to remove timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, let&#8217;s comment the <code>timeout()</code> method again on <code>recommendation v2</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    // timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And rebuild and redeploy the service again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
+
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="createrecommendationv3"><a class="anchor" href="#createrecommendationv3"></a>Create recommendation:v3</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We can experiment with Egress service entry by making two changes to <code>RecommendationResource.java</code> like the following and creating a "v3" docker image.</p>
+</div>
+<div class="paragraph">
+<p>Change the default output to make a call to <a href="http://worldclockapi.com/api/json/cet/now" class="bare">http://worldclockapi.com/api/json/cet/now</a>.</p>
+</div>
+<div class="paragraph">
+<p>From:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+// return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The "v3" tag during the Docker build is significant.</p>
+</div>
+<div class="sect2">
+<h3 id="_docker_build_2"><a class="anchor" href="#_docker_build_2"></a>Docker build</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3 .
+
+docker images | grep recommendation
+quay.io/rhdevelopers/istio-tutorial-recommendation   v3                  416d254a3692        About a minute ago   463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2-timeout          b82f7d5add2f        About an hour ago    463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2                  5852f5823257        About an hour ago    463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v1                  84738c27a06c        About an hour ago    463MB
+cd ../../..</code></pre>
 </div>
 </div>
 </div>

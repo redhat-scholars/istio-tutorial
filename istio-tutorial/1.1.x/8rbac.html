@@ -158,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -287,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="8mTLS.html#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -532,7 +526,7 @@ if so run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/authorization-enable-rbac.yml">istiofiles/authorization-enable-rbac.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/authorization-enable-rbac.yml">istiofiles/authorization-enable-rbac.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -541,7 +535,7 @@ Run next command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a>
 
 RBAC: access denied</code></pre>
 </div>
@@ -568,7 +562,7 @@ RBAC: access denied</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/namespace-rbac-policy-jwt.yml">istiofiles/namespace-rbac-policy-jwt.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/namespace-rbac-policy-jwt.yml">istiofiles/namespace-rbac-policy-jwt.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -576,9 +570,9 @@ RBAC: access denied</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt -s)
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl <a href="https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt" class="bare">https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt</a> -s)
 
-curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+curl -H "Authorization: Bearer $token" <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a>
 
 customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</code></pre>
 </div>
@@ -607,7 +601,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/namespace-rbac-policy-jwt.yml">istiofiles/namespace-rbac-policy-jwt.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/namespace-rbac-policy-jwt.yml">istiofiles/namespace-rbac-policy-jwt.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -615,7 +609,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" customer-tutorial.$(minishift ip).nip.io
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a>
 
 RBAC: access denied</code></pre>
 </div>
@@ -645,8 +639,8 @@ Obviously, you should also enable mTLS to authenticate also your requests.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
-istioctl create -f istiofiles/authorization-enable-rbac.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
+kubectl create -f istiofiles/authorization-enable-rbac.yml -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -658,7 +652,6 @@ istioctl create -f istiofiles/authorization-enable-rbac.yml -n tutorial</code></
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

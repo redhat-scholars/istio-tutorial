@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Egress :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.1.x/8egress.html">
+    <title>Untitled :: Istio Tutorial Docs</title>
+    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.1.x/2build-microservices.html">
     <meta name="generator" content="Antora 2.0.0">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
@@ -44,7 +44,7 @@
     </div>
   </nav>
 </header><div class="main-wrapper">
-<div class="navigation-container" data-component="istio-tutorial" data-version="1.0.x">
+<div class="navigation-container" data-component="istio-tutorial" data-version="1.1.x">
   <aside class="navigation">
     <div class="panels">
 <div class="navigation-menu is-active" data-panel="menu">
@@ -97,13 +97,55 @@
     <a class="nav-link" href="3monitoring-tracing.html">3. Observability</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring</a>
+    <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring with Grafana</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Custom Metrics</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="3monitoring-tracing.html#prometheus">Prometheus</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Custom metrics</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#containermemory">Container memory</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#applicationmetrics">Application metrics</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="3kiali.html">Kiali</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#howkiali">How Kiali Work</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#updatekiali">Update Kiali</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#generatingdata">Generating Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#servicegraph">Service Graph</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#servicelistening">Service Listening</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#istioconf">Istio Config</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#distributedtracing">Distributed Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#cleanup">Uninstall Kiali</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -116,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -189,24 +231,6 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="5circuit-breaker.html#poolejection">Pool Ejection</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#nofailinginstances">No Failing Instance</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#failinginstancesnopoolejection">Failing Instance No Pool Ejection</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="5circuit-breaker.html#failinginstancespoolejection">Failing Instance Pool Ejection</a>
-  </li>
-</ul>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="5circuit-breaker.html#circuitbreakerandpoolejection">Circuit Breaker + Pool Ejection</a>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -226,7 +250,7 @@
     <a class="nav-link" href="7policy.html">7. Policy</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="7policy.html#ratelimiting">Rate Limiting</a>
+    <a class="nav-link" href="7policy.html#ratelimiting">Rate Limiting - Not working yet</a>
   </li>
 </ul>
   </li>
@@ -234,15 +258,15 @@
     <button class="nav-toggle"></button>
     <span class="nav-text">8. Security</span>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="8egress.html">Egress</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#createrecommendationv3">Create Recommendation V3</a>
+    <a class="nav-link" href="8egress.html#createrecommendationv3">Create Recommendation V3</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#istioegress">Istio-ize Egress</a>
+    <a class="nav-link" href="8egress.html#istioegress">Istio-ize Egress</a>
   </li>
 </ul>
   </li>
@@ -263,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="8mTLS.html#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -277,9 +295,6 @@
     <button class="nav-toggle"></button>
     <a class="nav-link" href="8jwt.html">End-user authentication with JWT</a>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8jwt.html#preparation">Preparation</a>
-  </li>
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="8jwt.html#enablingauthentication">Enabling end-user authentication</a>
   </li>
@@ -294,9 +309,6 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="8rbac.html#enabling-rbac">Enabling RBAC</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8rbac.html#grant-access">Granting Access</a>
   </li>
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="8rbac.html#authorization-jwt">Authorization and JWT</a>
@@ -322,36 +334,6 @@
     <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/index.html">Advanced Istio Tutorial</a>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
-    <a class="nav-link" href="advanced/kiali.html">Kiali</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#howkiali">How Kiali Work</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#installkiali">Install Kiali</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#generatingdata">Generating Data</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#servicegraph">Service Graph</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#servicelistening">Service Listening</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#istioconf">Istio Config</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#distributedtracing">Distributed Tracing</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="advanced/kiali.html#cleanup">Uninstall Kiali</a>
-  </li>
-</ul>
-  </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/virtualization.html">Service Virtualization and Istio</a>
@@ -467,17 +449,17 @@
 <div class="navigation-explore" data-panel="explore">
   <div class="context">
     <span class="title">Istio Tutorial</span>
-    <span class="version">1.0.x</span>
+    <span class="version">1.1.x</span>
   </div>
   <ul class="components">
     <li class="component is-current">
       <span class="title">Istio Tutorial</span>
       <ul class="versions">
-        <li class="version is-latest">
-          <a href="../1.1.x/index.html">1.1.x</a>
+        <li class="version is-current is-latest">
+          <a href="index.html">1.1.x</a>
         </li>
-        <li class="version is-current">
-          <a href="index.html">1.0.x</a>
+        <li class="version">
+          <a href="../1.0.x/index.html">1.0.x</a>
         </li>
       </ul>
     </li>
@@ -489,32 +471,24 @@
   <main class="main">
 <div class="toolbar" role="navigation">
   <button class="navigation-toggle"></button>
-  <a href="../1.1.x/index.html" class="home-link"></a>
+  <a href="index.html" class="home-link"></a>
 <nav class="crumbs" aria-label="breadcrumbs">
-  <ul>
-    <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb">8. Security</li>
-    <li class="crumb"><a href="8egress.html">Egress</a></li>
-  </ul>
 </nav>
 <div class="page-versions">
-  <button class="versions-menu-toggle" title="Show other versions of page">1.0.x</button>
+  <button class="versions-menu-toggle" title="Show other versions of page">1.1.x</button>
   <div class="versions-menu">
-    <a class="version" href="../1.1.x/8egress.html">1.1.x</a>
-    <a class="version is-current" href="8egress.html">1.0.x</a>
+    <a class="version is-current" href="2build-microservices.html">1.1.x</a>
+    <a class="version is-missing" href="../1.0.x/index.html">1.0.x</a>
   </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/1.0.x/documentation/modules/ROOT/pages/8egress.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/2build-microservices.adoc">Edit this Page</a></div>
 </div>
 <article class="doc">
-<h1>Egress</h1>
-<div id="preamble">
+<div class="sect1">
+<h2 id="buildcustomer"><a class="anchor" href="#buildcustomer"></a>Build Customer</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Let&#8217;s see an example of using egress route by deploying a recommendation:v3 version. Egress service entry allow you to apply rules to how internal services interact with external APIs/services.</p>
-</div>
-<div class="paragraph">
-<p>In this case, we are going to configure Istio to access <a href="http://now.httpbin.org" class="bare">http://now.httpbin.org</a> from internal service (recommendation:v3).</p>
+<p>If you want to build Customer from the sources type the following commands</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -523,19 +497,208 @@
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-<div class="title">Before Start</div>
-<div class="paragraph">
-<p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>istioctl get virtualservice</code> <code>istioctl get destinationrule</code>
-if so run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
-</div>
-</div>
+The tag <code>v1</code> at the end of the image name matters.
 </td>
 </tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd customer/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1 .
+docker images | grep customer
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildpreference"><a class="anchor" href="#buildpreference"></a>Build Preference</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you want to build Preference from the sources type the following commands</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The tag <code>v1</code> at the end of the image name matters.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd preference/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1 .
+docker images | grep preference
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendation"><a class="anchor" href="#buildrecommendation"></a>Build Recommendation</h2>
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The tag <code>v1</code> at the end of the image name matters. We will be creating a <code>v2</code> version of <code>recommendation</code> later in this tutorial. Having both a <code>v1</code> and <code>v2</code> version of the <code>recommendation</code> code will allow us to exercise some interesting aspects of Istio&#8217;s capabilities.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1 .
+docker images | grep recommendation
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendationv2"><a class="anchor" href="#buildrecommendationv2"></a>Create recommendation:v2</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We can experiment with Istio controlling traffic by making a change to <code>RecommendationResource.java</code> like the following and creating a "v2" docker image.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The "v2" tag during the Docker build is significant.</p>
+</div>
+<div class="paragraph">
+<p>There is also a second <code>deployment.yml</code> file to label things correctly</p>
+</div>
+<div class="sect2">
+<h3 id="_docker_build"><a class="anchor" href="#_docker_build"></a>Docker build</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/quarkus
+mvn clean package -DskipTests
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+
+docker images | grep recommendation
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2                   46d2aa9d46c4        3 seconds ago       454MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v1                   5db0e5dee4f6        About an hour ago   454MB
+
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendationv2-timeout"><a class="anchor" href="#buildrecommendationv2-timeout"></a>Modify recommendation:v2 to have timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, introduce some wait time in <code>recommendation v2</code> by uncommenting the line that calls the <code>timeout()</code> method. Update <code>RecommendationResource.java</code> making it a slow performer with a 3 second delay.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rebuild and redeploy</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
+
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout .
+
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="timeout-clenup"><a class="anchor" href="#timeout-clenup"></a>Modify recommendation:v2 to remove timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, let&#8217;s comment the <code>timeout()</code> method again on <code>recommendation v2</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    // timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And rebuild and redeploy the service again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
+
+mvn clean package -DskipTests
+
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -543,240 +706,51 @@ if so run:</p>
 <h2 id="createrecommendationv3"><a class="anchor" href="#createrecommendationv3"></a>Create recommendation:v3</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We can experiment with Egress service entry by making two changes to <code>RecommendationVerticle.java</code> like the following and creating a "v3" docker image.</p>
+<p>We can experiment with Egress service entry by making two changes to <code>RecommendationResource.java</code> like the following and creating a "v3" docker image.</p>
 </div>
 <div class="paragraph">
-<p>First change is updating the response string to:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v3 from '%s': %d\n";</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The "v3" tag during the Docker build is significant.</p>
-</div>
-<div class="paragraph">
-<p>There is also a third <code>deployment.yml</code> file to label things correctly</p>
-</div>
-<div class="paragraph">
-<p>The second change is to change the default output to make a call to <a href="http://now.httpbin.org" class="bare">http://now.httpbin.org</a>.</p>
+<p>Change the default output to make a call to <a href="http://worldclockapi.com/api/json/cet/now" class="bare">http://worldclockapi.com/api/json/cet/now</a>.</p>
 </div>
 <div class="paragraph">
 <p>From:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        router.get("/").handler(this::getRecommendations);
-//        router.get("/").handler(this::getNow);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+// return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>To:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//        router.get("/").handler(this::getRecommendations);
-        router.get("/").handler(this::getNow);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>The "v3" tag during the Docker build is significant.</p>
 </div>
 <div class="sect2">
-<h3 id="_docker_build_if_you_have_access_to_docker_daemon"><a class="anchor" href="#_docker_build_if_you_have_access_to_docker_daemon"></a>Docker build (if you have access to Docker daemon)</h3>
+<h3 id="_docker_build_2"><a class="anchor" href="#_docker_build_2"></a>Docker build</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx
-mvn clean package
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
+mvn clean package -DskipTests
 
-docker build -t example/recommendation:v3 .
+eval $(minishift docker-env)
+
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3 .
 
 docker images | grep recommendation
-example/recommendation                  v3                  0671dfb295df        3 seconds ago       443MB
-example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendation                  v1                  f072978d9cf6        8 minutes ago       438MB</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><em>Important:</em> We have a 3rd Deployment to manage the v3 version of recommendation.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
-oc get pods -w
-
-or
-
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
-kubectl get pods -w</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_openshift_s2i_strategy_if_you_dont_have_access_to_docker_daemon"><a class="anchor" href="#_openshift_s2i_strategy_if_you_dont_have_access_to_docker_daemon"></a>OpenShift S2I strategy (if you DON&#8217;T have access to Docker daemon)</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v3 --name=recommendation-v3 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v3.yml
-oc apply -f &lt;(istioctl kube-inject -f recommendation-v3.yml) -n tutorial
-oc cancel-build bc/recommendation-v3
-oc delete svc/recommendation-v3
-oc start-build recommendation-v3 --from-dir=. --follow</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_wait_for_v3_to_be_deployed"><a class="anchor" href="#_wait_for_v3_to_be_deployed"></a>Wait for v3 to be deployed</h3>
-<div class="paragraph">
-<p>Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                  READY     STATUS    RESTARTS   AGE
-customer-3600192384-fpljb             2/2       Running   0          17m
-preference-243057078-8c5hz           2/2       Running   0          15m
-recommendation-v1-60483540-9snd9     2/2       Running   0          12m
-recommendation-v2-2815683430-vpx4p   2/2       Running   0          15s
-recommendation-v3-7b445dd469-j6rkg   2/2       Running   0          2m</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-terminal hljs" data-lang="terminal">cd ../../..</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="istioegress"><a class="anchor" href="#istioegress"></a>Istio-ize Egress</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Be sure you do not have any previous destination rule nor virtual service installed.</p>
-</div>
-<div class="paragraph">
-<p>Let&#8217;s redirect all traffic to reccomendation:v3.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2-v3.yml">istiofiles/destination-rule-recommendation-v1-v2-v3.yml</a> -n tutorial
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v3.yml">istiofiles/virtual-service-recommendation-v3.yml</a></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then access to the service:</p>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-Since no Egress service entry has been registered to access an external site, the timeout error is thrown after 5 seconds of trying to access to the site.
-.
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl -m 5 customer-tutorial.$(minishift ip).nip.io
-curl: (28) Operation timed out after 5000 milliseconds with 0 bytes received</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Let&#8217;s fix it by registering a service entry to allow access to <code>httpbin</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/service-entry-egress-httpbin.yml">istiofiles/service-entry-egress-httpbin.yml</a> -n tutorial
-
-istioctl get serviceentry
-
-curl customer-tutorial.$(minishift ip).nip.io
-customer =&gt; preference =&gt; Mon, 16 Jul 2018 12:03:38 GMT recommendation v3 from '7b445dd469-j6rkg': 1</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or shell into the pod by getting its name and then using that name with oc exec</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
-
-or
-
-kubectl exec -it $(oc get pods -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
-
-curl http://now.httpbin.org
-
-exit</code></pre>
-</div>
-</div>
-<div class="sect2">
-<h3 id="cleanup"><a class="anchor" href="#cleanup"></a>Clean up</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl delete -f istiofiles/service-entry-egress-httpbin.yml -n tutorial
-istioctl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
-istioctl delete -f istiofiles/virtual-service-recommendation-v3.yml</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or you can run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Undeploy <em>recommendation:v3</em>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete all -l app=recommendation,version=v3
-or
-kubectl delete all -l app=recommendation,version=v3</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Change <em>recommendation</em> code to version 2:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>First change is updating the response string to:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And then get back to not depend on <code>egress</code> external service:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//        router.get("/").handler(this::getRecommendations);
-        router.get("/").handler(this::getNow);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/RecommendationVerticle.java</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        router.get("/").handler(this::getRecommendations);
-//        router.get("/").handler(this::getNow);</code></pre>
+quay.io/rhdevelopers/istio-tutorial-recommendation   v3                  416d254a3692        About a minute ago   463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2-timeout          b82f7d5add2f        About an hour ago    463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v2                  5852f5823257        About an hour ago    463MB
+quay.io/rhdevelopers/istio-tutorial-recommendation   v1                  84738c27a06c        About an hour ago    463MB
+cd ../../..</code></pre>
 </div>
 </div>
 </div>

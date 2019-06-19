@@ -641,7 +641,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 6</cod
 <div class="sect2">
 <h3 id="authorization-jwt"><a class="anchor" href="#authorization-jwt"></a>Authorization and JWT</h3>
 <div class="paragraph">
-<p>In <a href="#grant-access">Granting Access</a>, you have added all users access to all services, but you can also specify a list of <code>subjects</code> that are assigned to a role.
+<p>In <a href="#">grant-access.adoc</a>, you have added all users access to all services, but you can also specify a list of <code>subjects</code> that are assigned to a role.
 Istio supports several ways to specify them, from using a Kubernetes service account to a range of IPs, request headers or request auths.
 But one that it is really interesting is its integration with JWT.</p>
 </div>
@@ -752,7 +752,7 @@ Obviously, you should also enable mTLS to authenticate also your requests.</p>
 <p>Check <a href="8mTLS.html" class="page">mTLS section</a> to learn more about mTLS and Istio.</p>
 </div>
 <div class="paragraph">
-<p>In section <a href="#authorization-jwt">Authorization and JWT</a>, you used the <code>preferred_username</code> field for the sake of simplicity, but of course any other field can be used.
+<p>In section <a href="#">authorization-jwt.adoc</a>, you used the <code>preferred_username</code> field for the sake of simplicity, but of course any other field can be used.
 In another case, you might want to use the <code>group</code> field of JWT so instead of using a <code>username</code> field which affects only one user, it affects the group of users that defines this field.</p>
 </div>
 </div>
@@ -778,7 +778,6 @@ istioctl create -f istiofiles/authorization-enable-rbac.yml -n tutorial</code></
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

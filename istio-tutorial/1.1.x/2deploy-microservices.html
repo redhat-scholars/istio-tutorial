@@ -158,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -287,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="8mTLS.html#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -539,11 +533,11 @@ cd istio-tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ istioctl version
-version.BuildInfo{Version:"1.1.1", GitRevision:"2b1331886076df103179e3da5dc9077fed59c989", User:"root", Host:"7077232d-4c6c-11e9-813c-0a580a2c0506", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.0-17-g2b13318"}</code></pre>
+version.BuildInfo{Version:"1.1.9", GitRevision:"879413c25b871ae6fd0df82bea1605baf12cba2e", User:"root", Host:"161bf1f4-8ef6-11e9-887b-0a580a2c0403", GolangVersion:"go1.10.4", DockerHub:"docker.io/istio", BuildStatus:"Clean", GitTag:"1.1.8-4-g879413c"}</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_customer_build_using_docker_daemon"><a class="anchor" href="#_customer_build_using_docker_daemon"></a>Customer build using Docker daemon</h3>
+<h3 id="_deploy_customer"><a class="anchor" href="#_deploy_customer"></a>Deploy Customer</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -551,31 +545,23 @@ version.BuildInfo{Version:"1.1.1", GitRevision:"2b1331886076df103179e3da5dc9077f
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Your very first Docker build will take a bit of time as it downloads all the layers. Subsequent rebuilds of the Docker image, updating only the microservice layer will be very fast.
+You will deploy docker images that were privously built. If you want to build customer visit: <a href="2build-microservices.html#buildcustomer" class="page">Build Customer</a>
 </td>
 </tr>
 </table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd customer/java/quarkus
-mvn clean package -DskipTests
-docker build -t example/customer .
-docker images | grep customer</code></pre>
-</div>
 </div>
 <div class="paragraph">
 <p>Now let&#8217;s deploy the customer pod with its sidecar</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">../../kubernetes/Service.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">../../kubernetes/Service.yml</a> -n tutorial</code></pre>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -586,14 +572,12 @@ kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutor
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer -n tutorial
-
-oc get route -n tutorial
-oc get pods -w -n tutorial
-
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Gateway.yml">customer/kubernetes/Gateway.yml</a> -n tutorial
 or
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Gateway.yml">customer/kubernetes/Gateway.yml</a> -n tutorial
 
-kubectl get route -o=jsonpath='{.items[0].spec.host}'
+oc get pods -w -n tutorial
+or
 kubectl get pods -w</code></pre>
 </div>
 </div>
@@ -617,7 +601,7 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -646,37 +630,36 @@ stern "customer-\w" -c customer</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer-6fc99b7bfd-5st28 customer Caused by: java.net.UnknownHostException: preference</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Back to the main istio-tutorial directory</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd ../../..</code></pre>
-</div>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="deploypreference"><a class="anchor" href="#deploypreference"></a>Deploy preference</h2>
+<h2 id="deploypreference"><a class="anchor" href="#deploypreference"></a>Deploy Preference</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_preference_build_using_docker_daemon"><a class="anchor" href="#_preference_build_using_docker_daemon"></a>Preference build using Docker daemon</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You will deploy docker images that were privously built. If you want to build preference visit: <a href="2build-microservices.html#buildpreference" class="page">Build Preference</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s deploy the preference pod with its sidecar</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd preference/java/quarkus
-mvn clean package -DskipTests
-docker build -t example/preference:v1 .
-docker images | grep preference
-
-oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a>
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">../../kubernetes/Service.yml</a></code></pre>
-</div>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a></code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -693,7 +676,7 @@ kubectl get pods -w</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -734,51 +717,38 @@ stern "preference-\w" -c preference</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostException: recommendation</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Back to the main istio-tutorial directory</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd ../../..</code></pre>
-</div>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="deployrecommendation"><a class="anchor" href="#deployrecommendation"></a>Deploy recommendation</h2>
+<h2 id="deployrecommendation"><a class="anchor" href="#deployrecommendation"></a>Deploy Recommendation</h2>
 <div class="sectionbody">
-<div class="admonitionblock important">
+<div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-important" title="Important"></i>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The tag <code>v1</code> at the end of the image name matters. We will be creating a <code>v2</code> version of <code>recommendation</code> later in this tutorial. Having both a <code>v1</code> and <code>v2</code> version of the <code>recommendation</code> code will allow us to exercise some interesting aspects of Istio&#8217;s capabilities.
+You will deploy docker images that were privously built. If you want to build recommendation visit: <a href="2build-microservices.html#buildrecommendation" class="page">Build Recommendation</a>
 </td>
 </tr>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_recommendation_build_using_docker_daemon"><a class="anchor" href="#_recommendation_build_using_docker_daemon"></a>Recommendation build using Docker daemon</h3>
+<div class="paragraph">
+<p>Now let&#8217;s deploy the recommendation pod with its sidecar</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
-mvn clean package -DskipTests
-docker build -t example/recommendation:v1 .
-docker images | grep recommendation
-
-oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial
 oc get pods -w
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">../../kubernetes/Deployment.yml</a>) -n tutorial
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a>
 kubectl get pods -w</code></pre>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -788,7 +758,7 @@ kubectl get pods -w</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -807,14 +777,6 @@ kubectl get pods -w</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation
 or
 stern "recommendation-v1-\w" -c recommendation-v1</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Back to the main <code>istio-tutorial</code> directory</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd ../../..</code></pre>
 </div>
 </div>
 </div>
@@ -874,7 +836,6 @@ kubectl describe deployment {servicename} | grep Replicas</code></pre>
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

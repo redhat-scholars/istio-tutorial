@@ -158,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -287,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#restore">Restore Environment</a>
+    <a class="nav-link" href="#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -525,96 +519,10 @@ if so run:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="preparation"><a class="anchor" href="#preparation"></a>Before Start</h2>
+<h2 id="testingtls"><a class="anchor" href="#testingtls"></a>Testing mTLS</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>If you are running this tutorial in OpenShift (Minishift) you need to remove the <strong>customer</strong> <code>route</code> you created at the beginning of the tutorial.</p>
-</div>
-<div class="paragraph">
-<p>To do it just run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete route customer</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, you need to enable Istio Ingress to receive all traffic and redirect it to customer service.
-For this reason, let&#8217;s create a <code>Gateway</code> and <code>VirtualService</code> that allows local calls reach the clustered service inside the mesh.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/gateway-customer.yml">istiofiles/gateway-customer.yml</a></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then configure some environment variables that will help you on testing:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_PORT=$(oc -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-
-or in Kubernetes:
-
-export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_HOST=$(minishift ip)
-export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now you can run <code>curl</code> but against <code>GATEWAY_URL</code> and you&#8217;ll see the same messages as before:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="enablingtls"><a class="anchor" href="#enablingtls"></a>Enabling mTLS</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Now that Istio gateway is in place, you can enable <em>mTLS</em> by applying next Istio resources:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/authentication-enable-tls.yml">istiofiles/authentication-enable-tls.yml</a> <i class="conum" data-value="1"></i><b>(1)</b>
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-tls.yml">istiofiles/destination-rule-tls.yml</a> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Enables mTLS into <code>tutorial</code> namespace</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Makes that services withn <code>tutorial</code> namespace communicates with <em>mTLS</em></td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Then you can run:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
-customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And you&#8217;ll see exactly the same but now the communication between the services has been secured.
-How can you check that?</p>
-</div>
-<div class="paragraph">
-<p>By <em>sniffing</em> traffic between services, which is a bit more tedious, open a new terminal tab and run next command:</p>
+<p>Check the mTLS by <em>sniffing</em> traffic between services, which is a bit more tedious, open a new terminal tab and run next command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -665,7 +573,7 @@ sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' <i class
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a>
 customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
 </div>
 </div>
@@ -695,8 +603,7 @@ E....B@.@._........
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/authentication-enable-tls.yml
-kubectl delete -f istiofiles/destination-rule-tls.yml</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f istiofiles/disable-mtls.yml</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -704,7 +611,7 @@ kubectl delete -f istiofiles/destination-rule-tls.yml</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://${GATEWAY_URL}/
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a>
 customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
 </div>
 </div>
@@ -734,12 +641,9 @@ x-b3-sampled: 1</code></pre>
 <div class="sect1">
 <h2 id="restore"><a class="anchor" href="#restore"></a>Clean Up</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>source,bash]</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>kubectl delete -f istiofiles/gateway-customer.yml</pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/disable-mtls.yml</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -748,14 +652,6 @@ x-b3-sampled: 1</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And finally in case of running in OpenShift (Minishift) you can restore the route:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose service customer</code></pre>
 </div>
 </div>
 </div>
@@ -767,7 +663,6 @@ x-b3-sampled: 1</code></pre>
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

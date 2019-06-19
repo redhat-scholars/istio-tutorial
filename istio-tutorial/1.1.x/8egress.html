@@ -158,7 +158,7 @@
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Create Recommendation V2</a>
+    <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
     <button class="nav-toggle"></button>
@@ -287,13 +287,7 @@
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#preparation">Preparation</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#enablingtls">Enabling TLS</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="8mTLS.html#restore">Restore Environment</a>
+    <a class="nav-link" href="8mTLS.html#testingtls">Testing mTLS</a>
   </li>
 </ul>
   </li>
@@ -525,72 +519,25 @@ if so run:</p>
 </tr>
 </table>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="createrecommendationv3"><a class="anchor" href="#createrecommendationv3"></a>Create recommendation:v3</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>We can experiment with Egress service entry by making two changes to <code>RecommendationResource.java</code> like the following and creating a "v3" docker image.</p>
-</div>
-<div class="paragraph">
-<p>Change the default output to make a call to <a href="http://worldclockapi.com/api/json/cet/now" class="bare">http://worldclockapi.com/api/json/cet/now</a>.</p>
-</div>
-<div class="paragraph">
-<p>From:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-// return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The "v3" tag during the Docker build is significant.</p>
-</div>
-<div class="sect2">
-<h3 id="_docker_build"><a class="anchor" href="#_docker_build"></a>Docker build</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
-mvn clean package -DskipTests
-
-docker build -t example/recommendation:v3 .
-
-docker images | grep recommendation
-example/recommendation                  v3                  0671dfb295df        3 seconds ago       443MB
-example/recommendation                  v2                  c31e399a9628        5 seconds ago       438MB
-example/recommendation                  v1                  f072978d9cf6        8 minutes ago       438MB</code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p><em>Important:</em> We have a 3rd Deployment to manage the v3 version of recommendation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">recommendation/kubernetes/Deployment-v3.yml</a>) -n tutorial
 oc get pods -w
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">recommendation/kubernetes/Deployment-v3.yml</a>) -n tutorial
 kubectl get pods -w -n</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_wait_for_v3_to_be_deployed"><a class="anchor" href="#_wait_for_v3_to_be_deployed"></a>Wait for v3 to be deployed</h3>
+</div>
+<div class="sect1">
+<h2 id="_wait_for_v3_to_be_deployed"><a class="anchor" href="#_wait_for_v3_to_be_deployed"></a>Wait for v3 to be deployed</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod</p>
 </div>
@@ -604,17 +551,19 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0          15s
 recommendation-v3-7b445dd469-j6rkg   2/2       Running   0          2m</code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-terminal hljs" data-lang="terminal">cd ../../..</code></pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="istioegress"><a class="anchor" href="#istioegress"></a>Istio-ize Egress</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Configure Istio to allow only registered traffic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: ALLOW_ANY/mode: REGISTRY_ONLY/g' | kubectl replace -n istio-system -f -</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Be sure you do not have any previous destination rule nor virtual service installed.</p>
 </div>
@@ -714,7 +663,6 @@ kubectl delete all -n tutorial -l app=recommendation,version=v3</code></pre>
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>
