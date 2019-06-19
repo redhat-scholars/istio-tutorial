@@ -31,3 +31,6 @@ You will need in this tutorial:
 * siege
 ** MAC OS: `brew install siege`
 ** Fedora: `dnf install siege`
+
+* envsubst
+** MAC OS: `brew install gettext;  brew link --force gettext`

@@ -1,6 +1,19 @@
 = Deploy Microservices
 include::_attributes.adoc[]
 
+Create an environment variable for your user and log into OpenShift.
+
+[source,bash,subs="+macros,+attributes"]
+----
+export WORKSHOP_USER=<your-username-number>
+
+
+#Example:
+export WORKSHOP_USER=1
+
+oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
+----
+
 [#deploycustomer]
 == Deploy customer
 
@@ -17,13 +30,20 @@ and you have setup the project/namespace
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc new-project tutorial
+oc new-project tutorial{namespace-suffix}
 or
-kubectl create namespace tutorial
-kubectl config set-context $(kubectl config current-context) --namespace=tutorial
-
-oc adm policy add-scc-to-user privileged -z default -n tutorial
+kubectl create namespace tutorial{namespace-suffix}
+kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
 ----
+
+ifndef::workshop[]
+Give the tutorial project the required privileges.
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc adm policy add-scc-to-user privileged -z default -n tutorial{namespace-suffix}
+----
+endif::workshop[]
 
 Then clone the git repository
 
@@ -51,29 +71,44 @@ Now let's deploy the customer pod with its sidecar
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial
-oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial
-kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 ----
 
 === Expose customer
 
 Since the `customer` service is the one our users will interact with, let's add an OpenShift Route that exposes that endpoint.
 
+ifndef::workshop[]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial
+oc create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial{namespace-suffix}
 or
-kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial{namespace-suffix}
 
-oc get pods -w -n tutorial
+oc get pods -w -n tutorial{namespace-suffix}
 or
-kubectl get pods -w
+kubectl get pods -w -n tutorial{namespace-suffix}
 ----
+endif::workshop[]
+
+ifdef::workshop[]
+[source,bash,subs="+macros,+attributes"]
+----
+envsubst < link:{github-repo}/{customer-repo}/kubernetes/Gateway.workshop.yml[{customer-repo}/kubernetes/Gateway.workshop.yml] | oc create -f - -n tutorial{namespace-suffix}
+or
+envsubst < link:{github-repo}/{customer-repo}/kubernetes/Gateway.workshop.yml[{customer-repo}/kubernetes/Gateway.workshop.yml] | kubectl create -f - -n tutorial{namespace-suffix}
+
+oc get pods -w -n tutorial{namespace-suffix}
+or
+kubectl get pods -w -n tutorial{namespace-suffix}
+----
+endif::workshop[]
 
 IMPORTANT: If your pod fails with `ImagePullBackOff`, it's possible that your current terminal isn't using the proper Docker Environment. See link:#setup-environment[Setup environment].
 
@@ -117,22 +152,22 @@ Now let's deploy the preference pod with its sidecar
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml]) -n tutorial
-oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml]
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 
 or
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml]) -n tutorial
-kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml]
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml])  -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 ----
 
 === Wait preference to be deployed
 
 [source, bash]
 ----
-oc get pods -w -n tutorial
+oc get pods -w  -n tutorial{namespace-suffix}
 or
-kubectl get pods -w
+kubectl get pods -w -n tutorial{namespace-suffix}
 ----
 
 Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
@@ -176,15 +211,15 @@ Now let's deploy the recommendation pod with its sidecar
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial
-oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial
-oc get pods -w
+oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml])  -n tutorial{namespace-suffix}
+oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml]  -n tutorial{namespace-suffix}
+oc get pods -w -n tutorial{namespace-suffix}
 
 or 
 
-kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial
-kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml]
-kubectl get pods -w
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+kubectl get pods -w -n tutorial{namespace-suffix}
 ----
 
 === Wait recommendation to be deployed
@@ -234,13 +269,13 @@ docker build -t example/{servicename}:v1 .
 
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
 oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
-oc delete pod -l app={servicename},version=v1
+oc delete pod -l app={servicename},version=v1 -n tutorial{namespace-suffix}
 
 or
 
 kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
 kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
-kubectl delete pod -l app={servicename},version=v1
+kubectl delete pod -l app={servicename},version=v1 -n tutorial{namespace-suffix}
 ----
 
 Why the delete pod?
@@ -249,7 +284,7 @@ Based on the Deployment configuration, Kubernetes/OpenShift will recreate the po
 
 [source,bash]
 ----
-oc describe deployment {servicename} | grep Replicas
+oc describe deployment {servicename}  -n tutorial{namespace-suffix}| grep Replicas
 or
-kubectl describe deployment {servicename} | grep Replicas
+kubectl describe deployment {servicename} -n tutorial{namespace-suffix} | grep Replicas
 ----

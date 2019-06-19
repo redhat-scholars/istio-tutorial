@@ -1,23 +1,23 @@
 * xref:index.adoc[Introduction to Istio Tutorial]
 
+ifdef::workshop[]
+* xref:workshop:1setup.adoc[1. Setup]
+endif::workshop[]
+
 ifndef::workshop[]
 * xref:1setup.adoc[1. Setup]
 ** xref:1setup.adoc#prerequisite[Prerequisites]
 ** xref:1setup.adoc#minishift[Setup MiniShift]
 ** xref:1setup.adoc#environment[Setup Environment]
 ** xref:1setup.adoc#istioinstallation[Install Istio]
+endif::workshop[]
 
 * xref:2deploy-microservices.adoc[2. Deploy Microservices]
 ** xref:2deploy-microservices.adoc#deploycustomer[Deploy Customer]
 ** xref:2deploy-microservices.adoc#deploypreference[Deploy Preference]
 ** xref:2deploy-microservices.adoc#deployrecommendation[Deploy Recommendation]
 ** xref:2deploy-microservices.adoc#redeployingcode[Updating Redeploying Code]
-endif::workshop[]
 
-ifdef::workshop[]
-* xref:workshop:1setup.adoc[1. Setup]
-* xref:workshop:2deploy-microservices.adoc[2. Deploy Microservices]
-endif::workshop[]
 
 * xref:3monitoring-tracing.adoc[3. Observability]
 ** xref:3monitoring-tracing.adoc#monitoring[Monitoring with Grafana]
