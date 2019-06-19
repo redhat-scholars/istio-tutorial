@@ -60,7 +60,22 @@
     <a class="nav-link" href="workshop/1setup.html">1. Setup</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="workshop/2deploy-microservices.html">2. Deploy Microservices</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
@@ -264,7 +279,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h</code></p
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation.yml">istiofiles/destination-rule-recommendation.yml</a> -n tutorial-$WORKSHOP_USER
 kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-503.yml">istiofiles/virtual-service-recommendation-503.yml</a> -n tutorial-$WORKSHOP_USER
 
-./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
+./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a>
 
 customer =&gt; preference =&gt; recommendation v2 from '7778d6fb89-j6lts': 138
 customer =&gt; Error: 503 - preference =&gt; Error: 503 - fault filter abort
@@ -306,7 +321,7 @@ kubectl replace -f <a href="https://github.com/redhat-developer-demos/istio-tuto
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a></code></pre>
 </div>
 </div>
 <div class="paragraph">

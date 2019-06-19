@@ -60,7 +60,22 @@
     <a class="nav-link" href="workshop/1setup.html">1. Setup</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="workshop/2deploy-microservices.html">2. Deploy Microservices</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
@@ -269,7 +284,7 @@ exit</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a>
 
 customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 196
 customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 197
@@ -314,7 +329,7 @@ exit</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a>
 
 customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 207
@@ -354,7 +369,7 @@ You will deploy docker images that were privously built. If you want to build re
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -370,7 +385,7 @@ You will deploy docker images that were privously built. If you want to build re
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a>
 customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2907
 customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2908
 customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2909</code></pre>
@@ -427,7 +442,7 @@ You will deploy docker images that were privously built. If you want to build re
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 40 -c 1 -v <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-e7a4.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-e7a4.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 40 -c 1 -v <a href="http://customer-tutorial-$WORKSHOP_USER.barcelona-e7a4.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.barcelona-e7a4.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -447,7 +462,7 @@ You will deploy docker images that were privously built. If you want to build re
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-e7a4.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-e7a4.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 2 -c 20 -v <a href="http://customer-tutorial-$WORKSHOP_USER.barcelona-e7a4.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.barcelona-e7a4.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">

@@ -60,7 +60,22 @@
     <a class="nav-link" href="workshop/1setup.html">1. Setup</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="workshop/2deploy-microservices.html">2. Deploy Microservices</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
@@ -280,15 +295,15 @@ kubectl get virtualservice -n tutorial-$WORKSHOP_USER</code></pre>
 <p>There are two ways to get the URL for your browser:</p>
 </div>
 <div class="paragraph">
-<p>Open the url <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com</a> in your broswer</p>
+<p>Open the url <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com</a> in your broswer</p>
 </div>
 <div class="paragraph">
 <p>You can also attempt to use the curl -A command to test with different user-agent strings.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -A Safari istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER
-curl -A Firefox istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -A Safari istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER
+curl -A Firefox istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -314,7 +329,7 @@ curl -A Firefox istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftw
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-mobile-recommendation-v2.yml">istiofiles/virtual-service-mobile-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a></code></pre>
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a></code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -373,7 +388,7 @@ if so run:</p>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial-$WORKSHOP_USER
 kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml">istiofiles/virtual-service-recommendation-v1-mirror-v2.yml</a> -n tutorial-$WORKSHOP_USER
 
-curl istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</code></pre>
+curl istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -427,7 +442,7 @@ and curl the customer endpoint many times</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -458,7 +473,7 @@ recommendation-v2-2815683430-tptf2   2/2       Running   0          33m</code></
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-e7a4.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.apps.barcelona-e7a4.openshiftworkshop.com</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://customer-tutorial-$WORKSHOP_USER.barcelona-e7a4.openshiftworkshop.com" class="bare">http://customer-tutorial-$WORKSHOP_USER.barcelona-e7a4.openshiftworkshop.com</a></code></pre>
 </div>
 </div>
 <div class="paragraph">

@@ -60,7 +60,22 @@
     <a class="nav-link" href="workshop/1setup.html">1. Setup</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="workshop/2deploy-microservices.html">2. Deploy Microservices</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
@@ -256,7 +271,7 @@ Run next command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a>
 
 RBAC: access denied</code></pre>
 </div>
@@ -293,7 +308,7 @@ RBAC: access denied</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl <a href="https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt" class="bare">https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt</a> -s)
 
-curl -H "Authorization: Bearer $token" <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
+curl -H "Authorization: Bearer $token" <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a>
 
 customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</code></pre>
 </div>
@@ -330,7 +345,7 @@ customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER</a>
 
 RBAC: access denied</code></pre>
 </div>

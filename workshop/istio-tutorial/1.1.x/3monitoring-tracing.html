@@ -60,7 +60,22 @@
     <a class="nav-link" href="workshop/1setup.html">1. Setup</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="workshop/2deploy-microservices.html">2. Deploy Microservices</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-toggle"></button>
@@ -234,14 +249,14 @@ You may want to push some load onto the deployed applications in order to see so
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/customer" class="bare">http://istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/customer</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer</a></code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://grafana-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1" class="bare">http://grafana-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://grafana-istio-system.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1" class="bare">http://grafana-istio-system.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1</a>
 or
-firefox <a href="http://grafana-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1" class="bare">http://grafana-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1</a></code></pre>
+firefox <a href="http://grafana-istio-system.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1" class="bare">http://grafana-istio-system.barcelona-e7a4.openshiftworkshop.com/d/TSEY6jLmk/istio-galley-dashboard?orgId=1</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -249,7 +264,7 @@ firefox <a href="http://grafana-istio-system.apps.barcelona-e7a4.openshiftworksh
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"><a href="http://grafana-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&amp;orgId=1"" class="bare">http://grafana-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&amp;orgId=1"</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"><a href="http://grafana-istio-system.barcelona-e7a4.openshiftworkshop.com/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&amp;orgId=1"" class="bare">http://grafana-istio-system.barcelona-e7a4.openshiftworkshop.com/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&amp;orgId=1"</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -268,9 +283,9 @@ firefox <a href="http://grafana-istio-system.apps.barcelona-e7a4.openshiftworksh
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://prometheus-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"" class="bare">http://prometheus-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"" class="bare">http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"</a>
 or
-firefox <a href="http://prometheus-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"" class="bare">http://prometheus-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"</a></code></pre>
+firefox <a href="http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"" class="bare">http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"</a></code></pre>
 </div>
 </div>
 </div>
@@ -292,9 +307,9 @@ firefox <a href="http://prometheus-istio-system.apps.barcelona-e7a4.openshiftwor
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="https://jaeger-query-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/" class="bare">https://jaeger-query-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/</a>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="https://jaeger-query-istio-system.barcelona-e7a4.openshiftworkshop.com/" class="bare">https://jaeger-query-istio-system.barcelona-e7a4.openshiftworkshop.com/</a>
 or
-firefox <a href="https://jaeger-query-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/" class="bare">https://jaeger-query-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/</a></code></pre>
+firefox <a href="https://jaeger-query-istio-system.barcelona-e7a4.openshiftworkshop.com/" class="bare">https://jaeger-query-istio-system.barcelona-e7a4.openshiftworkshop.com/</a></code></pre>
 </div>
 </div>
 <div class="paragraph">

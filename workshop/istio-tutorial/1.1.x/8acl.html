@@ -60,7 +60,22 @@
     <a class="nav-link" href="workshop/1setup.html">1. Setup</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="workshop/2deploy-microservices.html">2. Deploy Microservices</a>
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-toggle"></button>
@@ -261,7 +276,7 @@ The Access Control rules take some time to be applied and reflected. Be patient 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER
 customer =&gt; 404 customer =&gt; Error: 403 - PERMISSION_DENIED:preferencewhitelist.listchecker.tutorial:customer is not whitelisted</code></pre>
 </div>
 </div>
@@ -288,7 +303,7 @@ customer =&gt; 404 customer =&gt; Error: 403 - PERMISSION_DENIED:preferencewhite
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.apps.barcelona-e7a4.openshiftworkshop.com/$WORKSHOP_USER
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer-$WORKSHOP_USER
 customer =&gt; Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed</code></pre>
 </div>
 </div>
