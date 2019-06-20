@@ -1,6 +1,7 @@
 = Deploy Microservices
 include::_attributes.adoc[]
 
+ifdef::workshop[]
 Create an environment variable for your user and log into OpenShift.
 
 [source,bash,subs="+macros,+attributes"]
@@ -13,6 +14,7 @@ export WORKSHOP_USER=1
 
 oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
 ----
+endif::workshop[]
 
 [#deploycustomer]
 == Deploy customer
