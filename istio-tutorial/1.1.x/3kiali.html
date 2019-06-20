@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Observing microservice meshes with Kiali :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.1.x/3kiali.html">
     <meta name="generator" content="Antora 2.0.0">
@@ -572,7 +572,7 @@ let&#8217;s do it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://kiali-istio-system.$(minishift ip).nip.io/kiali</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://kiali-istio-system.$(minishift ip).nip.io/kiali" class="bare">http://kiali-istio-system.$(minishift ip).nip.io/kiali</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -597,7 +597,7 @@ earlier.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a></code></pre>
 </div>
 </div>
 </div>
@@ -692,31 +692,6 @@ destination rules and so on:</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="_images/kiali-service-details.png" alt="Service Details"></span></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="distributedtracing"><a class="anchor" href="#distributedtracing"></a>Distributed Tracing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Click on the Distributed Tracing link in the left navigation. The distributed
-tracing, provided by Jaeger, will open in a new page.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The tracing page opens in a new browser window/tab, so if it doesn&#8217;t
-open, please check if your browser didn&#8217;t block it from opening.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/kiali-distributed-tracing.png" alt="Distributed Tracing Page"></span></p>
 </div>
 </div>
 </div>

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Service Resiliency :: Istio Workshop</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.1.x/5circuit-breaker.html">
     <meta name="generator" content="Antora 2.0.0">
@@ -89,6 +89,36 @@
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="3kiali.html">Kiali</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#howkiali">How Kiali Work</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#updatekiali">Update Kiali</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#generatingdata">Generating Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#servicegraph">Service Graph</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#servicelistening">Service Listening</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#istioconf">Istio Config</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#distributedtracing">Distributed Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#cleanup">Uninstall Kiali</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -296,7 +326,7 @@ customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://kiali-istio-system.$(minishift ip).nip.io/kiali</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://kiali-istio-system.{appdomain}/kiali</code></pre>
 </div>
 </div>
 <div class="paragraph">

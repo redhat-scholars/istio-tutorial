@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Observability :: Istio Workshop</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.1.x/3monitoring-tracing.html">
     <meta name="generator" content="Antora 2.0.0">
@@ -89,6 +89,36 @@
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#tracing">Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="3kiali.html">Kiali</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#howkiali">How Kiali Work</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#updatekiali">Update Kiali</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#generatingdata">Generating Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#servicegraph">Service Graph</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#servicelistening">Service Listening</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#istioconf">Istio Config</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#distributedtracing">Distributed Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3kiali.html#cleanup">Uninstall Kiali</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -286,6 +316,26 @@ firefox <a href="http://grafana-istio-system.barcelona-e7a4.openshiftworkshop.co
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"" class="bare">http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"</a>
 or
 firefox <a href="http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"" class="bare">http://prometheus-istio-system.barcelona-e7a4.openshiftworkshop.com/graph?g0.range_input=1m&amp;g0.stacked=1&amp;g0.expr=&amp;g0.tab=0"</a></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="containermemory"><a class="anchor" href="#containermemory"></a>Containers memory</h3>
+<div class="paragraph">
+<p>Istio allows also to see the RSS memory consumed by the containers.</p>
+</div>
+<div class="paragraph">
+<p>In the Prometheus dashboard, add the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">container_memory_rss{namespace="tutorial-$WORKSHOP_USER",container_name =~ "customer|preference|recommendation"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and select <code>Execute</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/prometheus-memory.png" alt="Prometheus memory"></span></p>
 </div>
 </div>
 </div>

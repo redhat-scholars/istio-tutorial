@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Observing microservice meshes with Kiali :: Istio Workshop</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.1.x/3kiali.html">
     <meta name="generator" content="Antora 2.0.0">
@@ -89,6 +89,36 @@
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="3kiali.html">Kiali</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#howkiali">How Kiali Work</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#updatekiali">Update Kiali</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#generatingdata">Generating Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#servicegraph">Service Graph</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#servicelistening">Service Listening</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#istioconf">Istio Config</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#distributedtracing">Distributed Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#cleanup">Uninstall Kiali</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -219,7 +249,8 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="3kiali.html">Observing microservice meshes with Kiali</a></li>
+    <li class="crumb"><a href="3monitoring-tracing.html">3. Observability</a></li>
+    <li class="crumb"><a href="3kiali.html">Kiali</a></li>
   </ul>
 </nav>
   <div class="edit-this-page"><a href="file:///antora/documentation/modules/ROOT/pages/3kiali.adoc">Edit this Page</a></div>
@@ -260,55 +291,13 @@ the listing and data of the services, health indexes, and so on.</p>
 to Istio or Openshift configuration (besides the ones required to install
 Istio).</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="updatekiali"><a class="anchor" href="#updatekiali"></a>Update kiali?</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A prerequisite for installing Kiali is that you must have OpenShift and Istio
-installed and configured.</p>
-</div>
-<div class="paragraph">
-<p>Update Kiali with the following commands:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># URLS for Jaeger and Grafana
-export JAEGER_URL="http://tracing-istio-system.$(minishift ip).nip.io"
-export GRAFANA_URL="http://grafana-istio-system.$(minishift ip).nip.io"
-
-echo "apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kiali
-  namespace: istio-system
-  labels:
-    app: kiali
-    chart: kiali
-    heritage: Tiller
-    release: istio
-data:
-  config.yaml: |
-    istio_namespace: istio-system
-    server:
-      port: 20001
-    external_services:
-      istio:
-        url_service_version: http://istio-pilot:8080/version
-      jaeger:
-        url: $JAEGER_URL
-      grafana:
-        url:  $GRAFANA_URL"| kubectl apply -f -; oc delete pod -l app=kiali -n istio-system</code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p>So now we can access Kiali at <code>kiali-istio-system.$(minishift ip).nip.io</code>, so
 let&#8217;s do it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open http://kiali-istio-system.$(minishift ip).nip.io/kiali</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">open <a href="http://kiali-istio-system.barcelona-e7a4.openshiftworkshop.com/kiali" class="bare">http://kiali-istio-system.barcelona-e7a4.openshiftworkshop.com/kiali</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -333,7 +322,7 @@ earlier.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl customer-tutorial.$(minishift ip).nip.io</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer" class="bare">http://istio-ingressgateway-istio-system.barcelona-e7a4.openshiftworkshop.com/customer</a></code></pre>
 </div>
 </div>
 </div>
@@ -428,31 +417,6 @@ destination rules and so on:</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="_images/kiali-service-details.png" alt="Service Details"></span></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="distributedtracing"><a class="anchor" href="#distributedtracing"></a>Distributed Tracing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Click on the Distributed Tracing link in the left navigation. The distributed
-tracing, provided by Jaeger, will open in a new page.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The tracing page opens in a new browser window/tab, so if it doesn&#8217;t
-open, please check if your browser didn&#8217;t block it from opening.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="_images/kiali-distributed-tracing.png" alt="Distributed Tracing Page"></span></p>
 </div>
 </div>
 </div>
