@@ -52,7 +52,7 @@ If you open Kiali, you will notice that v2 receives requests, but that failing r
 
 [source, bash]
 ----
-open http://kiali-istio-system.$(minishift ip).nip.io/kiali
+open http://kiali-istio-system.{appdomain}/kiali
 ----
 
 In Kiali, go to `Graph`, select the `recommendation` square, and place the mouse over the red sign, like the picture bellow.

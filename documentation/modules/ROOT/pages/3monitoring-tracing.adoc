@@ -105,7 +105,7 @@ image:prometheus_custom_metric.png[alt text]
 
 
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
-
+endif::workshop[]
 
 
 [#containermemory]
@@ -117,14 +117,14 @@ In the Prometheus dashboard, add the following
 
 [source,bash,subs="+macros,+attributes"]
 ----
-container_memory_rss{namespace="tutorial",container_name =~ "customer|preference|recommendation"}
+container_memory_rss{namespace="tutorial{namespace-suffix}",container_name =~ "customer|preference|recommendation"}
 ----
 
 and select `Execute`
 
 image:prometheus-memory.png[Prometheus memory]
 
-endif::workshop[]
+
 [#tracing]
 == Tracing
 

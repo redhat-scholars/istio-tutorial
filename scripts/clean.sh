@@ -15,7 +15,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentvs"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         if [ "$name" != "customer-gateway" ]; then
             kubectl delete virtualservice "$name" -n "$namespace"
@@ -33,7 +33,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentdr"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         kubectl delete destinationrule "$name" -n "$namespace"
     done
@@ -49,7 +49,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentse"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         kubectl delete serviceentry "$name" -n "$namespace"
     done
@@ -65,7 +65,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentp"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         kubectl delete policy "$name" -n "$namespace"
     done
@@ -81,7 +81,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentsr"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         kubectl delete servicerole "$name" -n "$namespace"
     done
@@ -97,7 +97,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentsrb"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         kubectl delete servicerolebinding "$name" -n "$namespace"
     done
@@ -113,7 +113,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentrbc"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         kubectl delete rbacconfig "$name" -n "$namespace"
     done
@@ -129,7 +129,7 @@ else
 
     names=`awk -v namespace="$namespace" '{ {print $1} }' <<< "$contentcrbc"`
 
-    for name in "${names[@]}"
+    for name in ${names[@]}
     do
         kubectl delete ClusterRbacConfig "$name" -n "$namespace"
     done

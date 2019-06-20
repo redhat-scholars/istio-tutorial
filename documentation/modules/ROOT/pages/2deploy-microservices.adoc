@@ -163,7 +163,7 @@ kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{p
 
 === Wait preference to be deployed
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
 oc get pods -w  -n tutorial{namespace-suffix}
 or

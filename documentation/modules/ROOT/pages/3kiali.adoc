@@ -26,6 +26,7 @@ Kiali runs as a service together with Istio, and does not require any changes
 to Istio or Openshift configuration (besides the ones required to install
 Istio).
 
+ifndef::workshop[]
 [#updatekiali]
 == Update kiali?
 
@@ -65,13 +66,14 @@ data:
 
 
 ----
+endif::workshop[]
 
 So now we can access Kiali at `kiali-istio-system.$(minishift ip).nip.io`, so
 let's do it:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-open http://kiali-istio-system.$(minishift ip).nip.io/kiali
+open http://kiali-istio-system.{appdomain}/kiali
 ----
 
 
@@ -89,9 +91,9 @@ earlier.
 
 To generate data for it, we can `curl` it with this command:
 
-[source, bash]
+[source, bash,subs="+macros,+attributes"]
 ----
-curl customer-tutorial.$(minishift ip).nip.io
+curl http://istio-ingressgateway-istio-system.{appdomain}/customer
 ----
 
 [#servicegraph]
@@ -158,14 +160,3 @@ the service, such as metrics, traces, workloads, virtual services,
 destination rules and so on:
 
 image:kiali-service-details.png[Service Details]
-
-[#distributedtracing]
-== Distributed Tracing
-
-Click on the Distributed Tracing link in the left navigation. The distributed
-tracing, provided by Jaeger, will open in a new page.
-
-NOTE: The tracing page opens in a new browser window/tab, so if it doesn't
-open, please check if your browser didn't block it from opening.
-
-image:kiali-distributed-tracing.png[Distributed Tracing Page]
