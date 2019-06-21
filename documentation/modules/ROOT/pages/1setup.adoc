@@ -8,6 +8,7 @@ You will need in this tutorial:
 
 * openshift
 ** Mac: `brew install openshift-cli`
+** Or get binary from https://www.okd.io/download.html
 * `minishift`
 ** https://github.com/minishift/minishift/releases[Mac OS and Fedora]
 * docker
