@@ -323,7 +323,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -331,7 +331,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -342,7 +342,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -391,7 +391,7 @@ kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial-$WORKSHOP_US
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial-$WORKSHOP_USER
 kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER
 
-./scripts/run.sh istio-ingressgateway-istio-system.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -428,7 +428,7 @@ kubectl get virtualservice -o yaml -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 </div>
@@ -461,7 +461,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h</code></p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
