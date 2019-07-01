@@ -14,7 +14,7 @@ asciidoc:
   attributes:
     workshop: true
     ocpurl: https://master.jconf-d4f8.openshiftworkshop.com
-    appdomain: jconf-d4f8.openshiftworkshop.com
+    appdomain: apps.jconf-d4f8.openshiftworkshop.com
     etherpad: https://etherpad.wikimedia.org/p/istio-jconf
     namespace-suffix: -$WORKSHOP_USER
     path: customer-$WORKSHOP_USER
