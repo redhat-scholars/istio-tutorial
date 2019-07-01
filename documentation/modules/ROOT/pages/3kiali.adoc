@@ -66,7 +66,7 @@ data:
 
 
 ----
-endif::workshop[]
+
 
 So now we can access Kiali at `kiali-istio-system.$(minishift ip).nip.io`, so
 let's do it:
@@ -75,7 +75,18 @@ let's do it:
 ----
 open http://kiali-istio-system.{appdomain}/kiali
 ----
+endif::workshop[]
 
+// Workshop address
+ifdef::workshop[]
+So now we can access Kiali, so
+let's do it:
+
+[source, bash,subs="+macros,+attributes"]
+----
+open https://kiali-istio-system.{appdomain}/
+----
+endif::workshop[]
 
 image:kiali-login.png[Login Page]
 
@@ -93,7 +104,7 @@ To generate data for it, we can `curl` it with this command:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-curl http://istio-ingressgateway-istio-system.{appdomain}/customer
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 [#servicegraph]
