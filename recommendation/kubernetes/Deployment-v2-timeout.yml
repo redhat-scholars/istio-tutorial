@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: recommendation
+    version: v2
+  name: recommendation-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: recommendation
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: "true"      
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: -Xms15m -Xmx15m -Xmn15m
+        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout
+        imagePullPolicy: IfNotPresent
+        name: recommendation
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        resources:
+          requests: 
+            memory: "50Mi" 
+            cpu: "250m" # 1/4 core
+          limits:
+            memory: "120Mi"
+            cpu: "500m" 
+        livenessProbe:
+          httpGet:            
+            port: 8080
+            path: /health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:            
+            port: 8080
+            path: /health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
+        securityContext:
+          privileged: false
