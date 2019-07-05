@@ -25,7 +25,7 @@ spec:
   http:
   - match:
     - uri:
-        prefix: /customer-$WORKSHOP_USER
+        prefix: /customer$WORKSHOP_USER
     rewrite:
       uri: /
     route:
