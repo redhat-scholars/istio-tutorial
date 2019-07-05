@@ -332,8 +332,8 @@ kubectl get virtualservice -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -A Safari istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER
-curl -A Firefox istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -A Safari istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER
+curl -A Firefox istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -359,7 +359,7 @@ curl -A Firefox istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworks
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-mobile-recommendation-v2.yml">istiofiles/virtual-service-mobile-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER
 
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" <a href="http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</a></code></pre>
+curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" <a href="http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</a></code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -418,7 +418,7 @@ if so run:</p>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial-$WORKSHOP_USER
 kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v1-mirror-v2.yml">istiofiles/virtual-service-recommendation-v1-mirror-v2.yml</a> -n tutorial-$WORKSHOP_USER
 
-curl istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+curl istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -472,7 +472,7 @@ and curl the customer endpoint many times</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
