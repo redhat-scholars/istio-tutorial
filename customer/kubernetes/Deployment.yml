@@ -22,7 +22,7 @@ spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms15m -Xmx15m -Xmn15m
+          value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         name: customer
         image: quay.io/rhdevelopers/istio-tutorial-customer:v1
         imagePullPolicy: IfNotPresent
@@ -37,18 +37,16 @@ spec:
           name: prometheus
           protocol: TCP
         livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health          
+          httpGet:
+            path: /health 
+            port: 8080          
           initialDelaySeconds: 3
           periodSeconds: 5
           timeoutSeconds: 5
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health          
+          httpGet:
+            path: /health 
+            port: 8080           
           initialDelaySeconds: 3
           periodSeconds: 5
           timeoutSeconds: 5

@@ -22,7 +22,7 @@ spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xms15m -Xmx15m -Xmn15m
+          value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout
         imagePullPolicy: IfNotPresent
         name: recommendation

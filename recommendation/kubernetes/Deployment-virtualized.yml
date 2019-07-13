@@ -22,6 +22,8 @@ spec:
     spec:
       containers:
       - env:
+         name: JAVA_OPTIONS
+         value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         image: example/recommendation:virtualized
         args: ["-import=/go/bin/simulation.json"]
         imagePullPolicy: IfNotPresent

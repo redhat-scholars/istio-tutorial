@@ -24,7 +24,7 @@ spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          value: -Xmx256m
+          value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         image: example/recommendation:v6
         imagePullPolicy: IfNotPresent
         livenessProbe:
