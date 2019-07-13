@@ -17,7 +17,6 @@ spec:
   selector:
     app: customer
     version: v1
-    deploymentconfig: customer
   triggers:
   - imageChangeParams:
       containerNames:
@@ -81,19 +80,20 @@ spec:
   ports:
   - name: http
     port: 8080
+    targetPort: 8080
   selector:
     app: customer
 ---
-apiVersion: route.openshift.io/v1
 kind: Route
+apiVersion: route.openshift.io/v1
 metadata:
+  name: customer
   labels:
     app: customer
-  name: customer
 spec:
-  port:
-    targetPort: 8080-tcp
   to:
     kind: Service
     name: customer
     weight: 100
+  port:
+    targetPort: http
