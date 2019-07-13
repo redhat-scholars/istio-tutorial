@@ -8,6 +8,8 @@ spec:
   params:
   - name: url
     value: https://github.com/redhat-developer-demos/istio-tutorial
+  - name: revision
+    value: pipelines-resource-limits
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource

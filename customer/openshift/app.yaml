@@ -37,8 +37,6 @@ spec:
     spec:
       containers:
       - env:
-        - name: JAVA_OPTIONS
-          value: -Dquarkus.http.host=0.0.0.0 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         - name: JAEGER_SERVICE_NAME
           value: customer
         - name: JAEGER_ENDPOINT
