@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  generateName: customer-deploy-pipelinerun-
+spec:
+  pipelineRef:
+    name: deploy-openshift-pipeline
+  trigger:
+    type: manual
+  serviceAccount: 'pipeline'
+  resources:
+  - name: app-git
+    resourceRef:
+      name: customer-git
+  - name: app-image
+    resourceRef:
+      name: customer-openshift-image

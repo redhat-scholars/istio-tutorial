@@ -1,0 +1,101 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app: customer
+  name: customer
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: customer
+  name: customer
+spec:
+  replicas: 1
+  selector:
+    app: customer
+    version: v1
+    deploymentconfig: customer
+  triggers:
+  - imageChangeParams:
+      containerNames:
+      - customer
+      from:
+        kind: ImageStreamTag
+        name: customer:latest
+    type: ImageChange
+  template:
+    metadata:
+      labels:
+        app: customer
+        version: v1
+        deploymentconfig: customer
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: -Dquarkus.http.host=0.0.0.0 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+        - name: JAEGER_SERVICE_NAME
+          value: customer
+        - name: JAEGER_ENDPOINT
+          value: http://jaeger-collector.istio-system.svc:14268/api/traces
+        - name: JAEGER_PROPAGATION
+          value: b3
+        - name: JAEGER_SAMPLER_TYPE
+          value: const
+        - name: JAEGER_SAMPLER_PARAM
+          value: "1"
+        name: customer
+        image: customer:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health 
+            port: 8080          
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health 
+            port: 8080           
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        securityContext:
+          privileged: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer
+  labels:
+    app: customer    
+spec:
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: customer
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: customer
+  name: customer
+spec:
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: customer
+    weight: 100
