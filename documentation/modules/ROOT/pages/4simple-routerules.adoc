@@ -6,7 +6,7 @@ For this use case, we need to use a modified version of Recommendations
 [#deployrecommendationv2]
 == Deploy recommendation:v2
 
-NOTE: You will deploy docker images that were privously built. If you want to build recommendation V2 visit: xref:2build-microservices.adoc#buildrecommendationv2[Create Recommendation V2]
+NOTE: You will deploy docker images that were previously built. If you want to build recommendation V2 visit: xref:2build-microservices.adoc#buildrecommendationv2[Create Recommendation V2]
 
 
 IMPORTANT: We have a 2nd Deployment to manage the v2 version of recommendation. 

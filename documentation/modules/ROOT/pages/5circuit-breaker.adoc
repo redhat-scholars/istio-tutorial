@@ -93,7 +93,7 @@ customer => preference => recommendation v1 from '2039379827-h58vw': 130
 
 Wait only N seconds before giving up and failing. At this point, no other virtual service nor destination rule (in `tutorial` namespace) should be in effect. To check it run `kubectl get virtualservice` `kubectl get destinationrule` and if so `kubectl delete virtualservice virtualservicename -n tutorial{namespace-suffix}` and `kubectl delete destinationrule destinationrulename -n tutorial{namespace-suffix}`
 
-NOTE: You will deploy docker images that were privously built. If you want to build recommendation to add a timeout visit: xref:2build-microservices.adoc#buildrecommendationv2-timeout[Modify recommendation:v2 to have timeout]
+NOTE: You will deploy docker images that were previously built. If you want to build recommendation to add a timeout visit: xref:2build-microservices.adoc#buildrecommendationv2-timeout[Modify recommendation:v2 to have timeout]
 
 First, introduce some wait time in `recommendation v2` by making it a slow performer with a 3 second delay by running the command
 
@@ -128,7 +128,7 @@ customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
 
 === Clean up
 
-NOTE: You will deploy docker images that were privously built. If you want to build recommendation to remove the timeout visit: xref:2build-microservices.adoc#timeout-clenup[Modify recommendation:v2 to remove timeout]
+NOTE: You will deploy docker images that were previously built. If you want to build recommendation to remove the timeout visit: xref:2build-microservices.adoc#timeout-clenup[Modify recommendation:v2 to remove timeout]
 
 Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
 

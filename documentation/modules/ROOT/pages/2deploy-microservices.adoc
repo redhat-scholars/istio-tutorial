@@ -67,7 +67,7 @@ version.BuildInfo{Version:"1.1.9", GitRevision:"879413c25b871ae6fd0df82bea1605ba
 
 === Deploy Customer 
 
-NOTE: You will deploy docker images that were privously built. If you want to build customer visit: xref:2build-microservices.adoc#buildcustomer[Build Customer]
+NOTE: You will deploy docker images that were previously built. If you want to build customer visit: xref:2build-microservices.adoc#buildcustomer[Build Customer]
 
 Now let's deploy the customer pod with its sidecar
 
@@ -148,7 +148,7 @@ customer-6fc99b7bfd-5st28 customer Caused by: java.net.UnknownHostException: pre
 [#deploypreference]
 == Deploy Preference
 
-NOTE: You will deploy docker images that were privously built. If you want to build preference visit: xref:2build-microservices.adoc#buildpreference[Build Preference]
+NOTE: You will deploy docker images that were previously built. If you want to build preference visit: xref:2build-microservices.adoc#buildpreference[Build Preference]
 
 Now let's deploy the preference pod with its sidecar
 
@@ -207,7 +207,7 @@ preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostExceptio
 [#deployrecommendation]
 == Deploy Recommendation
 
-NOTE: You will deploy docker images that were privously built. If you want to build recommendation visit: xref:2build-microservices.adoc#buildrecommendation[Build Recommendation]
+NOTE: You will deploy docker images that were previously built. If you want to build recommendation visit: xref:2build-microservices.adoc#buildrecommendation[Build Recommendation]
 
 Now let's deploy the recommendation pod with its sidecar
 
