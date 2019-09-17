@@ -159,11 +159,11 @@ or you can run:
 [#nocircuitbreaker]
 === Load test without circuit breaker
 
-Let's perform a load test in our system with `siege`. We'll have 40 clients sending 1 concurrent requests each:
+Let's perform a load test in our system with `siege`. We'll have 10 clients sending 4 concurrent requests each:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-siege -r 40 -c 1 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
+siege -r 10 -c 4 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
 
 You should see an output similar to this:
@@ -172,17 +172,180 @@ image:siege_ok.png[siege output with all successful requests]
 
 All of the requests to our system were successful.
 
-[#circuitbreaker]
-=== Load test with circuit breaker
+Now let's make things a bit more interesting.
 
-Now let's see what is the behavior of the system running `siege` again but having 20 concurrent requests.
+We will make pod `recommendation-v2` fail 100% of the time. 
+Get one of the pod names from your system and replace on the following command accordingly:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-siege -r 2 -c 20 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
+oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+or
+kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+----
 
-image:siege_cb_503.png[siege output with some 503 requests due to open circuit breaker]
+You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
-You can run siege multiple times, but in all of the executions you should see some `503` errors being displayed in the results. That's the circuit breaker being opened whenever Istio detects more than 1 pending request being handled by the instance/pod.
+[source,bash,subs="+macros,+attributes"]
+----
+curl localhost:8080/misbehave
+exit
+----
 
+Open a new terminal window and run next command to inspect the logs of this failing pod:
 
+First you need the pod name:
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc get pods -n tutorial
+or
+kubectl get pods -n tutorial
+
+NAME                                  READY     STATUS    RESTARTS   AGE
+customer-3600192384-fpljb             2/2       Running   0          17m
+preference-243057078-8c5hz           2/2       Running   0          15m
+recommendation-v1-60483540-9snd9     2/2       Running   0          12m
+recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
+----
+
+And get the pod name of `recommendation-v2`.
+In previous case, it is `recommendation-v2-2815683430-vpx4p`.
+
+Then check its log:
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+or
+kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+
+recommendation request from '99634814-sf4cl': 10
+recommendation request from '99634814-sf4cl': 11
+recommendation request from '99634814-sf4cl': 12
+recommendation request from '99634814-sf4cl': 13
+----
+
+Scale up the recommendation v2 service to two instances:
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
+or
+kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
+----
+
+Now, you've got one instance of `recommendation-v2` that is misbehaving and another one that is working correctly.
+Let's redirect all traffic to `recommendation-v2`:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
+----
+
+Let's perform a load test in our system with `siege`. 
+We'll have 10 clients sending 4 concurrent requests each:
+
+[source,bash,subs="+macros,+attributes"]
+----
+siege -r 10 -c 4 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
+----
+
+You should see an output similar to this:
+
+image:siege_ok.png[siege output with all successful requests]
+
+All of the requests to our system were successful.
+
+So the *automatic* retries are working as expected.
+So far so good, the error is never send back to the client. 
+But inspect the logs of the failing pod again:
+
+IMPORTANT: Substitute the pod name to your pod name.
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+or
+kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+
+recommendation request from '99634814-sf4cl': 35
+recommendation request from '99634814-sf4cl': 36
+recommendation request from '99634814-sf4cl': 37
+recommendation request from '99634814-sf4cl': 38
+----
+
+Notice that the number of requests has been increased by an order of 20.
+The reason is that the requests are still able to reach the failing service, so even though all consecutive requests to failing pod will fail, Istio is still sending traffic to this failing pod.
+
+This is where the _Circuit Breaker_ comes into the scene.
+
+[#circuitbreaker]
+=== Load test with circuit breaker
+
+Circuit breaker and pool ejection are used to avoid reaching a failing pod for a specified amount of time.
+In this way when some consecutive errors are produced, the failing pod is ejected from eligible pods and all further requests are not sent anymore to that instance but to a healthy instance.
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
+----
+
+[source,bash,subs="+macros,+attributes"]
+----
+siege -r 10 -c 4 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
+----
+
+You should see an output similar to this:
+
+image:siege_ok.png[siege output with all successful requests]
+
+All of the requests to our system were successful.
+
+But now inspect again the logs of the failing pod:
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+or
+kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+
+recommendation request from '99634814-sf4cl': 38
+recommendation request from '99634814-sf4cl': 39
+recommendation request from '99634814-sf4cl': 40
+----
+
+IMPORTANT: Substitute the pod name to your pod name.
+
+Now the request is only send to this pod once or twice until the circuit is tripped and pod is ejected.
+After this, no further request is send to failing pod.
+
+=== Clean up
+
+Remove Istio resources:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl delete -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
+
+kubectl delete -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
+----
+
+Scale down to one instance of `recommendation-v2`.
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
+or
+kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
+----
+
+Restart `recommendation-v2` pod:
+
+[source,bash,subs="+macros,+attributes"]
+----
+oc delete pod -l app=recommendation,version=v2
+or
+kubectl delete pod -l app=recommendation,version=v2
+----
