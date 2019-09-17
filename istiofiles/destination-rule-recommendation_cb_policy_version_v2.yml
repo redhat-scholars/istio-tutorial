@@ -5,21 +5,21 @@ metadata:
 spec:
   host: recommendation
   subsets:
-    - name: version-v1
-      labels:
-        version: v1
-    - name: version-v2
-      labels:
-        version: v2
-      trafficPolicy:
-        connectionPool:
-          http:
-            http1MaxPendingRequests: 1
-            maxRequestsPerConnection: 1
-          tcp:
-            maxConnections: 1
-        outlierDetection:
-          baseEjectionTime: 120.000s
-          consecutiveErrors: 1
-          interval: 1.000s
-          maxEjectionPercent: 100
+  - labels:
+      version: v1
+    name: version-v1
+  - labels:
+      version: v2
+    name: version-v2
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 1
+        maxRequestsPerConnection: 1
+      tcp:
+        maxConnections: 1
+    outlierDetection:
+      baseEjectionTime: 3m
+      consecutiveErrors: 1
+      interval: 1s
+      maxEjectionPercent: 100
