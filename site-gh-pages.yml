@@ -9,7 +9,7 @@ content:
   sources:
   - url: .
     branches: master
-    tags: [1.0.*]
+    tags: [1.0.*, 1.1.*]
     start_path: documentation
 asciidoc:
   attributes:
