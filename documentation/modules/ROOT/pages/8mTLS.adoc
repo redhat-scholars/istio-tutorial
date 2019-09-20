@@ -18,6 +18,30 @@ In this chapter, we are going to see how to secure the communication between all
 [#testingtls]
 == Testing mTLS
 
+Depending on how you install Istio, you have mTLS enabled or not.
+If you have followed this guide and installed the demo profile (xref:1setup.adoc[Setup]), then mTLS is not enabled.
+
+To check if mTLS is enabled or not just run next command:
+
+[source, bash]
+----
+istioctl authn tls-check $(oc get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
+or
+istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
+
+HOST:PORT                                  STATUS     SERVER     CLIENT     AUTHN POLICY        DESTINATION RULE
+customer.tutorial.svc.cluster.local:8000     OK         mTLS      HTTP       default/            default/
+----
+
+If `CLIENT` is with `HTTP` means that mTLS is not enabled.
+
+To enable mTLS:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl create -f link:{github-repo}/{istiofiles-dir}/authentication-enable-tls.yml[istiofiles/authentication-enable-tls.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[istiofiles/destination-rule-tls.yml] -n tutorial{namespace-suffix}
+----
 
 Check the mTLS by _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
 
@@ -28,7 +52,6 @@ CUSTOMER_POD=$(oc get pod | grep cust | awk '{ print $1}' ) # <1>
 or in Kuberentes:
 
 CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' )
-
 
 oc exec -it $CUSTOMER_POD -c istio-proxy /bin/bash # <2>
 
@@ -79,7 +102,7 @@ Now, let's disable _TLS_:
 
 [source, bash]
 ----
-kubectl create -f istiofiles/disable-mtls.yml
+kubectl replace -f istiofiles/disable-mtls.yml
 ----
 
 And execute again:
@@ -115,6 +138,7 @@ Now, you can see that since there is no _TLS_ enabled, the information is not sh
 [source,bash]
 ----
 kubectl delete -f istiofiles/disable-mtls.yml
+kubectl delete -f istiofiles/destination-rule-tls.yml
 ----
 
 or you can run:
