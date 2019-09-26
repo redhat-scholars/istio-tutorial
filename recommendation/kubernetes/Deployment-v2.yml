@@ -26,10 +26,9 @@ spec:
         image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2
         imagePullPolicy: IfNotPresent
         livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health          
+          httpGet:
+            path: "/health"
+            port: 8080       
           initialDelaySeconds: 3
           periodSeconds: 5
           timeoutSeconds: 5
@@ -45,10 +44,9 @@ spec:
           name: prometheus
           protocol: TCP
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health          
+          httpGet:
+            path: "/health"
+            port: 8080      
           initialDelaySeconds: 3
           periodSeconds: 5
           timeoutSeconds: 5
