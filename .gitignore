@@ -40,3 +40,6 @@ package*
 node_modules
 .firebaserc
 .firebase
+
+customer/dotnet/obj
+preference/dotnet/obj
