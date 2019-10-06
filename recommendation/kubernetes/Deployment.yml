@@ -36,21 +36,26 @@ spec:
         - containerPort: 9779
           name: prometheus
           protocol: TCP
+        resources:
+          requests: 
+            memory: "40Mi" 
+            cpu: "200m" # 1/5 core
+          limits:
+            memory: "100Mi"
+            cpu: "500m" 
         livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health          
-          initialDelaySeconds: 3
-          periodSeconds: 5
-          timeoutSeconds: 5
+          httpGet:            
+            port: 8080
+            path: /health
+          initialDelaySeconds: 5
+          periodSeconds: 4
+          timeoutSeconds: 1
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health          
-          initialDelaySeconds: 3
+          httpGet:            
+            port: 8080
+            path: /health
+          initialDelaySeconds: 6
           periodSeconds: 5
-          timeoutSeconds: 5
+          timeoutSeconds: 1
         securityContext:
           privileged: false
