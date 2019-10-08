@@ -69,7 +69,7 @@ Error: 403 - PERMISSION_DENIED:
 exit
 ----
 
-So as you can see customer can only do a request to `preference` service but not to `recommendation`.
+So as you can see `customer` can only do a request to `preference` service but not to `recommendation`.
 
 === Clean up
 
