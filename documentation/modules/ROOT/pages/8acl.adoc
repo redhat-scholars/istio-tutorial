@@ -31,7 +31,8 @@ IMPORTANT: The Access Control rules take some time to be applied and reflected. 
 [#whitelist]
 == Whitelist
 
-We'll create a whitelist that will only allow the next communication path customer -> preference -> recommendation
+We'll create a whitelist that will only allow the next communication path: customer -> preference -> recommendation.
+Any other path will result to a 403 HTTP error.
 
 [source,bash,subs="+macros,+attributes"]
 ----
