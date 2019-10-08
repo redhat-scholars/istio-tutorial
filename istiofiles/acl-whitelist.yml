@@ -5,17 +5,30 @@ metadata:
 spec:
   compiledAdapter: listchecker
   params:
-    overrides: ["recommendation"]
+    overrides: ["preference"]
     blacklist: false
 ---
 apiVersion: "config.istio.io/v1alpha2"
-kind: instance
+kind: rule
 metadata:
-  name: preferencesource
+  name: checkfrompreference
 spec:
-  compiledTemplate: listentry
+  match: destination.labels["app"] == "recommendation"
+  actions:
+  - handler: preferencewhitelist
+    instances:
+    - appsource
+
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: handler
+metadata:
+  name: customerwhitelist
+spec:
+  compiledAdapter: listchecker
   params:
-    value: source.labels["app"]
+    overrides: ["customer"]
+    blacklist: false
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
@@ -24,6 +37,16 @@ metadata:
 spec:
   match: destination.labels["app"] == "preference"
   actions:
-  - handler: preferencewhitelist
+  - handler: customerwhitelist
     instances:
-    - preferencesource
+    - appsource
+
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: appsource
+spec:
+  compiledTemplate: listentry
+  params:
+    value: source.labels["app"]
