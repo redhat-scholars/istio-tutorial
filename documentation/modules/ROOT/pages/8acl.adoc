@@ -20,8 +20,10 @@ To validate if it is enabled just run:
 
 `kubectl -n istio-system get cm istio -o jsonpath="{@.data.mesh}" | grep disablePolicyChecks`
 
-The result is `disablePolicyChecks is false` if you installed Istio by using `istio-demo.yaml` file.
-If not then refer to https://istio.io/docs/tasks/policy-enforcement/enabling-policy/
+The result should be `disablePolicyChecks is false`. 
+If you installed Istio by using `istio-demo.yaml` file then it is enabled by default.
+
+If the result is `true` then refer to https://istio.io/docs/tasks/policy-enforcement/enabling-policy/ to enable it.
 ====
 
 IMPORTANT: The Access Control rules take some time to be applied and reflected. Be patient here!
