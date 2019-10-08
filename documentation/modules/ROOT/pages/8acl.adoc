@@ -21,7 +21,7 @@ To validate if it is enabled just run:
 `kubectl -n istio-system get cm istio -o jsonpath="{@.data.mesh}" | grep disablePolicyChecks`
 
 The result should be `disablePolicyChecks is false`. 
-If you installed Istio by using `istio-demo.yaml` file then it is enabled by default.
+If you installed Istio using `istio-demo.yaml` file then it is enabled by default.
 
 If the result is `true` then refer to https://istio.io/docs/tasks/policy-enforcement/enabling-policy/ to enable it.
 ====
