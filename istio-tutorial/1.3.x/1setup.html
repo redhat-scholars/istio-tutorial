@@ -750,6 +750,18 @@ oc expose service kiali --path=/kiali
 oc adm policy add-cluster-role-to-user admin system:serviceaccount:istio-system:kiali-service-account -z default</code></pre>
 </div>
 </div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<code>istio-demo.yaml</code> enables policy enforcement by default which is required in some sections of the tutorial. Please refer to <a href="https://istio.io/docs/tasks/policy-enforcement/enabling-policy/" class="bare">https://istio.io/docs/tasks/policy-enforcement/enabling-policy/</a> if you are not using this file.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Wait for Istio&#8217;s components to be ready</p>
 </div>
