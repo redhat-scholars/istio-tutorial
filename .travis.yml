@@ -11,7 +11,7 @@ addons:
 
 language: java
 jdk:
-  - oraclejdk8
+  - oraclejdk11
 
 before_install:
   - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
