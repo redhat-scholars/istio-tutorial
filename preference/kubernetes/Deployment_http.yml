@@ -2,29 +2,30 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: recommendation
-    version: v2
-  name: recommendation-v2
+    app: preference
+    version: v1
+  name: preference-v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: recommendation
-      version: v2
+      app: preference
+      version: v1
   template:
     metadata:
       labels:
-        app: recommendation
-        version: v2
+        app: preference
+        version: v1
       annotations:
         sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
-      - env:
+      - env:      
         - name: JAVA_OPTIONS
           value: -Xms15m -Xmx15m -Xmn15m
-        name: recommendation          
-        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2
+        name: preference
+        image: quay.io/rhdevelopers/istio-tutorial-preference:v1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -38,24 +39,22 @@ spec:
           protocol: TCP
         resources:
           requests: 
-            memory: "40Mi" 
+            memory: "20Mi" 
             cpu: "200m" # 1/5 core
           limits:
-            memory: "100Mi"
+            memory: "40Mi"
             cpu: "500m" 
         livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/
+          httpGet:            
+            port: 8080
+            path: /health
           initialDelaySeconds: 5
           periodSeconds: 4
           timeoutSeconds: 1
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
+          httpGet:            
+            port: 8080
+            path: /health
           initialDelaySeconds: 6
           periodSeconds: 5
           timeoutSeconds: 1

@@ -18,6 +18,7 @@ spec:
         version: v2
       annotations:
         sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
       - env:
@@ -44,18 +45,16 @@ spec:
             memory: "100Mi"
             cpu: "500m" 
         livenessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/
+          httpGet:            
+            port: 8080
+            path: /health
           initialDelaySeconds: 5
           periodSeconds: 4
           timeoutSeconds: 1
         readinessProbe:
-          exec:
-            command:
-            - curl
-            - localhost:8080/health
+          httpGet:            
+            port: 8080
+            path: /health
           initialDelaySeconds: 6
           periodSeconds: 5
           timeoutSeconds: 1

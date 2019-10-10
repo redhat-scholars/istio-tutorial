@@ -44,16 +44,18 @@ spec:
             memory: "40Mi"
             cpu: "500m" 
         livenessProbe:
-          httpGet:            
-            port: 8080
-            path: /health
+          exec:
+            command:
+            - curl
+            - localhost:8080/
           initialDelaySeconds: 5
           periodSeconds: 4
           timeoutSeconds: 1
         readinessProbe:
-          httpGet:            
-            port: 8080
-            path: /health
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
           initialDelaySeconds: 6
           periodSeconds: 5
           timeoutSeconds: 1
