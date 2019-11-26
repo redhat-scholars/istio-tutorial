@@ -54,16 +54,20 @@ metadata:
 data:
   config.yaml: |
     istio_namespace: istio-system
+    auth:
+      strategy: login
     server:
       port: 20001
+      web_root: /kiali
     external_services:
       istio:
         url_service_version: http://istio-pilot:8080/version
-      jaeger:
+      tracing:
         url: $JAEGER_URL
       grafana:
-        url:  $GRAFANA_URL"| kubectl apply -f -; oc delete pod -l app=kiali -n istio-system
-
+        url: $GRAFANA_URL
+      prometheus:
+        url: http://prometheus:9090"| kubectl apply -f -; oc delete pod -l app=kiali -n istio-system
 
 ----
 
