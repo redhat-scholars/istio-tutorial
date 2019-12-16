@@ -7,6 +7,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
@@ -26,6 +27,18 @@ public class PreferencesController {
 
     public PreferencesController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    // SB 1.5.X actuator does not allow subpaths on custom health checks URL/do in easy way
+    @RequestMapping("/health/ready")
+    @ResponseStatus(HttpStatus.OK)
+    public void ready() {}
+
+    // SB 1.5.X actuator does not allow subpaths on custom health checks URL/do in
+    // easy way
+    @RequestMapping("/health/live")
+    @ResponseStatus(HttpStatus.OK)
+    public void live() {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "text/plain")
