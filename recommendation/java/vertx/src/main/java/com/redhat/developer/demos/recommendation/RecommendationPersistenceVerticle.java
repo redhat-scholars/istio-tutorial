@@ -89,7 +89,8 @@ public class RecommendationPersistenceVerticle extends AbstractVerticle {
 
         HealthCheckHandler hc = HealthCheckHandler.create(vertx);
         hc.register("dummy-health-check", future -> future.complete(Status.OK()));
-        router.get("/health").handler(hc);
+        router.get("/health/ready").handler(hc);
+        router.get("/health/live").handler(hc);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(LISTEN_ON);
     }
