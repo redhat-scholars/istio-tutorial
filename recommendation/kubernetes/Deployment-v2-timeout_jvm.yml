@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: recommendation
+    version: v2
+  name: recommendation-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: recommendation
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: "true"      
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
+        image: example/recommendation:v2-timeout
+        imagePullPolicy: IfNotPresent
+        name: recommendation
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        livenessProbe:
+          httpGet:            
+            port: 8080
+            path: /health/live
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 4
+        readinessProbe:
+          httpGet:            
+            port: 8080
+            path: /health/ready
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 4
+        securityContext:
+          privileged: false

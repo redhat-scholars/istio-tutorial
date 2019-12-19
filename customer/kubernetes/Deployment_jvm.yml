@@ -1,0 +1,56 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: customer
+    version: v1
+  name: customer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: customer
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: -Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:///dev/./urandom
+        name: customer
+        image: example/customer
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health/live
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 4
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health/ready
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 4
+        securityContext:
+          privileged: false
