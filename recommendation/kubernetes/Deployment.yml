@@ -24,7 +24,7 @@ spec:
         - name: JAVA_OPTIONS
           value: -Xms15m -Xmx15m -Xmn15m
         name: recommendation          
-        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v1
+        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v1.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
