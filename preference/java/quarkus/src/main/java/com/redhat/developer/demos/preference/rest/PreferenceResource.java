@@ -1,4 +1,4 @@
-package com.redhat.developer.demos.customer.rest;
+package com.redhat.developer.demos.preference.rest;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class PreferenceResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response getCustomer() {
         try {
-            String response = recommendationService.getPreference();
+            String response = recommendationService.getRecommendation();
             return Response.ok(String.format(RESPONSE_STRING_FORMAT, response)).build();
         } catch (WebApplicationException ex) {
             Response response = ex.getResponse();

@@ -1,4 +1,4 @@
-package com.redhat.developer.demos.customer.rest;
+package com.redhat.developer.demos.preference.rest;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import javax.ws.rs.core.MultivaluedHashMap;

@@ -1,4 +1,4 @@
-package com.redhat.developer.demos.customer.rest;
+package com.redhat.developer.demos.preference.rest;
 
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -14,6 +14,6 @@ public interface RecommendationService {
     @Path("/")
     @GET
     @Produces("text/plain")
-    public String getPreference();
+    public String getRecommendation();
 
 }

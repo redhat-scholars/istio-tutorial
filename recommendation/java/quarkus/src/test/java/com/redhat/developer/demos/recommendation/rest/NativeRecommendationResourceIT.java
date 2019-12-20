@@ -1,8 +1,8 @@
 package com.redhat.developer.demos.recommendation.rest;
 
-import io.quarkus.test.junit.SubstrateTest;
+import io.quarkus.test.junit.NativeImageTest;
 
-@SubstrateTest
+@NativeImageTest
 public class NativeRecommendationResourceIT extends RecommendationResourceTest {
 
     // Execute the same tests but in native mode.
