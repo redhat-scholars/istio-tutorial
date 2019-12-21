@@ -17,7 +17,13 @@ if so run:
 ----
 ====
 
-_Important:_ We have a 3rd Deployment to manage the v3 version of recommendation. 
+IMPORTANT: We have a 3rd Deployment to manage the v3 version of recommendation. 
+
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build recommendation V3 with Quarkus visit: xref:2build-microservices.adoc#createrecommendationv3[Create Recommendation V3]
+
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build recommendation V3 with Spring Boot visit: xref:2build-microservices.adoc#createrecommendationspringbootv3[Create Recommendation V3 Spring Boot]
+
+If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
 [source,bash, subs="+macros,+attributes"]
 ----

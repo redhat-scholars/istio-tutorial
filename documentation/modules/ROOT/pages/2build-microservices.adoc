@@ -1,18 +1,74 @@
+include::_attributes.adoc[]
+
+[#buildcustomerspringboot]
+== Build Customer Spring Boot
+
+If you want to build Customer from the Spring Boot sources type the following commands
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd customer/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/customer .
+docker images | grep customer
+cd ../../..
+----
+
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment_jvm.yml[{customer-repo}/kubernetes/Deployment_jvm.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+
 [#buildcustomer]
 == Build Customer
 
 If you want to build Customer from the sources type the following commands
 
-IMPORTANT: The tag `v1` at the end of the image name matters. 
+IMPORTANT: The tag `v1.1` at the end of the image name matters. 
 
 [source,bash,subs="+macros,+attributes"]
 ----
 eval $(minishift docker-env)
 cd customer/java/quarkus
-mvn clean package -DskipTests
-docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1 .
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
+docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1.1 .
 docker images | grep customer
 cd ../../..
+----
+
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+
+[#buildpreferencespringboot]
+== Build Preference Spring Boot
+
+If you want to build Preference from the sources type the following commands
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd preference/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/preference:v1 .
+docker images | grep preference
+cd ../../..
+----
+
+Then to deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment_jvm.yml[{preference-repo}/kubernetes/Deployment_jvm.yml])  -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 ----
 
 [#buildpreference]
@@ -20,31 +76,105 @@ cd ../../..
 
 If you want to build Preference from the sources type the following commands
 
-IMPORTANT: The tag `v1` at the end of the image name matters. 
+IMPORTANT: The tag `v1.1` at the end of the image name matters. 
 
 [source,bash,subs="+macros,+attributes"]
 ----
 eval $(minishift docker-env)
 cd preference/java/quarkus
-mvn clean package -DskipTests
-docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1 .
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
+docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1.1 .
 docker images | grep preference
 cd ../../..
+----
+
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml])  -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+
+[#buildrecommendationspringboot]
+== Build Recommendation Spring Boot
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v1 .
+docker images | grep recommendation
+cd ../../..
+----
+
+Then to deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl 
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment_jvm.yml[{recommendation-repo}/kubernetes/Deployment_jvm.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+kubectl get pods -w -n tutorial{namespace-suffix}
 ----
 
 [#buildrecommendation]
 == Build Recommendation
 
-IMPORTANT: The tag `v1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
+IMPORTANT: The tag `v1.1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
 
 [source,bash,subs="+macros,+attributes"]
 ----
 eval $(minishift docker-env)
 cd recommendation/java/quarkus
-mvn clean package -DskipTests
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1 .
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1.1 .
 docker images | grep recommendation
 cd ../../..
+----
+
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+kubectl get pods -w -n tutorial{namespace-suffix}
+----
+
+[#buildrecommendationspringbootv2]
+== Create recommendation:v2 Spring Boot
+
+We can experiment with Istio controlling traffic by making a change to `RecommendationResource.java` like the following and creating a "v2" docker image.
+
+[source,java]
+----
+private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";
+----
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v2 .
+docker images | grep recommendation
+cd ../../..
+----
+
+The "v2" tag during the Docker build is significant.
+
+There is also a second `Deployment-v2_jvm.yml` file to deploy this second version.
+
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl 
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2_jvm.yml[{recommendation-repo}/kubernetes/Deployment-v2_jvm.yml]) -n tutorial{namespace-suffix}
+
+kubectl get pods -w -n tutorial{namespace-suffix}
 ----
 
 [#buildrecommendationv2]
@@ -59,17 +189,15 @@ private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s
 
 The "v2" tag during the Docker build is significant.
 
-There is also a second `deployment.yml` file to label things correctly
-
-=== Docker build 
+There is also a second `Deployment-v2.yml` file to label things correctly
 
 [source,bash,subs="+macros,+attributes"]
 ----
 eval $(minishift docker-env)
 cd recommendation/java/quarkus
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1 .
 
 docker images | grep recommendation
 quay.io/rhdevelopers/istio-tutorial-recommendation   v2                   46d2aa9d46c4        3 seconds ago       454MB
@@ -78,6 +206,53 @@ quay.io/rhdevelopers/istio-tutorial-recommendation   v1                   5db0e5
 cd ../../..
 ----
 
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml]) -n tutorial{namespace-suffix}
+----
+
+[#buildrecommendationspringbootv2-timeout]
+== Modify recommendation:v2 Spring Boot to have timeout
+
+First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationResource.java` making it a slow performer with a 3 second delay.
+
+[source,java]
+----
+@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}
+----
+
+Rebuild and redeploy
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v2 .
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..
+----
+
+
 [#buildrecommendationv2-timeout]
 == Modify recommendation:v2 to have timeout
 
@@ -85,7 +260,7 @@ First, introduce some wait time in `recommendation v2` by uncommenting the line 
 
 [source,java]
 ----
-@@GET
+@GET
 public Response recommendations() {
     count++;
     logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
@@ -106,12 +281,50 @@ Rebuild and redeploy
 ----
 cd recommendation/java/quarkus
 
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
 eval $(minishift docker-env)
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1-timeout .
+docker images | grep recommendation
 
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..
+----
+
+[#timeoutspringboot-cleanup]
+== Modify recommendation:v2 Spring Boot to remove timeout
+
+First, introduce some wait time in `recommendation v2` by uncommenting the line that calls the `timeout()` method. Update `RecommendationResource.java` making it a slow performer with a 3 second delay.
+
+[source,java]
+----
+@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    // timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}
+----
+
+Rebuild and redeploy
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v2 .
 docker images | grep recommendation
 
 oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
@@ -149,11 +362,11 @@ And rebuild and redeploy the service again:
 ----
 cd recommendation/java/quarkus
 
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
 eval $(minishift docker-env)
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1 .
 
 docker images | grep recommendation
 
@@ -162,6 +375,50 @@ or
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
+----
+
+[#createrecommendationspringbootv3]
+== Create recommendation:v3 Spring Boot
+
+We can experiment with Egress service entry by making two changes to `RecommendationResource.java` like the following and creating a "v3" docker image.
+
+Change the default output to make a call to http://worldclockapi.com/api/json/cet/now.
+
+From:
+
+[source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java
+----
+return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+// return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
+----
+
+To:
+
+[source, java]
+.src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java
+----
+// return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
+----
+
+The "v3" tag during the Docker build is significant.
+
+[source,bash,subs="+macros,+attributes"]
+----
+eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v3 .
+docker images | grep recommendation
+
+cd ../../..
+----
+
+There is also a third `Deployment-v3_jvm.yml` file to deploy this second version.
+
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3_jvm.yml[{recommendation-repo}/kubernetes/Deployment-v3_jvm.yml]) -n tutorial
 ----
 
 [#createrecommendationv3]
@@ -191,22 +448,22 @@ return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME,
 
 The "v3" tag during the Docker build is significant.
 
-=== Docker build 
-
 [source,bash,subs="+macros,+attributes"]
 ----
 cd recommendation/java/quarkus
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
 eval $(minishift docker-env)
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3 .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3.1 .
 
-docker images | grep recommendation
-quay.io/rhdevelopers/istio-tutorial-recommendation   v3                  416d254a3692        About a minute ago   463MB
-quay.io/rhdevelopers/istio-tutorial-recommendation   v2-timeout          b82f7d5add2f        About an hour ago    463MB
-quay.io/rhdevelopers/istio-tutorial-recommendation   v2                  5852f5823257        About an hour ago    463MB
-quay.io/rhdevelopers/istio-tutorial-recommendation   v1                  84738c27a06c        About an hour ago    463MB
+docker images | grep recommendation 
 cd ../../..
 ----
 
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml]) -n tutorial
+----

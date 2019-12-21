@@ -68,9 +68,11 @@ control plane version: 1.3.0
 
 === Deploy Customer 
 
-NOTE: You will deploy docker images that were previously built. If you want to build customer visit: xref:2build-microservices.adoc#buildcustomer[Build Customer]
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build customer using Quarkus visit: xref:2build-microservices.adoc#buildcustomer[Build Customer]
 
-Now let's deploy the customer pod with its sidecar
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build customer using Spring Boot visit: xref:2build-microservices.adoc#buildcustomerspringboot[Build Customer Spring Boot]
+
+If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -149,9 +151,11 @@ customer-6fc99b7bfd-5st28 customer Caused by: java.net.UnknownHostException: pre
 [#deploypreference]
 == Deploy Preference
 
-NOTE: You will deploy docker images that were previously built. If you want to build preference visit: xref:2build-microservices.adoc#buildpreference[Build Preference]
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build preference with Quarkus visit: xref:2build-microservices.adoc#buildpreference[Build Preference]
 
-Now let's deploy the preference pod with its sidecar
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build preference with Spring Boot visit: xref:2build-microservices.adoc#buildpreferencespringboot[Build Preference Spring Boot]
+
+If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -208,9 +212,11 @@ preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostExceptio
 [#deployrecommendation]
 == Deploy Recommendation
 
-NOTE: You will deploy docker images that were previously built. If you want to build recommendation visit: xref:2build-microservices.adoc#buildrecommendation[Build Recommendation]
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build recommendation with Quarkus visit: xref:2build-microservices.adoc#buildrecommendation[Build Recommendation]
 
-Now let's deploy the recommendation pod with its sidecar
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build recommendation with Spring Boot visit: xref:2build-microservices.adoc#buildrecommendationspringboot[Build Recommendation Spring Boot]
+
+If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
 [source,bash,subs="+macros,+attributes"]
 ----

@@ -1,0 +1,26 @@
+runtime:
+  cache_dir: ./.cache/antora
+site:
+  title: Istio Tutorial Docs
+  url: https://redhat-developer-demos.github.io/istio-tutorial/
+  start_page: istio-tutorial::index.adoc
+
+content:
+  sources:
+  - url: .
+    branches: HEAD
+    start_path: documentation
+asciidoc:
+  attributes:
+    appdomain: $(minishift ip).nip.io
+    etherpad: ''
+    namespace-suffix: ''
+    ocpurl: ''
+    path: 'customer'
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./supplemental-ui
+output:
+  dir: ./gh-pages
