@@ -95,7 +95,11 @@ Wait only N seconds before giving up and failing. At this point, no other virtua
 
 To check it run `kubectl get virtualservice` `kubectl get destinationrule` and if so `kubectl delete virtualservice virtualservicename -n tutorial{namespace-suffix}` and `kubectl delete destinationrule destinationrulename -n tutorial{namespace-suffix}`
 
-NOTE: You will deploy docker images that were previously built. If you want to build recommendation to add a timeout visit: xref:2build-microservices.adoc#buildrecommendationv2-timeout[Modify recommendation:v2 to have timeout]
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build recommendation with Quarkus to add a timeout visit: xref:2build-microservices.adoc#buildrecommendationv2-timeout[Modify recommendation:v2 to have timeout]
+
+NOTE: You will deploy docker images that were previously built for this tutorial. If you want to build recommendation with Spring Boot to add a timeout visit: xref:2build-microservices.adoc#buildrecommendationspringbootv2-timeout[Modify recommendation:v2 Spring Boot to have timeout]
+
+If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
 First, introduce some wait time in `recommendation v2` by making it a slow performer with a 3 second delay by running the command
 
@@ -130,7 +134,9 @@ customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
 
 === Clean up
 
-NOTE: You will deploy docker images that were previously built. If you want to build recommendation to remove the timeout visit: xref:2build-microservices.adoc#timeout-clenup[Modify recommendation:v2 to remove timeout]
+NOTE: You will deploy docker images that were previously built. If you want to build recommendation with Quarkus to remove the timeout visit: xref:2build-microservices.adoc#timeout-clenup[Modify recommendation:v2 to remove timeout]
+
+NOTE: You will deploy docker images that were previously built. If you want to build recommendation with Spring Boot to remove the timeout visit: xref:2build-microservices.adoc#timeoutspringboot-cleanup[Modify recommendation:v2 to remove timeout]
 
 Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
 
