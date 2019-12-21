@@ -15,7 +15,7 @@ docker images | grep customer
 cd ../../..
 ----
 
-Then to deploy to Kubernetes use:
+To deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -40,7 +40,7 @@ docker images | grep customer
 cd ../../..
 ----
 
-Then to deploy to Kubernetes use:
+To deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -88,7 +88,7 @@ docker images | grep preference
 cd ../../..
 ----
 
-Then to deploy to Kubernetes use:
+To deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -134,7 +134,7 @@ docker images | grep recommendation
 cd ../../..
 ----
 
-Then to deploy to Kubernetes use:
+To deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -167,6 +167,16 @@ The "v2" tag during the Docker build is significant.
 
 There is also a second `Deployment-v2_jvm.yml` file to deploy this second version.
 
+To deploy to Kubernetes use:
+
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl 
+kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2_jvm.yml[{recommendation-repo}/kubernetes/Deployment-v2_jvm.yml]) -n tutorial{namespace-suffix}
+
+kubectl get pods -w -n tutorial{namespace-suffix}
+----
+
 [#buildrecommendationv2]
 == Create recommendation:v2
 
@@ -196,7 +206,7 @@ quay.io/rhdevelopers/istio-tutorial-recommendation   v1                   5db0e5
 cd ../../..
 ----
 
-Then to deploy to Kubernetes use:
+To deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -451,7 +461,7 @@ docker images | grep recommendation
 cd ../../..
 ----
 
-Then to deploy to Kubernetes use:
+To deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
