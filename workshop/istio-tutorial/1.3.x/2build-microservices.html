@@ -252,6 +252,33 @@
   </div>
 <article class="doc">
 <div class="sect1">
+<h2 id="buildcustomerspringboot"><a class="anchor" href="#buildcustomerspringboot"></a>Build Customer Spring Boot</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you want to build Customer from the Spring Boot sources type the following commands</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd customer/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/customer .
+docker images | grep customer
+cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment_jvm.yml">customer/kubernetes/Deployment_jvm.yml</a>) -n tutorial-$WORKSHOP_USER
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="buildcustomer"><a class="anchor" href="#buildcustomer"></a>Build Customer</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -264,7 +291,7 @@
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-The tag <code>v1</code> at the end of the image name matters.
+The tag <code>v1.1</code> at the end of the image name matters.
 </td>
 </tr>
 </table>
@@ -273,10 +300,46 @@ The tag <code>v1</code> at the end of the image name matters.
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
 cd customer/java/quarkus
-mvn clean package -DskipTests
-docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1 .
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
+docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1.1 .
 docker images | grep customer
 cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a>) -n tutorial-$WORKSHOP_USER
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildpreferencespringboot"><a class="anchor" href="#buildpreferencespringboot"></a>Build Preference Spring Boot</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you want to build Preference from the sources type the following commands</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd preference/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/preference:v1 .
+docker images | grep preference
+cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then to deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment_jvm.yml">preference/kubernetes/Deployment_jvm.yml</a>)  -n tutorial-$WORKSHOP_USER
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 </div>
@@ -294,7 +357,7 @@ cd ../../..</code></pre>
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-The tag <code>v1</code> at the end of the image name matters.
+The tag <code>v1.1</code> at the end of the image name matters.
 </td>
 </tr>
 </table>
@@ -303,10 +366,45 @@ The tag <code>v1</code> at the end of the image name matters.
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
 cd preference/java/quarkus
-mvn clean package -DskipTests
-docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1 .
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
+docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1.1 .
 docker images | grep preference
 cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a>)  -n tutorial-$WORKSHOP_USER
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendationspringboot"><a class="anchor" href="#buildrecommendationspringboot"></a>Build Recommendation Spring Boot</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v1 .
+docker images | grep recommendation
+cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then to deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment_jvm.yml">recommendation/kubernetes/Deployment_jvm.yml</a>) -n tutorial-$WORKSHOP_USER
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial-$WORKSHOP_USER
+kubectl get pods -w -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 </div>
@@ -321,7 +419,7 @@ cd ../../..</code></pre>
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-The tag <code>v1</code> at the end of the image name matters. We will be creating a <code>v2</code> version of <code>recommendation</code> later in this tutorial. Having both a <code>v1</code> and <code>v2</code> version of the <code>recommendation</code> code will allow us to exercise some interesting aspects of Istio&#8217;s capabilities.
+The tag <code>v1.1</code> at the end of the image name matters. We will be creating a <code>v2</code> version of <code>recommendation</code> later in this tutorial. Having both a <code>v1</code> and <code>v2</code> version of the <code>recommendation</code> code will allow us to exercise some interesting aspects of Istio&#8217;s capabilities.
 </td>
 </tr>
 </table>
@@ -330,10 +428,60 @@ The tag <code>v1</code> at the end of the image name matters. We will be creatin
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
 cd recommendation/java/quarkus
-mvn clean package -DskipTests
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1 .
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1.1 .
 docker images | grep recommendation
 cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a>) -n tutorial-$WORKSHOP_USER
+kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial-$WORKSHOP_USER
+kubectl get pods -w -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendationspringbootv2"><a class="anchor" href="#buildrecommendationspringbootv2"></a>Create recommendation:v2 Spring Boot</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We can experiment with Istio controlling traffic by making a change to <code>RecommendationResource.java</code> like the following and creating a "v2" docker image.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s': %d\n";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v2 .
+docker images | grep recommendation
+cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The "v2" tag during the Docker build is significant.</p>
+</div>
+<div class="paragraph">
+<p>There is also a second <code>Deployment-v2_jvm.yml</code> file to deploy this second version.</p>
+</div>
+<div class="paragraph">
+<p>To deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2_jvm.yml">recommendation/kubernetes/Deployment-v2_jvm.yml</a>) -n tutorial-$WORKSHOP_USER
+
+kubectl get pods -w -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 </div>
@@ -353,17 +501,15 @@ cd ../../..</code></pre>
 <p>The "v2" tag during the Docker build is significant.</p>
 </div>
 <div class="paragraph">
-<p>There is also a second <code>deployment.yml</code> file to label things correctly</p>
+<p>There is also a second <code>Deployment-v2.yml</code> file to label things correctly</p>
 </div>
-<div class="sect2">
-<h3 id="_docker_build"><a class="anchor" href="#_docker_build"></a>Docker build</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
 cd recommendation/java/quarkus
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1 .
 
 docker images | grep recommendation
 quay.io/rhdevelopers/istio-tutorial-recommendation   v2                   46d2aa9d46c4        3 seconds ago       454MB
@@ -371,6 +517,56 @@ quay.io/rhdevelopers/istio-tutorial-recommendation   v1                   5db0e5
 
 cd ../../..</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>To deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">recommendation/kubernetes/Deployment-v2.yml</a>) -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="buildrecommendationspringbootv2-timeout"><a class="anchor" href="#buildrecommendationspringbootv2-timeout"></a>Modify recommendation:v2 Spring Boot to have timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, introduce some wait time in <code>recommendation v2</code> by uncommenting the line that calls the <code>timeout()</code> method. Update <code>RecommendationResource.java</code> making it a slow performer with a 3 second delay.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rebuild and redeploy</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v2 .
+docker images | grep recommendation
+
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..</code></pre>
 </div>
 </div>
 </div>
@@ -383,7 +579,7 @@ cd ../../..</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@@GET
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@GET
 public Response recommendations() {
     count++;
     logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
@@ -405,12 +601,54 @@ public Response recommendations() {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
 
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
 eval $(minishift docker-env)
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1-timeout .
+docker images | grep recommendation
 
+oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+or
+kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
+
+cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="timeoutspringboot-cleanup"><a class="anchor" href="#timeoutspringboot-cleanup"></a>Modify recommendation:v2 Spring Boot to remove timeout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, introduce some wait time in <code>recommendation v2</code> by uncommenting the line that calls the <code>timeout()</code> method. Update <code>RecommendationResource.java</code> making it a slow performer with a 3 second delay.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@GET
+public Response recommendations() {
+    count++;
+    logger.debug(String.format("recommendation request from %s: %d", HOSTNAME, count));
+
+    // timeout();
+
+    logger.debug("recommendation service ready to return");
+    if (misbehave) {
+        return doMisbehavior();
+    }
+    return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rebuild and redeploy</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v2 .
 docker images | grep recommendation
 
 oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
@@ -452,11 +690,11 @@ public Response recommendations() {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
 
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
 eval $(minishift docker-env)
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2 .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1 .
 
 docker images | grep recommendation
 
@@ -465,6 +703,59 @@ or
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="createrecommendationspringbootv3"><a class="anchor" href="#createrecommendationspringbootv3"></a>Create recommendation:v3 Spring Boot</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We can experiment with Egress service entry by making two changes to <code>RecommendationResource.java</code> like the following and creating a "v3" docker image.</p>
+</div>
+<div class="paragraph">
+<p>Change the default output to make a call to <a href="http://worldclockapi.com/api/json/cet/now" class="bare">http://worldclockapi.com/api/json/cet/now</a>.</p>
+</div>
+<div class="paragraph">
+<p>From:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+// return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/com/redhat/developer/demos/recommendation/rest/RecommendationResource.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The "v3" tag during the Docker build is significant.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minishift docker-env)
+cd recommendation/java/springboot/
+mvn clean package -DskipTests
+docker build -t example/recommendation:v3 .
+docker images | grep recommendation
+
+cd ../../..</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There is also a third <code>Deployment-v3_jvm.yml</code> file to deploy this second version.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kubectl apply -f &lt;(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3_jvm.yml[{recommendation-repo}/kubernetes/Deployment-v3_jvm.yml]) -n tutorial</pre>
 </div>
 </div>
 </div>
@@ -501,24 +792,25 @@ return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME,
 <div class="paragraph">
 <p>The "v3" tag during the Docker build is significant.</p>
 </div>
-<div class="sect2">
-<h3 id="_docker_build_2"><a class="anchor" href="#_docker_build_2"></a>Docker build</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/quarkus
-mvn clean package -DskipTests
+mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
 eval $(minishift docker-env)
 
-docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3 .
+docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3.1 .
 
 docker images | grep recommendation
-quay.io/rhdevelopers/istio-tutorial-recommendation   v3                  416d254a3692        About a minute ago   463MB
-quay.io/rhdevelopers/istio-tutorial-recommendation   v2-timeout          b82f7d5add2f        About an hour ago    463MB
-quay.io/rhdevelopers/istio-tutorial-recommendation   v2                  5852f5823257        About an hour ago    463MB
-quay.io/rhdevelopers/istio-tutorial-recommendation   v1                  84738c27a06c        About an hour ago    463MB
 cd ../../..</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>To deploy to Kubernetes use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">recommendation/kubernetes/Deployment-v3.yml</a>) -n tutorial</code></pre>
 </div>
 </div>
 </div>
