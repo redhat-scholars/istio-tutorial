@@ -22,8 +22,6 @@ We will make pod recommendation-v2 fail 100% of the time. Get one of the pod nam
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
@@ -39,10 +37,9 @@ This is a special endpoint that will make our application return only `503`s.
 
 You will see it works every time because Istio will retry the recommendation service *automatically* and it will land on v1 only.
 
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
+include::generate_traffic.adoc[]
 
+----
 customer => preference => recommendation v1 from '2036617847-m9glz': 196
 customer => preference => recommendation v1 from '2036617847-m9glz': 197
 customer => preference => recommendation v1 from '2036617847-m9glz': 198
@@ -63,8 +60,6 @@ Now, make the pod v2 behave well again
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
@@ -78,10 +73,9 @@ exit
 
 The application is back to round-robin load-balancing between v1 and v2
 
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
+include::generate_traffic.adoc[]
 
+----
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
 customer => preference => recommendation v1 from '2039379827-h58vw': 130
@@ -105,15 +99,12 @@ First, introduce some wait time in `recommendation v2` by making it a slow perfo
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
+kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
 ----
 
 Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond
 
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::generate_traffic.adoc[]
 
 Then add the timeout rule
 
@@ -124,9 +115,9 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommenda
 
 You will see it return v1 after waiting about 1 second. You don't see v2 anymore, because the response from v2 expires after the timeout period and it is never returned.
 
-[source,bash,subs="+macros,+attributes"]
+include::generate_traffic.adoc[]
+
 ----
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2907
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2908
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
@@ -142,7 +133,7 @@ Change the implementation of `v2` back to the image that responds without the de
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
+kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
 ----
 
 Then delete the virtual service created for timeout by:
@@ -185,8 +176,6 @@ Get one of the pod names from your system and replace on the following command a
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
-or
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
 ----
 
@@ -204,8 +193,6 @@ First you need the pod name:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc get pods -n tutorial
-or
 kubectl get pods -n tutorial
 
 NAME                                  READY     STATUS    RESTARTS   AGE
@@ -222,8 +209,6 @@ Then check its log:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
-or
 kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
 
 recommendation request from '99634814-sf4cl': 10
@@ -236,8 +221,6 @@ Scale up the recommendation v2 service to two instances:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
-or
 kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
 ----
 
@@ -272,8 +255,6 @@ IMPORTANT: Substitute the pod name to your pod name.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
-or
 kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
 
 recommendation request from '99634814-sf4cl': 35
@@ -313,8 +294,6 @@ But now inspect again the logs of the failing pod:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
-or
 kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
 
 recommendation request from '99634814-sf4cl': 38
@@ -342,8 +321,6 @@ Scale down to one instance of `recommendation-v2`.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
-or
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
 ----
 
@@ -351,7 +328,5 @@ Restart `recommendation-v2` pod:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc delete pod -l app=recommendation,version=v2
-or
 kubectl delete pod -l app=recommendation,version=v2
 ----

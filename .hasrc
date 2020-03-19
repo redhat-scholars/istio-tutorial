@@ -1,7 +1,6 @@
 # cloud
-minishift
+minikube
 docker
-oc
 kubectl
 
 # sources

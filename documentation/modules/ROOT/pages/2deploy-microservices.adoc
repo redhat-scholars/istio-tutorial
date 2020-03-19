@@ -23,8 +23,6 @@ Make sure you are logged in
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc whoami
-or
 kubectl config current-context
 ----
 
@@ -32,20 +30,9 @@ and you have setup the project/namespace
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc new-project tutorial{namespace-suffix}
-or
 kubectl create namespace tutorial{namespace-suffix}
 kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
 ----
-
-ifndef::workshop[]
-Give the tutorial project the required privileges.
-
-[source,bash,subs="+macros,+attributes"]
-----
-oc adm policy add-scc-to-user privileged -z default -n tutorial{namespace-suffix}
-----
-endif::workshop[]
 
 Then clone the git repository
 
@@ -76,29 +63,27 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-
-or
-
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 ----
 
 === Expose customer
 
-Since the `customer` service is the one our users will interact with, let's add an OpenShift Route that exposes that endpoint.
+Since the `customer` service is the one our users will interact with, let's add a Gateway that exposes that endpoint.
 
 ifndef::workshop[]
 [source,bash,subs="+macros,+attributes"]
 ----
-oc create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial{namespace-suffix}
-or
 kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial{namespace-suffix}
-
-oc get pods -w -n tutorial{namespace-suffix}
-or
 kubectl get pods -w -n tutorial{namespace-suffix}
+
+kubectl get svc istio-ingressgateway -n istio-system
+istio-ingressgateway   LoadBalancer   10.101.82.250   <pending>     15020:31582/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:30818/TCP,15030:32542/TCP,15031:30106/TCP,15032:32284/TCP,15443:31080/TCP   19m
+
+export INGRESS_HOST=$(minikube ip -p istio)
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+
+export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 ----
 endif::workshop[]
 
@@ -121,10 +106,7 @@ Wait until the status is `Running` and there are `2/2` pods in the `Ready` colum
 
 Then test the customer endpoint
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::curl.adoc[]
 
 You should see the following error because the services `preference` and `recommendation` are not yet deployed.
 
@@ -159,11 +141,6 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
-
-or
-
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml])  -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 ----
@@ -172,17 +149,12 @@ kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{p
 
 [source, bash,subs="+macros,+attributes"]
 ----
-oc get pods -w  -n tutorial{namespace-suffix}
-or
 kubectl get pods -w -n tutorial{namespace-suffix}
 ----
 
 Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::curl.adoc[]
 
 It will respond with an error since the service `recommendation` is not yet deployed.
 
@@ -220,12 +192,6 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml])  -n tutorial{namespace-suffix}
-oc create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml]  -n tutorial{namespace-suffix}
-oc get pods -w -n tutorial{namespace-suffix}
-
-or 
-
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 kubectl get pods -w -n tutorial{namespace-suffix}
@@ -235,10 +201,7 @@ kubectl get pods -w -n tutorial{namespace-suffix}
 
 Wait until the status is `Running` and there are `2/2` pods in the `Ready` column. To exit, press `Ctrl+C`
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::curl.adoc[]
 
 it should now return
 
@@ -276,12 +239,6 @@ Make your changes, save it and then:
 mvn clean package
 docker build -t example/{servicename}:v1 .
 
-oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
-oc get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
-oc delete pod -l app={servicename},version=v1 -n tutorial{namespace-suffix}
-
-or
-
 kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
 kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
 kubectl delete pod -l app={servicename},version=v1 -n tutorial{namespace-suffix}
@@ -293,7 +250,5 @@ Based on the Deployment configuration, Kubernetes/OpenShift will recreate the po
 
 [source,bash]
 ----
-oc describe deployment {servicename}  -n tutorial{namespace-suffix}| grep Replicas
-or
 kubectl describe deployment {servicename} -n tutorial{namespace-suffix} | grep Replicas
 ----

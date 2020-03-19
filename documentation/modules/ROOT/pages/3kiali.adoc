@@ -106,10 +106,7 @@ earlier.
 
 To generate data for it, we can `curl` it with this command:
 
-[source, bash,subs="+macros,+attributes"]
-----
-curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::curl.adoc[]
 
 [#servicegraph]
 == Service Graph

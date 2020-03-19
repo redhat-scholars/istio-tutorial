@@ -10,10 +10,7 @@ NOTE: You may want to push some load onto the deployed applications in order to 
 
 Run the following command to produce load.
 
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::generate_traffic.adoc[]
 
 [source,bash,subs="+macros,+attributes"]
 ----

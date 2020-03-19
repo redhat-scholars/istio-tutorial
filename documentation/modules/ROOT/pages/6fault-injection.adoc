@@ -22,9 +22,7 @@ By default, recommendation v1 and v2 are being randomly load-balanced as that is
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc get pods -l app=recommendation -n tutorial{namespace-suffix}
-or
-$ kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
+kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
 
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          18h
@@ -37,9 +35,11 @@ You can inject 503's, for approximately 50% of the requests
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-503.yml[istiofiles/virtual-service-recommendation-503.yml] -n tutorial{namespace-suffix}
+----
 
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
+include::generate_traffic.adoc[]
 
+----
 customer => preference => recommendation v2 from '7778d6fb89-j6lts': 138
 customer => Error: 503 - preference => Error: 503 - fault filter abort
 customer => preference => recommendation v1 from '6976858b48-dswhz': 139
@@ -73,10 +73,7 @@ kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommen
 
 And hit the customer endpoint
 
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::generate_traffic.adoc[]
 
 You will notice many requests to the customer endpoint now have a delay.
 If you are monitoring the logs for recommendation v1 and v2, you will also see the delay happens BEFORE the recommendation service is actually called
@@ -85,11 +82,6 @@ If you are monitoring the logs for recommendation v1 and v2, you will also see t
 ----
 stern recommendation -n tutorial{namespace-suffix}
 ----
-
-or
-`bash
-./kubetail.sh recommendation -n tutorial{namespace-suffix}
-`
 
 === Clean up
 

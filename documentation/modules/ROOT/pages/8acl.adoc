@@ -51,8 +51,6 @@ Of course everything is still valid but let's go inside customer pod:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) -c customer /bin/bash
-or
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) -c customer /bin/bash
 ----
 

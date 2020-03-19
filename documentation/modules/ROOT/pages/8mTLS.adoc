@@ -25,8 +25,6 @@ To check if mTLS is enabled or not just run next command:
 
 [source, bash]
 ----
-istioctl authn tls-check $(oc get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
-or
 istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
 
 HOST:PORT                                  STATUS     SERVER     CLIENT     AUTHN POLICY        DESTINATION RULE
@@ -47,17 +45,9 @@ Check the mTLS by _sniffing_ traffic between services, which is a bit more tedio
 
 [source, bash]
 ----
-CUSTOMER_POD=$(oc get pod | grep cust | awk '{ print $1}' ) # <1>
+CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' ) # <1>
 
-or in Kuberentes:
-
-CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' )
-
-oc exec -it $CUSTOMER_POD -c istio-proxy /bin/bash # <2>
-
-or in Kubernetes:
-
-kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash 
+kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash # <2>
 
 # Inside pod shell
 
@@ -94,6 +84,7 @@ E....B@.@._........
 .y/E]......K......... .@s.3.\.
 .i.v...#.O<..^.F.	...?..:s...).....e......*..F.Kz..i.jk..xx...#....|.U.!.......X.....@......0.....*...l.v..G)T...9...M.....i.H ..=	.a.hp..&8..L..`.s..d_o.~.T ./.......9..	;F81.......S.{.....1rE..o...`..............c+U...}.{7..Y....Q4.#..(.c]Q...[..8..$u.b...=..6.....~..9..H....R
 .9x*q....h0......O......q..Fb)..E..m..=.M.....W.Yk>.......;.2eys..E.....=q.;.k ....R.f.(./^F....4.c..*Y.4....es.....TX`nh..L.z.6....(.X.>c.V.0z........GF%.%..l4P.......@.^Q........46.g.#.n...e.k.._..>.T+.S...t}....
+
 ----
 
 Notice that you cannot see any detail about the communication since it happened through TLS.

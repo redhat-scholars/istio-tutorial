@@ -6,19 +6,18 @@ include::_attributes.adoc[]
 
 You will need in this tutorial:
 
-* openshift
-** Mac: `brew install openshift-cli`
-* `minishift`
-** https://github.com/minishift/minishift/releases[Mac OS and Fedora]
+* `virtualbox`
+** https://www.virtualbox.org/wiki/Downloads[MacOS, Windows and Linux]
+* `minikube`
+** https://kubernetes.io/docs/tasks/tools/install-minikube/[MacOS, Windows and Fedora]
 * docker
-** https://www.docker.com/docker-mac[Mac OS]
+** https://www.docker.com/docker-mac[MacOS]
 ** Fedora: `dnf install docker`
 * kubectl
-** https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl[Mac OS]
+** https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl[MacOS, Windows and Fedora]
 ** Fedora: `dnf install kubernetes-client`
-* `oc (eval $(minishift oc-env))`
 * Apache Maven
-** https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[Mac OS]
+** https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[MacOS, Windows and Linux]
 ** Fedora: `dnf install maven`
 * link:https://github.com/wercker/stern[stern]
 ** Mac OS: `brew install stern`
@@ -44,9 +43,8 @@ The output should be something like:
 
 [source, bash]
 ----
-✔ minishift
+✔ minikube
 ✔ docker 18.09.0
-✔ oc
 ✔ kubectl
 ✔ git 2.17.2
 ✔ mvn 3.5.0
@@ -58,48 +56,32 @@ The output should be something like:
 You can check quickly if you are missing any tool and decide if you want to install or not.
 ====
 
-[#minishift]
-== Setup minishift
+[#minikube]
+== Setup minikube
 
-In case of using Minishift you need at least minishift v1.24.0.
+In case of using Minikube you need at least minikube v1.7.3.
 
 [source,bash,subs="+macros,+attributes"]
 ----
 #!/bin/bash
 
-# add the location of minishift executable to PATH
+# add the location of minikube executable to PATH
 # I also keep other handy tools like kubectl and kubetail.sh
 # in that directory
 
-minishift profile set istio-tutorial
-minishift config set memory 8GB
-minishift config set cpus 3
-minishift config set image-caching true
-minishift config set openshift-version v3.11.0
-minishift addon enable admin-user
-
-#cdk 3.7 bug - docker url check
-minishift config set skip-startup-checks true
-
-minishift start
-#This needs to be executed again if you restart minishift.
-minishift ssh -- sudo setenforce 0
-
-# Openshift console bug. anyuid needs to be applied after startup
-minishift addon apply anyuid
+minikube profile istio
+minikube start --memory=8192 --cpus=2 --kubernetes-version=v1.14.2 --vm-driver=virtualbox -p istio
 ----
-
 
 [#environment]
 == Setup environment
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift oc-env)
-oc login $(minishift ip):8443 -u admin -p admin
+eval $(minikube docker-env -p istio)
 ----
 
-NOTE: In this tutorial, you will often be polling the customer endpoint with `curl`, while simultaneously viewing logs via `stern` or `kubetail.sh` and issuing commands via `oc` and `istioctl`. Consider using three terminal windows.
+NOTE: In this tutorial, you will often be polling the customer endpoint with `curl`, while simultaneously viewing logs via `stern` or `kubetail.sh` and issuing commands via `kubectl` and `istioctl`. Consider using three terminal windows.
 
 [#upstreamistioinstallation]
 == Upstream Istio installation
@@ -124,25 +106,10 @@ export PATH=$ISTIO_HOME/bin:$PATH
 [source,bash,subs="+macros,+attributes"]
 ----
 
-for i in install/kubernetes/helm/istio-init/files/crd*yaml; do oc apply -f $i; done
-or
 for i in install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl apply -f $i; done
 
-
-oc apply -f install/kubernetes/istio-demo.yaml
-or
 kubectl apply -f install/kubernetes/istio-demo.yaml
-
-oc project istio-system
-or
 kubectl config set-context $(kubectl config current-context) --namespace=istio-system
-
-oc expose svc istio-ingressgateway --port=80
-oc expose svc grafana
-oc expose svc prometheus
-oc expose svc tracing
-oc expose service kiali --path=/kiali 
-oc adm policy add-cluster-role-to-user admin system:serviceaccount:istio-system:kiali-service-account -z default
 ----
 
 IMPORTANT: `istio-demo.yaml` enables policy enforcement by default which is required in some sections of the tutorial. Please refer to https://istio.io/docs/tasks/policy-enforcement/enabling-policy/ if you are not using this file.
@@ -151,8 +118,6 @@ Wait for Istio's components to be ready
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc get pods -w
-or
 $ kubectl get pods -w
 
 NAME                                        READY     STATUS      RESTARTS   AGE
@@ -172,14 +137,3 @@ istio-tracing-7454db9d79-9qwqr            1/1     Running     0          88m
 kiali-66d74fc6cc-zdzzt                    1/1     Running     0          88m
 prometheus-7d9fb4b69c-ww5w7               1/1     Running     0          88m
 ----
-
-And if you need quick access to the OpenShift console
-
-[source,bash,subs="+macros,+attributes"]
-----
-minishift console
-----
-
-NOTE: On your first launch of the OpenShift console via `minishift`, you will receive a warning like "Your connection is not private". For our demo, simply select "Proceed to 192.168.xx.xx (unsafe)" to bypass the warning. Both the username and the password are set to `admin`, thanks to the `admin-user` add-on.
-
-
