@@ -84,9 +84,9 @@ From the main istio-tutorial directory,
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
-
-./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
+
+include::generate_traffic.adoc[]
 
 you should only see v2 being returned
 
