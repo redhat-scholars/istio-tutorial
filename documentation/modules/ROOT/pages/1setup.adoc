@@ -43,7 +43,7 @@ The output should be something like:
 
 [source, bash]
 ----
-✔ minikube
+✔ minikube 1.8.2
 ✔ docker 18.09.0
 ✔ kubectl
 ✔ git 2.17.2
