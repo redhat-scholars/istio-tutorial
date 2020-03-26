@@ -76,11 +76,9 @@ Open `istiofiles/namespace-rbac-policy-jwt.yml` and change the `role` with value
 [source, yaml]
 .istiofiles/namespace-rbac-policy-jwt.yml
 ----
-spec:
-  subjects:
-  - user: "*"
-    properties:
-      request.auth.claims[role]: "xxx"
+when:
+  - key: request.auth.claims[role]
+    values: ["xxxx"]
 ----
 
 And then replace it:
@@ -117,5 +115,5 @@ Follow xref:8jwt.adoc#cleanup[End-user authentication with JWT Clean Up] steps t
 [source, bash]
 ----
 kubectl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
-kubectl create -f istiofiles/authorization-enable-rbac.yml -n tutorial
+kubectl delete -f istiofiles/authorization-enable-rbac.yml -n tutorial
 ----

@@ -55,6 +55,8 @@ Configure Istio to allow only registered traffic:
 kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: ALLOW_ANY/mode: REGISTRY_ONLY/g' | kubectl replace -n istio-system -f -
 ----
 
+WARNING: You might need to wait some tenths of seconds until the configuration takes effect.
+
 Be sure you do not have any previous destination rule nor virtual service installed.
 
 Let's redirect all traffic to reccomendation:v3.
@@ -124,4 +126,11 @@ Undeploy _recommendation:v3_:
 [source, bash]
 ----
 kubectl delete all -n tutorial -l app=recommendation,version=v3
+----
+
+And get back to allow any output traffic:
+
+[source, bash]
+----
+kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: REGISTRY_ONLY/mode: ALLOW_ANY/g' | kubectl replace -n istio-system -f -
 ----

@@ -27,57 +27,9 @@ to Istio or Openshift configuration (besides the ones required to install
 Istio).
 
 ifndef::workshop[]
-[#updatekiali]
-== Update kiali?
-
-A prerequisite for installing Kiali is that you must have OpenShift and Istio
-installed and configured.
-
-Update Kiali with the following commands:
-
-[source, bash]
-----
-# URLS for Jaeger and Grafana
-export JAEGER_URL="http://tracing-istio-system.$(minishift ip).nip.io"
-export GRAFANA_URL="http://grafana-istio-system.$(minishift ip).nip.io"
-
-echo "apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kiali
-  namespace: istio-system
-  labels:
-    app: kiali
-    chart: kiali
-    heritage: Tiller
-    release: istio
-data:
-  config.yaml: |
-    istio_namespace: istio-system
-    auth:
-      strategy: login
-    server:
-      port: 20001
-      web_root: /kiali
-    external_services:
-      istio:
-        url_service_version: http://istio-pilot:8080/version
-      tracing:
-        url: $JAEGER_URL
-      grafana:
-        url: $GRAFANA_URL
-      prometheus:
-        url: http://prometheus:9090"| kubectl apply -f -; oc delete pod -l app=kiali -n istio-system
-
-----
-
-
-So now we can access Kiali at `kiali-istio-system.$(minishift ip).nip.io`, so
-let's do it:
-
 [source, bash,subs="+macros,+attributes"]
 ----
-open http://kiali-istio-system.{appdomain}/kiali
+istioctl dashboard kiali
 ----
 endif::workshop[]
 

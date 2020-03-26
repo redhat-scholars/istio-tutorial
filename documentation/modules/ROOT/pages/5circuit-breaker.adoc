@@ -47,10 +47,22 @@ customer => preference => recommendation v1 from '2036617847-m9glz': 198
 
 If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as `preference` will retry to establish the connection with `recommendation`, and v1 will reply.
 
-[source, bash]
+ifndef::workshop[]
+[source, bash,subs="+macros,+attributes"]
 ----
-open http://kiali-istio-system.{appdomain}/kiali
+istioctl dashboard kiali
 ----
+endif::workshop[]
+
+ifdef::workshop[]
+So now we can access Kiali, so
+let's do it:
+
+[source, bash,subs="+macros,+attributes"]
+----
+open https://kiali-istio-system.{appdomain}/
+----
+endif::workshop[]
 
 In Kiali, go to `Graph`, select the `recommendation` square, and place the mouse over the red sign, like the picture bellow.
 
@@ -158,10 +170,7 @@ or you can run:
 
 Let's perform a load test in our system with `siege`. We'll have 10 clients sending 4 concurrent requests each:
 
-[source,bash,subs="+macros,+attributes"]
-----
-siege -r 10 -c 4 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::siege.adoc[]
 
 You should see an output similar to this:
 
@@ -236,10 +245,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommenda
 Let's perform a load test in our system with `siege`. 
 We'll have 10 clients sending 4 concurrent requests each:
 
-[source,bash,subs="+macros,+attributes"]
-----
-siege -r 10 -c 4 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::siege.adoc[]
 
 You should see an output similar to this:
 
@@ -279,10 +285,7 @@ In this way when some consecutive errors are produced, the failing pod is ejecte
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
 ----
 
-[source,bash,subs="+macros,+attributes"]
-----
-siege -r 10 -c 4 -v http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::siege.adoc[]
 
 You should see an output similar to this:
 

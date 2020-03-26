@@ -1,21 +1,12 @@
-apiVersion: rbac.istio.io/v1alpha1
-kind: ServiceRole
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
 metadata:
-  name: customer
+  name: "customer"
 spec:
   rules:
-    - services: ["*"]
-      methods: ["GET"]
----
-apiVersion: rbac.istio.io/v1alpha1
-kind: ServiceRoleBinding
-metadata:
-  name: bind-customer
-spec:
-  subjects:
-    - user: "*"
-      properties:
-        request.auth.claims[role]: "customer"
-  roleRef:
-    kind: ServiceRole
-    name: customer
+  - to:
+    - operation:
+        methods: ["GET"]
+    when:
+    - key: request.auth.claims[role]
+      values: ["customer"]
