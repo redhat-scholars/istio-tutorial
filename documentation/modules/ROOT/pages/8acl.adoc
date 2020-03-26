@@ -41,9 +41,10 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofil
 
 Then if you do:
 
+include::curl.adoc[]
+
 [source,bash,subs="+macros,+attributes"]
 ----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => preference => recommendation v2 from '6b569c9cfb-g8shk': 5
 ----
 
@@ -51,8 +52,6 @@ Of course everything is still valid but let's go inside customer pod:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial{namespace-suffix} $(oc get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) -c customer /bin/bash
-or
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) -c customer /bin/bash
 ----
 
@@ -88,9 +87,10 @@ We'll create a blacklist making the customer service blacklist to the preference
 kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofiles/acl-blacklist.yml] -n tutorial{namespace-suffix}
 ----
 
+include::curl.adoc[]
+
 [source,bash,subs="+macros,+attributes"]
 ----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
 customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
 ----
 

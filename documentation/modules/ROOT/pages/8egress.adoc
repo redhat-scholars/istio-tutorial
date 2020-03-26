@@ -27,11 +27,6 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 [source,bash, subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml]) -n tutorial
-oc get pods -w
-
-or
-
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml]) -n tutorial
 kubectl get pods -w -n
 ----
@@ -60,6 +55,8 @@ Configure Istio to allow only registered traffic:
 kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: ALLOW_ANY/mode: REGISTRY_ONLY/g' | kubectl replace -n istio-system -f -
 ----
 
+WARNING: You might need to wait some tenths of seconds until the configuration takes effect.
+
 Be sure you do not have any previous destination rule nor virtual service installed.
 
 Let's redirect all traffic to reccomendation:v3.
@@ -72,13 +69,11 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommenda
 
 Then access to the service:
 
+IMPORTANT: Since no Egress service entry has been registered to access an external site, the service will return a 500 error 
 
+include::curl.adoc[]
 
-IMPORTANT: Since no Egress service entry has been registered to access an external site, the service will return a 500 error
-.
-[source, bash]
 ----
-$ curl customer-tutorial.$(minishift ip).nip.io
 customer => Error: 503 - preference => Error: 500 - <html><head><title>Error</title></head><body>Internal Server Error</body></html>
 ----
 
@@ -89,19 +84,19 @@ Let's fix it by registering a service entry to allow access to `worldclockapi`.
 kubectl create -f link:{github-repo}/{istiofiles-dir}/service-entry-egress-worldclockapi.yml[istiofiles/service-entry-egress-worldclockapi.yml] -n tutorial
 
 kubectl get serviceentry
+----
 
-curl customer-tutorial.$(minishift ip).nip.io
+include::curl.adoc[]
+
+----
 customer => preference => recommendation v3 2019-03-28T00:24+01:00 from '57cd88c95d-jp546': 1
 ----
 
-or shell into the pod by getting its name and then using that name with oc exec
+or shell into the pod by getting its name and then using that name with `kubectl exec`:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc exec -it -n tutorial $(oc get pods -n tutorial -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
-or
-
-kubectl exec -it -n tutorial $(oc get pods -n tutorial -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
+kubectl exec -it -n tutorial $(kubectl get pods -n tutorial -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
 
 curl http://worldclockapi.com/api/json/cet/now
 
@@ -130,7 +125,12 @@ Undeploy _recommendation:v3_:
 
 [source, bash]
 ----
-oc delete all -n tutorial -l app=recommendation,version=v3
-or
 kubectl delete all -n tutorial -l app=recommendation,version=v3
+----
+
+And get back to allow any output traffic:
+
+[source, bash]
+----
+kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: REGISTRY_ONLY/mode: ALLOW_ANY/g' | kubectl replace -n istio-system -f -
 ----

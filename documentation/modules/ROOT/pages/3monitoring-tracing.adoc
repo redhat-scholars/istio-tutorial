@@ -10,40 +10,31 @@ NOTE: You may want to push some load onto the deployed applications in order to 
 
 Run the following command to produce load.
 
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::generate_traffic.adoc[]
+
+ifndef::workshop[]
+
+In a new terminal window run:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-ifdef::workshop[]
-open http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?orgId=1
-or
-firefox http://grafana-istio-system.{appdomain}/d/TSEY6jLmk/istio-galley-dashboard?orgId=1
+istioctl dashboard grafana
+----
+
+Navigate to `dashboard/db/istio-mesh-dashboard`.
 endif::workshop[]
 
 ifndef::workshop[]
-open "$(minishift openshift service grafana -u -n istio-system)/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1"
+And open the next page in a browser:
+
+`open http://grafana-istio-system.{appdomain}/dashboard/db/istio-mesh-dashboard`
+
 or
-firefox "$(minishift openshift service grafana -u -n istio-system)/d/TSEY6jLmk/istio-galley-dashboard?refresh=5s&orgId=1"
+
+`firefox http://grafana-istio-system.{appdomain}/dashboard/db/istio-mesh-dashboard`
 endif::workshop[]
-----
 
 image:grafana1.png[Grafana 1]
-
-[source,bash,subs="+macros,+attributes"]
-----
-ifdef::workshop[]
-http://grafana-istio-system.{appdomain}/d/UbsSZTDik/istio-workload-dashboard?refresh=5s&orgId=1"
-endif::workshop[]
-
-ifndef::workshop[]
-open "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?orgId=1&refresh=10s"
-or
-firefox "$(minishift openshift service grafana -u -n istio-system)/d/UbsSZTDik/istio-workload-dashboard?orgId=1&refresh=10s"
-endif::workshop[]
-----
 
 to check the "Workload of the services"
 
@@ -52,23 +43,27 @@ image:grafana2.png[Grafana 2]
 [#prometheus]
 == Prometheus
 
-Explore Prometheus:
+ifndef::workshop[]
+
+In a new terminal window run:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-ifdef::workshop[]
-open http://prometheus-istio-system.{appdomain}/graph?g0.range_input=1m&g0.stacked=1&g0.expr=&g0.tab=0"
-or
-firefox http://prometheus-istio-system.{appdomain}/graph?g0.range_input=1m&g0.stacked=1&g0.expr=&g0.tab=0"
-endif::workshop[]
-
-ifndef::workshop[]
-open "$(minishift openshift service prometheus -u -n istio-system)/graph?g0.range_input=1m&g0.stacked=1&g0.expr=&g0.tab=0"
-or
-firefox "$(minishift openshift service prometheus -u -n istio-system)/graph?g0.range_input=1m&g0.stacked=1&g0.expr=&g0.tab=0"
-endif::workshop[]
+istioctl dashboard prometheus
 ----
+endif::workshop[]
 
+Explore Prometheus:
+
+ifdef::workshop[]
+And open the next page in a browser:
+
+`open http://prometheus-istio-system.{appdomain}/graph?g0.range_input=1m&g0.stacked=1&g0.expr=&g0.tab=0`
+
+or
+
+`firefox http://prometheus-istio-system.{appdomain}/graph?g0.range_input=1m&g0.stacked=1&g0.expr=&g0.tab=0`
+endif::workshop[]
 
 // Custom Metrics removed from Workshop because it requires access to istio-system.
 ifndef::workshop[] 
@@ -103,7 +98,6 @@ and select `Execute`
 
 image:prometheus_custom_metric.png[alt text]
 
-
 NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
 endif::workshop[]
 
@@ -117,7 +111,7 @@ In the Prometheus dashboard, add the following
 
 [source,bash,subs="+macros,+attributes"]
 ----
-container_memory_rss{namespace="tutorial{namespace-suffix}",container_name =~ "customer|preference|recommendation"}
+container_memory_rss{namespace="tutorial",container=~"customer|preference|recommendation"}
 ----
 
 and select `Execute`
@@ -136,16 +130,22 @@ Our `customer` and `preference` services are using the https://github.com/jaeger
 
 Let's open the Jaeger console, select `customer` from the list of services and click `Find Traces`
 
+ifndef::workshop[]
+
+In a new terminal window run:
+
 [source,bash,subs="+macros,+attributes"]
 ----
-ifdef::workshop[]
-open https://jaeger-query-istio-system.{appdomain}/
-or
-firefox https://jaeger-query-istio-system.{appdomain}/
+istioctl dashboard jaeger
+----
 endif::workshop[]
 
-ifndef::workshop[]
-minishift openshift service tracing -n istio-system --in-browser
+ifdef::workshop[]
+`open https://jaeger-query-istio-system.{appdomain}/`
+
+or
+
+`firefox https://jaeger-query-istio-system.{appdomain}/`
 endif::workshop[]
 ----
 

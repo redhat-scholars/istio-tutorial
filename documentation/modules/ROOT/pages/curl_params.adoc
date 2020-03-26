@@ -1,0 +1,13 @@
+ifdef::workshop[]
+[source,bash,subs="+macros,+attributes"]
+----
+curl {extrap} istio-ingressgateway-istio-system.{appdomain}/{path}
+----
+endif::workshop[]
+
+ifndef::workshop[]
+[source,bash,subs="+macros,+attributes"]
+----
+curl {extrap} $GATEWAY_URL/customer
+----
+endif::workshop[]

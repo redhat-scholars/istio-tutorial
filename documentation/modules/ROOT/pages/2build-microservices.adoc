@@ -7,7 +7,7 @@ If you want to build Customer from the Spring Boot sources type the following co
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd customer/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/customer .
@@ -32,7 +32,7 @@ IMPORTANT: The tag `v1.1` at the end of the image name matters.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd customer/java/quarkus
 mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 docker build -t quay.io/rhdevelopers/istio-tutorial-customer:v1.1 .
@@ -55,7 +55,7 @@ If you want to build Preference from the sources type the following commands
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd preference/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/preference:v1 .
@@ -80,7 +80,7 @@ IMPORTANT: The tag `v1.1` at the end of the image name matters.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd preference/java/quarkus
 mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 docker build -t quay.io/rhdevelopers/istio-tutorial-preference:v1.1 .
@@ -99,9 +99,11 @@ kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{p
 [#buildrecommendationspringboot]
 == Build Recommendation Spring Boot
 
+It is not necessary to build the service as they are already built and published in https://quay.io/[Quay] public Docker registry so you can deploy to Kubernetes directly.
+
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd recommendation/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/recommendation:v1 .
@@ -113,7 +115,6 @@ Then to deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl 
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment_jvm.yml[{recommendation-repo}/kubernetes/Deployment_jvm.yml]) -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 kubectl get pods -w -n tutorial{namespace-suffix}
@@ -122,11 +123,13 @@ kubectl get pods -w -n tutorial{namespace-suffix}
 [#buildrecommendation]
 == Build Recommendation
 
+It is not necessary to build the service as they are already built and published in https://quay.io/[Quay] public Docker registry so you can deploy to Kubernetes directly.
+
 IMPORTANT: The tag `v1.1` at the end of the image name matters. We will be creating a `v2` version of `recommendation` later in this tutorial. Having both a `v1` and `v2` version of the `recommendation` code will allow us to exercise some interesting aspects of Istio's capabilities.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd recommendation/java/quarkus
 mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v1.1 .
@@ -155,7 +158,7 @@ private static final String RESPONSE_STRING_FORMAT = "recommendation v2 from '%s
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd recommendation/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/recommendation:v2 .
@@ -171,7 +174,6 @@ To deploy to Kubernetes use:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl 
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2_jvm.yml[{recommendation-repo}/kubernetes/Deployment-v2_jvm.yml]) -n tutorial{namespace-suffix}
 
 kubectl get pods -w -n tutorial{namespace-suffix}
@@ -193,7 +195,7 @@ There is also a second `Deployment-v2.yml` file to label things correctly
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd recommendation/java/quarkus
 mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
@@ -239,19 +241,16 @@ Rebuild and redeploy
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd recommendation/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/recommendation:v2 .
 docker images | grep recommendation
 
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
 ----
-
 
 [#buildrecommendationv2-timeout]
 == Modify recommendation:v2 to have timeout
@@ -283,13 +282,11 @@ cd recommendation/java/quarkus
 
 mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 
 docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1-timeout .
 docker images | grep recommendation
 
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
@@ -321,14 +318,12 @@ Rebuild and redeploy
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd recommendation/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/recommendation:v2 .
 docker images | grep recommendation
 
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
@@ -364,14 +359,12 @@ cd recommendation/java/quarkus
 
 mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 
 docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v2.1 .
 
 docker images | grep recommendation
 
-oc delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
-or
 kubectl delete pod --force --grace-period=0 -l app=recommendation,version=v2 -n tutorial
 
 cd ../../..
@@ -406,7 +399,7 @@ The "v3" tag during the Docker build is significant.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 cd recommendation/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/recommendation:v3 .
@@ -453,7 +446,7 @@ The "v3" tag during the Docker build is significant.
 cd recommendation/java/quarkus
 mvn clean package -DskipTests -Pnative -Dquarkus.native.container-build=true
 
-eval $(minishift docker-env)
+eval $(minikube docker-env -p istio)
 
 docker build -t quay.io/rhdevelopers/istio-tutorial-recommendation:v3.1 .
 

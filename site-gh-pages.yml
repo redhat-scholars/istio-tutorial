@@ -9,7 +9,7 @@ content:
   sources:
   - url: .
     branches: master
-    tags: [1.0.*, 1.1.*]
+    tags: [1.0.*, 1.1.*, 1.3.*]
     start_path: documentation
 asciidoc:
   attributes:
@@ -18,6 +18,7 @@ asciidoc:
     namespace-suffix: ''
     ocpurl: ''
     path: 'customer'
+    attribute-missing: skip
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable

@@ -48,17 +48,14 @@ and test with a Safari (or even Chrome on Mac since it includes Safari in the st
 
 and test with a Firefox browser, it should only see v1 responses from recommendation.
 
-There are two ways to get the URL for your browser:
-
-Open the url http://istio-ingressgateway-istio-system.{appdomain} in your broswer 
-
 You can also attempt to use the curl -A command to test with different user-agent strings. 
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl -A Safari istio-ingressgateway-istio-system.{appdomain}/{path}
-curl -A Firefox istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+:extrap: -A Safari
+include::curl_params.adoc[]
+
+
+:extrap: -A Firefox
+include::curl_params.adoc[]
 
 You can describe the virtualservice to see its configuration
 
@@ -80,9 +77,10 @@ kubectl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tut
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial{namespace-suffix}
-
-curl -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" http://istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
+
+:extrap: -A "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4(KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
+include::curl_params.adoc[]
 
 ==== Clean up
 
@@ -99,14 +97,11 @@ or you can run:
 ./scripts/clean.sh tutorial{namespace-suffix}
 ----
 
-
 [#mirroringtraffic]
 == Mirroring Traffic (Dark Launch)
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc get pods -l app=recommendation -n tutorial{namespace-suffix}
-or 
 kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
 ----
 
@@ -118,7 +113,6 @@ kubectl get virtualservice -n tutorial{namespace-suffix}
 kubectl get destinationrule
 ----
 
-
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` 
 if so run:
 
@@ -127,23 +121,20 @@ if so run:
 ./scripts/clean.sh tutorial{namespace-suffix}
 ----
 
-
-Make sure you are in the main directory of "istio-tutorial"
+Make sure you are in the main directory of "istio-tutorial".
 
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial{namespace-suffix}
-
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
 ----
+
+include::curl.adoc[]
 
 Check the logs of recommendation-v2
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
-or
 kubectl logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
 ----
 
@@ -162,7 +153,6 @@ or you can run:
 ./scripts/clean.sh tutorial{namespace-suffix}
 ----
 
-
 [#loadbalancer]
 == Load Balancer
 
@@ -172,28 +162,18 @@ Add another v2 pod to the mix
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
-or
 kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
 ----
 
 Wait a bit (oc get pods -w to watch)
 and curl the customer endpoint many times
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::curl.adoc[]
 
 Add a 3rd v2 pod to the mix
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
-$ oc get pods -n tutorial{namespace-suffix}
-
-or 
-
 $ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
 $ kubectl get pods -n tutorial{namespace-suffix}
 
@@ -209,10 +189,7 @@ recommendation-v2-2815683430-tptf2   2/2       Running   0          33m
 
 Wait for those 2/2 (two containers in each pod) and then poll the customer endpoint:
 
-[source, bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh http://customer-tutorial{namespace-suffix}.{appdomain}
-----
+include::generate_traffic.adoc[]
 
 The results should follow a fairly normal round-robin distribution pattern
 
@@ -258,7 +235,5 @@ customer => preference => recommendation v2 from '2819441432-rg45q': 14
 ----
 kubectl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial{namespace-suffix}
 
-oc scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
-or
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
 ----

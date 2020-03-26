@@ -6,12 +6,13 @@ spec:
   hosts:
   - recommendation
   http:
-  - fault:
-      abort:
-        httpStatus: 503
-        percent: 50
-    route:
+  - route:
     - destination:
         host: recommendation
         subset: app-recommendation
+    fault:
+      abort:
+        percentage:
+          value: 50
+        httpStatus: 503
 ---

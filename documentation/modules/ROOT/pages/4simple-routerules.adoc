@@ -18,8 +18,6 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml]) -n tutorial{namespace-suffix}
-or
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml]) -n tutorial{namespace-suffix}
 ----
 
@@ -29,7 +27,7 @@ Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc get pods -w -n tutorial{namespace-suffix}
+kubectl get pods -w -n tutorial{namespace-suffix}
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preference-243057078-8c5hz           2/2       Running   0          15m
@@ -39,33 +37,22 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s
 
 and test the customer endpoint
 
-[source,bash,subs="+macros,+attributes"]
-----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::curl.adoc[]
 
 you likely see "customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
 
-[source,bash, subs="+macros,+attributes"]
-----
-curl istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::curl.adoc[]
 
 you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
 Send several requests to see their responses:
 
-[source, bash, subs="+macros,+attributes"]
-----
-./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::generate_traffic.adoc[]
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
-or
 kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 ----
 
@@ -82,8 +69,6 @@ Scale back to a single replica of the recommendation-v2 Deployment
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
-or
 kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
 ----
 
@@ -131,10 +116,7 @@ kubectl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial{n
 
 and you should see the default behavior of load-balancing between v1 and v2
 
-[source,bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::generate_traffic.adoc[]
 
 [#canarydeploymentrecommendation]
 === Canary deployment: Split traffic between v1 and v2
@@ -143,8 +125,6 @@ Canary Deployment scenario: push v2 into the cluster but slowly send end-user tr
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc get pods -l app=recommendation -n tutorial{namespace-suffix}
-or
 $ kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
 
 NAME                                  READY     STATUS    RESTARTS   AGE
@@ -161,10 +141,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommenda
 
 and send in several requests:
 
-[source, bash,subs="+macros,+attributes"]
-----
-./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
-----
+include::generate_traffic.adoc[]
 
 In another terminal, change the mixture to be 75/25
 
@@ -180,7 +157,6 @@ Clean up
 kubectl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial{namespace-suffix}
 kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
 ----
-
 
 or you can run:
 
