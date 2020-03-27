@@ -52,6 +52,88 @@ HOST:PORT                                    STATUS     SERVER     CLIENT       
 customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default
 ----
 
+Check the mTLS by _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
+
+[source, bash]
+----
+CUSTOMER_POD=$(oc get pod | grep cust | awk '{ print $1}' ) # <1>
+
+or in Kuberentes:
+
+CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' )
+
+oc exec -it $CUSTOMER_POD -c istio-proxy /bin/bash # <2>
+
+or in Kubernetes:
+
+kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash 
+
+# Inside pod shell
+
+ifconfig # <3>
+sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' # <4>
+----
+<1> Get customer pod name
+<2> Open a shell inside pod
+<3> Get IP of current pod (probably the IP represented at `eth0` interface)
+<4> Capture traffic from `eth0` (or your interface) of port `8080` and network `172.17.0.10` (your IP from `ifconfig`)
+
+Now all communication that happens between `customer` service and `preference` service is dumped in the console.
+
+So now go to a terminal and execute:
+
+[source, bash, subs="+macros,+attributes"]
+----
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
+customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
+----
+
+Obviously, the response is exactly the same, but if you go to the terminal where you are executing `tcpdump`, you should see something like:
+
+[source, bash]
+----
+Z.!.X/K.............w$.?....&T...=..=..y..[.k..g..0..5.f%..vz|..t.....%..|...B..%r0.^k.y.....y.@l$O.....?...J..qc&...
+.n$X.....l.#...... ..Q..u..jBI.Z.Eb$9.$.._...!.........~"Xx<....);........Z.
+.y/E]......K......... .@s.3.\.
+----
+
+Notice that you cannot see any detail about the communication since it happened through TLS.
+
+Now, let's disable _TLS_:
+
+[source, bash]
+----
+kubectl replace -f istiofiles/disable-mtls.yml
+----
+
+And execute again:
+
+[source, bash, subs="+macros,+attributes"]
+----
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
+customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
+----
+
+And again check `tcpdump` output:
+
+[source, bash]
+----
+host: 0192.168.64.70:31380
+user-agent: curl/7.54.0
+accept: */*
+x-forwarded-for: 172.17.0.1
+x-forwarded-proto: http
+x-envoy-internal: true
+x-request-id: e5c0b90f-341b-9edc-ac3e-7dd8b33f0e8b
+x-envoy-decorator-operation: customer.tutorial.svc.cluster.local:8080/
+x-b3-traceid: ce289e960a639d11
+x-b3-spanid: ce289e960a639d11
+x-b3-sampled: 1
+----
+
+Now, you can see that since there is no _TLS_ enabled, the information is not shadowed but in clear.
+
+
 [#restore]
 == Clean Up
 

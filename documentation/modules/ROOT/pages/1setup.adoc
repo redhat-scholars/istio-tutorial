@@ -99,7 +99,8 @@ export PATH=$ISTIO_HOME/bin:$PATH
 [source,bash,subs="+macros,+attributes"]
 ----
 
-istioctl manifest apply --set profile=demo
+istioctl manifest apply --set profile=demo --set values.global.proxy.privileged=true
+
 - Applying manifest for component Base...
 ✔ Finished applying manifest for component Base.
 - Applying manifest for component Tracing...
