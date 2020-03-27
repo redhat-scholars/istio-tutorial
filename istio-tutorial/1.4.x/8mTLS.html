@@ -523,15 +523,12 @@ If you have followed this guide and installed the demo profile (<a href="1setup.
 <div class="paragraph">
 <p>To check if mTLS is enabled or not just run the next command:</p>
 </div>
-<div class="paragraph">
-<p>[source, bash,subs="+macros,+attributes"</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl authn tls-check $(kubectl get pods -n tutorial|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
 
 HOST:PORT                                    STATUS     SERVER         CLIENT     AUTHN POLICY     DESTINATION RULE
-customer.tutorial.svc.cluster.local:8080     OK         PERMISSIVE     -          /default         -</pre>
+customer.tutorial.svc.cluster.local:8080     OK         PERMISSIVE     -          /default         -</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -549,16 +546,13 @@ kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutor
 <div class="paragraph">
 <p>To check that mTLS is enabled run the next command:</p>
 </div>
-<div class="paragraph">
-<p>[source, bash,subs="+macros,+attributes"</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl authn tls-check $(kubectl get pods -n tutorial|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
 
 
 HOST:PORT                                    STATUS     SERVER     CLIENT           AUTHN POLICY         DESTINATION RULE
-customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default</pre>
+customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default</code></pre>
 </div>
 </div>
 </div>
