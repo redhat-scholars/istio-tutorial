@@ -43,7 +43,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[i
 
 To check that mTLS is enabled run the next command:
 
-[source, bash,subs="+macros,+attributes"
+[source, bash,subs="+macros,+attributes"]
 ----
 istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
 
