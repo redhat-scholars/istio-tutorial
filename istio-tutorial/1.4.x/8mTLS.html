@@ -555,6 +555,112 @@ HOST:PORT                                    STATUS     SERVER     CLIENT       
 customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Check the mTLS by <em>sniffing</em> traffic between services, which is a bit more tedious, open a new terminal tab and run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">CUSTOMER_POD=$(oc get pod | grep cust | awk '{ print $1}' ) <i class="conum" data-value="1"></i><b>(1)</b>
+
+or in Kuberentes:
+
+CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' )
+
+oc exec -it $CUSTOMER_POD -c istio-proxy /bin/bash <i class="conum" data-value="2"></i><b>(2)</b>
+
+or in Kubernetes:
+
+kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash
+
+# Inside pod shell
+
+ifconfig <i class="conum" data-value="3"></i><b>(3)</b>
+sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Get customer pod name</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Open a shell inside pod</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Get IP of current pod (probably the IP represented at <code>eth0</code> interface)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Capture traffic from <code>eth0</code> (or your interface) of port <code>8080</code> and network <code>172.17.0.10</code> (your IP from <code>ifconfig</code>)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now all communication that happens between <code>customer</code> service and <code>preference</code> service is dumped in the console.</p>
+</div>
+<div class="paragraph">
+<p>So now go to a terminal and execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a>
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Obviously, the response is exactly the same, but if you go to the terminal where you are executing <code>tcpdump</code>, you should see something like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Z.!.X/K.............w$.?....&amp;T...=..=..y..[.k..g..0..5.f%..vz|..t.....%..|...B..%r0.^k.y.....y.@l$O.....?...J..qc&amp;...
+.n$X.....l.#...... ..Q..u..jBI.Z.Eb$9.$.._...!.........~"Xx&lt;....);........Z.
+.y/E]......K......... .@s.3.\.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that you cannot see any detail about the communication since it happened through TLS.</p>
+</div>
+<div class="paragraph">
+<p>Now, let&#8217;s disable <em>TLS</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl replace -f istiofiles/disable-mtls.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And execute again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a>
+customer =&gt; preference =&gt; recommendation v1 from 'b87789c58-mfrhr': 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And again check <code>tcpdump</code> output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">host: 0192.168.64.70:31380
+user-agent: curl/7.54.0
+accept: */*
+x-forwarded-for: 172.17.0.1
+x-forwarded-proto: http
+x-envoy-internal: true
+x-request-id: e5c0b90f-341b-9edc-ac3e-7dd8b33f0e8b
+x-envoy-decorator-operation: customer.tutorial.svc.cluster.local:8080/
+x-b3-traceid: ce289e960a639d11
+x-b3-spanid: ce289e960a639d11
+x-b3-sampled: 1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, you can see that since there is no <em>TLS</em> enabled, the information is not shadowed but in clear.</p>
+</div>
 </div>
 </div>
 <div class="sect1">

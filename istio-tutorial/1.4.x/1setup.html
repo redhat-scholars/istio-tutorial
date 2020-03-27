@@ -698,7 +698,8 @@ export PATH=$ISTIO_HOME/bin:$PATH</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl manifest apply --set profile=demo
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl manifest apply --set profile=demo --set values.global.proxy.privileged=true
+
 - Applying manifest for component Base...
 ✔ Finished applying manifest for component Base.
 - Applying manifest for component Tracing...
