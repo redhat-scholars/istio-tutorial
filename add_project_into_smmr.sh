@@ -1,0 +1,1 @@
+eval "oc patch servicemeshmemberroll/default --type=json --patch '[{\"op\":\"add\",\"path\":\"/spec/members/0\",\"value\":\"$(oc config view --minify --output 'jsonpath={..namespace}')\"}]' --namespace istio-system"
