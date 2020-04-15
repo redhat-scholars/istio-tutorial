@@ -1,0 +1,1 @@
+for deployment in $(oc get deployments -o jsonpath='{.items[*].metadata.name}'); do oc patch deployment/${deployment} --type=json --patch '[{"op":"remove","path":"/spec/template/metadata/annotations"}]'; done
