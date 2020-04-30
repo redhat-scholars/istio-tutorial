@@ -7,7 +7,6 @@ If you want to build Customer from the Spring Boot sources type the following co
 
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minikube docker-env -p istio)
 cd customer/java/springboot/
 mvn clean package -DskipTests
 docker build -t example/customer .
