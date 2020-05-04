@@ -18,9 +18,12 @@ asciidoc:
     etherpad: https://etherpad.wikimedia.org/p/istio-jconf
     namespace-suffix: -$WORKSHOP_USER
     path: customer$WORKSHOP_USER
+  extensions:
+    - ./lib/remote-include-processor.js
+    - ./lib/tab-block.js
 ui:
   bundle:
-    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    url: https://github.com/redhat-developer-demos/rhd-tutorial-ui/releases/download/v0.0.4/ui-bundle.zip
     snapshot: true
   supplemental_files: ./supplemental-ui
 output:

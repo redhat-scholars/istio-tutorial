@@ -140,6 +140,8 @@ istioctl dashboard jaeger
 ----
 endif::workshop[]
 
+[source,bash,subs="+macros,+attributes"]
+----
 ifdef::workshop[]
 `open https://jaeger-query-istio-system.{appdomain}/`
 

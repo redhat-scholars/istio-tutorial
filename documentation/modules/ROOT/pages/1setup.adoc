@@ -6,80 +6,49 @@ include::_attributes.adoc[]
 
 You will need in this tutorial:
 
-* `virtualbox`
-** https://www.virtualbox.org/wiki/Downloads[MacOS, Windows and Linux]
-* `minikube`
-** https://kubernetes.io/docs/tasks/tools/install-minikube/[MacOS, Windows and Fedora]
-* docker
-** https://www.docker.com/docker-mac[MacOS]
-** Fedora: `dnf install docker`
-* kubectl
-** https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl[MacOS, Windows and Fedora]
-** Fedora: `dnf install kubernetes-client`
-* Apache Maven
-** https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz[MacOS, Windows and Linux]
-** Fedora: `dnf install maven`
-* link:https://github.com/wercker/stern[stern]
-** Mac OS: `brew install stern`
-** Fedora: `sudo curl --output /usr/local/bin/stern -L https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64 && sudo chmod +x /usr/local/bin/stern`
-* istioctl (will be installed via the steps below)
-* `curl`, `gunzip`, `tar`
-** Mac OS: built-in or part of your bash shell
-** Fedora: should also be installed already, but just in case... `dnf install curl gzip tar`
-* git
-** `dnf install git`
-* siege
-** MAC OS: `brew install siege`
-** Fedora: `dnf install siege`
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/prerequisites-kubernetes.adoc[]
 
+| `istioctl`
+| https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-osx.tar.gz[Download]
+| https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip[Download]
+| https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux.tar.gz[Download]
+|===
 
-[TIP]
-====
-If you want to validate if everything is installed at once, just open a terminal and run:
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/optional-requisites.adoc[]
+|===
 
-`curl -sL https://git.io/_has | HAS_ALLOW_UNSAFE=y bash -s`
+[#download-tutorial-sources]
+== Download Tutorial Sources
 
-The output should be something like:
+Before we start setting up the environment, let's clone the tutorial sources and set the `TUTORIAL_HOME` environment variable to point to the root directory of the tutorial:
 
-[source, bash]
-----
-✔ minikube 1.8.2
-✔ docker 18.09.0
-✔ kubectl
-✔ git 2.17.2
-✔ mvn 3.5.0
-✔ curl 7.54.0
-✔ stern 1.6.0
-✔ siege 4.0.4
-----
+:tutorial-url: https://github.com/redhat-developer-demos/istio-tutorial
+:folder: istio-tutorial
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/download-sources.adoc[]
 
-You can check quickly if you are missing any tool and decide if you want to install or not.
-====
+[#install-minikube]
+=== Install Minikube
 
-[#minikube]
-== Setup minikube
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/install-minikube.adoc[]
 
-In case of using Minikube you need at least minikube v1.7.4.
+[#start-kubernetes]
+=== Start Kubernetes
 
-[source,bash,subs="+macros,+attributes"]
-----
-minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.17.4 --vm-driver=virtualbox -p istio
-----
+There are series of commands as steps that allows you get started with minikube. The following section shows how to start minikube with minimal and required configurations:
 
-[#environment]
-== Setup environment
+:profile: istio-devnation
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/kubernetes-setup.adoc[]
 
-[source,bash,subs="+macros,+attributes"]
-----
-eval $(minikube docker-env -p istio)
-----
-
-NOTE: In this tutorial, you will often be polling the customer endpoint with `curl`, while simultaneously viewing logs via `stern` or `kubetail.sh` and issuing commands via `kubectl` and `istioctl`. Consider using three terminal windows.
 
 [#upstreamistioinstallation]
-== Upstream Istio installation
+== Istio Installation
 
-[source,bash,subs="+macros,+attributes"]
+[tabs, subs="attributes+,+macros"]	
+====
+Minikube::
++
+--
+[source,bash,subs="attributes+,+macros"]
 ----
 #!/bin/bash
 
@@ -89,14 +58,17 @@ curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{
 # Fedora/RHEL:
 curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux.tar.gz | tar xz
 
+# Windows
+curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip
+
 # Both:
 cd istio-{istio-version}
 export ISTIO_HOME=`pwd`
 export PATH=$ISTIO_HOME/bin:$PATH
-
+cd $TUTORIAL_HOME
 ----
 
-[source,bash,subs="+macros,+attributes"]
+[source,bash,subs="attributes+,+macros"]
 ----
 
 istioctl manifest apply --set profile=demo --set values.global.proxy.privileged=true
@@ -138,7 +110,7 @@ IMPORTANT: `istio-demo.yaml` enables policy enforcement by default which is requ
 
 Wait for Istio's components to be ready
 
-[source,bash,subs="+macros,+attributes"]
+[source,bash,subs="attributes+,+macros"]
 ----
 $ kubectl get pods -w
 
@@ -156,3 +128,33 @@ istio-tracing-c66d67cd9-mqhjx             1/1     Running   0          102s
 kiali-8559969566-phh2b                    1/1     Running   0          101s
 prometheus-66c5887c86-lfx7p               1/1     Running   0          101s
 ----
+--
+OpenShift::
++
+--
+Istio is supported in OpenShift by Red Hat OpenShift Service Mesh operator.
+
+To install it, you need to follow the instructions written in: https://docs.openshift.com/container-platform/4.3/service_mesh/service_mesh_install/preparing-ossm-installation.html
+
+It is important that after you finish with the installation, all the required pods are delpyed in `istio-system` namespace:
+
+[source,bash,subs="attributes+,+macros"]
+----
+$ kubectl get pods -w
+
+NAME                                     READY   STATUS             RESTARTS   AGE
+grafana-7bf5764d9d-2b2f6                 2/2     Running            0          28h
+istio-citadel-576b9c5bbd-z84z4           1/1     Running            0          28h
+istio-egressgateway-5476bc4656-r4zdv     1/1     Running            0          28h
+istio-galley-7d57b47bb7-lqdxv            1/1     Running            0          28h
+istio-ingressgateway-dbb8f7f46-ct6n5     1/1     Running            0          28h
+istio-pilot-546bf69578-ccg5x             2/2     Running            0          28h
+istio-policy-77fd498655-7pvjw            2/2     Running            0          28h
+istio-sidecar-injector-df45bd899-ctxdt   1/1     Running            0          28h
+istio-telemetry-66f697d6d5-cj28l         2/2     Running            0          28h
+jaeger-896945cbc-7lqrr                   2/2     Running            0          11h
+kiali-78d9c5b87c-snjzh                   0/1     Running            0          22h
+prometheus-6dff867c97-gr2n5              2/2     Running            0          28h
+----
+--
+====
