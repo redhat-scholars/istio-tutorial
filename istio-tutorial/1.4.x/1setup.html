@@ -2,12 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.4.x/1setup.html">
     <meta name="generator" content="Antora 2.0.0">
     <link rel="stylesheet" href="../../_/css/site.css">
-<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">  </head>
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon"><script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+  </head>
   <body class="article">
 <header class="header" role="banner">
   <nav class="navbar">
@@ -43,11 +44,12 @@
       </div>
     </div>
   </nav>
-</header><div class="body">
-<div class="nav-container" data-component="istio-tutorial" data-version="1.4.x">
-  <aside class="nav">
+</header><div class="main-wrapper">
+<div class="navigation-container"  data-component="istio-tutorial"
+  data-version="1.4.x" >
+  <aside class="navigation">
     <div class="panels">
-<div class="nav-panel-menu is-active" data-panel="menu">
+      <div class="navigation-menu is-active" data-panel="menu">
   <nav class="nav-menu">
     <h3 class="title"><a href="index.html">Istio Tutorial</a></h3>
 <ul class="nav-list">
@@ -57,17 +59,20 @@
     <a class="nav-link" href="index.html">Introduction to Istio Tutorial</a>
   </li>
   <li class="nav-item is-current-page" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="1setup.html">1. Setup</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#prerequisite">Prerequisites</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#minikube">Setup Minikube</a>
+    <a class="nav-link" href="#download-tutorial-sources">Download Tutorial</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#environment">Setup Environment</a>
+    <a class="nav-link" href="#install-minikube">Install Minikube</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#start-kubernetes">Start Kubernetes</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#istioinstallation">Install Istio</a>
@@ -75,7 +80,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -93,14 +98,14 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="3monitoring-tracing.html">3. Observability</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring with Grafana</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="3monitoring-tracing.html#prometheus">Prometheus</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -118,7 +123,7 @@
     <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="3kiali.html">Kiali</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -150,18 +155,18 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <span class="nav-text">4. Traffic Control</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="4simple-routerules.html#istiorouting">Changing Istio Routings</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
@@ -181,11 +186,11 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="4advanced-routerules.html">Advanced Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="4advanced-routerules.html#canarydeploymentuseragent">Canary Deployment based on user-agent</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
@@ -210,7 +215,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="5circuit-breaker.html">5. Service Resiliency</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -220,7 +225,7 @@
     <a class="nav-link" href="5circuit-breaker.html#timeout">Timeout</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="5circuit-breaker.html#failfast">Fail Fast</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -234,7 +239,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="6fault-injection.html">6. Chaos Testing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -246,11 +251,11 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <span class="nav-text">7. Security</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="8egress.html">Egress</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -262,7 +267,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="8acl.html">Access Control List</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -274,7 +279,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -283,7 +288,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="8jwt.html">End-user authentication with JWT</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -295,7 +300,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="8rbac.html">Istio Role Based Access Control (RBAC)</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -322,11 +327,11 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/index.html">Advanced Istio Tutorial</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/virtualization.html">Service Virtualization and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -341,7 +346,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/diferencia.html">Diferencia and Detecting Regressions</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -365,7 +370,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/promotion.html">Istio for Promoting Services</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -383,11 +388,11 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/zero-downtime-database.html">Zero Downtime Migration with Database</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <span class="nav-text">Starting the Migration</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
@@ -413,7 +418,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-item-toggle"></button>
+    <button class="nav-toggle"></button>
     <a class="nav-link" href="advanced/cube.html">Dark Launch Automatic Test</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -437,249 +442,392 @@
 </ul>
   </nav>
 </div>
-<div class="nav-panel-explore" data-panel="explore">
-  <div class="context">
-    <span class="title">Istio Tutorial</span>
-    <span class="version">1.4.x</span>
-  </div>
-  <ul class="components">
-    <li class="component is-current">
-      <span class="title">Istio Tutorial</span>
-      <ul class="versions">
-        <li class="version is-current is-latest">
-          <a href="index.html">1.4.x</a>
-        </li>
-        <li class="version">
-          <a href="../1.3.x/index.html">1.3.x</a>
-        </li>
-        <li class="version">
-          <a href="../1.1.x/index.html">1.1.x</a>
-        </li>
-      </ul>
-    </li>
-  </ul>
-</div>
     </div>
   </aside>
+  <div class="navigation-explore" data-panel="explore">
+  <div class="context">
+    <!-- Just a place holder to fill in  explorer for each context -->
+  </div>
 </div>
-<main>
+</div>
+  <main class="main">
 <div class="toolbar" role="navigation">
-<button class="nav-toggle"></button>
+  <button class="navigation-toggle"></button>
   <a href="index.html" class="home-link"></a>
-<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
-    <li><a href="index.html">Istio Tutorial</a></li>
-    <li><a href="1setup.html">1. Setup</a></li>
+    <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
+    <li class="crumb"><a href="1setup.html">1. Setup</a></li>
   </ul>
 </nav>
-<div class="page-versions">
-  <button class="version-menu-toggle" title="Show other versions of page">1.4.x</button>
-  <div class="version-menu">
-    <a class="version is-current" href="1setup.html">1.4.x</a>
-    <a class="version" href="../1.3.x/1setup.html">1.3.x</a>
-    <a class="version" href="../1.1.x/1setup.html">1.1.x</a>
-  </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/1setup.adoc">Edit this Page</a></div>
-  </div>
 <article class="doc">
-<h1 class="page">Setup</h1>
+<h1>Setup</h1>
 <div class="sect1">
 <h2 id="prerequisite"><a class="anchor" href="#prerequisite"></a>Prerequisite CLI tools</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You will need in this tutorial:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>virtualbox</code></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://www.virtualbox.org/wiki/Downloads">MacOS, Windows and Linux</a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>The following CLI tools are required for running the exercises in this tutorial.
+Please have them installed and configured before you get started with any of the tutorial chapters.</p>
 </div>
-</li>
-<li>
-<p><code>minikube</code></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://kubernetes.io/docs/tasks/tools/install-minikube/">MacOS, Windows and Fedora</a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>docker</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://www.docker.com/docker-mac">MacOS</a></p>
-</li>
-<li>
-<p>Fedora: <code>dnf install docker</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>kubectl</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl">MacOS, Windows and Fedora</a></p>
-</li>
-<li>
-<p>Fedora: <code>dnf install kubernetes-client</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Apache Maven</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz">MacOS, Windows and Linux</a></p>
-</li>
-<li>
-<p>Fedora: <code>dnf install maven</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="https://github.com/wercker/stern">stern</a></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Mac OS: <code>brew install stern</code></p>
-</li>
-<li>
-<p>Fedora: <code>sudo curl --output /usr/local/bin/stern -L <a href="https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64" class="bare">https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64</a> &amp;&amp; sudo chmod +x /usr/local/bin/stern</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>istioctl (will be installed via the steps below)</p>
-</li>
-<li>
-<p><code>curl</code>, <code>gunzip</code>, <code>tar</code></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Mac OS: built-in or part of your bash shell</p>
-</li>
-<li>
-<p>Fedora: should also be installed already, but just in case&#8230;&#8203; <code>dnf install curl gzip tar</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>git</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>dnf install git</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>siege</p>
-<div class="ulist">
-<ul>
-<li>
-<p>MAC OS: <code>brew install siege</code></p>
-</li>
-<li>
-<p>Fedora: <code>dnf install siege</code></p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="admonitionblock tip">
-<table>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
 <tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>If you want to validate if everything is installed at once, just open a terminal and run:</p>
-</div>
-<div class="paragraph">
-<p><code>curl -sL <a href="https://git.io/_has" class="bare">https://git.io/_has</a> | HAS_ALLOW_UNSAFE=y bash -s</code></p>
-</div>
-<div class="paragraph">
-<p>The output should be something like:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">✔ minikube 1.8.2
-✔ docker 18.09.0
-✔ kubectl
-✔ git 2.17.2
-✔ mvn 3.5.0
-✔ curl 7.54.0
-✔ stern 1.6.0
-✔ siege 4.0.4</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can check quickly if you are missing any tool and decide if you want to install or not.</p>
-</div>
-</td>
+<th class="tableblock halign-center valign-top"><strong>Tool</strong></th>
+<th class="tableblock halign-center valign-top"><strong>macOS</strong></th>
+<th class="tableblock halign-center valign-top"><strong>Fedora</strong></th>
+<th class="tableblock halign-center valign-top"><strong>windows</strong></th>
 </tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>Git</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://git-scm.com/download/mac">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://git-scm.com/download/win">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://git-scm.com/download/linux">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>Docker</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://docs.docker.com/docker-for-mac/install">Docker for Mac</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>dnf install docker</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://docs.docker.com/docker-for-windows/install">Docker for Windows</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>VirtualBox</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://download.virtualbox.org/virtualbox/6.1.6/VirtualBox-6.1.6-137129-OSX.dmg">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://download.virtualbox.org/virtualbox/6.1.6/VirtualBox-6.1.6-137129-Win.exe">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://www.virtualbox.org/wiki/Linux_Downloads">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://kubernetes.io/docs/tasks/tools/install-minikube">Minikube</a> v1.9.2</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.9.2/minikube-darwin-amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.9.2/minikube-windows-amd64.exe">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.9.2/minikube-linux-amd64">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>kubectl v1.17.4</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/darwin/amd64/kubectl">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/linux/amd64/kubectl">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/windows/amd64/kubectl.exe">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern">stern</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install stern</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern/releases/download/1.11.0/stern_windows_amd64.exe">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>Apache Maven 3.6.3</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>istioctl</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/istio/istio/releases/download/1.4.6/istio-1.4.6-osx.tar.gz">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/istio/istio/releases/download/1.4.6/istio-1.4.6-win.zip">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/istio/istio/releases/download/1.4.6/istio-1.4.6-linux.tar.gz">Download</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The following CLI tools are optional for running the exercises in this tutorial.
+Although they are used in the tutorial, you could use others without any problem.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-center valign-top"><strong>Tool</strong></th>
+<th class="tableblock halign-center valign-top"><strong>macOS</strong></th>
+<th class="tableblock halign-center valign-top"><strong>Fedora</strong></th>
+<th class="tableblock halign-center valign-top"><strong>windows</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq">yq v2.4.1</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq/releases/download/2.4.1/yq_darwin_amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq/releases/download/2.4.1/yq_windows_amd64.exe">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq">jq v1.6.0</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe">Download</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://httpie.org/">httpie</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install httpie</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>dnf install httpie</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://httpie.org/doc#windows-etc" class="bare">https://httpie.org/doc#windows-etc</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">watch</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install watch</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>dnf install procps-ng</code></p></td>
+<td class="tableblock halign-center valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">kubectx and kubens</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install kubectx</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/ahmetb/kubectx" class="bare">https://github.com/ahmetb/kubectx</a></p></td>
+<td class="tableblock halign-center valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/rakyll/hey">hey</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/hey-release/hey_darwin_amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/jblabs/dist/hey_linux_v0.1.2">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/jblabs/dist/hey_win_v0.1.2.exe">Download</a></p></td>
+</tr>
+</tbody>
 </table>
 </div>
 </div>
-</div>
 <div class="sect1">
-<h2 id="minikube"><a class="anchor" href="#minikube"></a>Setup minikube</h2>
+<h2 id="download-tutorial-sources"><a class="anchor" href="#download-tutorial-sources"></a>Download Tutorial Sources</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In case of using Minikube you need at least minikube v1.7.4.</p>
+<p>Before we start setting up the environment, let&#8217;s clone the tutorial sources and set the <code>TUTORIAL_HOME</code> environment variable to point to the root directory of the tutorial:</p>
+</div>
+<div class="paragraph">
+<p>Before we start setting up the environment, let’s clone the tutorial sources and set the <code>TUTORIAL_HOME</code> environment variable to point to the root directory of the tutorial:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.17.4 --vm-driver=virtualbox -p istio</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">git clone <a href="https://github.com/redhat-developer-demos/istio-tutorial" class="bare">https://github.com/redhat-developer-demos/istio-tutorial</a> istio-tutorial &amp;&amp; \
+export TUTORIAL_HOME="$(pwd)/istio-tutorial" &amp;&amp; \
+cd $TUTORIAL_HOME</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="install-minikube"><a class="anchor" href="#install-minikube"></a>Install Minikube</h3>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_macos"></a>MacOS</p>
+</li>
+<li>
+<p><a id="tabset1_linux"></a>Linux</p>
+</li>
+<li>
+<p><a id="tabset1_windows"></a>Windows</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_macos">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mkdir bin &amp;&amp; \
+cd bin &amp;&amp; \
+curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-darwin-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-darwin-amd64</a> &amp;&amp; \
+chmod +x minikube</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/darwin/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/darwin/amd64/kubectl</a> &amp;&amp; \
+chmod +x kubectl &amp;&amp; \
+cd ..</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_linux">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mkdir bin &amp;&amp; \
+cd bin &amp;&amp; \
+curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-linux-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-linux-amd64</a> &amp;&amp; \
+chmod +x minikube</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/linux/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/linux/amd64/kubectl</a> &amp;&amp; \
+chmod +x kubectl &amp;&amp; \
+cd ..</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_windows">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mkdir bin &amp;&amp; \
+cd bin &amp;&amp; \
+curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-windows-amd64.exe" class="bare">https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-windows-amd64.exe</a></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/windows/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/windows/amd64/kubectl</a> &amp;&amp; \
+cd ..</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>And then set environment variables:</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_macos-and-linux"></a>MacOS and Linux</p>
+</li>
+<li>
+<p><a id="tabset2_windows"></a>Windows</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_macos-and-linux">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash-session hljs" data-lang="bash-session">export MINIKUBE_HOME=$TUTORIAL_HOME;
+export PATH=$MINIKUBE_HOME/bin:$PATH
+export KUBECONFIG=$MINIKUBE_HOME/.kube/config
+export KUBE_EDITOR="code -w"</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_windows">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash-session hljs" data-lang="bash-session">set MINIKUBE_HOME=%TUTORIAL_HOME%
+set PATH=%MINIKUBE_HOME%/bin:%PATH%
+set KUBECONFIG=%MINIKUBE_HOME%/.kube/config
+set KUBE_EDITOR="code -w"</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="start-kubernetes"><a class="anchor" href="#start-kubernetes"></a>Start Kubernetes</h3>
+<div class="paragraph">
+<p>There are series of commands as steps that allows you get started with minikube. The following section shows how to start minikube with minimal and required configurations:</p>
+</div>
+<div class="paragraph">
+<p>The profile istio-devnation is created to run the tutorial:</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset3_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset3_openshift"></a>OpenShift</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset3_minikube">
+<div class="paragraph">
+<p>Having <code>minikube</code> installed and in your <code>PATH</code>, then run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.17.4 --vm-driver=virtualbox -p istio-devnation</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the output must be something similar like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">❌  profile "istio-devnation" not found
+✅  Created a new profile : istio-devnation
+✅  minikube profile was successfully set to istio-devnation
+😄  [default] minikube v1.9.2 on Darwin 10.15.2
+✨  Selecting 'virtualbox' driver from user configuration (alternates: [hyperkit])
+🔥  Creating virtualbox VM (CPUs=2, Memory=8192MB, Disk=50000MB) ...
+🐳  Preparing Kubernetes v1.17.4 on Docker '19.03.5' ...
+    ▪ apiserver.enable-admission-plugins=LimitRanger,NamespaceExists,NamespaceLifecycle,ResourceQuota,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook
+🚜  Pulling images ...
+🚀  Launching Kubernetes ...
+⌛  Waiting for cluster to come online ...
+🏄  Done! kubectl is now configured to use "istio-devnation"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally configure to use minikube internal docker as docker host:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minikube docker-env -p istio-devnation)</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset3_openshift">
+<div class="paragraph">
+<p>To run OpenShift4, you need to have one provisioned using <a href="https://try.openshift.com">try.openshift.com</a> or can use any existing OpenShift4 cluster.
+Once you have your cluster, you can download the latest OpenShift client(oc) from <a href="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/">here</a> and add to your path.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>oc version</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output should show oc version &gt;=4.2</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc version
+Client Version: openshift-clients-4.3.0-201910250623-88-g6a937dfe
+Kubernetes Version: v1.17.4</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then login into the cluster and run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project istio-devnation</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="environment"><a class="anchor" href="#environment"></a>Setup environment</h2>
+<h2 id="upstreamistioinstallation"><a class="anchor" href="#upstreamistioinstallation"></a>Istio Installation</h2>
 <div class="sectionbody">
-<div class="listingblock">
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset4_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset4_openshift"></a>OpenShift</p>
+</li>
+</ul>
+</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">eval $(minikube docker-env -p istio)</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-In this tutorial, you will often be polling the customer endpoint with <code>curl</code>, while simultaneously viewing logs via <code>stern</code> or <code>kubetail.sh</code> and issuing commands via <code>kubectl</code> and <code>istioctl</code>. Consider using three terminal windows.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="upstreamistioinstallation"><a class="anchor" href="#upstreamistioinstallation"></a>Upstream Istio installation</h2>
-<div class="sectionbody">
+<div class="tab-pane" aria-labelledby="tabset4_minikube">
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/bash
@@ -690,10 +838,14 @@ curl -L <a href="https://github.com/istio/istio/releases/download/1.4.6/istio-1.
 # Fedora/RHEL:
 curl -L <a href="https://github.com/istio/istio/releases/download/1.4.6/istio-1.4.6-linux.tar.gz" class="bare">https://github.com/istio/istio/releases/download/1.4.6/istio-1.4.6-linux.tar.gz</a> | tar xz
 
+# Windows
+curl -L <a href="https://github.com/istio/istio/releases/download/1.4.6/istio-1.4.6-win.zip" class="bare">https://github.com/istio/istio/releases/download/1.4.6/istio-1.4.6-win.zip</a>
+
 # Both:
 cd istio-1.4.6
 export ISTIO_HOME=`pwd`
-export PATH=$ISTIO_HOME/bin:$PATH</code></pre>
+export PATH=$ISTIO_HOME/bin:$PATH
+cd $TUTORIAL_HOME</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -768,14 +920,54 @@ prometheus-66c5887c86-lfx7p               1/1     Running   0          101s</cod
 </div>
 </div>
 </div>
+<div class="tab-pane" aria-labelledby="tabset4_openshift">
+<div class="paragraph">
+<p>Istio is supported in OpenShift by Red Hat OpenShift Service Mesh operator.</p>
+</div>
+<div class="paragraph">
+<p>To install it, you need to follow the instructions written in: <a href="https://docs.openshift.com/container-platform/4.3/service_mesh/service_mesh_install/preparing-ossm-installation.html" class="bare">https://docs.openshift.com/container-platform/4.3/service_mesh/service_mesh_install/preparing-ossm-installation.html</a></p>
+</div>
+<div class="paragraph">
+<p>It is important that after you finish with the installation, all the required pods are delpyed in <code>istio-system</code> namespace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ kubectl get pods -w
+
+NAME                                     READY   STATUS             RESTARTS   AGE
+grafana-7bf5764d9d-2b2f6                 2/2     Running            0          28h
+istio-citadel-576b9c5bbd-z84z4           1/1     Running            0          28h
+istio-egressgateway-5476bc4656-r4zdv     1/1     Running            0          28h
+istio-galley-7d57b47bb7-lqdxv            1/1     Running            0          28h
+istio-ingressgateway-dbb8f7f46-ct6n5     1/1     Running            0          28h
+istio-pilot-546bf69578-ccg5x             2/2     Running            0          28h
+istio-policy-77fd498655-7pvjw            2/2     Running            0          28h
+istio-sidecar-injector-df45bd899-ctxdt   1/1     Running            0          28h
+istio-telemetry-66f697d6d5-cj28l         2/2     Running            0          28h
+jaeger-896945cbc-7lqrr                   2/2     Running            0          11h
+kiali-78d9c5b87c-snjzh                   0/1     Running            0          22h
+prometheus-6dff867c97-gr2n5              2/2     Running            0          28h</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </article>
-</main>
+  </main>
 </div>
 <footer class="footer">
   <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
 </footer>
 <script src="../../_/js/site.js"></script>
-<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/highlight.js"></script>
+<script>hljs.initHighlighting()</script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+  integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   </body>
 </html>
