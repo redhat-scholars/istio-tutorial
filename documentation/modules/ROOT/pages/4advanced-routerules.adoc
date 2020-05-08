@@ -7,6 +7,7 @@ include::_attributes.adoc[]
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -28,19 +29,30 @@ The baggage header for user agent has following form `baggage-user-agent: <value
 [#alltorecommendationv1]
 === Set recommendation to all v1
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
 ----
 
 [#safaritov2]
 === Set Safari users to v2
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-safari-recommendation-v2.yml[istiofiles/virtual-service-safari-recommendation-v2.yml] -n tutorial{namespace-suffix}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get virtualservice -n tutorial{namespace-suffix}
 ----
 
@@ -59,6 +71,7 @@ include::curl_params.adoc[]
 
 You can describe the virtualservice to see its configuration
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl get virtualservice -o yaml -n tutorial{namespace-suffix}
@@ -66,6 +79,7 @@ kubectl get virtualservice -o yaml -n tutorial{namespace-suffix}
 
 ==== Remove the Safari rule
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tutorial{namespace-suffix}
@@ -74,6 +88,7 @@ kubectl delete -f istiofiles/virtual-service-safari-recommendation-v2.yml -n tut
 [#mobiletov2]
 === Set mobile users to v2
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-mobile-recommendation-v2.yml[istiofiles/virtual-service-mobile-recommendation-v2.yml] -n tutorial{namespace-suffix}
@@ -84,14 +99,21 @@ include::curl_params.adoc[]
 
 ==== Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/virtual-service-mobile-recommendation-v2.yml -n tutorial{namespace-suffix}
 ----
 
 or you can run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -100,6 +122,7 @@ or you can run:
 [#mirroringtraffic]
 == Mirroring Traffic (Dark Launch)
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
@@ -107,15 +130,22 @@ kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
 
 You should have 2 pods for recommendation based on the steps above
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl get virtualservice -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get destinationrule
 ----
 
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` 
 if so run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -123,9 +153,15 @@ if so run:
 
 Make sure you are in the main directory of "istio-tutorial".
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1-mirror-v2.yml[istiofiles/virtual-service-recommendation-v1-mirror-v2.yml] -n tutorial{namespace-suffix}
 ----
 
@@ -133,6 +169,7 @@ include::curl.adoc[]
 
 Check the logs of recommendation-v2
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
@@ -140,14 +177,21 @@ kubectl logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v
 
 === Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/virtual-service-recommendation-v1-mirror-v2.yml -n tutorial{namespace-suffix}
 ----
 
 or you can run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -160,6 +204,7 @@ By default, you will see "round-robin" style load-balancing, but you can change 
 
 Add another v2 pod to the mix
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
@@ -172,12 +217,16 @@ include::curl.adoc[]
 
 Add a 3rd v2 pod to the mix
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-$ kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
-$ kubectl get pods -n tutorial{namespace-suffix}
+kubectl scale deployment recommendation-v2 --replicas=3 -n tutorial{namespace-suffix}
+kubectl get pods -n tutorial{namespace-suffix}
+----
 
-
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-1755156816-cjd2z             2/2       Running   0          1h
 preference-3336288630-2cc6f          2/2       Running   0          1h
@@ -193,6 +242,7 @@ include::generate_traffic.adoc[]
 
 The results should follow a fairly normal round-robin distribution pattern
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '99634814-d2z2t': 1145
@@ -207,6 +257,7 @@ customer => preference => recommendation v2 from '2819441432-bs5ck': 182
 
 Now, add the Random LB DestinationPolicy
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_lb_policy_app.yml[istiofiles/destination-rule-recommendation_lb_policy_app.yml] -n tutorial{namespace-suffix}
@@ -214,6 +265,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommend
 
 And you should see a different pattern of which pod is being selected
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v2 from '2819441432-rg45q': 10
@@ -231,9 +283,14 @@ customer => preference => recommendation v2 from '2819441432-rg45q': 14
 
 === Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/destination-rule-recommendation_lb_policy_app.yml -n tutorial{namespace-suffix}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
 ----

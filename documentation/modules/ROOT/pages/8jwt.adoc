@@ -7,6 +7,7 @@ include::_attributes.adoc[]
 You should have NO virtualservice, destinationrule, gateway or policy (in `tutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` `kubectl get gateway` `kubectl get policy`
 if so run:
 
+[.console-input]
 [source, bash]
 ----
 ./scripts/clean.sh
@@ -27,12 +28,15 @@ The first thing you need to do is run and validate that now it is still possible
 
 include::curl.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
 
 Then run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/enduser-authentication-jwt.yml[istiofiles/enduser-authentication-jwt.yml]
@@ -42,14 +46,17 @@ Then let's run the curl again:
 
 include::curl.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
-Origin authentication failed.%`
+Origin authentication failed.%
 ----
 
 And now the communication is not possible because the user has not been identified (provides a valid JWT token).
 
 To get a correct token, just run next `curl` request.
 
+[.console-input]
 [source, bash]
 ----
 token=$(curl https://gist.githubusercontent.com/lordofthejars/a02485d70c99eba70980e0a92b2c97ed/raw/f16b938464b01a2e721567217f672f11dc4ef565/token.simple.jwt -s)
@@ -62,6 +69,8 @@ Then let's repeat the request but passing the token stored in `token` variable.
 :extrap: -H "Authorization: Bearer $token"
 include::curl_params.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
@@ -80,6 +89,7 @@ Check xref:8mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
 [#cleanup]
 == Clean Up
 
+[.console-input]
 [source, bash]
 ----
 kubectl delete -f istiofiles/enduser-authentication-jwt.yml

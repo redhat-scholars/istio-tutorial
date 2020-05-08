@@ -16,6 +16,7 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 == Deploy Recommendation microservice V2 using an existing image
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml]) -n tutorial{namespace-suffix}
@@ -25,9 +26,15 @@ kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-re
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl get pods -w -n tutorial{namespace-suffix}
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preference-243057078-8c5hz           2/2       Running   0          15m
@@ -51,6 +58,7 @@ include::generate_traffic.adoc[]
 
 The default Kubernetes/OpenShift behavior is to round-robin load-balance across all available pods behind a single Service. Add another replica of recommendation-v2 Deployment.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-suffix}
@@ -58,6 +66,7 @@ kubectl scale --replicas=2 deployment/recommendation-v2 -n tutorial{namespace-su
 
 Now, you will see two requests into the v2 and one for v1.
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '2819441432-qsp25': 29
@@ -67,6 +76,7 @@ customer => preference => recommendation v2 from '99634814-sf4cl': 38
 
 Scale back to a single replica of the recommendation-v2 Deployment
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-suffix}
@@ -80,9 +90,15 @@ kubectl scale --replicas=1 deployment/recommendation-v2 -n tutorial{namespace-su
 
 From the main istio-tutorial directory,
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
 ----
 
@@ -95,12 +111,21 @@ you should only see v2 being returned
 
 Note: "replace" instead of "create" since we are overlaying the previous rule
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1.yml[istiofiles/virtual-service-recommendation-v1.yml] -n tutorial{namespace-suffix}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get virtualservice -n tutorial{namespace-suffix}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get virtualservice -o yaml -n tutorial{namespace-suffix}
 ----
 
@@ -109,6 +134,7 @@ kubectl get virtualservice -o yaml -n tutorial{namespace-suffix}
 
 By simply removing the rule
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/virtual-service-recommendation-v1.yml -n tutorial{namespace-suffix}
@@ -123,10 +149,15 @@ include::generate_traffic.adoc[]
 
 Canary Deployment scenario: push v2 into the cluster but slowly send end-user traffic to it, if you continue to see success, continue shifting more traffic over time
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-$ kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
+kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          2h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
@@ -134,6 +165,7 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          1h
 
 Create the `virtualservice` that will send 90% of requests to v1 and 10% to v2
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2.yml[istiofiles/virtual-service-recommendation-v1_and_v2.yml] -n tutorial{namespace-suffix}
@@ -145,6 +177,7 @@ include::generate_traffic.adoc[]
 
 In another terminal, change the mixture to be 75/25
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v1_and_v2_75_25.yml[istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml] -n tutorial{namespace-suffix}
@@ -152,14 +185,21 @@ kubectl replace -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommend
 
 Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/virtual-service-recommendation-v1_and_v2_75_25.yml -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2.yml -n tutorial{namespace-suffix}
 ----
 
 or you can run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}

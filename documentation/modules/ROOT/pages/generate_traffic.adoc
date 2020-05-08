@@ -1,4 +1,5 @@
 ifdef::workshop[]
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh istio-ingressgateway-istio-system.{appdomain}/{path}
@@ -6,6 +7,7 @@ ifdef::workshop[]
 endif::workshop[]
 
 ifndef::workshop[]
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 ./scripts/run.sh $GATEWAY_URL/customer

@@ -27,6 +27,7 @@ to Istio or Openshift configuration (besides the ones required to install
 Istio).
 
 ifndef::workshop[]
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 istioctl dashboard kiali
@@ -38,6 +39,7 @@ ifdef::workshop[]
 So now we can access Kiali, so
 let's do it:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 open https://kiali-istio-system.{appdomain}/

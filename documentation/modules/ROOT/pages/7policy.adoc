@@ -7,6 +7,7 @@ include::_attributes.adoc[]
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -22,6 +23,7 @@ Here we will limit the number of concurrent requests into recommendation v2
 
 Now apply the rate limit handler
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/recommendation_rate_limit_handler.yml[istiofiles/recommendation_rate_limit_handler.yml]
@@ -29,6 +31,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/recommendation_rate_limit_
 
 Now setup the requestcount quota
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/rate_limit_rule.yml[istiofiles/rate_limit_rule.yml]
@@ -40,6 +43,7 @@ include::generate_traffic.adoc[]
 
 You should see some 429 errors:
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v2 from '2819441432-f4ls5': 108
@@ -61,15 +65,21 @@ customer => preference => recommendation v2 from '2819441432-f4ls5': 112
 
 === Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/rate_limit_rule.yml
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/recommendation_rate_limit_handler.yml
 ----
 
 or you can run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}

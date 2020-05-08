@@ -7,6 +7,7 @@ include::_attributes.adoc[]
 You should have NO virtualservice, destinationrule, gateway or policy (in `tutorial` namespace) `kubectl get virtualservice` `kubectl get destinationrule` `kubectl get gateway` `kubectl get policy`
 if so run:
 
+[.console-input]
 [source, bash]
 ----
 ./scripts/clean.sh
@@ -20,6 +21,7 @@ In this chapter, we are going to see how to use Istio's authorization feature to
 
 The first thing to do is enable Istio Authorization by using `ClusterRbacConfig` object.
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/authorization-enable-rbac.yml[istiofiles/authorization-enable-rbac.yml] -n tutorial
@@ -28,10 +30,15 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/authorization-enable-rbac.
 Now RBAC is enabled on your mesh.
 Run next command:
 
+[.console-input]
 [source, bash ,subs="+macros,+attributes" ]
 ----
 curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
+----
 
+[.console-output]
+[source, bash,subs="+macros,+attributes"]
+----
 RBAC: access denied
 ----
 
@@ -48,6 +55,7 @@ After that, you are ready to use JWT in the authorization phase as well.
 
 Now apply next Istio resource which makes that only tokens that contain a field named `role` with value `customer`.
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
@@ -55,6 +63,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.
 
 and then you can do a new call with the new token containing the `role` claim with value `customer``:
 
+[.console-input]
 [source, bash, subs="+macros,+attributes"]
 ----
 token=$(curl https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt -s)
@@ -63,6 +72,8 @@ token=$(curl https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244
 :extrap: -H "Authorization: Bearer $token"
 include::curl_params.adoc[]
 
+[.console-output]
+[source, bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
 ----
@@ -73,6 +84,7 @@ To validate that this is working correctly, do next thing:
 
 Open `istiofiles/namespace-rbac-policy-jwt.yml` and change the `role` with value `xxx` and save the file.
 
+[.console-input]
 [source, yaml]
 .istiofiles/namespace-rbac-policy-jwt.yml
 ----
@@ -83,6 +95,7 @@ when:
 
 And then replace it:
 
+[.console-input]
 [source, bash, subs="+macros,+attributes"]
 ----
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
@@ -93,6 +106,8 @@ After that, repeat the same request as before:
 :extrap: -H "Authorization: Bearer $token"
 include::curl_params.adoc[]
 
+[.console-output]
+[source, bash,subs="+macros,+attributes"]
 ----
 RBAC: access denied
 ----
@@ -112,8 +127,14 @@ Check xref:8mTLS.adoc[mTLS section] to learn more about mTLS and Istio.
 
 Follow xref:8jwt.adoc#cleanup[End-user authentication with JWT Clean Up] steps there to clean all JWT stuff and then call:
 
+[.console-input]
 [source, bash]
 ----
 kubectl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
+----
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/authorization-enable-rbac.yml -n tutorial
 ----

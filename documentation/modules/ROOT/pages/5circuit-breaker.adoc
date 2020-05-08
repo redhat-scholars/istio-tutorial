@@ -7,6 +7,7 @@ include::_attributes.adoc[]
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -20,6 +21,7 @@ Instead of failing immediately, retry the Service N more times
 
 We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
@@ -27,6 +29,7 @@ kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{na
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/misbehave
@@ -39,6 +42,8 @@ You will see it works every time because Istio will retry the recommendation ser
 
 include::generate_traffic.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '2036617847-m9glz': 196
 customer => preference => recommendation v1 from '2036617847-m9glz': 197
@@ -48,6 +53,7 @@ customer => preference => recommendation v1 from '2036617847-m9glz': 198
 If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as `preference` will retry to establish the connection with `recommendation`, and v1 will reply.
 
 ifndef::workshop[]
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 istioctl dashboard kiali
@@ -70,6 +76,7 @@ image:kiali-retry.png[Kiali Retry]
 
 Now, make the pod v2 behave well again
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
@@ -77,6 +84,7 @@ kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{na
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/behave
@@ -87,6 +95,8 @@ The application is back to round-robin load-balancing between v1 and v2
 
 include::generate_traffic.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '2039379827-h58vw': 129
 customer => preference => recommendation v2 from '2036617847-m9glz': 207
@@ -109,6 +119,7 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 First, introduce some wait time in `recommendation v2` by making it a slow performer with a 3 second delay by running the command
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial{namespace-suffix}
@@ -120,6 +131,7 @@ include::generate_traffic.adoc[]
 
 Then add the timeout rule
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-timeout.yml[istiofiles/virtual-service-recommendation-timeout.yml] -n tutorial{namespace-suffix}
@@ -129,6 +141,8 @@ You will see it return v1 after waiting about 1 second. You don't see v2 anymore
 
 include::generate_traffic.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2907
 customer => preference => recommendation v1 from '6976858b48-cs2rt': 2908
@@ -143,6 +157,7 @@ NOTE: You will deploy docker images that were previously built. If you want to b
 
 Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial{namespace-suffix}
@@ -150,6 +165,7 @@ kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"con
 
 Then delete the virtual service created for timeout by:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial{namespace-suffix}
@@ -157,6 +173,7 @@ kubectl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutor
 
 or you can run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -183,6 +200,7 @@ Now let's make things a bit more interesting.
 We will make pod `recommendation-v2` fail 100% of the time. 
 Get one of the pod names from your system and replace on the following command accordingly:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
@@ -190,6 +208,7 @@ kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{na
 
 You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl localhost:8080/misbehave
@@ -200,10 +219,15 @@ Open a new terminal window and run next command to inspect the logs of this fail
 
 First you need the pod name:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl get pods -n tutorial
+----
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preference-243057078-8c5hz           2/2       Running   0          15m
@@ -216,10 +240,15 @@ In previous case, it is `recommendation-v2-2815683430-vpx4p`.
 
 Then check its log:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+----
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 recommendation request from '99634814-sf4cl': 10
 recommendation request from '99634814-sf4cl': 11
 recommendation request from '99634814-sf4cl': 12
@@ -228,6 +257,7 @@ recommendation request from '99634814-sf4cl': 13
 
 Scale up the recommendation v2 service to two instances:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-suffix}
@@ -236,9 +266,15 @@ kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial{namespace-su
 Now, you've got one instance of `recommendation-v2` that is misbehaving and another one that is working correctly.
 Let's redirect all traffic to `recommendation-v2`:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
 ----
 
@@ -259,10 +295,15 @@ But inspect the logs of the failing pod again:
 
 IMPORTANT: Substitute the pod name to your pod name.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+----
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 recommendation request from '99634814-sf4cl': 35
 recommendation request from '99634814-sf4cl': 36
 recommendation request from '99634814-sf4cl': 37
@@ -280,6 +321,7 @@ This is where the _Circuit Breaker_ comes into the scene.
 Circuit breaker and pool ejection are used to avoid reaching a failing pod for a specified amount of time.
 In this way when some consecutive errors are produced, the failing pod is ejected from eligible pods and all further requests are not sent anymore to that instance but to a healthy instance.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
@@ -295,10 +337,15 @@ All of the requests to our system were successful.
 
 But now inspect again the logs of the failing pod:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{namespace-suffix}
+----
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 recommendation request from '99634814-sf4cl': 38
 recommendation request from '99634814-sf4cl': 39
 recommendation request from '99634814-sf4cl': 40
@@ -313,15 +360,21 @@ After this, no further request is send to failing pod.
 
 Remove Istio resources:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation_cb_policy_version_v2.yml[istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml] -n tutorial{namespace-suffix}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v2.yml[istiofiles/virtual-service-recommendation-v2.yml] -n tutorial{namespace-suffix}
 ----
 
 Scale down to one instance of `recommendation-v2`.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-suffix}
@@ -329,6 +382,7 @@ kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial{namespace-su
 
 Restart `recommendation-v2` pod:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete pod -l app=recommendation,version=v2

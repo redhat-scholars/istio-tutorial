@@ -7,6 +7,7 @@ include::_attributes.adoc[]
 You should have NO virtualservice, destinationrule, gateway or policy (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` `kubectl get gateway{namespace-suffix}` `kubectl get policy{namespace-suffix}`
 if so run:
 
+[.console-input]
 [source, bash]
 ----
 ./scripts/clean.sh
@@ -23,10 +24,15 @@ If you have followed this guide and installed the demo profile (xref:1setup.adoc
 
 To check if mTLS is enabled or not just run the next command:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
+----
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 HOST:PORT                                    STATUS     SERVER         CLIENT     AUTHN POLICY     DESTINATION RULE
 customer.tutorial.svc.cluster.local:8080     OK         PERMISSIVE     -          /default         -
 ----
@@ -35,61 +41,74 @@ If `CLIENT` is with `-` means that mTLS is not enabled.
 
 To enable mTLS:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/authentication-enable-tls.yml[istiofiles/authentication-enable-tls.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[istiofiles/destination-rule-tls.yml] -n tutorial{namespace-suffix}
 ----
 
 To check that mTLS is enabled run the next command:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
+----
 
-
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 HOST:PORT                                    STATUS     SERVER     CLIENT           AUTHN POLICY         DESTINATION RULE
 customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default
 ----
 
 Check the mTLS by _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
 
+[.console-input]
 [source, bash]
 ----
-CUSTOMER_POD=$(oc get pod | grep cust | awk '{ print $1}' ) # <1>
-
-or in Kuberentes:
-
-CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' )
-
-oc exec -it $CUSTOMER_POD -c istio-proxy /bin/bash # <2>
-
-or in Kubernetes:
-
-kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash 
-
-# Inside pod shell
-
-ifconfig # <3>
-sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' # <4>
+CUSTOMER_POD=$(kubectl get pod | grep cust | awk '{ print $1}' ) # <1>
+kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash # <2>
 ----
 <1> Get customer pod name
 <2> Open a shell inside pod
-<3> Get IP of current pod (probably the IP represented at `eth0` interface)
-<4> Capture traffic from `eth0` (or your interface) of port `8080` and network `172.17.0.10` (your IP from `ifconfig`)
+
+Inside pod shell
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+ifconfig # <1>
+sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' # <2>
+----
+<1> Get IP of current pod (probably the IP represented at `eth0` interface)
+<2> Capture traffic from `eth0` (or your interface) of port `8080` and network `172.17.0.10` (your IP from `ifconfig`)
 
 Now all communication that happens between `customer` service and `preference` service is dumped in the console.
 
 So now go to a terminal and execute:
 
+[.console-input]
 [source, bash, subs="+macros,+attributes"]
 ----
 curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
+----
+
+[.console-output]
+[source, bash,subs="+macros,+attributes"]
+----
 customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
 ----
 
 Obviously, the response is exactly the same, but if you go to the terminal where you are executing `tcpdump`, you should see something like:
 
+[.console-output]
 [source, bash]
 ----
 Z.!.X/K.............w$.?....&T...=..=..y..[.k..g..0..5.f%..vz|..t.....%..|...B..%r0.^k.y.....y.@l$O.....?...J..qc&...
@@ -101,6 +120,7 @@ Notice that you cannot see any detail about the communication since it happened 
 
 Now, let's disable _TLS_:
 
+[.console-input]
 [source, bash]
 ----
 kubectl replace -f istiofiles/disable-mtls.yml
@@ -108,14 +128,21 @@ kubectl replace -f istiofiles/disable-mtls.yml
 
 And execute again:
 
+[.console-input]
 [source, bash, subs="+macros,+attributes"]
 ----
 curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
+----
+
+[.console-output]
+[source, bash,subs="+macros,+attributes"]
+----
 customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
 ----
 
 And again check `tcpdump` output:
 
+[.console-output]
 [source, bash]
 ----
 host: 0192.168.64.70:31380
@@ -137,14 +164,21 @@ Now, you can see that since there is no _TLS_ enabled, the information is not sh
 [#restore]
 == Clean Up
 
+[.console-input]
 [source,bash]
 ----
 kubectl delete -f istiofiles/disable-mtls.yml
+----
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/destination-rule-tls.yml
 ----
 
 or you can run:
 
+[.console-input]
 [source, bash]
 ----
 ./scripts/clean.sh

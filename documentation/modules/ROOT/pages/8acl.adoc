@@ -7,6 +7,7 @@ include::_attributes.adoc[]
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -34,6 +35,7 @@ IMPORTANT: The Access Control rules take some time to be applied and reflected. 
 We'll create a whitelist that will only allow the next communication path: customer -> preference -> recommendation.
 Any other path will result to a 403 HTTP error.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofiles/acl-whitelist.yml] -n tutorial{namespace-suffix}
@@ -43,6 +45,7 @@ Then if you do:
 
 include::curl.adoc[]
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v2 from '6b569c9cfb-g8shk': 5
@@ -50,6 +53,7 @@ customer => preference => recommendation v2 from '6b569c9cfb-g8shk': 5
 
 Of course everything is still valid but let's go inside customer pod:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) -c customer /bin/bash
@@ -57,14 +61,33 @@ kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{na
 
 You will be inside the application container of your pod `customer-86ccc8746d-c6kfb`. Now execute:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 curl preference:8080
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 preference => recommendation v1 from '868bf96bfc-425m6': 5
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 curl recommendation:8080
-Error: 403 - PERMISSION_DENIED:
+----
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+Error: 403 - PERMISSION_DENIED:
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 exit
 ----
 
@@ -72,6 +95,7 @@ So as you can see `customer` can only do a request to `preference` service but n
 
 === Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/acl-whitelist.yml -n tutorial{namespace-suffix}
@@ -82,6 +106,7 @@ kubectl delete -f istiofiles/acl-whitelist.yml -n tutorial{namespace-suffix}
 
 We'll create a blacklist making the customer service blacklist to the preference service. Requests from the customer service to the preference service will return a 403 Forbidden HTTP error code.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofiles/acl-blacklist.yml] -n tutorial{namespace-suffix}
@@ -89,6 +114,7 @@ kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofil
 
 include::curl.adoc[]
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
@@ -96,6 +122,7 @@ customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:N
 
 === Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/acl-blacklist.yml -n tutorial{namespace-suffix}

@@ -11,6 +11,7 @@ In this case, we are going to configure Istio to access http://worldclockapi.com
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
+[.console-input]
 [source, bash]
 ----
 ./scripts/clean.sh
@@ -25,9 +26,15 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[.console-input]
 [source,bash, subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml]) -n tutorial
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get pods -w -n
 ----
 
@@ -35,6 +42,7 @@ kubectl get pods -w -n
 
 Wait for those pods to show "2/2", the istio-proxy/envoy sidecar is part of that pod
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 NAME                                  READY     STATUS    RESTARTS   AGE
@@ -50,6 +58,7 @@ recommendation-v3-7b445dd469-j6rkg   2/2       Running   0          2m
 
 Configure Istio to allow only registered traffic:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: ALLOW_ANY/mode: REGISTRY_ONLY/g' | kubectl replace -n istio-system -f -
@@ -61,9 +70,15 @@ Be sure you do not have any previous destination rule nor virtual service instal
 
 Let's redirect all traffic to reccomendation:v3.
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2-v3.yml[istiofiles/destination-rule-recommendation-v1-v2-v3.yml] -n tutorial
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-v3.yml[istiofiles/virtual-service-recommendation-v3.yml]
 ----
 
@@ -73,31 +88,45 @@ IMPORTANT: Since no Egress service entry has been registered to access an extern
 
 include::curl.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => Error: 503 - preference => Error: 500 - <html><head><title>Error</title></head><body>Internal Server Error</body></html>
 ----
 
 Let's fix it by registering a service entry to allow access to `worldclockapi`.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/service-entry-egress-worldclockapi.yml[istiofiles/service-entry-egress-worldclockapi.yml] -n tutorial
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get serviceentry
 ----
 
 include::curl.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v3 2019-03-28T00:24+01:00 from '57cd88c95d-jp546': 1
 ----
 
 or shell into the pod by getting its name and then using that name with `kubectl exec`:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl exec -it -n tutorial $(kubectl get pods -n tutorial -o jsonpath="{.items[*].metadata.name}" -l app=recommendation,version=v3) -c recommendation /bin/bash
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 curl http://worldclockapi.com/api/json/cet/now
 
 exit
@@ -107,15 +136,27 @@ exit
 [#cleanup]
 === Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/service-entry-egress-worldclockapi.yml -n tutorial
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/destination-rule-recommendation-v1-v2-v3.yml -n tutorial
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/virtual-service-recommendation-v3.yml
 ----
 
 or you can run:
 
+[.console-input]
 [source, bash]
 ----
 ./scripts/clean.sh
@@ -123,6 +164,7 @@ or you can run:
 
 Undeploy _recommendation:v3_:
 
+[.console-input]
 [source, bash]
 ----
 kubectl delete all -n tutorial -l app=recommendation,version=v3
@@ -130,6 +172,7 @@ kubectl delete all -n tutorial -l app=recommendation,version=v3
 
 And get back to allow any output traffic:
 
+[.console-input]
 [source, bash]
 ----
 kubectl get configmap istio -n istio-system -o yaml | sed 's/mode: REGISTRY_ONLY/mode: ALLOW_ANY/g' | kubectl replace -n istio-system -f -

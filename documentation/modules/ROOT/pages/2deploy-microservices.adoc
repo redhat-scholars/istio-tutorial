@@ -21,6 +21,7 @@ endif::workshop[]
 
 Make sure you are logged in
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl config current-context
@@ -28,9 +29,15 @@ kubectl config current-context
 
 and you have setup the project/namespace
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create namespace tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
 ----
 
@@ -38,9 +45,15 @@ Start deploying the microservice projects, starting with customer
 
 Make sure `istioctl` is in your `PATH`:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-$ istioctl version
+istioctl version
+----
+
+[.console-output]
+[source,bash,subs="attributes+,+macros"]
+----
 client version: 1.4.6
 control plane version: 1.4.6
 data plane version: 1.4.6 (2 proxies)
@@ -54,9 +67,15 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{customer-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 ----
 
@@ -65,14 +84,34 @@ kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Service.yml[{cus
 Since the `customer` service is the one our users will interact with, let's add a Gateway that exposes that endpoint.
 
 ifndef::workshop[]
+
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{customer-repo}/kubernetes/Gateway.yml[{customer-repo}/kubernetes/Gateway.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get pods -w -n tutorial{namespace-suffix}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get svc istio-ingressgateway -n istio-system
-istio-ingressgateway   LoadBalancer   10.101.82.250   <pending>     15020:31582/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:30818/TCP,15030:32542/TCP,15031:30106/TCP,15032:32284/TCP,15443:31080/TCP   19m
+----
 
+[.console-output]
+[source,bash,subs="attributes+,+macros"]
+----
+istio-ingressgateway   LoadBalancer   10.101.82.250   <pending>     15020:31582/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:30818/TCP,15030:32542/TCP,15031:30106/TCP,15032:32284/TCP,15443:31080/TCP   19m
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 export INGRESS_HOST=$(minikube ip -p istio)
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 
@@ -107,17 +146,25 @@ You should see the following error because the services `preference` and `recomm
 customer => UnknownHostException: preference
 ----
 
-Also review the logs
+Also review the logs:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 stern $(kubectl get pods|grep customer|awk '{ print $1 }'|head -1) -c customer
+----
+
 or
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 stern "customer-\w" -c customer
 ----
 
 You should see a stacktrace containing this cause:
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer-6fc99b7bfd-5st28 customer Caused by: java.net.UnknownHostException: preference
@@ -132,14 +179,21 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml])  -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{preference-repo}/kubernetes/Service.yml[{preference-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
 ----
 
 === Wait preference to be deployed
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 kubectl get pods -w -n tutorial{namespace-suffix}
@@ -153,6 +207,7 @@ It will respond with an error since the service `recommendation` is not yet depl
 
 NOTE: We could make this a bit more resilient in a future iteration of this tutorial
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => Error: 503 - preference => UnknownHostException: recommendation
@@ -160,15 +215,23 @@ customer => Error: 503 - preference => UnknownHostException: recommendation
 
 and check out the logs
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 stern $(kubectl get pods|grep preference|awk '{ print $1 }'|head -1) -c preference
+----
+
 or
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 stern "preference-\w" -c preference
 ----
 
 You should see a stacktrace containing this cause:
 
+[.console-outputput]
 [source,bash,subs="+macros,+attributes"]
 ----
 preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostException: recommendation
@@ -183,10 +246,21 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{recommendation-repo}/kubernetes/Service.yml[{recommendation-repo}/kubernetes/Service.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get pods -w -n tutorial{namespace-suffix}
 ----
 
@@ -198,6 +272,7 @@ include::curl.adoc[]
 
 it should now return
 
+[.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v1 from '99634814-sf4cl': 1
@@ -205,10 +280,17 @@ customer => preference => recommendation v1 from '99634814-sf4cl': 1
 
 and you can monitor the `recommendation` logs with
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation
+----
+
 or
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 stern "recommendation-v1-\w" -c recommendation-v1
 ----
 
@@ -218,22 +300,47 @@ stern "recommendation-v1-\w" -c recommendation-v1
 
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 
+[.console-input]
 [source,bash]
 ----
 cd {servicename}/java/{quarkus|springboot|vertx}
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 vi src/main/java/com/redhat/developer/demos/{servicename}/{Servicename}{Controller|Verticle}.java
 ----
 
 Make your changes, save it and then:
 
+[.console-input]
 [source,bash]
 ----
 mvn clean package
-docker build -t example/{servicename}:v1 .
+----
 
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+docker build -t example/{servicename}:v1 .
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l app={servicename},version=v1
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete pod -l app={servicename},version=v1 -n tutorial{namespace-suffix}
 ----
 
@@ -241,6 +348,7 @@ Why the delete pod?
 
 Based on the Deployment configuration, Kubernetes/OpenShift will recreate the pod, based on the new docker image as it attempts to keep the desired replicas available
 
+[.console-input]
 [source,bash]
 ----
 kubectl describe deployment {servicename} -n tutorial{namespace-suffix} | grep Replicas

@@ -9,6 +9,7 @@ Apply some chaos engineering by throwing in some HTTP errors or network delays. 
 You should have NO virtualservice nor destinationrule (in `tutorial` namespace) `kubectl get virtualservice{namespace-suffix}` `kubectl get destinationrule{namespace-suffix}` 
 if so run:
 
+[.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
 ./scripts/clean.sh tutorial{namespace-suffix}
@@ -20,10 +21,15 @@ if so run:
 
 By default, recommendation v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl get pods -l app=recommendation -n tutorial{namespace-suffix}
+----
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
 NAME                                  READY     STATUS    RESTARTS   AGE
 recommendation-v1-3719512284-7mlzw   2/2       Running   6          18h
 recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
@@ -31,14 +37,22 @@ recommendation-v2-2815683430-vn77w   2/2       Running   0          3h
 
 You can inject 503's, for approximately 50% of the requests
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-503.yml[istiofiles/virtual-service-recommendation-503.yml] -n tutorial{namespace-suffix}
 ----
 
 include::generate_traffic.adoc[]
 
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v2 from '7778d6fb89-j6lts': 138
 customer => Error: 503 - preference => Error: 503 - fault filter abort
@@ -55,6 +69,7 @@ customer => preference => recommendation v2 from '7778d6fb89-j6lts': 141
 
 Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial{namespace-suffix}
@@ -65,9 +80,15 @@ kubectl delete -f istiofiles/virtual-service-recommendation-503.yml -n tutorial{
 
 The most insidious of possible distributed computing faults is not a "down" service but a service that is responding slowly, potentially causing a cascading failure in your network of services.
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
 ----
 
@@ -78,6 +99,7 @@ include::generate_traffic.adoc[]
 You will notice many requests to the customer endpoint now have a delay.
 If you are monitoring the logs for recommendation v1 and v2, you will also see the delay happens BEFORE the recommendation service is actually called
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 stern recommendation -n tutorial{namespace-suffix}
@@ -85,8 +107,14 @@ stern recommendation -n tutorial{namespace-suffix}
 
 === Clean up
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl delete -f istiofiles/destination-rule-recommendation.yml -n tutorial{namespace-suffix}
+----
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
 kubectl delete -f istiofiles/virtual-service-recommendation-delay.yml -n tutorial{namespace-suffix}
 ----

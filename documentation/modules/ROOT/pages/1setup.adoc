@@ -68,11 +68,15 @@ export PATH=$ISTIO_HOME/bin:$PATH
 cd $TUTORIAL_HOME
 ----
 
+[.console-input]
 [source,bash,subs="attributes+,+macros"]
 ----
-
 istioctl manifest apply --set profile=demo --set values.global.proxy.privileged=true
+----
 
+[.console-output]
+[source,bash,subs="attributes+,+macros"]
+----
 - Applying manifest for component Base...
 ✔ Finished applying manifest for component Base.
 - Applying manifest for component Tracing...
@@ -102,7 +106,11 @@ istioctl manifest apply --set profile=demo --set values.global.proxy.privileged=
 
 
 ✔ Installation complete
+----
 
+[.console-input]
+[source,bash,subs="attributes+,+macros"]
+----
 kubectl config set-context $(kubectl config current-context) --namespace=istio-system
 ----
 
@@ -110,10 +118,15 @@ IMPORTANT: `istio-demo.yaml` enables policy enforcement by default which is requ
 
 Wait for Istio's components to be ready
 
+[.console-input]
 [source,bash,subs="attributes+,+macros"]
 ----
-$ kubectl get pods -w
+kubectl get pods -w
+----
 
+[.console-output]
+[source,bash,subs="attributes+,+macros"]
+----
 NAME                                        READY     STATUS      RESTARTS   AGE
 grafana-6b65874977-v92gw                  1/1     Running   0          99s
 istio-citadel-7bcc69d486-lqhwh            1/1     Running   0          101s
@@ -138,10 +151,15 @@ To install it, you need to follow the instructions written in: https://docs.open
 
 It is important that after you finish with the installation, all the required pods are delpyed in `istio-system` namespace:
 
+[.console-input]
 [source,bash,subs="attributes+,+macros"]
 ----
-$ kubectl get pods -w
+kubectl get pods -w
+----
 
+[.console-output]
+[source,bash,subs="attributes+,+macros"]
+----
 NAME                                     READY   STATUS             RESTARTS   AGE
 grafana-7bf5764d9d-2b2f6                 2/2     Running            0          28h
 istio-citadel-576b9c5bbd-z84z4           1/1     Running            0          28h

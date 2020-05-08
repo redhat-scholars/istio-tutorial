@@ -16,6 +16,7 @@ ifndef::workshop[]
 
 In a new terminal window run:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 istioctl dashboard grafana
@@ -47,6 +48,7 @@ ifndef::workshop[]
 
 In a new terminal window run:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 istioctl dashboard prometheus
@@ -74,14 +76,15 @@ Istio also allows you to specify custom metrics which can be seen inside of the 
 
 Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl create -f link:{github-repo}/{istiofiles-dir}/recommendation_requestcount.yml[istiofiles/recommendation_requestcount.yml] -n istio-system
 ----
 
-
 Then run several requests through the system
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 while true; do curl istio-ingressgateway-istio-system.{appdomain}/{path}; sleep .5;  done
@@ -89,6 +92,7 @@ while true; do curl istio-ingressgateway-istio-system.{appdomain}/{path}; sleep 
 
 In the Prometheus dashboard, add the following
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 istio_requests_total{destination_service="recommendation.tutorial.svc.cluster.local"}
@@ -109,6 +113,7 @@ Istio allows also to see the RSS memory consumed by the containers.
 
 In the Prometheus dashboard, add the following
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 container_memory_rss{namespace="tutorial",container=~"customer|preference|recommendation"}
@@ -134,6 +139,7 @@ ifndef::workshop[]
 
 In a new terminal window run:
 
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 istioctl dashboard jaeger
