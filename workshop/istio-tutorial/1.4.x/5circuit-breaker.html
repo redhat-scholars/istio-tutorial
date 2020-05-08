@@ -7,16 +7,16 @@
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.4.x/5circuit-breaker.html">
     <meta name="generator" content="Antora 2.0.0">
     <link rel="stylesheet" href="../../_/css/site.css">
-<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon"><script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
   </head>
   <body class="article">
 <header class="header" role="banner">
   <nav class="navbar">
     <div class="navbar-brand">
       <div class="navbar-item">
-        <a href="#">Istio Tutorial</a>
-        <span class="separator">//</span>
-        <a href="https://redhat-developer-demos.github.io/istio-tutorial/workshop">Docs</a>
+        <a href="https://redhat-developer-demos.github.io/istio-tutorial/workshop">Istio Workshop</a>
       </div>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
@@ -24,27 +24,9 @@
         <span></span>
       </button>
     </div>
-    <div id="topbar-nav" class="navbar-menu">
-      <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable">
-          <div class="navbar-link">Project</div>
-          <div class="navbar-dropdown">
-            <div class="navbar-item"><strong>GitHub</strong></div>
-            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial">Istio Tutorial Repository</a>
-            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial/issues">Istio Tutorial Issue Tracker</a>
-          </div>
-        </div>
-        <a class="navbar-item" href="https://twitter.com/rhdevelopers">
-          <span class="icon">
-            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
-            </svg>
-          </span>
-        </a>
-      </div>
-    </div>
   </nav>
-</header><div class="main-wrapper">
+</header>
+<div class="main-wrapper">
 <div class="navigation-container"  data-component="istio-tutorial"
   data-version="1.4.x" >
   <aside class="navigation">
@@ -332,7 +314,7 @@
 <p>You should have NO virtualservice nor destinationrule (in <code>tutorial</code> namespace) <code>kubectl get virtualservice-$WORKSHOP_USER</code> <code>kubectl get destinationrule-$WORKSHOP_USER</code>
 if so run:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -352,7 +334,7 @@ if so run:</p>
 <div class="paragraph">
 <p>We will make pod recommendation-v2 fail 100% of the time. Get one of the pod names from your system and replace on the following command accordingly:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl exec -it -n tutorial-$WORKSHOP_USER $(kubectl get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
@@ -360,7 +342,7 @@ if so run:</p>
 <div class="paragraph">
 <p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/misbehave
 exit</code></pre>
@@ -372,16 +354,16 @@ exit</code></pre>
 <div class="paragraph">
 <p>You will see it works every time because Istio will retry the recommendation service <strong>automatically</strong> and it will land on v1 only.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock console-output">
 <div class="content">
-<pre>customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 196
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 196
 customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 197
-customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</pre>
+customer =&gt; preference =&gt; recommendation v1 from '2036617847-m9glz': 198</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -405,7 +387,7 @@ let&#8217;s do it:</p>
 <div class="paragraph">
 <p>Now, make the pod v2 behave well again</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl exec -it -n tutorial-$WORKSHOP_USER $(kubectl get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
@@ -413,7 +395,7 @@ let&#8217;s do it:</p>
 <div class="paragraph">
 <p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/behave
 exit</code></pre>
@@ -422,16 +404,16 @@ exit</code></pre>
 <div class="paragraph">
 <p>The application is back to round-robin load-balancing between v1 and v2</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock console-output">
 <div class="content">
-<pre>customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 129
 customer =&gt; preference =&gt; recommendation v2 from '2036617847-m9glz': 207
-customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 130</pre>
+customer =&gt; preference =&gt; recommendation v1 from '2039379827-h58vw': 130</code></pre>
 </div>
 </div>
 </div>
@@ -475,7 +457,7 @@ You will deploy docker images that were previously built for this tutorial. If y
 <div class="paragraph">
 <p>First, introduce some wait time in <code>recommendation v2</code> by making it a slow performer with a 3 second delay by running the command</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2-timeout"}]}}}}' -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -483,7 +465,7 @@ You will deploy docker images that were previously built for this tutorial. If y
 <div class="paragraph">
 <p>Hit the customer endpoint a few times, to see the load-balancing between v1 and v2 but with v2 taking a bit of time to respond</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
@@ -491,7 +473,7 @@ You will deploy docker images that were previously built for this tutorial. If y
 <div class="paragraph">
 <p>Then add the timeout rule</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-timeout.yml">istiofiles/virtual-service-recommendation-timeout.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -499,16 +481,16 @@ You will deploy docker images that were previously built for this tutorial. If y
 <div class="paragraph">
 <p>You will see it return v1 after waiting about 1 second. You don&#8217;t see v2 anymore, because the response from v2 expires after the timeout period and it is never returned.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/run.sh istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock console-output">
 <div class="content">
-<pre>customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2907
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2907
 customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2908
-customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2909</pre>
+customer =&gt; preference =&gt; recommendation v1 from '6976858b48-cs2rt': 2909</code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -540,7 +522,7 @@ You will deploy docker images that were previously built. If you want to build r
 <div class="paragraph">
 <p>Change the implementation of <code>v2</code> back to the image that responds without the delay of 3 seconds:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/rhdevelopers/istio-tutorial-recommendation:v2"}]}}}}' -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -548,7 +530,7 @@ You will deploy docker images that were previously built. If you want to build r
 <div class="paragraph">
 <p>Then delete the virtual service created for timeout by:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/virtual-service-recommendation-timeout.yml -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -556,7 +538,7 @@ You will deploy docker images that were previously built. If you want to build r
 <div class="paragraph">
 <p>or you can run:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -572,7 +554,7 @@ You will deploy docker images that were previously built. If you want to build r
 <div class="paragraph">
 <p>Let&#8217;s perform a load test in our system with <code>siege</code>. We&#8217;ll have 10 clients sending 4 concurrent requests each:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 10 -c 4 istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
@@ -593,7 +575,7 @@ You will deploy docker images that were previously built. If you want to build r
 <p>We will make pod <code>recommendation-v2</code> fail 100% of the time.
 Get one of the pod names from your system and replace on the following command accordingly:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl exec -it -n tutorial-$WORKSHOP_USER $(kubectl get pods -n tutorial-$WORKSHOP_USER|grep recommendation-v2|awk '{ print $1 }'|head -1) -c recommendation /bin/bash</code></pre>
 </div>
@@ -601,7 +583,7 @@ Get one of the pod names from your system and replace on the following command a
 <div class="paragraph">
 <p>You will be inside the application container of your pod <code>recommendation-v2-2036617847-spdrb</code>. Now execute:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/misbehave
 exit</code></pre>
@@ -613,11 +595,14 @@ exit</code></pre>
 <div class="paragraph">
 <p>First you need the pod name:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -n tutorial
-
-NAME                                  READY     STATUS    RESTARTS   AGE
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -n tutorial</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                  READY     STATUS    RESTARTS   AGE
 customer-3600192384-fpljb             2/2       Running   0          17m
 preference-243057078-8c5hz           2/2       Running   0          15m
 recommendation-v1-60483540-9snd9     2/2       Running   0          12m
@@ -631,11 +616,14 @@ In previous case, it is <code>recommendation-v2-2815683430-vpx4p</code>.</p>
 <div class="paragraph">
 <p>Then check its log:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial-$WORKSHOP_USER
-
-recommendation request from '99634814-sf4cl': 10
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">recommendation request from '99634814-sf4cl': 10
 recommendation request from '99634814-sf4cl': 11
 recommendation request from '99634814-sf4cl': 12
 recommendation request from '99634814-sf4cl': 13</code></pre>
@@ -644,7 +632,7 @@ recommendation request from '99634814-sf4cl': 13</code></pre>
 <div class="paragraph">
 <p>Scale up the recommendation v2 service to two instances:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl scale deployment recommendation-v2 --replicas=2 -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -653,17 +641,21 @@ recommendation request from '99634814-sf4cl': 13</code></pre>
 <p>Now, you&#8217;ve got one instance of <code>recommendation-v2</code> that is misbehaving and another one that is working correctly.
 Let&#8217;s redirect all traffic to <code>recommendation-v2</code>:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial-$WORKSHOP_USER
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Let&#8217;s perform a load test in our system with <code>siege</code>.
 We&#8217;ll have 10 clients sending 4 concurrent requests each:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 10 -c 4 istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
@@ -694,11 +686,14 @@ Substitute the pod name to your pod name.
 </tr>
 </table>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial-$WORKSHOP_USER
-
-recommendation request from '99634814-sf4cl': 35
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">recommendation request from '99634814-sf4cl': 35
 recommendation request from '99634814-sf4cl': 36
 recommendation request from '99634814-sf4cl': 37
 recommendation request from '99634814-sf4cl': 38</code></pre>
@@ -718,12 +713,12 @@ The reason is that the requests are still able to reach the failing service, so 
 <p>Circuit breaker and pool ejection are used to avoid reaching a failing pod for a specified amount of time.
 In this way when some consecutive errors are produced, the failing pod is ejected from eligible pods and all further requests are not sent anymore to that instance but to a healthy instance.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml">istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">siege -r 10 -c 4 istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
@@ -740,11 +735,14 @@ In this way when some consecutive errors are produced, the failing pod is ejecte
 <div class="paragraph">
 <p>But now inspect again the logs of the failing pod:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial-$WORKSHOP_USER
-
-recommendation request from '99634814-sf4cl': 38
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">recommendation request from '99634814-sf4cl': 38
 recommendation request from '99634814-sf4cl': 39
 recommendation request from '99634814-sf4cl': 40</code></pre>
 </div>
@@ -771,17 +769,20 @@ After this, no further request is send to failing pod.</p>
 <div class="paragraph">
 <p>Remove Istio resources:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml">istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml</a> -n tutorial-$WORKSHOP_USER
-
-kubectl delete -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml">istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v2.yml">istiofiles/virtual-service-recommendation-v2.yml</a> -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Scale down to one instance of <code>recommendation-v2</code>.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl scale deployment recommendation-v2 --replicas=1 -n tutorial-$WORKSHOP_USER</code></pre>
 </div>
@@ -789,7 +790,7 @@ kubectl delete -f <a href="https://github.com/redhat-developer-demos/istio-tutor
 <div class="paragraph">
 <p>Restart <code>recommendation-v2</code> pod:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete pod -l app=recommendation,version=v2</code></pre>
 </div>
@@ -800,8 +801,78 @@ kubectl delete -f <a href="https://github.com/redhat-developer-demos/istio-tutor
 </article>
   </main>
 </div>
-<footer class="footer">
-  <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
+<footer role="contentinfo">
+  <div class="region region-rhd-footer">
+    <div id="block-rhdfooter" class="rhd-footer">
+      <nav class="rhd-footer-nav" aria-label="Secondary Navigation" role="navigation">
+  <ul class="rhd-menu">
+    <li class="menu-item menu-item--expanded">
+      <h3 class="section-toggle">Resources</h3>
+      <ul class="rhd-menu">
+        <li class="menu-item">
+          <a href="https://github.com/redhat-developer-demos/istio-tutorial" title="Istio Tutorial">Istio
+            Tutorial</a>
+        </li>
+        <li class="menu-item">
+          <a href="https://github.com/redhat-developer-demos/istio-tutorial/issues" title="Issue Tracker">Issue
+            Tracker</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>      <div class="rhd-footer-sidebar">
+        <p class="rhd-footer-sidebar-title">Red Hat Developer</p>
+        <p class="rhd-footer-sidebar-subtitle">Build here. Go anywhere.</p>
+        <p class="rhd-footer-sidebar-content">
+          We serve the builders. The problem solvers who create careers with
+          code.<br /><br /><a href="https://developer.redhat.com/register">Join us</a>
+          if you’re a developer, software engineer, web designer, front-end
+          designer, UX designer, computer scientist, architect, tester,
+          product manager, project manager or team lead.
+        </p>
+        <ul class="rhd-footer-sidebar-social">
+          <li>
+            <a href="https://www.youtube.com/channel/UC7noUdfWp-ukXUlAsJnSm-Q" target="_blank"
+              rel="noopener noreferrer"><svg class="svg-inline--fa fa-youtube fa-w-18" aria-hidden="true"
+                data-prefix="fab" data-icon="youtube" role="img" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 576 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z">
+                </path>
+              </svg><!-- <i class="fab fa-youtube"></i> --></a>
+          </li>
+          <li>
+            <a href="https://www.facebook.com/RedHatDeveloperProgram" target="_blank" rel="noopener noreferrer"><svg
+                class="svg-inline--fa fa-facebook fa-w-14" aria-hidden="true" data-prefix="fab" data-icon="facebook"
+                role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M448 56.7v398.5c0 13.7-11.1 24.7-24.7 24.7H309.1V306.5h58.2l8.7-67.6h-67v-43.2c0-19.6 5.4-32.9 33.5-32.9h35.8v-60.5c-6.2-.8-27.4-2.7-52.2-2.7-51.6 0-87 31.5-87 89.4v49.9h-58.4v67.6h58.4V480H24.7C11.1 480 0 468.9 0 455.3V56.7C0 43.1 11.1 32 24.7 32h398.5c13.7 0 24.8 11.1 24.8 24.7z">
+                </path>
+              </svg><!-- <i class="fab fa-facebook"> </i> --></a>
+          </li>
+          <li>
+            <a href="https://twitter.com/rhdevelopers" target="_blank" rel="noopener noreferrer"><svg
+                class="svg-inline--fa fa-twitter fa-w-16" aria-hidden="true" data-prefix="fab" data-icon="twitter"
+                role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                </path>
+              </svg><!-- <i class="fab fa-twitter"> </i> --></a>
+          </li>
+          <li>
+            <a href="https://github.com/redhat-developer" target="_blank" rel="noopener noreferrer"><svg
+                class="svg-inline--fa fa-github fa-w-16" aria-hidden="true" data-prefix="fab" data-icon="github"
+                role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z">
+                </path>
+              </svg><!-- <i class="fab fa-github"> </i> --></a>
+          </li>
+        </ul>
+        <a class="rhd-footer-sidebar-signup" href="https://developers.redhat.com/register">Sign me up ▸</a>
+      </div>
+    </div>
+  </div>
 </footer>
 <script src="../../_/js/site.js"></script>
 <script src="../../_/js/vendor/highlight.js"></script>

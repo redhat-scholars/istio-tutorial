@@ -7,16 +7,16 @@
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/workshop/istio-tutorial/1.4.x/8rbac.html">
     <meta name="generator" content="Antora 2.0.0">
     <link rel="stylesheet" href="../../_/css/site.css">
-<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon"><script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
   </head>
   <body class="article">
 <header class="header" role="banner">
   <nav class="navbar">
     <div class="navbar-brand">
       <div class="navbar-item">
-        <a href="#">Istio Tutorial</a>
-        <span class="separator">//</span>
-        <a href="https://redhat-developer-demos.github.io/istio-tutorial/workshop">Docs</a>
+        <a href="https://redhat-developer-demos.github.io/istio-tutorial/workshop">Istio Workshop</a>
       </div>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
@@ -24,27 +24,9 @@
         <span></span>
       </button>
     </div>
-    <div id="topbar-nav" class="navbar-menu">
-      <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable">
-          <div class="navbar-link">Project</div>
-          <div class="navbar-dropdown">
-            <div class="navbar-item"><strong>GitHub</strong></div>
-            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial">Istio Tutorial Repository</a>
-            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial/issues">Istio Tutorial Issue Tracker</a>
-          </div>
-        </div>
-        <a class="navbar-item" href="https://twitter.com/rhdevelopers">
-          <span class="icon">
-            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
-            </svg>
-          </span>
-        </a>
-      </div>
-    </div>
   </nav>
-</header><div class="main-wrapper">
+</header>
+<div class="main-wrapper">
 <div class="navigation-container"  data-component="istio-tutorial"
   data-version="1.4.x" >
   <aside class="navigation">
@@ -333,7 +315,7 @@
 <p>You should have NO virtualservice, destinationrule, gateway or policy (in <code>tutorial</code> namespace) <code>kubectl get virtualservice</code> <code>kubectl get destinationrule</code> <code>kubectl get gateway</code> <code>kubectl get policy</code>
 if so run:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./scripts/clean.sh</code></pre>
 </div>
@@ -353,7 +335,7 @@ if so run:</p>
 <div class="paragraph">
 <p>The first thing to do is enable Istio Authorization by using <code>ClusterRbacConfig</code> object.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/authorization-enable-rbac.yml">istiofiles/authorization-enable-rbac.yml</a> -n tutorial</code></pre>
 </div>
@@ -362,11 +344,14 @@ if so run:</p>
 <p>Now RBAC is enabled on your mesh.
 Run next command:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</a>
-
-RBAC: access denied</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER" class="bare">http://istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</a></code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">RBAC: access denied</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -389,7 +374,7 @@ RBAC: access denied</code></pre>
 <div class="paragraph">
 <p>Now apply next Istio resource which makes that only tokens that contain a field named <code>role</code> with value <code>customer</code>.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/namespace-rbac-policy-jwt.yml">istiofiles/namespace-rbac-policy-jwt.yml</a> -n tutorial</code></pre>
 </div>
@@ -397,19 +382,19 @@ RBAC: access denied</code></pre>
 <div class="paragraph">
 <p>and then you can do a new call with the new token containing the <code>role</code> claim with value <code>customer`</code>:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">token=$(curl <a href="https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt" class="bare">https://gist.githubusercontent.com/lordofthejars/f590c80b8d83ea1244febb2c73954739/raw/21ec0ba0184726444d99018761cf0cd0ece35971/token.role.jwt</a> -s)</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock console-output">
 <div class="content">
-<pre>customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from 'b4d67bcb7-7rp88': 4</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -421,7 +406,7 @@ RBAC: access denied</code></pre>
 <div class="paragraph">
 <p>Open <code>istiofiles/namespace-rbac-policy-jwt.yml</code> and change the <code>role</code> with value <code>xxx</code> and save the file.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="title">istiofiles/namespace-rbac-policy-jwt.yml</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">when:
@@ -432,7 +417,7 @@ RBAC: access denied</code></pre>
 <div class="paragraph">
 <p>And then replace it:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/namespace-rbac-policy-jwt.yml">istiofiles/namespace-rbac-policy-jwt.yml</a> -n tutorial</code></pre>
 </div>
@@ -440,14 +425,14 @@ RBAC: access denied</code></pre>
 <div class="paragraph">
 <p>After that, repeat the same request as before:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -H "Authorization: Bearer $token" istio-ingressgateway-istio-system.apps.jconf-d4f8.openshiftworkshop.com/customer$WORKSHOP_USER</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock console-output">
 <div class="content">
-<pre>RBAC: access denied</pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">RBAC: access denied</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -473,10 +458,14 @@ Obviously, you should also enable mTLS to authenticate also your requests.</p>
 <div class="paragraph">
 <p>Follow <a href="8jwt.html#cleanup" class="page">End-user authentication with JWT Clean Up</a> steps there to clean all JWT stuff and then call:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
-kubectl delete -f istiofiles/authorization-enable-rbac.yml -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f istiofiles/authorization-enable-rbac.yml -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -484,8 +473,78 @@ kubectl delete -f istiofiles/authorization-enable-rbac.yml -n tutorial</code></p
 </article>
   </main>
 </div>
-<footer class="footer">
-  <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
+<footer role="contentinfo">
+  <div class="region region-rhd-footer">
+    <div id="block-rhdfooter" class="rhd-footer">
+      <nav class="rhd-footer-nav" aria-label="Secondary Navigation" role="navigation">
+  <ul class="rhd-menu">
+    <li class="menu-item menu-item--expanded">
+      <h3 class="section-toggle">Resources</h3>
+      <ul class="rhd-menu">
+        <li class="menu-item">
+          <a href="https://github.com/redhat-developer-demos/istio-tutorial" title="Istio Tutorial">Istio
+            Tutorial</a>
+        </li>
+        <li class="menu-item">
+          <a href="https://github.com/redhat-developer-demos/istio-tutorial/issues" title="Issue Tracker">Issue
+            Tracker</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>      <div class="rhd-footer-sidebar">
+        <p class="rhd-footer-sidebar-title">Red Hat Developer</p>
+        <p class="rhd-footer-sidebar-subtitle">Build here. Go anywhere.</p>
+        <p class="rhd-footer-sidebar-content">
+          We serve the builders. The problem solvers who create careers with
+          code.<br /><br /><a href="https://developer.redhat.com/register">Join us</a>
+          if you’re a developer, software engineer, web designer, front-end
+          designer, UX designer, computer scientist, architect, tester,
+          product manager, project manager or team lead.
+        </p>
+        <ul class="rhd-footer-sidebar-social">
+          <li>
+            <a href="https://www.youtube.com/channel/UC7noUdfWp-ukXUlAsJnSm-Q" target="_blank"
+              rel="noopener noreferrer"><svg class="svg-inline--fa fa-youtube fa-w-18" aria-hidden="true"
+                data-prefix="fab" data-icon="youtube" role="img" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 576 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z">
+                </path>
+              </svg><!-- <i class="fab fa-youtube"></i> --></a>
+          </li>
+          <li>
+            <a href="https://www.facebook.com/RedHatDeveloperProgram" target="_blank" rel="noopener noreferrer"><svg
+                class="svg-inline--fa fa-facebook fa-w-14" aria-hidden="true" data-prefix="fab" data-icon="facebook"
+                role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M448 56.7v398.5c0 13.7-11.1 24.7-24.7 24.7H309.1V306.5h58.2l8.7-67.6h-67v-43.2c0-19.6 5.4-32.9 33.5-32.9h35.8v-60.5c-6.2-.8-27.4-2.7-52.2-2.7-51.6 0-87 31.5-87 89.4v49.9h-58.4v67.6h58.4V480H24.7C11.1 480 0 468.9 0 455.3V56.7C0 43.1 11.1 32 24.7 32h398.5c13.7 0 24.8 11.1 24.8 24.7z">
+                </path>
+              </svg><!-- <i class="fab fa-facebook"> </i> --></a>
+          </li>
+          <li>
+            <a href="https://twitter.com/rhdevelopers" target="_blank" rel="noopener noreferrer"><svg
+                class="svg-inline--fa fa-twitter fa-w-16" aria-hidden="true" data-prefix="fab" data-icon="twitter"
+                role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                </path>
+              </svg><!-- <i class="fab fa-twitter"> </i> --></a>
+          </li>
+          <li>
+            <a href="https://github.com/redhat-developer" target="_blank" rel="noopener noreferrer"><svg
+                class="svg-inline--fa fa-github fa-w-16" aria-hidden="true" data-prefix="fab" data-icon="github"
+                role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" data-fa-i2svg="">
+                <path fill="currentColor"
+                  d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z">
+                </path>
+              </svg><!-- <i class="fab fa-github"> </i> --></a>
+          </li>
+        </ul>
+        <a class="rhd-footer-sidebar-signup" href="https://developers.redhat.com/register">Sign me up ▸</a>
+      </div>
+    </div>
+  </div>
 </footer>
 <script src="../../_/js/site.js"></script>
 <script src="../../_/js/vendor/highlight.js"></script>

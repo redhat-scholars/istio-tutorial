@@ -2,22 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Observability :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.4.x/3monitoring-tracing.html">
     <meta name="generator" content="Antora 2.0.0">
     <link rel="stylesheet" href="../../_/css/site.css">
-<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon"><script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
   </head>
   <body class="article">
-<header class="header" role="banner">
+<header class="header">
   <nav class="navbar">
     <div class="navbar-brand">
-      <div class="navbar-item">
-        <a href="#">Istio Tutorial</a>
-        <span class="separator">//</span>
-        <a href="https://redhat-developer-demos.github.io/istio-tutorial">Docs</a>
-      </div>
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-developer-demos.github.io/istio-tutorial">Istio Tutorial Docs</a>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
         <span></span>
@@ -26,32 +22,30 @@
     </div>
     <div id="topbar-nav" class="navbar-menu">
       <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
         <div class="navbar-item has-dropdown is-hoverable">
-          <div class="navbar-link">Project</div>
+          <a class="navbar-link" href="#">More Tutorials</a>
           <div class="navbar-dropdown">
-            <div class="navbar-item"><strong>GitHub</strong></div>
-            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial">Istio Tutorial Repository</a>
-            <a class="navbar-item" href="https://github.com/redhat-developer-demos/istio-tutorial/issues">Istio Tutorial Issue Tracker</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/tekton-tutorial/" target="_blank">Tekton</a>
           </div>
         </div>
-        <a class="navbar-item" href="https://twitter.com/rhdevelopers">
-          <span class="icon">
-            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
-            </svg>
-          </span>
-        </a>
       </div>
     </div>
   </nav>
-</header><div class="main-wrapper">
-<div class="navigation-container"  data-component="istio-tutorial"
-  data-version="1.1.x" >
-  <aside class="navigation">
+</header>
+<div class="body">
+<div class="nav-container" data-component="istio-tutorial" data-version="1.1.x">
+  <aside class="nav">
     <div class="panels">
-      <div class="navigation-menu is-active" data-panel="menu">
+<div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="index.html">Istio Tutorial</a></h3>
+    <h3 class="title"><a href="index.html"></a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
@@ -59,7 +53,7 @@
     <a class="nav-link" href="index.html">Introduction to Istio Tutorial</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="1setup.html">1. Setup</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -77,7 +71,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -95,14 +89,14 @@
 </ul>
   </li>
   <li class="nav-item is-current-page" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="3monitoring-tracing.html">3. Observability</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#monitoring">Monitoring with Grafana</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="#prometheus">Prometheus</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -120,7 +114,7 @@
     <a class="nav-link" href="#tracing">Tracing</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="3kiali.html">Kiali</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -152,18 +146,18 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <span class="nav-text">4. Traffic Control</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="4simple-routerules.html">Simple Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="4simple-routerules.html#deployrecommendationv2">Deploy Recommendation V2</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="4simple-routerules.html#istiorouting">Changing Istio Routings</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
@@ -183,11 +177,11 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="4advanced-routerules.html">Advanced Routing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="4advanced-routerules.html#canarydeploymentuseragent">Canary Deployment based on user-agent</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
@@ -212,7 +206,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="5circuit-breaker.html">5. Service Resiliency</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -222,7 +216,7 @@
     <a class="nav-link" href="5circuit-breaker.html#timeout">Timeout</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="5circuit-breaker.html#failfast">Fail Fast</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -236,7 +230,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="6fault-injection.html">6. Chaos Testing</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -248,7 +242,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="7policy.html">7. Policy</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
@@ -257,11 +251,11 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <span class="nav-text">8. Security</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="8egress.html">Egress</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -273,7 +267,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="8acl.html">Access Control List</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -285,7 +279,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="8mTLS.html">Mutual TLS and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -294,7 +288,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="8jwt.html">End-user authentication with JWT</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -306,7 +300,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="8rbac.html">Istio Role Based Access Control (RBAC)</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -333,11 +327,11 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="advanced/index.html">Advanced Istio Tutorial</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="advanced/virtualization.html">Service Virtualization and Istio</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -352,7 +346,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="advanced/diferencia.html">Diferencia and Detecting Regressions</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -376,7 +370,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="advanced/promotion.html">Istio for Promoting Services</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -394,11 +388,11 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="advanced/zero-downtime-database.html">Zero Downtime Migration with Database</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <span class="nav-text">Starting the Migration</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
@@ -424,7 +418,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <button class="nav-toggle"></button>
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="advanced/cube.html">Dark Launch Automatic Test</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
@@ -450,25 +444,22 @@
 </div>
     </div>
   </aside>
-  <div class="navigation-explore" data-panel="explore">
-  <div class="context">
-    <!-- Just a place holder to fill in  explorer for each context -->
-  </div>
 </div>
-</div>
-  <main class="main">
+<main class="article">
 <div class="toolbar" role="navigation">
-  <button class="navigation-toggle"></button>
+<button class="nav-toggle"></button>
   <a href="../1.4.x/index.html" class="home-link"></a>
-  <nav class="crumbs" aria-label="breadcrumbs">
+<nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
-    <li class="crumb"><a href="index.html">Istio Tutorial</a></li>
-    <li class="crumb"><a href="3monitoring-tracing.html">3. Observability</a></li>
+    <li><a href="index.html">Istio Tutorial</a></li>
+    <li><a href="3monitoring-tracing.html">3. Observability</a></li>
   </ul>
 </nav>
-</div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/1.1.x/documentation/modules/ROOT/pages/3monitoring-tracing.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
 <article class="doc">
-<h1>Observability</h1>
+<h1 class="page">Observability</h1>
 <div class="sect1">
 <h2 id="monitoring"><a class="anchor" href="#monitoring"></a>Monitoring with Grafana</h2>
 <div class="sectionbody">
@@ -629,19 +620,17 @@ You may have to refresh the browser for the Prometheus graph to update. And you 
 </div>
 </div>
 </article>
-  </main>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
 </div>
 <footer class="footer">
-  <p>This content is brought to you by <a href="http://developers.redhat.com">Red Hat Developer</a> - Register today!.</p>
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
 </footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
 <script src="../../_/js/site.js"></script>
-<script src="../../_/js/vendor/highlight.js"></script>
-<script>hljs.initHighlighting()</script>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-  integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-  integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
   </body>
 </html>
