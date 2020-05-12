@@ -109,6 +109,11 @@ kubectl get svc istio-ingressgateway -n istio-system
 istio-ingressgateway   LoadBalancer   10.101.82.250   <pending>     15020:31582/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:30818/TCP,15030:32542/TCP,15031:30106/TCP,15032:32284/TCP,15443:31080/TCP   19m
 ----
 
+[tabs]
+====
+Minikube::
++
+--
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -117,6 +122,17 @@ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -
 
 export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 ----
+--
+OpenShift::
++
+--
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+export GATEWAY_URL=kubectl get route istio-ingressgateway -n istio-system -o yaml | yq r - "spec.host"
+----
+--
+====
 endif::workshop[]
 
 ifdef::workshop[]
