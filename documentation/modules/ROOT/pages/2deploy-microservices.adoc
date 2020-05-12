@@ -129,7 +129,7 @@ OpenShift::
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-export GATEWAY_URL=kubectl get route istio-ingressgateway -n istio-system -o yaml | yq r - "spec.host"
+export GATEWAY_URL=$(kubectl get route istio-ingressgateway -n istio-system -o yaml | yq r - "spec.host")
 ----
 --
 ====
