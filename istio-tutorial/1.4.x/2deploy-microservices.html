@@ -586,7 +586,7 @@ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT</code></pre>
 <div class="tab-pane" aria-labelledby="tabset1_openshift">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export GATEWAY_URL=kubectl get route istio-ingressgateway -n istio-system -o yaml | yq r - "spec.host"</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export GATEWAY_URL=$(kubectl get route istio-ingressgateway -n istio-system -o yaml | yq r - "spec.host")</code></pre>
 </div>
 </div>
 </div>
