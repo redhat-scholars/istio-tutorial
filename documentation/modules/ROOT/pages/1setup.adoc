@@ -116,7 +116,7 @@ kubectl config set-context $(kubectl config current-context) --namespace=istio-s
 
 IMPORTANT: `istio-demo.yaml` enables policy enforcement by default which is required in some sections of the tutorial. Please refer to https://istio.io/docs/tasks/policy-enforcement/enabling-policy/ if you are not using this file.
 
-If using OpenShift, secure contexts will need to be modified to allow ingress, egress, and Prmetheus to run.
+If using OpenShift, secure contexts will need to be modified to allow ingress, egress, and Prometheus to run.
 
 [.console-input]
 [source,bash,subs="attributes+,+macros"]
