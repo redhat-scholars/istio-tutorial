@@ -117,7 +117,7 @@ Minikube::
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-export INGRESS_HOST=$(minikube ip -p istio)
+export INGRESS_HOST=$(minikube ip -p istio-devnation)
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 
 export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
