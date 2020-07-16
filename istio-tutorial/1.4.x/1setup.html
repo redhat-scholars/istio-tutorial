@@ -499,10 +499,10 @@ Please have them installed and configured before you get started with any of the
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://www.virtualbox.org/wiki/Linux_Downloads">Download</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://kubernetes.io/docs/tasks/tools/install-minikube">Minikube</a> v1.9.2</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.9.2/minikube-darwin-amd64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.9.2/minikube-windows-amd64.exe">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.9.2/minikube-linux-amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://kubernetes.io/docs/tasks/tools/install-minikube">Minikube</a> v1.11.0</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.11.0/minikube-darwin-amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.11.0/minikube-windows-amd64.exe">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.11.0/minikube-linux-amd64">Download</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><code>kubectl v1.17.4</code></p></td>
@@ -582,7 +582,7 @@ Although they are used in the tutorial, you could use others without any problem
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/rakyll/hey">hey</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/hey-release/hey_darwin_amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install hey</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/jblabs/dist/hey_linux_v0.1.2">Download</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/jblabs/dist/hey_win_v0.1.2.exe">Download</a></p></td>
 </tr>
@@ -639,7 +639,7 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-darwin-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-darwin-amd64</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.11.0/minikube-darwin-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.11.0/minikube-darwin-amd64</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -671,7 +671,7 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-linux-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-linux-amd64</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.11.0/minikube-linux-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.11.0/minikube-linux-amd64</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -703,7 +703,7 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-windows-amd64.exe" class="bare">https://storage.googleapis.com/minikube/releases/v1.9.2/minikube-windows-amd64.exe</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.11.0/minikube-windows-amd64.exe" class="bare">https://storage.googleapis.com/minikube/releases/v1.11.0/minikube-windows-amd64.exe</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -794,7 +794,7 @@ set KUBE_EDITOR="code -w"</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">❌  profile "istio-devnation" not found
 ✅  Created a new profile : istio-devnation
 ✅  minikube profile was successfully set to istio-devnation
-😄  [default] minikube v1.9.2 on Darwin 10.15.2
+😄  [default] minikube v1.11.0 on Darwin 10.15.2
 ✨  Selecting 'virtualbox' driver from user configuration (alternates: [hyperkit])
 🔥  Creating virtualbox VM (CPUs=2, Memory=8192MB, Disk=50000MB) ...
 🐳  Preparing Kubernetes v1.17.4 on Docker '19.03.5' ...

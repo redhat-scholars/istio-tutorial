@@ -576,7 +576,7 @@ You will deploy docker images that were previously built for this tutorial. If y
 <div class="tab-pane" aria-labelledby="tabset1_minikube">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_HOST=$(minikube ip -p istio)
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_HOST=$(minikube ip -p istio-devnation)
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 
 export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT</code></pre>
