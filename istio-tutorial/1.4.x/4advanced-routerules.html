@@ -645,7 +645,7 @@ if so run:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs -f `oc get pods -n tutorial|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs -f `kubectl get pods -n tutorial|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial</code></pre>
 </div>
 </div>
 <div class="sect2">
