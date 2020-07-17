@@ -172,7 +172,7 @@ Check the logs of recommendation-v2
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl logs -f `oc get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
+kubectl logs -f `kubectl get pods -n tutorial{namespace-suffix}|grep recommendation-v2|awk '{ print $1 }'` -c recommendation -n tutorial{namespace-suffix}
 ----
 
 === Clean up
