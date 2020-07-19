@@ -25,7 +25,7 @@ istioctl dashboard grafana
 Navigate to `dashboard/db/istio-mesh-dashboard`.
 endif::workshop[]
 
-ifndef::workshop[]
+ifdef::workshop[]
 And open the next page in a browser:
 
 `open http://grafana-istio-system.{appdomain}/dashboard/db/istio-mesh-dashboard`
@@ -146,15 +146,15 @@ istioctl dashboard jaeger
 ----
 endif::workshop[]
 
+ifdef::workshop[]
 [source,bash,subs="+macros,+attributes"]
 ----
-ifdef::workshop[]
 `open https://jaeger-query-istio-system.{appdomain}/`
 
 or
 
 `firefox https://jaeger-query-istio-system.{appdomain}/`
-endif::workshop[]
 ----
+endif::workshop[]
 
 image:jaegerUI.png[Trace as seen in Jaeger]
