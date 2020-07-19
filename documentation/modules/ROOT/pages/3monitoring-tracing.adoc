@@ -87,7 +87,7 @@ Then run several requests through the system
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-while true; do curl istio-ingressgateway-istio-system.{appdomain}/{path}; sleep .5;  done
+while true; do curl $GATEWAY_URL/customer; sleep .5;  done
 ----
 
 In the Prometheus dashboard, add the following
