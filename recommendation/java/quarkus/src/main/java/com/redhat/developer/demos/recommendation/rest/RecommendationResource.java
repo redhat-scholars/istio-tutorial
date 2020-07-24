@@ -29,15 +29,11 @@ public class RecommendationResource {
      */
     private boolean misbehave = false;
 
-    private static final String HOSTNAME = parseContainerIdFromHostname(
-            System.getenv().getOrDefault("HOSTNAME", "unknown"));
-
-    static String parseContainerIdFromHostname(String hostname) {
-        return hostname.replaceAll("recommendation-v\\d+-", "");
-    }
+    private String HOSTNAME = System.getenv().getOrDefault("HOSTNAME", "unknown");
 
     @GET
     public Response getRecommendations() {
+
         count++;
         logger.info(String.format("recommendation request from %s: %d", HOSTNAME, count));
 

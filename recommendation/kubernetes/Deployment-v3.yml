@@ -23,7 +23,7 @@ spec:
       - env:
         - name: JAVA_OPTIONS
           value: -Xms15m -Xmx15m -Xmn15m
-        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v3.1
+        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v3.2
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
