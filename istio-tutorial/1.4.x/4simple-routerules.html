@@ -542,7 +542,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 </div>
 <div class="paragraph">
-<p>you likely see "customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.</p>
+<p>you likely see "customer =&gt; preference =&gt; recommendation v1 from 'recommendation-v1-99634814-d2z2t': 3", where 'recommendation-v1-99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
@@ -550,7 +550,7 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 </div>
 <div class="paragraph">
-<p>you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service</p>
+<p>you likely see "customer =&gt; preference =&gt; recommendation v2 from 'recommendation-v2-2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service</p>
 </div>
 <div class="paragraph">
 <p>Send several requests to see their responses:</p>
@@ -573,9 +573,9 @@ recommendation-v2-2815683430-vpx4p   2/2       Running   0         15s</code></p
 </div>
 <div class="listingblock console-output">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from '2819441432-qsp25': 29
-customer =&gt; preference =&gt; recommendation v2 from '99634814-sf4cl': 37
-customer =&gt; preference =&gt; recommendation v2 from '99634814-sf4cl': 38</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from 'recommendation-v1-2819441432-qsp25': 29
+customer =&gt; preference =&gt; recommendation v2 from 'recommendation-v2-99634814-sf4cl': 37
+customer =&gt; preference =&gt; recommendation v2 from 'recommendation-v2-99634814-sf4cl': 38</code></pre>
 </div>
 </div>
 <div class="paragraph">
