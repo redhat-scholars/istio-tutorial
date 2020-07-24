@@ -54,17 +54,17 @@ include::generate_traffic.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v2 from '7778d6fb89-j6lts': 138
+customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 138
 customer => Error: 503 - preference => Error: 503 - fault filter abort
-customer => preference => recommendation v1 from '6976858b48-dswhz': 139
+customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-dswhz': 139
 customer => Error: 503 - preference => Error: 503 - fault filter abort
-customer => preference => recommendation v2 from '7778d6fb89-j6lts': 139
-customer => preference => recommendation v1 from '6976858b48-dswhz': 140
-customer => preference => recommendation v2 from '7778d6fb89-j6lts': 140
-customer => preference => recommendation v1 from '6976858b48-dswhz': 141
+customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 139
+customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-dswhz': 140
+customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 140
+customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-dswhz': 141
 customer => Error: 503 - preference => Error: 503 - fault filter abort
 customer => Error: 503 - preference => Error: 503 - fault filter abort
-customer => preference => recommendation v2 from '7778d6fb89-j6lts': 141
+customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 141
 ----
 
 Clean up

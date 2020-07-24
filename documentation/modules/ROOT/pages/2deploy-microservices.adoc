@@ -291,7 +291,7 @@ it should now return
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from '99634814-sf4cl': 1
+customer => preference => recommendation v1 from 'recommendation-v1-6cf5ff55d9-7zbj8': 1
 ----
 
 and you can monitor the `recommendation` logs with

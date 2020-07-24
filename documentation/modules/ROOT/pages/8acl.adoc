@@ -48,7 +48,7 @@ include::curl.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v2 from '6b569c9cfb-g8shk': 5
+customer => preference => recommendation v2 from 'recommendation-v2-6b569c9cfb-g8shk': 5
 ----
 
 Of course everything is still valid but let's go inside customer pod:
@@ -70,7 +70,7 @@ curl preference:8080
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-preference => recommendation v1 from '868bf96bfc-425m6': 5
+preference => recommendation v1 from 'recommendation-v1-868bf96bfc-425m6': 5
 ----
 
 [.console-input]

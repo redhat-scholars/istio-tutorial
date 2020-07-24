@@ -103,7 +103,7 @@ curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 [.console-output]
 [source, bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
+customer => preference => recommendation v1 from 'recommendation-v1-b87789c58-mfrhr': 2
 ----
 
 Obviously, the response is exactly the same, but if you go to the terminal where you are executing `tcpdump`, you should see something like:
@@ -137,7 +137,7 @@ curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
 [.console-output]
 [source, bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from 'b87789c58-mfrhr': 2
+customer => preference => recommendation v1 from 'recommendation-v1-b87789c58-mfrhr': 2
 ----
 
 And again check `tcpdump` output:

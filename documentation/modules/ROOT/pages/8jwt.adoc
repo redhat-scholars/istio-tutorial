@@ -31,7 +31,7 @@ include::curl.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
+customer => preference => recommendation v1 from 'recommendation-v1-b4d67bcb7-7rp88': 4
 ----
 
 Then run:
@@ -72,7 +72,7 @@ include::curl_params.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
+customer => preference => recommendation v1 from 'recommendation-v1-b4d67bcb7-7rp88': 4
 ----
 
 Now just change some part of the token and send the request again, you'll notice that request is refused.

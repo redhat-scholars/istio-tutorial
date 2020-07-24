@@ -45,9 +45,9 @@ include::generate_traffic.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from '2036617847-m9glz': 196
-customer => preference => recommendation v1 from '2036617847-m9glz': 197
-customer => preference => recommendation v1 from '2036617847-m9glz': 198
+customer => preference => recommendation v1 from 'recommendation-v1-2036617847-m9glz': 196
+customer => preference => recommendation v1 from 'recommendation-v1-2036617847-m9glz': 197
+customer => preference => recommendation v1 from 'recommendation-v1-2036617847-m9glz': 198
 ----
 
 If you open Kiali, you will notice that v2 receives requests, but that failing request is never returned to the user as `preference` will retry to establish the connection with `recommendation`, and v1 will reply.
@@ -98,9 +98,9 @@ include::generate_traffic.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from '2039379827-h58vw': 129
-customer => preference => recommendation v2 from '2036617847-m9glz': 207
-customer => preference => recommendation v1 from '2039379827-h58vw': 130
+customer => preference => recommendation v1 from 'recommendation-v1-2039379827-h58vw': 129
+customer => preference => recommendation v2 from 'recommendation-v2-2036617847-m9glz': 207
+customer => preference => recommendation v1 from 'recommendation-v1-2039379827-h58vw': 130
 ----
 
 // Needs a modified image
@@ -144,9 +144,9 @@ include::generate_traffic.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from '6976858b48-cs2rt': 2907
-customer => preference => recommendation v1 from '6976858b48-cs2rt': 2908
-customer => preference => recommendation v1 from '6976858b48-cs2rt': 2909
+customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-cs2rt': 2907
+customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-cs2rt': 2908
+customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-cs2rt': 2909
 ----
 
 === Clean up
@@ -249,10 +249,10 @@ kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{na
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-recommendation request from '99634814-sf4cl': 10
-recommendation request from '99634814-sf4cl': 11
-recommendation request from '99634814-sf4cl': 12
-recommendation request from '99634814-sf4cl': 13
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 10
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 11
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 12
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 13
 ----
 
 Scale up the recommendation v2 service to two instances:
@@ -304,10 +304,10 @@ kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{na
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-recommendation request from '99634814-sf4cl': 35
-recommendation request from '99634814-sf4cl': 36
-recommendation request from '99634814-sf4cl': 37
-recommendation request from '99634814-sf4cl': 38
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 35
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 36
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 37
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 38
 ----
 
 Notice that the number of requests has been increased by an order of 20.
@@ -346,9 +346,9 @@ kubectl logs recommendation-v2-2815683430-vpx4p -c recommendation -n tutorial{na
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-recommendation request from '99634814-sf4cl': 38
-recommendation request from '99634814-sf4cl': 39
-recommendation request from '99634814-sf4cl': 40
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 38
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 39
+recommendation request from 'recommendation-v2-2815683430-vpx4p': 40
 ----
 
 IMPORTANT: Substitute the pod name to your pod name.

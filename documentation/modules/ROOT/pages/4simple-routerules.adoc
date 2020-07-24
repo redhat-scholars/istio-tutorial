@@ -46,11 +46,11 @@ and test the customer endpoint
 
 include::curl.adoc[]
 
-you likely see "customer =&gt; preference =&gt; recommendation v1 from '99634814-d2z2t': 3", where '99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
+you likely see "customer =&gt; preference =&gt; recommendation v1 from 'recommendation-v1-99634814-d2z2t': 3", where 'recommendation-v1-99634814-d2z2t' is the pod running v1 and the 3 is basically the number of times you hit the endpoint.
 
 include::curl.adoc[]
 
-you likely see "customer =&gt; preference =&gt; recommendation v2 from '2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
+you likely see "customer =&gt; preference =&gt; recommendation v2 from 'recommendation-v2-2819441432-5v22s': 1" as by default you get round-robin load-balancing when there is more than one Pod behind a Service
 
 Send several requests to see their responses:
 
@@ -69,9 +69,9 @@ Now, you will see two requests into the v2 and one for v1.
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from '2819441432-qsp25': 29
-customer => preference => recommendation v2 from '99634814-sf4cl': 37
-customer => preference => recommendation v2 from '99634814-sf4cl': 38
+customer => preference => recommendation v1 from 'recommendation-v1-2819441432-qsp25': 29
+customer => preference => recommendation v2 from 'recommendation-v2-99634814-sf4cl': 37
+customer => preference => recommendation v2 from 'recommendation-v2-99634814-sf4cl': 38
 ----
 
 Scale back to a single replica of the recommendation-v2 Deployment

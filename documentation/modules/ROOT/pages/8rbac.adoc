@@ -75,7 +75,7 @@ include::curl_params.adoc[]
 [.console-output]
 [source, bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from 'b4d67bcb7-7rp88': 4
+customer => preference => recommendation v1 from 'recommendation-v1-b4d67bcb7-7rp88': 4
 ----
 
 Notice that now only valid JWT tokens containing the claim `role` set to `customer` will suceed, the rest you'll get an access denied.

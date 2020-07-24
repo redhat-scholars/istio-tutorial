@@ -245,14 +245,14 @@ The results should follow a fairly normal round-robin distribution pattern
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v1 from '99634814-d2z2t': 1145
-customer => preference => recommendation v2 from '2819441432-525lh': 1
-customer => preference => recommendation v2 from '2819441432-rg45q': 2
-customer => preference => recommendation v2 from '2819441432-bs5ck': 181
-customer => preference => recommendation v1 from '99634814-d2z2t': 1146
-customer => preference => recommendation v2 from '2819441432-rg45q': 3
-customer => preference => recommendation v2 from '2819441432-rg45q': 4
-customer => preference => recommendation v2 from '2819441432-bs5ck': 182
+customer => preference => recommendation v1 from 'recommendation-v1-6cf5ff55d9-7zbj8': 1145
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-525lh': 1
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 2
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-bs5ck': 181
+customer => preference => recommendation v1 from 'recommendation-v1-6cf5ff55d9-7zbj8': 1146
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 3
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 4
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-bs5ck': 182
 ----
 
 Now, add the Random LB DestinationPolicy
@@ -268,17 +268,17 @@ And you should see a different pattern of which pod is being selected
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v2 from '2819441432-rg45q': 10
-customer => preference => recommendation v2 from '2819441432-525lh': 3
-customer => preference => recommendation v2 from '2819441432-rg45q': 11
-customer => preference => recommendation v1 from '99634814-d2z2t': 1153
-customer => preference => recommendation v1 from '99634814-d2z2t': 1154
-customer => preference => recommendation v1 from '99634814-d2z2t': 1155
-customer => preference => recommendation v2 from '2819441432-rg45q': 12
-customer => preference => recommendation v2 from '2819441432-525lh': 4
-customer => preference => recommendation v2 from '2819441432-525lh': 5
-customer => preference => recommendation v2 from '2819441432-rg45q': 13
-customer => preference => recommendation v2 from '2819441432-rg45q': 14
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 10
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-525lh': 3
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 11
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1153
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1154
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1155
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 12
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-525lh': 4
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-525lh': 5
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 13
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-rg45q': 14
 ----
 
 === Clean up

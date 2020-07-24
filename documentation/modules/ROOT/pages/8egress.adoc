@@ -113,7 +113,7 @@ include::curl.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v3 2019-03-28T00:24+01:00 from '57cd88c95d-jp546': 1
+customer => preference => recommendation v3 2019-03-28T00:24+01:00 from 'recommendation-v3-57cd88c95d-jp546': 1
 ----
 
 or shell into the pod by getting its name and then using that name with `kubectl exec`:

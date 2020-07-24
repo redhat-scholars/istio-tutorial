@@ -46,21 +46,21 @@ You should see some 429 errors:
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v2 from '2819441432-f4ls5': 108
-customer => preference => recommendation v1 from '99634814-d2z2t': 1932
-customer => preference => recommendation v2 from '2819441432-f4ls5': 109
-customer => preference => recommendation v1 from '99634814-d2z2t': 1933
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-f4ls5': 108
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1932
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-f4ls5': 109
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1933
 customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
-customer => preference => recommendation v1 from '99634814-d2z2t': 1934
-customer => preference => recommendation v2 from '2819441432-f4ls5': 110
-customer => preference => recommendation v1 from '99634814-d2z2t': 1935
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1934
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-f4ls5': 110
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1935
 customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
-customer => preference => recommendation v1 from '99634814-d2z2t': 1936
-customer => preference => recommendation v2 from '2819441432-f4ls5': 111
-customer => preference => recommendation v1 from '99634814-d2z2t': 1937
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1936
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-f4ls5': 111
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1937
 customer => 503 preference => 429 RESOURCE_EXHAUSTED:Quota is exhausted for: RequestCount
-customer => preference => recommendation v1 from '99634814-d2z2t': 1938
-customer => preference => recommendation v2 from '2819441432-f4ls5': 112
+customer => preference => recommendation v1 from 'recommendation-v1-99634814-d2z2t': 1938
+customer => preference => recommendation v2 from 'recommendation-v2-2819441432-f4ls5': 112
 ----
 
 === Clean up
