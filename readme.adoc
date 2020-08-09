@@ -8,9 +8,9 @@ This content is brought to you by http://developers.redhat.com - Register today!
 :source-highlighter: highlightjs
 
 
-- A HTML version of this file is published at https://redhat-developer-demos.github.io/istio-tutorial/
+- A HTML version of this file is published at https://redhat-scholars.github.io/istio-tutorial/
 
-- The source code is available at https://github.com/redhat-developer-demos/istio-tutorial
+- The source code is available at https://github.com/redhat-scholars/istio-tutorial
 
 - Download the ebook "Introducing Istio Service Mesh for Microservices" for FREE at https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/.
 
