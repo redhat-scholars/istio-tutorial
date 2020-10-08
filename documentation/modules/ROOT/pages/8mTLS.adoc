@@ -68,6 +68,11 @@ HOST:PORT                                    STATUS     SERVER     CLIENT       
 customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default
 ----
 
+[tabs]
+====
+tcpdump::
++
+--
 Check the mTLS by _sniffing_ traffic between services, which is a bit more tedious, open a new terminal tab and run next command:
 
 [.console-input]
@@ -159,7 +164,109 @@ x-b3-sampled: 1
 ----
 
 Now, you can see that since there is no _TLS_ enabled, the information is not shadowed but in clear.
+--
+ksniff::
++
+--
+You can also use https://github.com/eldadru/ksniff[ksniff] to sniff the traffic between pods.
 
+To install ksniff we recommend you to do it through https://krew.sigs.k8s.io/docs/user-guide/setup/install/[krew].
+
+With `krew` installed:
+
+[.console-input]
+[source, bash, subs="+macros,+attributes"]
+----
+kubectl krew install sniff
+----
+
+Then get the IP of `preference` pod:
+
+[.console-input]
+[source, bash, subs="+macros,+attributes"]
+----
+kubectl get pod -o wide
+----
+
+[.console-output]
+[source, bash]
+----
+NAME                                READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+customer-6948b8b959-zdlbz           2/2     Running   0          31h     10.131.2.7    ip-10-0-156-199.eu-central-1.compute.internal   <none>           <none>
+preference-v1-7fdb89c86b-9kqvw      2/2     Running   0          31h     10.130.2.8    ip-10-0-132-217.eu-central-1.compute.internal   <none>           <none>
+recommendation-v1-f484cbdb9-vzxgt   2/2     Running   0          31h     10.131.2.8    ip-10-0-156-199.eu-central-1.compute.internal   <none>           <none>
+----
+
+In the previous case the preference IP is `10.130.2.8`.
+
+Then let's sniff the traffic that is sent to `preference` pod by running:
+
+[.console-input]
+[source, bash, subs="+macros,+attributes"]
+----
+kubectl sniff -i eth0 -o ./capture1.pcap customer-6948b8b959-zdlbz -f '((tcp) and (net 10.130.2.8))' -n tutorial -p -c istio-proxy
+----
+
+Change the `customer` pod name with the correct one and the IP with the preference IP.
+
+So now go to a new terminal window and execute:
+
+[.console-input]
+[source, bash, subs="+macros,+attributes"]
+----
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
+----
+
+[.console-output]
+[source, bash,subs="+macros,+attributes"]
+----
+customer => preference => recommendation v1 from 'recommendation-v1-b87789c58-mfrhr': 2
+----
+
+Then move to `kubectl sniff` terminal window and stop the process by typing kbd:[Ctrl+C].
+At the same directory, you have a file named `capture1.pcap` which is the captured traffic, you can use https://www.wireshark.org/[Wireshark] to open the file, and you'll see something like:
+
+image:wireshark-tls.png[mTLS]
+
+Notice that there is no HTTP traces, the reason is that HTTPS is not traced by default, you only see at `TCP` level.
+But now let's disable mTLS and see what's happening:
+
+[.console-input]
+[source, bash]
+----
+kubectl replace -f istiofiles/disable-mtls.yml
+----
+
+Start `ksniff` changing the `pcap` filename:
+
+[.console-input]
+[source, bash, subs="+macros,+attributes"]
+----
+kubectl sniff -i eth0 -o ./capture2.pcap customer-6948b8b959-zdlbz -f '((tcp) and (net 10.130.2.8))' -n tutorial -p -c istio-proxy
+----
+
+And execute again:
+
+[.console-input]
+[source, bash, subs="+macros,+attributes"]
+----
+curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
+----
+
+[.console-output]
+[source, bash,subs="+macros,+attributes"]
+----
+customer => preference => recommendation v1 from 'recommendation-v1-b87789c58-mfrhr': 2
+----
+
+Then move to `kubectl sniff` terminal window and stop the process by typing kbd:[Ctrl+C].
+At the same directory, you have a file named `capture2.pcap` which is the captured traffic, you can use https://www.wireshark.org/[Wireshark] to open the file, and you'll see something like:
+
+image:wireshark-no-tls.png[mTLS]
+
+Notice that now _HTTP_ traffic is shown and if you look at the bottom, you'll see the response content.
+--
+====
 
 [#restore]
 == Clean Up
