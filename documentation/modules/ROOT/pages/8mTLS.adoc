@@ -68,6 +68,10 @@ HOST:PORT                                    STATUS     SERVER     CLIENT       
 customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default
 ----
 
+You can follow two ways for sniffing traffic.
+If you are using `minikube` and the version of Istio Proxy container has `tcpdump` then `tcpdump` is your way. 
+But if you are in a more restricted environment (ie production) then `ksniff` is the way to proceed to sniff traffic.
+
 [tabs]
 ====
 tcpdump::
