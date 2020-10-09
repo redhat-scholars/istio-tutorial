@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Mutual TLS and Istio :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.4.x/8mTLS.html">
-    <meta name="generator" content="Antora 2.0.0">
+    <meta name="generator" content="Antora 2.3.1">
     <link rel="stylesheet" href="../../_/css/site.css">
   </head>
   <body class="article">
@@ -314,7 +314,7 @@
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="#">8tips.adoc</a>
+    <a class="nav-link" href="#8tips.adoc">10. Tips And Tricks</a>
   </li>
 </ul>
   </li>
@@ -450,7 +450,7 @@
     <li><a href="8mTLS.html">Mutual TLS and Istio</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/redhat-developer-demos/istio-tutorial/edit/master/documentation/modules/ROOT/pages/8mTLS.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/redhat-scholars/istio-tutorial/edit/master/documentation/modules/ROOT/pages/8mTLS.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <article class="doc">
@@ -534,6 +534,19 @@ customer.tutorial.svc.cluster.local:8080     OK         PERMISSIVE     -        
 customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default</code></pre>
 </div>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_tcpdump"></a>tcpdump</p>
+</li>
+<li>
+<p><a id="tabset1_ksniff"></a>ksniff</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_tcpdump">
 <div class="paragraph">
 <p>Check the mTLS by <em>sniffing</em> traffic between services, which is a bit more tedious, open a new terminal tab and run next command:</p>
 </div>
@@ -646,6 +659,115 @@ x-b3-sampled: 1</code></pre>
 </div>
 <div class="paragraph">
 <p>Now, you can see that since there is no <em>TLS</em> enabled, the information is not shadowed but in clear.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_ksniff">
+<div class="paragraph">
+<p>You can also use <a href="https://github.com/eldadru/ksniff">ksniff</a> to sniff the traffic between pods.</p>
+</div>
+<div class="paragraph">
+<p>To install ksniff we recommend you to do it through <a href="https://krew.sigs.k8s.io/docs/user-guide/setup/install/">krew</a>.</p>
+</div>
+<div class="paragraph">
+<p>With <code>krew</code> installed:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl krew install sniff</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then get the IP of <code>preference</code> pod:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -o wide</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+customer-6948b8b959-zdlbz           2/2     Running   0          31h     10.131.2.7    ip-10-0-156-199.eu-central-1.compute.internal   &lt;none&gt;           &lt;none&gt;
+preference-v1-7fdb89c86b-9kqvw      2/2     Running   0          31h     10.130.2.8    ip-10-0-132-217.eu-central-1.compute.internal   &lt;none&gt;           &lt;none&gt;
+recommendation-v1-f484cbdb9-vzxgt   2/2     Running   0          31h     10.131.2.8    ip-10-0-156-199.eu-central-1.compute.internal   &lt;none&gt;           &lt;none&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the previous case the preference IP is <code>10.130.2.8</code>.</p>
+</div>
+<div class="paragraph">
+<p>Then let&#8217;s sniff the traffic that is sent to <code>preference</code> pod by running:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl sniff -i eth0 -o ./capture1.pcap customer-6948b8b959-zdlbz -f 'tcp) and (net 10.130.2.8' -n tutorial -p -c istio-proxy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Change the <code>customer</code> pod name with the correct one and the IP with the preference IP.</p>
+</div>
+<div class="paragraph">
+<p>So now go to a new terminal window and execute:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a></code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from 'recommendation-v1-b87789c58-mfrhr': 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then move to <code>kubectl sniff</code> terminal window and stop the process by typing kbd:[Ctrl+C].
+At the same directory, you have a file named <code>capture1.pcap</code> which is the captured traffic, you can use <a href="https://www.wireshark.org/">Wireshark</a> to open the file, and you&#8217;ll see something like:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/wireshark-tls.png" alt="mTLS"></span></p>
+</div>
+<div class="paragraph">
+<p>Notice that there is no HTTP traces, the reason is that HTTPS is not traced by default, you only see at <code>TCP</code> level.
+But now let&#8217;s disable mTLS and see what&#8217;s happening:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl replace -f istiofiles/disable-mtls.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Start <code>ksniff</code> changing the <code>pcap</code> filename:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl sniff -i eth0 -o ./capture2.pcap customer-6948b8b959-zdlbz -f 'tcp) and (net 10.130.2.8' -n tutorial -p -c istio-proxy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And execute again:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer" class="bare">http://istio-ingressgateway-istio-system.$(minishift ip).nip.io/customer</a></code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from 'recommendation-v1-b87789c58-mfrhr': 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then move to <code>kubectl sniff</code> terminal window and stop the process by typing kbd:[Ctrl+C].
+At the same directory, you have a file named <code>capture2.pcap</code> which is the captured traffic, you can use <a href="https://www.wireshark.org/">Wireshark</a> to open the file, and you&#8217;ll see something like:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/wireshark-no-tls.png" alt="mTLS"></span></p>
+</div>
+<div class="paragraph">
+<p>Notice that now <em>HTTP</em> traffic is shown and if you look at the bottom, you&#8217;ll see the response content.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
