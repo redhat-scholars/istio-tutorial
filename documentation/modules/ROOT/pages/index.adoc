@@ -57,7 +57,7 @@ oc delete pods -n istio-system --all --grace-period=0 --force
 
 endif::workshop[]
 
-- A HTML version of this file is published at https://redhat-developer-demos.github.io/istio-tutorial/
+- A HTML version of this file is published at https://redhat-scholars.github.io/istio-tutorial
 
 - The source code is available at https://github.com/redhat-developer-demos/istio-tutorial
 
