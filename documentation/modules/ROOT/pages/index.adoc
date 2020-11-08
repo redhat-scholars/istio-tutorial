@@ -59,7 +59,7 @@ endif::workshop[]
 
 - A HTML version of this file is published at https://redhat-scholars.github.io/istio-tutorial
 
-- The source code is available at https://github.com/redhat-developer-demos/istio-tutorial
+- The source code is available at https://github.com/redhat-scholars/istio-tutorial
 
 - Download the ebook "Introducing Istio Service Mesh for Microservices" for FREE at https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/.
 
