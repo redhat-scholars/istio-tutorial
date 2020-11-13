@@ -42,14 +42,18 @@ Then run:
 kubectl create -f link:{github-repo}/{istiofiles-dir}/enduser-authentication-jwt.yml[istiofiles/enduser-authentication-jwt.yml]
 ----
 
-Then let's run the curl again:
+Then let's run the curl again with an *invalid* token:
 
-include::curl.adoc[]
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl $GATEWAY_URL/customer -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkRIRmJwb0lVcXJZOHQyenBBMnFYZkNtcjVWTzVaRXI0UnpIVV8tZW52dlEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjQ2ODU5ODk3MDAsImZvbyI6ImJhciIsImlhdCI6MTUzMjM4OTcwMCwiaXNzIjoidGVzdGluZ0BzZWN1cmUuaXN0aW8uaW8iLCJzdWIiOiJ0ZXN0aW5nQHNlY3VyZS5pc3Rpby5pbyJ9.CfNnxWP2tcnR9q0vxyxweaF3ovQYHYZl82hAUsn21bwQd9zP7c-LS9qd_vpdLG4Tn1A15NxfCjp5f7QNBUo-KC9PJqYpgGbaXhaGx7bEdFWjcwv3nZzvc7M__ZpaCERdwU7igUmJqYGBYQ51vr2njU9ZimyKkfDe3axcyiBZde7G6dabliUosJvvKOPcKIWPccCgefSj_GNfwIip3-SsFdlR7BtbVUcqR-yv-XOxJ3Uc1MI0tz3uMiiZcyPV7sNCU4KRnemRIMHVOfuvHsU60_GhGbiSFzgPTAa9WTltbnarTbxudb_YEOx12JiwYToeX0DCPb43W1tzIBxgm8NxUU"
+----
 
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-Origin authentication failed.%
+Origin Jwt verification fails
 ----
 
 And now the communication is not possible because the user has not been identified (provides a valid JWT token).

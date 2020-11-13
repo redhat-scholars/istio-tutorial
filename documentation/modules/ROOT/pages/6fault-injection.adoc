@@ -40,7 +40,7 @@ You can inject 503's, for approximately 50% of the requests
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation-v1-v2.yml[istiofiles/destination-rule-recommendation-v1-v2.yml] -n tutorial{namespace-suffix}
 ----
 
 [.console-input]
@@ -54,17 +54,10 @@ include::generate_traffic.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 138
-customer => Error: 503 - preference => Error: 503 - fault filter abort
-customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-dswhz': 139
-customer => Error: 503 - preference => Error: 503 - fault filter abort
-customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 139
-customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-dswhz': 140
-customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 140
-customer => preference => recommendation v1 from 'recommendation-v1-6976858b48-dswhz': 141
 customer => Error: 503 - preference => Error: 503 - fault filter abort
 customer => Error: 503 - preference => Error: 503 - fault filter abort
-customer => preference => recommendation v2 from 'recommendation-v2-7778d6fb89-j6lts': 141
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => Error: 503 - preference => Error: 503 - fault filter abort
 ----
 
 Clean up
@@ -83,13 +76,13 @@ The most insidious of possible distributed computing faults is not a "down" serv
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial{namespace-suffix}
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
 ----
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/destination-rule-recommendation.yml[istiofiles/destination-rule-recommendation.yml] -n tutorial{namespace-suffix}
+kubectl create -f link:{github-repo}/{istiofiles-dir}/virtual-service-recommendation-delay.yml[istiofiles/virtual-service-recommendation-delay.yml] -n tutorial{namespace-suffix}
 ----
 
 And hit the customer endpoint

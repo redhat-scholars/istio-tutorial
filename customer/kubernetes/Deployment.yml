@@ -1,3 +1,9 @@
+---
+apiVersion: "v1"
+kind: "ServiceAccount"
+metadata:
+  name: "customer"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -61,3 +67,4 @@ spec:
           timeoutSeconds: 1
         securityContext:
           privileged: false
+      serviceAccount: "customer"

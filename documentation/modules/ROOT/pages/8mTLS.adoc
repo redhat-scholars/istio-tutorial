@@ -14,61 +14,37 @@ if so run:
 ----
 ====
 
-In this chapter, we are going to see how to secure the communication between all services by enabling mutual _TLS_ in Istio.
+In this chapter, we are going to see _mTLS_ in Istio.
 
 [#testingtls]
 == Testing mTLS
 
-Depending on how you install Istio, you have mTLS enabled or not.
-If you have followed this guide and installed the demo profile (xref:1setup.adoc[Setup]), then mTLS is not enabled.
+Depending on how you install Istio, you might have mTLS enabled or not.
+If you are using Istio 1.5 or beyond, mTLS is enabled by default in `permissive` mode.
 
 To check if mTLS is enabled or not just run the next command:
 
 [.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
-istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
+istioctl experimental authz check $(kubectl get pods -n tutorial|grep customer|awk '{ print $1 }'|head -1) -a
 ----
 
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-HOST:PORT                                    STATUS     SERVER         CLIENT     AUTHN POLICY     DESTINATION RULE
-customer.tutorial.svc.cluster.local:8080     OK         PERMISSIVE     -          /default         -
+...
+LISTENER[FilterChain]     HTTP ROUTE                                                SNI     ALPN                                             CERTIFICATE          mTLS (MODE)          AuthZ (RULES)
+virtualInbound[4]                                                                                                                            none                 no (none)            no (none)
+virtualInbound[5]         inbound|8080|http|customer.tutorial.svc.cluster.local             istio,istio-http/1.0,istio-http/1.1,istio-h2     noneSDS: default     yes (PERMISSIVE)     no (none)
+virtualInbound[6]         inbound|8080|http|customer.tutorial.svc.cluster.local                                                              none                 no (PERMISSIVE)      no (none)
+virtualInbound[7]         inbound|8080|http|customer.tutorial.svc.cluster.local             istio,istio-http/1.0,istio-http/1.1,istio-h2     noneSDS: default     yes (PERMISSIVE)     no (none)
+virtualInbound[8]         inbound|8080|http|customer.tutorial.svc.cluster.local                                                              none                 no (PERMISSIVE)
 ----
 
-If `CLIENT` is with `-` means that mTLS is not enabled.
+Notice that `mTLS` is enabled in ALPN inbounds.
 
-To enable mTLS:
-
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/authentication-enable-tls.yml[istiofiles/authentication-enable-tls.yml] -n tutorial{namespace-suffix}
-----
-
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/destination-rule-tls.yml[istiofiles/destination-rule-tls.yml] -n tutorial{namespace-suffix}
-----
-
-To check that mTLS is enabled run the next command:
-
-[.console-input]
-[source, bash,subs="+macros,+attributes"]
-----
-istioctl authn tls-check $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) customer.tutorial.svc.cluster.local
-----
-
-[.console-output]
-[source,bash,subs="+macros,+attributes"]
-----
-HOST:PORT                                    STATUS     SERVER     CLIENT           AUTHN POLICY         DESTINATION RULE
-customer.tutorial.svc.cluster.local:8080     OK         STRICT     ISTIO_MUTUAL     tutorial/default     tutorial/default
-----
-
-You can follow two ways for sniffing traffic.
+To validate how traffic is sent through Istio proxies, you can follow two ways for sniffing traffic.
 If you are using `minikube` and the version of Istio Proxy container has `tcpdump` then `tcpdump` is your way. 
 But if you are in a more restricted environment (ie production) then `ksniff` is the way to proceed to sniff traffic.
 
@@ -206,9 +182,24 @@ In the previous case the preference IP is `10.130.2.8`.
 Then let's sniff the traffic that is sent to `preference` pod by running:
 
 [.console-input]
-[source, bash, subs="+macros,+attributes"]
+[source, bash]
 ----
 kubectl sniff -i eth0 -o ./capture1.pcap customer-6948b8b959-zdlbz -f '((tcp) and (net 10.130.2.8))' -n tutorial -p -c istio-proxy
+----
+
+[.console-output]
+[source, bash]
+----
+...
+
+ionSeconds:*300,},Toleration{Key:node.kubernetes.io/unreachable,Operator:Exists,Value:,Effect:NoExecute,TolerationSeconds:*300,},},HostAliases:[]HostAlias{},PriorityClassName:,Priority:*0,DNSConfig:nil,ShareProcessNamespace:nil,ReadinessGates:[]PodReadinessGate{},RuntimeClassName:nil,EnableServiceLinks:*true,PreemptionPolicy:*PreemptLowerPriority,Overhead:ResourceList{},TopologySpreadConstraints:[]TopologySpreadConstraint{},EphemeralContainers:[]EphemeralContainer{},},Status:PodStatus{Phase:Pending,Conditions:[]PodCondition{},Message:,Reason:,HostIP:,PodIP:,StartTime:<nil>,ContainerStatuses:[]ContainerStatus{},QOSClass:BestEffort,InitContainerStatuses:[]ContainerStatus{},NominatedNodeName:,PodIPs:[]PodIP{},EphemeralContainerStatuses:[]ContainerStatus{},},}
+INFO[0000] waiting for pod successful startup
+INFO[0004] pod: 'ksniff-jskvq' created successfully on node: 'openshift-fzg94-worker-b-q5kr9.c.rhd-devx-asotobue.internal'
+INFO[0004] executing command: '[chroot /host crictl inspect --output json 4af99eeb1e4de09f9ba632516375f86c5959227b15d1fe5146105ee9a10641e6]' on container: 'ksniff-privileged', pod: 'ksniff-jskvq', namespace: 'tutorial'
+INFO[0004] command: '[chroot /host crictl inspect --output json 4af99eeb1e4de09f9ba632516375f86c5959227b15d1fe5146105ee9a10641e6]' executing successfully exitCode: '0', stdErr :''
+INFO[0004] output file option specified, storing output in: './capture5.pcap'
+INFO[0004] starting remote sniffing using privileged pod
+INFO[0004] executing command: '[nsenter -n -t 963456 -- tcpdump -i eth0 -U -w - ((tcp) and (net 10.131.2.143))]' on container: 'ksniff-privileged', pod: 'ksniff-jskvq', namespace: 'tutorial'
 ----
 
 Change the `customer` pod name with the correct one and the IP with the preference IP.
@@ -278,19 +269,11 @@ Notice that now _HTTP_ traffic is shown and if you look at the bottom, you'll se
 [.console-input]
 [source,bash]
 ----
-kubectl delete -f istiofiles/disable-mtls.yml
+kubectl apply -f istiofiles/enable-mtls.yml
 ----
-
-[.console-input]
-[source, bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/destination-rule-tls.yml
-----
-
-or you can run:
 
 [.console-input]
 [source, bash]
 ----
-./scripts/clean.sh
+kubectl delete pod -l app=ksniff
 ----
