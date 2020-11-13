@@ -135,3 +135,19 @@ else
     done
     
 fi
+
+contentap=`kubectl get authorizationpolicy -n "$namesp" 2>/dev/null`
+
+if [ -z "$contentap" ]; then
+    echo "No authorizationpolicy in $namesp namespace."
+else
+    contentap=`awk 'NR>1' <<< "$contentap"`
+
+    names=`awk -v namespace="$namesp" '{ {print $1} }' <<< "$contentap"`
+
+    for name in ${names[@]}
+    do
+        kubectl delete authorizationpolicy "$name" -n "$namesp"
+    done
+    
+fi

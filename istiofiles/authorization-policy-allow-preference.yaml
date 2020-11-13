@@ -1,0 +1,16 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
+metadata:
+  name: "preference-viewer"
+  namespace: tutorial
+spec:
+  selector:
+    matchLabels:
+      app: preference
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/tutorial/sa/customer"]
+    to:
+    - operation:
+        methods: ["GET"]

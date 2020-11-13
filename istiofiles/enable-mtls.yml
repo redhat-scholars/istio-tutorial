@@ -5,4 +5,4 @@ metadata:
   namespace: "tutorial"
 spec:
   mtls:
-    mode: DISABLE
+    mode: PERMISSIVE

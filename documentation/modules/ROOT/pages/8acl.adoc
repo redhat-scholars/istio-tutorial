@@ -1,4 +1,4 @@
-= Access Control List
+= Authorization Policy
 include::_attributes.adoc[]
 
 [IMPORTANT]
@@ -16,29 +16,26 @@ if so run:
 
 [IMPORTANT]
 ====
-You need to enable Policy Enforcement to make this works.
-To validate if it is enabled just run:
-
-`kubectl -n istio-system get cm istio -o jsonpath="{@.data.mesh}" | grep disablePolicyChecks`
-
-The result should be `disablePolicyChecks is false`. 
-If you installed Istio using `istio-demo.yaml` file then it is enabled by default.
-
-If the result is `true` then refer to https://istio.io/docs/tasks/policy-enforcement/enabling-policy/ to enable it.
+This section requires mutual TLS enabled because the following examples use principal in the policies.
+This is enabled by default, so you should not do anything special.
 ====
 
-IMPORTANT: The Access Control rules take some time to be applied and reflected. Be patient here!
+IMPORTANT: The Authorization Policy rules take some time to be applied and reflected. Be patient here!
 
-[#whitelist]
-== Whitelist
+[#authpolicies]
+== Authorization Policies
 
-We'll create a whitelist that will only allow the next communication path: customer -> preference -> recommendation.
-Any other path will result to a 403 HTTP error.
+We'll create an authorization path that will only allow the following communication path: customer -> preference -> recommendation.
+Any other path will result to a 403 forbidden HTTP error.
+
+=== Denny All
+
+Let's start by denning any request that occurs on our application:
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-whitelist.yml[istiofiles/acl-whitelist.yml] -n tutorial{namespace-suffix}
+kubectl apply -f link:{github-repo}/{istiofiles-dir}/authorization-policy-deny-all.yaml[istiofiles/authorization-policy-deny-all.yaml] -n tutorial{namespace-suffix}
 ----
 
 Then if you do:
@@ -48,18 +45,87 @@ include::curl.adoc[]
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-customer => preference => recommendation v2 from 'recommendation-v2-6b569c9cfb-g8shk': 5
+RBAC: access denied
 ----
 
-Of course everything is still valid but let's go inside customer pod:
+Of course any interaction is forbidden.
+
+=== Allow Customer
+
+Let's permit the interaction to customer service:
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl exec -it -n tutorial{namespace-suffix} $(kubectl get pods -n tutorial{namespace-suffix}|grep customer|awk '{ print $1 }'|head -1) -c customer /bin/bash
+kubectl apply -f link:{github-repo}/{istiofiles-dir}/authorization-policy-allow-customer.yaml[istiofiles/authorization-policy-allow-customer.yaml] -n tutorial{namespace-suffix}
 ----
 
-You will be inside the application container of your pod `customer-86ccc8746d-c6kfb`. Now execute:
+Then if you do:
+
+include::curl.adoc[]
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+customer => Error: 403 - RBAC: access denied
+----
+
+Now `customer` is reached but not preference.
+
+=== Allow Preference
+
+Let's permit it:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f link:{github-repo}/{istiofiles-dir}/authorization-policy-allow-preference.yaml[istiofiles/authorization-policy-allow-preference.yaml] -n tutorial{namespace-suffix}
+----
+
+Then if you do:
+
+include::curl.adoc[]
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+customer => Error: 503 - preference => Error: 403 - RBAC: access denied
+----
+
+The `preference` service is accessed but not the recommendation one.
+
+=== Allow Recommendation
+
+Let's end up by allowing all the path:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f link:{github-repo}/{istiofiles-dir}/authorization-policy-allow-recommendation.yaml[istiofiles/authorization-policy-allow-recommendation.yaml] -n tutorial{namespace-suffix}
+----
+
+Then if you do:
+
+include::curl.adoc[]
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+customer => preference => recommendation v1 from 'recommendation-v1-656788f945-9srp8': 12
+----
+
+=== Validate Other Paths
+
+Now let's assume that someone gets access to `recommendation` service:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl exec -it -n tutorial $(kubectl get pods -n tutorial|grep recommendation|awk '{ print $1 }'|head -1) -c recommendation /bin/bash
+----
+
+You will be inside the application container of `recommendation` pod. 
+Now execute:
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -70,19 +136,7 @@ curl preference:8080
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-preference => recommendation v1 from 'recommendation-v1-868bf96bfc-425m6': 5
-----
-
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-curl recommendation:8080
-----
-
-[.console-output]
-[source,bash,subs="+macros,+attributes"]
-----
-Error: 403 - PERMISSION_DENIED:
+RBAC: access denied
 ----
 
 [.console-input]
@@ -91,40 +145,12 @@ Error: 403 - PERMISSION_DENIED:
 exit
 ----
 
-So as you can see `customer` can only do a request to `preference` service but not to `recommendation`.
+So you can see that `preference` service can only be accessed by `customer` service and not any other service such as `recommendation`.
 
 === Clean up
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete -f istiofiles/acl-whitelist.yml -n tutorial{namespace-suffix}
+./scripts/clean.sh
 ----
-
-[#blacklist]
-== Blacklist
-
-We'll create a blacklist making the customer service blacklist to the preference service. Requests from the customer service to the preference service will return a 403 Forbidden HTTP error code.
-
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/acl-blacklist.yml[istiofiles/acl-blacklist.yml] -n tutorial{namespace-suffix}
-----
-
-include::curl.adoc[]
-
-[.console-output]
-[source,bash,subs="+macros,+attributes"]
-----
-customer => Error: 403 - PERMISSION_DENIED:denycustomerhandler.denier.tutorial:Not allowed
-----
-
-=== Clean up
-
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl delete -f istiofiles/acl-blacklist.yml -n tutorial{namespace-suffix}
-----
-

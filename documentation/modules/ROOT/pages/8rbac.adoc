@@ -16,34 +16,6 @@ if so run:
 
 In this chapter, we are going to see how to use Istio's authorization feature to provide access control for services in an Istio Mesh.
 
-[#enabling-rbac]
-== Enabling RBAC
-
-The first thing to do is enable Istio Authorization by using `ClusterRbacConfig` object.
-
-[.console-input]
-[source, bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/authorization-enable-rbac.yml[istiofiles/authorization-enable-rbac.yml] -n tutorial
-----
-
-Now RBAC is enabled on your mesh.
-Run next command:
-
-[.console-input]
-[source, bash ,subs="+macros,+attributes" ]
-----
-curl http://istio-ingressgateway-istio-system.{appdomain}/{path}
-----
-
-[.console-output]
-[source, bash,subs="+macros,+attributes"]
-----
-RBAC: access denied
-----
-
-By default, Istio uses a _deny by default_ strategy, meaning that nothing is permitted until you explicitly define access control policy to grant access to any service.
-
 [#authorization-jwt]
 == Authorization and JWT
 
@@ -53,12 +25,12 @@ The first thing you need to do is applying all the steps described at xref:8jwt.
 
 After that, you are ready to use JWT in the authorization phase as well.
 
-Now apply next Istio resource which makes that only tokens that contain a field named `role` with value `customer`.
+Now apply the following Istio resource which makes that only tokens that contain a field named `role` with value `customer`.
 
 [.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
+kubectl create -f link:{github-repo}/{istiofiles-dir}/authorization-policy-jwt.yaml[istiofiles/authorization-policy-jwt.yaml] -n tutorial
 ----
 
 and then you can do a new call with the new token containing the `role` claim with value `customer``:
@@ -78,15 +50,15 @@ include::curl_params.adoc[]
 customer => preference => recommendation v1 from 'recommendation-v1-b4d67bcb7-7rp88': 4
 ----
 
-Notice that now only valid JWT tokens containing the claim `role` set to `customer` will suceed, the rest you'll get an access denied.
+Notice that now only valid JWT tokens containing the claim `role` set to `customer` will succeed, the rest you'll get an access denied.
 
-To validate that this is working correctly, do next thing:
+To validate that this is working correctly, do the following thing:
 
-Open `istiofiles/namespace-rbac-policy-jwt.yml` and change the `role` with value `xxx` and save the file.
+Open `istiofiles/authorization-policy-jwt.yaml` and change the `role` with value `xxx` and save the file.
 
 [.console-input]
 [source, yaml]
-.istiofiles/namespace-rbac-policy-jwt.yml
+.istiofiles/authorization-policy-jwt.yaml
 ----
 when:
   - key: request.auth.claims[role]
@@ -98,7 +70,7 @@ And then replace it:
 [.console-input]
 [source, bash, subs="+macros,+attributes"]
 ----
-kubectl replace -f link:{github-repo}/{istiofiles-dir}/namespace-rbac-policy-jwt.yml[istiofiles/namespace-rbac-policy-jwt.yml] -n tutorial
+kubectl replace -f link:{github-repo}/{istiofiles-dir}/authorization-policy-jwt.yaml[istiofiles/authorization-policy-jwt.yaml] -n tutorial
 ----
 
 After that, repeat the same request as before:
@@ -130,11 +102,11 @@ Follow xref:8jwt.adoc#cleanup[End-user authentication with JWT Clean Up] steps t
 [.console-input]
 [source, bash]
 ----
-kubectl delete -f istiofiles/namespace-rbac-policy-jwt.yml -n tutorial
+kubectl delete -f istiofiles/authorization-policy-jwt.yaml -n tutorial
 ----
 
 [.console-input]
-[source, bash,subs="+macros,+attributes"]
+[source, bash]
 ----
-kubectl delete -f istiofiles/authorization-enable-rbac.yml -n tutorial
+kubectl delete -f istiofiles/enduser-authentication-jwt.yml -n tutorial
 ----

@@ -1,0 +1,13 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
+metadata:
+  name: "customer-viewer"
+  namespace: tutorial
+spec:
+  selector:
+    matchLabels:
+      app: customer
+  rules:
+  - to:
+    - operation:
+        methods: ["GET"]

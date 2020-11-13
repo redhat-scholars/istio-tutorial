@@ -1,4 +1,4 @@
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: recommendation
@@ -6,13 +6,17 @@ spec:
   hosts:
   - recommendation
   http:
+  - fault:
+      abort:
+        httpStatus: 503
+        percentage:
+          value: 100
+    route:
+    - destination:
+        host: recommendation
+        subset: version-v1
   - route:
     - destination:
         host: recommendation
-        subset: app-recommendation
-    fault:
-      abort:
-        percentage:
-          value: 50
-        httpStatus: 503
----
+        subset: version-v1
+      weight: 100

@@ -1,0 +1,16 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
+metadata:
+  name: "recommendation-viewer"
+  namespace: tutorial
+spec:
+  selector:
+    matchLabels:
+      app: recommendation
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/tutorial/sa/preference"]
+    to:
+    - operation:
+        methods: ["GET"]
