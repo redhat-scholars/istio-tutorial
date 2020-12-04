@@ -775,9 +775,20 @@ set KUBE_EDITOR="code -w"</code></pre>
 <div class="paragraph">
 <p>Having <code>minikube</code> installed and in your <code>PATH</code>, then run:</p>
 </div>
+<div class="paragraph">
+<p><strong>MacOS / Linux:</strong></p>
+</div>
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.18.6 --vm-driver=virtualbox -p istio-devnation</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Windows:</strong></p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.18.6 --vm-driver=hyperv -p istio-devnation</code></pre>
 </div>
 </div>
 <div class="paragraph">
