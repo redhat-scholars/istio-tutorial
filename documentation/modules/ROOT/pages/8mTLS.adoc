@@ -67,7 +67,7 @@ kubectl exec -it $CUSTOMER_POD -c istio-proxy /bin/bash # <2>
 Inside pod shell
 
 [.console-input]
-[source,bash,subs="+macros,+attributes"]
+[source,bash]
 ----
 ifconfig # <1>
 sudo tcpdump -vvvv -A -i eth0 '((dst port 8080) and (net 172.17.0.10))' # <2>
