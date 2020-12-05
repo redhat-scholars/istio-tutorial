@@ -35,7 +35,7 @@ kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-re
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get pods -w -n
+kubectl get pods -w -n tutorial
 ----
 
 == Wait for v3 to be deployed
@@ -80,7 +80,7 @@ WARNING: You might need to wait some tenths of seconds until the configuration t
 
 Be sure you do not have any previous destination rule nor virtual service installed.
 
-Let's redirect all traffic to reccomendation:v3.
+Let's redirect all traffic to recommendation:v3.
 
 [.console-input]
 [source, bash,subs="+macros,+attributes"]
