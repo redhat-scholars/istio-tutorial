@@ -10,7 +10,7 @@ ifndef::workshop[]
 ** xref:1setup.adoc#download-tutorial-sources[Download Tutorial]
 ** xref:1setup.adoc#install-minikube[Install Minikube]
 ** xref:1setup.adoc#start-kubernetes[Start Kubernetes]
-** xref:1setup.adoc#istioinstallation[Install Istio]
+** xref:1setup.adoc#upstreamistioinstallation[Install Istio]
 endif::workshop[]
 
 * xref:2deploy-microservices.adoc[2. Deploy Microservices]
