@@ -26,11 +26,27 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[tabs]
+====
+Minikube::
++
+--
 [.console-input]
 [source,bash, subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml]) -n tutorial
 ----
+--
+OpenShift::
++
+--
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+kubectl apply -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v3.yml[{recommendation-repo}/kubernetes/Deployment-v3.yml] -n tutorial
+----
+--
+====
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
