@@ -14,6 +14,7 @@ ifndef::workshop[]
 endif::workshop[]
 
 * xref:2deploy-microservices.adoc[2. Deploy Microservices]
+** xref:2deploy-microservices.adoc#createproject[Create Project]
 ** xref:2deploy-microservices.adoc#deploycustomer[Deploy Customer]
 ** xref:2deploy-microservices.adoc#deploypreference[Deploy Preference]
 ** xref:2deploy-microservices.adoc#deployrecommendation[Deploy Recommendation]
