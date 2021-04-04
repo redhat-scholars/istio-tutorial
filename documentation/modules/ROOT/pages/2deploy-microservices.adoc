@@ -40,7 +40,15 @@ kubectl create namespace tutorial{namespace-suffix}
 ----
 kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
 ----
+=== (Openshift only) Create Service Mesh Member in your project
+When using Openshift, you need to declare a Service Mesh Member in your `tutorial` project.
+See https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/installing-ossm.html#ossm-member-roll-create-member_installing-ossm for details.
 
+From OpenShift Web Console, it's as simple as selecting the `tutorial` project in "Installed Operators", opening "Istio Service Mesh Member", and clicking on the "Create ServiceMeshMember" button.
+
+Select `istio-system` as the namespace for the "Control Plane Ref" and click the "Create" button
+
+=== Check proper communication between istioctl and your cluster
 Start deploying the microservice projects, starting with customer
 
 Make sure `istioctl` is in your `PATH`:
