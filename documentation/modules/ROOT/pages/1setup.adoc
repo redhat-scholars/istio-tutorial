@@ -93,6 +93,14 @@ kubectl config set-context $(kubectl config current-context) --namespace=istio-s
 
 IMPORTANT: `istio-demo.yaml` enables policy enforcement by default which is required in some sections of the tutorial. Please refer to https://istio.io/docs/tasks/policy-enforcement/enabling-policy/ if you are not using this file.
 
+If using OpenShift, modify security contexts to ensure that all pods start properly.
+
+[.console-input]
+[source,bash,subs="attributes+,+macros"]
+---
+oc adm policy add-scc-to-group anyuid system:serviceaccounts:istio-system
+---
+
 Wait for Istio's components to be ready
 
 [.console-input]
@@ -121,7 +129,19 @@ Istio is supported in OpenShift by Red Hat OpenShift Service Mesh operator.
 
 To install it, you need to follow the instructions written in: https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/installing-ossm.html
 
-It is important that after you finish with the installation, all the required pods are delpyed in `istio-system` namespace:
+--
+Minishift::
++
+---
+Modify security contexts to ensure that all pods start properly.
+
+[.console-input]
+[source,bash,subs="attributes+,+macros"]
+----
+oc adm policy add-scc-to-group anyuid system:serviceaccounts:istio-system
+----
+
+It is important that after you finish with the installation, all the required pods are deployed in `istio-system` namespace:
 
 [.console-input]
 [source,bash,subs="attributes+,+macros"]
