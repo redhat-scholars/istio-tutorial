@@ -28,9 +28,9 @@ IMPORTANT: The Authorization Policy rules take some time to be applied and refle
 We'll create an authorization path that will only allow the following communication path: customer -> preference -> recommendation.
 Any other path will result to a 403 forbidden HTTP error.
 
-=== Denny All
+=== Deny All
 
-Let's start by denning any request that occurs on our application:
+Let's start by denying any request that occurs on our application:
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
