@@ -507,7 +507,7 @@ Please have them installed and configured before you get started with any of the
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern">stern</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install stern</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern/releases/download/1.6.0/stern_linux_amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64">Download</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern/releases/download/1.11.0/stern_windows_amd64.exe">Download</a></p></td>
 </tr>
 <tr>
@@ -776,11 +776,19 @@ set KUBE_EDITOR="code -w"</code></pre>
 <p>Having <code>minikube</code> installed and in your <code>PATH</code>, then run:</p>
 </div>
 <div class="paragraph">
-<p><strong>MacOS / Linux:</strong></p>
+<p><strong>MacOS</strong></p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.18.6 --vm-driver=virtualbox -p istio-devnation</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Linux</strong></p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.18.6 --vm-driver=kvm2 -p istio-devnation</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -796,13 +804,13 @@ set KUBE_EDITOR="code -w"</code></pre>
 </div>
 <div class="listingblock console-output">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">❌  profile "istio-devnation" not found
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">😄  [istio-devnation] minikube v1.20.0 on Darwin 11.3
 ✅  Created a new profile : istio-devnation
 ✅  minikube profile was successfully set to istio-devnation
-😄  [default] minikube v1.12.1 on Darwin 10.15.2
+😄  [default] minikube v1.12.1 on Darwin 11.3
 ✨  Selecting 'virtualbox' driver from user configuration (alternates: [hyperkit])
 🔥  Creating virtualbox VM (CPUs=2, Memory=8192MB, Disk=50000MB) ...
-🐳  Preparing Kubernetes v1.18.6 on Docker '19.03.5' ...
+🐳  Preparing Kubernetes v1.18.6 on Docker '20.10.6' ...
     ▪ apiserver.enable-admission-plugins=LimitRanger,NamespaceExists,NamespaceLifecycle,ResourceQuota,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook
 🚜  Pulling images ...
 🚀  Launching Kubernetes ...
@@ -838,11 +846,11 @@ Once you have your cluster, you can download the latest OpenShift client(oc) fro
 </div>
 </div>
 <div class="paragraph">
-<p>The output should show oc version &gt;=4.2:</p>
+<p>The output should show oc version &gt;=4.7:</p>
 </div>
 <div class="listingblock console-output">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Client Version: openshift-clients-4.3.0-201910250623-88-g6a937dfe
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Client Version: 4.7.0-202102130115.p0-c66c03f
 Kubernetes Version: v1.18.6</code></pre>
 </div>
 </div>
