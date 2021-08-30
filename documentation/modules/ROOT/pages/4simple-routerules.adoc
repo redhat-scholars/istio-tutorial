@@ -16,11 +16,27 @@ If you *have not built* the images on your own then let's deploy the customer po
 
 == Deploy Recommendation microservice V2 using an existing image
 
+[tabs]
+====
+Minikube::
++
+--
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml]) -n tutorial{namespace-suffix}
 ----
+--
+OpenShift::
++
+--
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment-v2.yml[{recommendation-repo}/kubernetes/Deployment-v2.yml] -n tutorial{namespace-suffix}
+----
+--
+====
 
 === Wait for v2 to be deployed
 

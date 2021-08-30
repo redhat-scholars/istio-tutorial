@@ -16,9 +16,8 @@ oc login -u user$WORKSHOP_USER -p openshift {ocpurl}
 ----
 endif::workshop[]
 
-[#deploycustomer]
-== Deploy customer
-
+[#createproject]
+== Create the `tutorial` project
 Make sure you are logged in
 
 [.console-input]
@@ -41,6 +40,26 @@ kubectl create namespace tutorial{namespace-suffix}
 kubectl config set-context $(kubectl config current-context) --namespace=tutorial{namespace-suffix}
 ----
 
+=== ServiceMemberRoll (only in OpenShift)
+When working with OpenShift, you need to either:
+
+1. add your project to one of the ServiceMemberRoll in the `istio-system` namespace
+2. create a ServiceMember in the `tutorial` project.
+
+If you opt for the first option, you might have to wait a bit for the Mesh service to enroll your
+project.
+
+If you're in a hurry, create a ServiceMember in the `tutorial` project:
+
+1. from the "Installed operators", select the `tutorial` project from the Project drop-down
+2. click on the "Istio Service Mesh Member"
+3. click on the "Create ServiceMeshMember" button
+4. open the "Control Plane Ref"
+5. select the `istio-system` as the Namespace
+6. click on the "Create" button
+
+[#deploycustomer]
+== Deploy customer
 Start deploying the microservice projects, starting with customer
 
 Make sure `istioctl` is in your `PATH`:
@@ -67,11 +86,27 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[tabs]
+====
+Minikube::
++
+--
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
 ----
+--
+OpenShift::
++
+--
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml] -n tutorial{namespace-suffix}
+----
+--
+====
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -103,11 +138,29 @@ kubectl get pods -w -n tutorial{namespace-suffix}
 kubectl get svc istio-ingressgateway -n istio-system
 ----
 
+[tabs]
+====
+Minikube::
++
+--
 [.console-output]
 [source,bash,subs="attributes+,+macros"]
 ----
 istio-ingressgateway   LoadBalancer   10.101.82.250   <pending>     15020:31582/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:30818/TCP,15030:32542/TCP,15031:30106/TCP,15032:32284/TCP,15443:31080/TCP   19m
 ----
+--
+
+OpenShift::
++
+--
+[.console-output]
+[source,bash,subs="attributes+,+macros"]
+----
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                              AGE
+istio-ingressgateway   ClusterIP   172.21.17.3     <none>        15021/TCP,80/TCP,443/TCP,15443/TCP   41m
+----
+--
+====
 
 [tabs]
 ====
@@ -195,11 +248,27 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[tabs]
+====
+Minikube::
++
+--
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml])  -n tutorial{namespace-suffix}
 ----
+--
+OpenShift::
++
+--
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f link:{github-repo}/{preference-repo}/kubernetes/Deployment.yml[{preference-repo}/kubernetes/Deployment.yml]  -n tutorial{namespace-suffix}
+----
+--
+====
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -262,11 +331,27 @@ NOTE: You will deploy docker images that were previously built for this tutorial
 
 If you *have not built* the images on your own then let's deploy the customer pod with its sidecar using the already built images for this tutorial:
 
+[tabs]
+====
+Minikube::
++
+--
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f <(istioctl kube-inject -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml]) -n tutorial{namespace-suffix}
 ----
+--
+OpenShift::
++
+--
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f link:{github-repo}/{recommendation-repo}/kubernetes/Deployment.yml[{recommendation-repo}/kubernetes/Deployment.yml] -n tutorial{namespace-suffix}
+----
+--
+====
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]

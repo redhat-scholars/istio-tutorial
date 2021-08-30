@@ -11,7 +11,7 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 | `istioctl`
 | https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-osx.tar.gz[Download]
 | https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip[Download]
-| https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux.tar.gz[Download]
+| https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux-amd64.tar.gz[Download]
 |===
 
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/optional-requisites.adoc[]
@@ -43,7 +43,7 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 [#upstreamistioinstallation]
 == Istio Installation
 
-[tabs, subs="attributes+,+macros"]	
+[tabs, subs="attributes+,+macros"]
 ====
 Minikube::
 +
@@ -56,7 +56,7 @@ Minikube::
 curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux-amd64.tar.gz | tar xz
 
 # Windows
 curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip
