@@ -10,8 +10,8 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 
 | `istioctl`
 | https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-osx.tar.gz[Download]
-| https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip[Download]
 | https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux.tar.gz[Download]
+| https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip[Download]
 |===
 
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/optional-requisites.adoc[]
