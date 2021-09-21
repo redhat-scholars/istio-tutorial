@@ -121,7 +121,7 @@ Istio is supported in OpenShift by Red Hat OpenShift Service Mesh operator.
 
 To install it, you need to follow the instructions written in: https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/installing-ossm.html
 
-It is important that after you finish with the installation, all the required pods are delpyed in `istio-system` namespace:
+It is important that after you finish with the installation, all the required pods are deployed in `istio-system` namespace:
 
 [.console-input]
 [source,bash,subs="attributes+,+macros"]
