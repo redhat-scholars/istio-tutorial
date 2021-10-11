@@ -56,7 +56,7 @@ Minikube::
 curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-osx.tar.gz | tar xz
 
 # Fedora/RHEL:
-curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux.tar.gz | tar xz
+curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-linux-amd64.tar.gz | tar xz
 
 # Windows
 curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip
