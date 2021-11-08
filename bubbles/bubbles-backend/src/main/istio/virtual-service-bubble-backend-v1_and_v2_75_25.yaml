@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bubble-backend
+spec:
+  hosts:
+  - bubble-backend
+  http:
+  - route:
+    - destination:
+        host: bubble-backend
+        subset: version-v1
+      weight: 75
+    - destination:
+        host: bubble-backend
+        subset: version-v2
+      weight: 25
