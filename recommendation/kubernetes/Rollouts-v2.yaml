@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: recommendation
+  labels:
+    app: recommendation
+spec:
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: "1m"
+      - setWeight: 50
+      - pause:
+          duration: "2m"
+      canaryService: recommendation-canary
+      stableService: recommendation
+      trafficRouting:
+        istio:
+           virtualService: 
+            name: recommendation 
+            routes:
+            - primary 
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: recommendation
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: recommendation
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - name: recommendation 
+        image: quay.io/rhdevelopers/istio-tutorial-recommendation:v2.2
+        imagePullPolicy: Always
+        ports:
+        - name: web
+          containerPort: 8080
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "140m"
