@@ -54,9 +54,9 @@ istioctl version
 [.console-output]
 [source,bash,subs="attributes+,+macros"]
 ----
-client version: 1.4.6
-control plane version: 1.4.6
-data plane version: 1.4.6 (2 proxies)
+client version: 1.9.4
+control plane version: 1.9.4
+data plane version: 1.9.4 (2 proxies)
 ----
 
 === Deploy Customer 

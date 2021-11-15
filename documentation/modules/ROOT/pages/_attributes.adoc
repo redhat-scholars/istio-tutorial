@@ -8,4 +8,4 @@
 :recommendation-repo: recommendation
 :recommendation-java: java/quarkus
 :istiofiles-dir: istiofiles
-:istio-version: 1.6.13
+:istio-version: 1.9.4

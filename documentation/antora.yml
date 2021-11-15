@@ -1,6 +1,6 @@
 name: istio-tutorial
 title: Istio Tutorial
-version: '1.6.x'
+version: '1.9.x'
 nav:
 - modules/ROOT/nav.adoc
 - modules/advanced/nav.adoc

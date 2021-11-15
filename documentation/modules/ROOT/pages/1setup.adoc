@@ -71,7 +71,7 @@ cd $TUTORIAL_HOME
 [.console-input]
 [source,bash,subs="attributes+,+macros"]
 ----
-istioctl manifest apply --set profile=demo --set values.global.proxy.privileged=true --set meshConfig.outboundTrafficPolicy.mode=ALLOW_ANY
+istioctl manifest apply --set profile=demo --set values.global.proxy.privileged=true --set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY
 ----
 
 [.console-output]
@@ -104,14 +104,10 @@ kubectl get pods -w
 [.console-output]
 [source,bash,subs="attributes+,+macros"]
 ----
-NAME                                        READY     STATUS      RESTARTS   AGE
-grafana-b54bb57b9-wdtw6                1/1     Running   0          79s
-istio-egressgateway-68587b7b8b-qzz8x   1/1     Running   0          79s
-istio-ingressgateway-55bdff67f-t97xd   1/1     Running   0          79s
-istio-tracing-9dd6c4f7c-mvwnz          1/1     Running   0          79s
-istiod-76bf8475c-cnkvn                 1/1     Running   0          101s
-kiali-d45468dc4-kslcb                  1/1     Running   0          78s
-prometheus-74d44d84db-j22tf            2/2     Running   0          78s
+NAME                                   READY   STATUS    RESTARTS   AGE
+istio-egressgateway-fdf8f9b9b-xg68c    1/1     Running   0          14m
+istio-ingressgateway-ccc594cb5-ppvrf   1/1     Running   0          14m
+istiod-69bc87d9d4-kcfnf                1/1     Running   0          14m
 ----
 --
 OpenShift::
@@ -119,7 +115,57 @@ OpenShift::
 --
 Istio is supported in OpenShift by Red Hat OpenShift Service Mesh operator.
 
-To install it, you need to follow the instructions written in: https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/installing-ossm.html
+To install it, you can follow this tutorial or if you required full step by step instructions read: https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html/service_mesh/index
+
+First of all, we need to install 4 operators (elasticsearch, jaeger, kiali and Red Hat Service Mesh). 
+Go to OpenShift admin console and click on OperatorHub to start the installation.
+It's important to note that you need to install the operators provided by Red Hat and not the community ones.
+
+image::1.operatorhub.png[]
+
+Then install OpenShift Elasticsearch Operator with the default parameters:
+
+image::2.elasticsearch.png[]
+
+Then install OpenShift Jaeger Operator:
+
+image::3.jaeger.png[]
+
+Install Kiali Operator:
+
+image::4.kiali.png[]
+
+Finally, install Red Hat Service Meh operator:
+
+image::5.servicemesh.png[]
+
+We also need to create an OpenShift project named `istio-tutorial`:
+
+image::6.createproject.png[]
+
+Then let's install and configure the Istio itslef.
+Click on `Installed Operators` menu, you should see the Red Hat Service Mesh Operator and in the `Provided API` column, click on `Istio Service Mesh Control Plane`:
+
+image::7.installedoperators.png[]
+
+You can leave the Istio configuration parameters with the default values *except* `Proxy > Networking > Traffic Control > Outbound > Policy` which needs to be changed to `REGISTRY_ONLY` to avoid traffic can go outside of the mesh.
+And create the Istio Control Plane.
+
+image::8.smconf.png[]
+
+Then let's wait until Istio is intalled.
+You can click on the Istio Control Plane `basic` to check how the installation is going on:
+
+image::9.bootup.png[]
+
+Go again to `Installed Operators` menu and select the `Istio Service Mesh Member Roll` option from `Provided API`.
+
+image::10.memberroll.png[]
+
+And configure which namespaces can run Istio workloads.
+For this tutorial, `tutorial` namespace is used:
+
+image::11.memberrollconf.png[]
 
 It is important that after you finish with the installation, all the required pods are deployed in `istio-system` namespace:
 
