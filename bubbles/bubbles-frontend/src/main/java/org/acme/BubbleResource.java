@@ -1,12 +1,12 @@
 package org.acme;
 
-import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.util.Map;
 
+import javax.inject.Inject;
+import javax.json.JsonObject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -16,10 +16,20 @@ public class BubbleResource {
     @RestClient
     BubbleService bubbleService;
 
+    @Inject
+    Statistics statistics;
+
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public InputStream bubble() throws UnknownHostException {
-        return bubbleService.bubble();
+    public JsonObject bubble() throws UnknownHostException {
+        final JsonObject bubble = bubbleService.bubble();
+        statistics.add(bubble);
+        return bubble;
+    }
+
+    @GET
+    @Path("/statistics")
+    public Statistics statistics() {
+        return statistics;
     }
 
 }

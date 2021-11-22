@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: bubble-backend
+spec:
+  host: bubble-backend
+  subsets:
+  - labels:
+      version: v1
+    name: version-v1
+  - labels:
+      version: v2
+    name: version-v2
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 1
+        maxRequestsPerConnection: 1
+      tcp:
+        maxConnections: 1
+    outlierDetection:
+      baseEjectionTime: 3m
+      consecutive5xxErrors: 1
+      interval: 1s
+      maxEjectionPercent: 100

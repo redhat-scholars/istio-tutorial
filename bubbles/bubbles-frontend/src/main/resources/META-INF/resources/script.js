@@ -1,4 +1,6 @@
 const root = document.querySelector("#app");
+const stats = document.querySelector("#statistics");
+
 let { innerHeight, innerWidth } = window;
 console.log(innerHeight, innerWidth);
 if (innerHeight < 300) {
@@ -74,6 +76,7 @@ class Bubble {
   }
 }
 
+// change to /bubble to dev mode
 // creating many bubble instance
 setInterval(function () {
   requestAnimationFrame(() => {
@@ -82,3 +85,28 @@ setInterval(function () {
       .then(data => new Bubble(data.color))
   });
 }, 400);
+
+function createTable(statistics) {
+  stats.innerHTML='';
+  let fLen = statistics.length;
+  for (let i = 0; i < fLen; i++) {
+    let row = document.createElement('td');
+    row.innerHTML = statistics[i];
+    stats.appendChild(row)
+  }
+}
+
+setInterval(function () {
+  fetch("/bubble/bubble/statistics")
+  .then(response => response.json())
+  .then(data => {
+    let hosts = data.hosts
+    const statistics = []
+    for (let hostId in hosts) {
+      let host = hosts[hostId]
+      let counter = data.requests[host]
+      statistics.push(host + " : " + counter + "|")
+    }
+    createTable(statistics)
+  })
+}, 400)

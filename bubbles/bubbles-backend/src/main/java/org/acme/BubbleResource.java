@@ -2,12 +2,17 @@ package org.acme;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -18,8 +23,25 @@ public class BubbleResource {
     String color;
 
     private boolean misbehave;
+    private boolean sleep;
 
-    private AtomicInteger counter = new AtomicInteger(0);
+    private AtomicLong counter = new AtomicLong(0);
+
+    @GET
+    @Path("/sleep")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String sleep() {
+        sleep = true;
+        return "Sleep Neo";
+    }
+
+    @GET
+    @Path("/awake")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String awake() {
+        sleep = false;
+        return "Awaking";
+    }
 
     @GET
     @Path("/misbehave")
@@ -38,20 +60,33 @@ public class BubbleResource {
     }
 
     @GET
-    public Bubble bubble() throws UnknownHostException {
-        return new Bubble(  color, 
+    public Response bubble() throws UnknownHostException {
+
+        if (misbehave) {
+
+            final Bubble b = new Bubble(  "yellow", 
                             InetAddress.getLocalHost().getHostName(), 
                             counter.incrementAndGet()
                         );
+
+            return Response.ok(b)
+                            .build();
+        }
+
+        if (sleep) {
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        final Bubble b = new Bubble(  color, 
+                            InetAddress.getLocalHost().getHostName(), 
+                            counter.incrementAndGet()
+                        );
+
+        return Response.ok(b).build();
     }
 
-    /**@GET
-    @Path("/stream")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    @SseElementType("application/json")
-    public Multi<Bubble> stream() {
-        Multi.createFrom()
-                .ticks().every(Duration.ofMillis(200))
-                .
-    }**/
 }
