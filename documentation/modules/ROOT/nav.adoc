@@ -6,10 +6,7 @@ endif::workshop[]
 
 ifndef::workshop[]
 * xref:1setup.adoc[1. Setup]
-** xref:1setup.adoc#prerequisite[Prerequisites]
-** xref:1setup.adoc#download-tutorial-sources[Download Tutorial]
-** xref:1setup.adoc#install-minikube[Install Minikube]
-** xref:1setup.adoc#start-kubernetes[Start Kubernetes]
+** xref:1setup.adoc#prerequisites[Prerequisites]
 ** xref:1setup.adoc#istioinstallation[Install Istio]
 endif::workshop[]
 
