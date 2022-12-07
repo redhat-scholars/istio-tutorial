@@ -1,4 +1,7 @@
-= Setup
+:tutorial-url: https://github.com/redhat-developer-demos/istio-tutorial
+:folder: istio-tutorial
+
+= Setup & Installation
 include::_attributes.adoc[]
 
 You can complete this tutorial using a local Minikube environment, or you can use an OpenShift 4 cluster where you have administrator access. https://developers.redhat.com/products/openshift-local/overview[OpenShift Local] can provide access to a local OpenShift 4 cluster if you'd like to use OpenShift but don't have access to a hosted environment.
@@ -18,8 +21,7 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 
 === Download Tutorial Sources
 
-:tutorial-url: https://github.com/redhat-developer-demos/istio-tutorial
-:folder: istio-tutorial
+// Uses the tutorial-url and folder variables declared at the top of this file
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/download-sources.adoc[]
 
 [#install-minikube]
@@ -111,7 +113,7 @@ istiod-69bc87d9d4-kcfnf                1/1     Running   0          14m
 OpenShift::
 +
 --
-Istio is supported in OpenShift by https://www.redhat.com/en/technologies/cloud-computing/openshift/what-is-openshift-service-mesh[Red Hat OpenShift Service Mesh] operator.
+Istio is supported in OpenShift by https://www.redhat.com/en/technologies/cloud-computing/openshift/what-is-openshift-service-mesh[Red Hat OpenShift Service Mesh] operator. This section assumes you have an OpenShift 4.9+ cluster and an account with administrator access.
 
 NOTE: The steps below provide a summary of the installation steps for Red Hat OpenShift Service Mesh. Detailed instructions can be found in the https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html/service_mesh/index[OpenShift Documentation].
 
