@@ -5,7 +5,7 @@ ifdef::workshop[]
 endif::workshop[]
 
 ifndef::workshop[]
-* xref:1setup.adoc[1. Setup]
+* xref:1setup.adoc[1. Setup & Installation]
 ** xref:1setup.adoc#prerequisites[Prerequisites]
 ** xref:1setup.adoc#istioinstallation[Install Istio]
 endif::workshop[]
