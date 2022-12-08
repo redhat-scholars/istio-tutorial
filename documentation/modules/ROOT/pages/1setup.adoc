@@ -63,8 +63,8 @@ curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{
 
 # Both:
 cd istio-{istio-version}
-export ISTIO_HOME=`pwd`
-export PATH=$ISTIO_HOME/bin:$PATH
+export ISTIO_HOME=$(pwd)
+export PATH="$ISTIO_HOME/bin:$PATH"
 cd $TUTORIAL_HOME
 ----
 

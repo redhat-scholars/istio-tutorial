@@ -11,9 +11,11 @@ ifndef::workshop[]
 endif::workshop[]
 
 * xref:2deploy-microservices.adoc[2. Deploy Microservices]
-** xref:2deploy-microservices.adoc#deploycustomer[Deploy Customer]
-** xref:2deploy-microservices.adoc#deploypreference[Deploy Preference]
-** xref:2deploy-microservices.adoc#deployrecommendation[Deploy Recommendation]
+** xref:2deploy-microservices.adoc#deploycustomer[Deploy the Customer Service]
+** xref:2deploy-microservices.adoc#configureingress[Configure Ingress]
+** xref:2deploy-microservices.adoc#_validate_ingress[Validate Ingress]
+** xref:2deploy-microservices.adoc#deploypreference[Deploy the Preference Service]
+** xref:2deploy-microservices.adoc#deployrecommendation[Deploy the Recommendation Service]
 ** xref:2deploy-microservices.adoc#redeployingcode[Updating Redeploying Code]
 
 
