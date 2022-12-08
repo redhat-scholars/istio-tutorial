@@ -12,7 +12,7 @@ Each of the microservice is will be deployed into the `tutorial` namespace, and 
 ----
 sidecar.istio.io/inject: "true"
 ----
-This annotation, combined with the fact that the `tutorial` namespace is part of the mesh (thanks to the *ServiceMeshMemberRoll* created in the Setup section) means that each microservice has an associated Istio "sidecar" to manage traffic as illustrated below. Read the Istio documentation to learn more about the https://istio.io/latest/docs/reference/config/networking/sidecar/[Sidecar].
+This annotation, combined with the fact that the `tutorial` namespace is part of the mesh (thanks to the *ServiceMeshMemberRoll* created in the Setup section) means that each microservice has an associated Istio "sidecar" to manage traffic as illustrated below. Read the Istio documentation to learn more about the https://istio.io/latest/docs/concepts/traffic-management/[traffic management and sidecar (Envoy-based) proxies].
 
 image:architecture-basic.png[]
 
@@ -83,7 +83,7 @@ OpenShift (Web Terminal)::
 +
 --
 
-If you installed the OpenShift Web Terminal, refresh the OpenShift Web Console and start a Web Terminal using the terminal icon in the top-right.
+If you installed the OpenShift Web Terminal during the xref:1setup.adoc#istioinstallation[Setup & Installation], refresh the OpenShift Web Console and start a Web Terminal using the terminal icon in the top-right.
 
 image:deploy-web-terminal.png[OpenShift Web Terminal]
 
@@ -121,7 +121,7 @@ OpenShift (Local Terminal)::
 +
 --
 
-. Download the OpenShift CLI (`oc`) from the help menu using (*?* icon) in the top-right of the OpenShift Web Console.
+. Download the OpenShift CLI (`oc`) from the help menu using (*?* icon) in the top-right of the OpenShift Web Console, and take note of the *Copy login command* link.
 +
 image:deploy-openshift-cli.png[OpenShift Help and Login Command]
 . Unzip the CLI and add it to your `PATH`.
@@ -129,7 +129,7 @@ image:deploy-openshift-cli.png[OpenShift Help and Login Command]
 +
 image:deploy-openshift-cli-local.png[Using OpenShift CLI and kubectl locally]
 . Execute the following command to create the `tutorial` namespace and set it as the current context:
-
++
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
