@@ -16,7 +16,7 @@ endif::workshop[]
 ** xref:2deploy-microservices.adoc#_validate_ingress[Validate Ingress]
 ** xref:2deploy-microservices.adoc#deploypreference[Deploy the Preference Service]
 ** xref:2deploy-microservices.adoc#deployrecommendation[Deploy the Recommendation Service]
-** xref:2deploy-microservices.adoc#redeployingcode[Updating Redeploying Code]
+** xref:2deploy-microservices.adoc#redeployingcode[Updating & Redeploying Code]
 
 
 * xref:3monitoring-tracing.adoc[3. Observability]
