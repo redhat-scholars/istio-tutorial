@@ -6,7 +6,7 @@ include::_attributes.adoc[]
 
 This section guides you through the deployment of the three microservices used throughout the tutorial. 
 
-Each of the microservice is will be deployed into the `tutorial` namespace, and is managed using a Deployment that is annotated with:
+Each of the microservice is will be deployed into the `tutorial` namespace, and is managed using a https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[Deployment] that is annotated with:
 [.console-output]
 [source,text,subs="attributes+,+macros"]
 ----
@@ -157,7 +157,7 @@ If you want to build and deploy custom container images for this service *using 
 If you choose to build custom versions of the container images, don't forget to modify the `image` in the *Deployment.yml* files referenced in subsequent steps.
 ====
 
-Let's deploy the customer Pod with its sidecar:
+Deploy the customer application using the YAML files provided in the https://github.com/redhat-developer-demos/istio-tutorial[tutorial content]:
 
 [tabs, subs="attributes+,+macros"]	
 ====
@@ -188,16 +188,14 @@ OpenShift::
 +
 --
 
-First, create the Deployment for the customer application. Istio will inject a sidecar container when the customer service Pod is created, since the Pod spec in the *Deployment.yml* has the `sidecar.istio.io/inject: "true"` annotation applied.
-
-. Deploy the customer application using the *Deployment.yml*:
+. Deploy the customer application using the *Deployment.yml*. This Deployment has the `sidecar.istio.io/inject: "true"` annotation, which means Istio will inject a sidecar container to manage network traffic:
 +
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 kubectl apply -f link:{github-repo}/{customer-repo}/kubernetes/Deployment.yml[{customer-repo}/kubernetes/Deployment.yml] -n tutorial{namespace-suffix}
 ----
-. Create a Service so the customer application has a stable DNS entry:
+. Create a Service so the customer application Pods have a stable DNS entry on the cluster:
 +
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
@@ -224,9 +222,11 @@ NAME                        READY   STATUS    RESTARTS   AGE
 customer-5f5d9f8767-dmc4f   2/2     Running   0          5m24s
 ----
 
-The `spec.replicas` for in the *Deployment.yml* is set to 1, so why is there a second container in the deployed Pod? The reason is that Istio injected the sidecar container that will be used to manage network traffic!
+Press Ctrl+C to exit the watch (-w) command when all containers are reporting READY.
 
-You can use `kubectl describe pods -n tutorial` to inspect the customer application Pod and see the Istio annotations and that a second container was automatically added to the Pod spec by the Istio operator.
+The `spec.replicas` for in the *Deployment.yml* is set to 1, so why is does the `get pods` command specify that 2 of 2 containers are ready? The reason is that Istio injected the sidecar container that will be used to manage network traffic!
+
+You can use `kubectl describe pods -n tutorial` to inspect the customer application's Pod and see the Istio annotations and that a second container was automatically added to the Pod spec by the Istio operator.
 
 [#configureingress]
 == Configure Ingress for the Customer Service
@@ -593,7 +593,7 @@ recommendation request from recommendation-v1-6c75fc9857-d4npl: 1
 
 
 [#redeployingcode]
-== Updating Redeploying 
+== Updating & Redeploying 
 
 NOTE: This section is optional. Feel free to move on to the xref:3kiali.adoc[Observability section] of this guide.
 
