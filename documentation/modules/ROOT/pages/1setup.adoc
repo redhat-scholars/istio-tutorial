@@ -1,10 +1,15 @@
-= Setup
+:tutorial-url: https://github.com/redhat-developer-demos/istio-tutorial
+:folder: istio-tutorial
+
+= Setup & Installation
 include::_attributes.adoc[]
 
-[#prerequisite]
-== Prerequisite CLI tools
+You can complete this tutorial using a local Minikube environment, or you can use an OpenShift 4 cluster where you have administrator access. https://developers.redhat.com/products/openshift-local/overview[OpenShift Local] can provide access to a local OpenShift 4 cluster if you'd like to use OpenShift but don't have access to a hosted environment.
 
-You will need in this tutorial:
+[#prerequisites]
+== Minikube Setup
+
+IMPORTANT: If you're using OpenShift instead of Minikube skip ahead to the link:#istioinstallation[Install Istio section] and select the OpenShift tab.
 
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/prerequisites-kubernetes.adoc[]
 
@@ -14,25 +19,20 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 | https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-win.zip[Download]
 |===
 
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/optional-requisites.adoc[]
-|===
+=== Download Tutorial Sources
 
-[#download-tutorial-sources]
-== Download Tutorial Sources
-
-Before we start setting up the environment, let's clone the tutorial sources and set the `TUTORIAL_HOME` environment variable to point to the root directory of the tutorial:
-
-:tutorial-url: https://github.com/redhat-developer-demos/istio-tutorial
-:folder: istio-tutorial
+// Uses the tutorial-url and folder variables declared at the top of this file
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/download-sources.adoc[]
 
 [#install-minikube]
 === Install Minikube
 
+IMPORTANT: If the *bin/* directory already exists in the `$TUTORIAL_HOME` location, replace the `mkdir bin && cd bin` with `cd bin` in the steps below.
+
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/install-minikube.adoc[]
 
 [#start-kubernetes]
-=== Start Kubernetes
+=== Start Minikube
 
 There are series of commands as steps that allows you get started with minikube. The following section shows how to start minikube with minimal and required configurations:
 
@@ -40,7 +40,7 @@ There are series of commands as steps that allows you get started with minikube.
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/kubernetes-setup.adoc[]
 
 
-[#upstreamistioinstallation]
+[#istioinstallation]
 == Istio Installation
 
 [tabs, subs="attributes+,+macros"]	
@@ -63,8 +63,8 @@ curl -L https://github.com/istio/istio/releases/download/{istio-version}/istio-{
 
 # Both:
 cd istio-{istio-version}
-export ISTIO_HOME=`pwd`
-export PATH=$ISTIO_HOME/bin:$PATH
+export ISTIO_HOME=$(pwd)
+export PATH="$ISTIO_HOME/bin:$PATH"
 cd $TUTORIAL_HOME
 ----
 
@@ -113,66 +113,96 @@ istiod-69bc87d9d4-kcfnf                1/1     Running   0          14m
 OpenShift::
 +
 --
-Istio is supported in OpenShift by Red Hat OpenShift Service Mesh operator.
+Istio is supported in OpenShift by https://www.redhat.com/en/technologies/cloud-computing/openshift/what-is-openshift-service-mesh[Red Hat OpenShift Service Mesh] operator. This section assumes you have an OpenShift 4.9+ cluster and an account with administrator access.
 
-To install it, you can follow this tutorial or if you required full step by step instructions read: https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html/service_mesh/index
+NOTE: The steps below provide a summary of the installation steps for Red Hat OpenShift Service Mesh. Detailed instructions can be found in the https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html/service_mesh/index[OpenShift Documentation].
 
-First of all, we need to install 4 operators (elasticsearch, jaeger, kiali and Red Hat Service Mesh). 
-Go to OpenShift admin console and click on OperatorHub to start the installation.
-It's important to note that you need to install the operators provided by Red Hat and not the community ones.
+Using Istio on OpenShift requires the installation of four operators, configuring a *Mesh Control Plane*, and enrolling namespaces in the mesh using a *Mesh Member Roll*. The required operators are:
 
-image::1.operatorhub.png[]
+* OpenShift Elastic Search Operator
+* OpenShift distributed tracing platform (based on https://www.jaegertracing.io/[Jaeger])
+* Kiali Operator
+* OpenShift Service Mesh Operator
 
-Then install OpenShift Elasticsearch Operator with the default parameters:
+Install the operators by following these steps:
 
-image::2.elasticsearch.png[]
+. Login to your OpenShift cluster's console as user with administrator permissions, e.g the *kubeadmin* account.
+. Choose the *Administrator* perspective from the side-menu.
+. Expand the *Operators* section and select *Operator Hub*.
+. Check the *Red Hat* box under the *Source* section to filter out community operators.
+. Search for and install the *OpenShift Elastic Search Operator*. Accept the default installation parameters when prompted.
++
+image::setup-operator-filter.png[]
+. Repeat the previous steps to install the following operators:
+  * OpenShift distributed tracing platform
+  * Kiali
+  * OpenShift Service Mesh
 
-Then install OpenShift Jaeger Operator:
 
-image::3.jaeger.png[]
+NOTE: It's recommended, but optional, to install the *Web Terminal* operator to simplify running commands later in this guide. You can use the OpenShift (`oc`) CLI and `kubectl` directly from your development machine if you prefer. The OpenShift CLI can be downloaded using the *Command line tools* link from the help icon in the top-right of the OpenShift console.
 
-Install Kiali Operator:
+Once complete select *Installed Operators* from the side-menu in the OpenShift console and verify the are listed as installed. Your list should be similar to the list shown in the following screenshot.
 
-image::4.kiali.png[]
+image::setup-all-operators.png[]
 
-Finally, install Red Hat Service Meh operator:
+To configure Istio we need to create a namespace where the control plane components can be deployed. To create the `istio-system` namespace:
 
-image::5.servicemesh.png[]
-
-We also need to create an OpenShift project named `istio-tutorial`:
+. Expand the *Home* section and select *Projects*.
+. Click the *Create Project* button in the top-right of the screen. A modal will appear in the center of the screen.
+. Enter `istio-system` in the *Name* and click *Create* in the modal.
 
 image::6.createproject.png[]
 
-Then let's install and configure the Istio itslef.
-Click on `Installed Operators` menu, you should see the Red Hat Service Mesh Operator and in the `Provided API` column, click on `Istio Service Mesh Control Plane`:
+You can now configure and deploy Istio:
 
+. Expand the *Operators* section and select *Installed Operators*.
+. Click the *Istio Service Mesh Control Plane* item in the *Provided APIs* column next to the Red Hat Service Mesh Operator
++
 image::7.installedoperators.png[]
-
-You can leave the Istio configuration parameters with the default values *except* `Proxy > Networking > Traffic Control > Outbound > Policy` which needs to be changed to `REGISTRY_ONLY` to avoid traffic can go outside of the mesh.
-And create the Istio Control Plane.
-
+. Click the *Create ServiceMeshControlPlane* button.
+. Leave the Istio configuration parameters with the default values *except* `Proxy > Networking > Traffic Control > Outbound > Policy` which needs to be changed to `REGISTRY_ONLY` to prevent traffic going outside of the mesh.
+. Scroll down and click *Create* to create the Istio Control Plane.
+. Click on the newly listed `basic` item in the *ServiceMeshControlPlane* list. 
++
 image::8.smconf.png[]
-
-Then let's wait until Istio is intalled.
-You can click on the Istio Control Plane `basic` to check how the installation is going on:
-
+. Wait until all Istio components are shown as ready.
++
 image::9.bootup.png[]
 
-Go again to `Installed Operators` menu and select the `Istio Service Mesh Member Roll` option from `Provided API`.
+Lastly, enroll services from a namespace in the Mesh using the https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-create-mesh.html[*Istio Service Mesh Member Roll*]:
 
+. Expand the *Home* section and select *Projects*.
+. Click the *Create Project* button in the top-right of the screen. A modal will appear in the center of the screen.
+. Enter `tutorial` in the *Name* and click *Create* in the modal.
+. Select the *Operators > Installed Operators* from the side-menu.
+. Select the *Istio Service Mesh Member Roll* option from the *Provided APIs* column.
++
 image::10.memberroll.png[]
+. Click the *Create ServiceMeshMemberRoll* button.
+. Choose the *YAML View* and add the `tutorial` namespace to the `spec.members` list:
++
+[.console-input]
+[source,yaml,subs="attributes+,+macros"]
+----
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  members:
+    - tutorial
+----
+. Scroll down and click the *Create* button.
 
-And configure which namespaces can run Istio workloads.
-For this tutorial, `tutorial` namespace is used:
-
-image::11.memberrollconf.png[]
+Congratulations! You've deployed Istio and enrolled services deployed in the `tutorial` project in the mesh.
 
 It is important that after you finish with the installation, all the required pods are deployed in `istio-system` namespace:
 
 [.console-input]
 [source,bash,subs="attributes+,+macros"]
 ----
-kubectl get pods -w
+kubectl get pods -w -n istio-system
 ----
 
 [.console-output]
