@@ -1,6 +1,7 @@
 {
   "name": "istio-tutorial",
   "version": "1.0.0",
+  "private": true,
   "description": "= Polyglot microservices (Java, Node, .NET) + Istio on Kubernetes/OpenShift This content is brought to you by http://developers.redhat.com - Register today! :toc: macro :toc-title: Table of Contents :toclevels: 3 :icons: font :data-uri: :source-highlighter: highlightjs",
   "main": "index.js",
   "directories": {
