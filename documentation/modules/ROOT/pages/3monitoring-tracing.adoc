@@ -1,18 +1,38 @@
 = Observability
 include::_attributes.adoc[]
 
-[#monitoring]
-== Monitoring with Grafana
+Istio includes observability features that are powered by Prometheus and Grafana. Prometheus is an open-source monitoring and alerting toolkit that is used to collect metrics from Istio and the services running within the mesh. Grafana is an open-source visualization tool that can be used to create dashboards and charts based on the data collected by Prometheus. Together, these tools provide Istio users with powerful observability capabilities, allowing them to monitor the performance of their applications and troubleshoot any issues that may arise.
 
-Out of the box, you get monitoring via Prometheus and Grafana. 
+[#simulatetraffic]
+== Simulate Traffic in the Mesh Network
 
-NOTE: You may want to push some load onto the deployed applications in order to see some metrics.  
+Viewing the Grafana and Prometheus dashboards won't be interesting unless there's traffic flowing through the services that were deployed in the xref:2deploy-microservices.adoc[] section of this tutorial. 
 
-Run the following command to produce load.
+Execute the following command to produce some load on the services:
 
 include::generate_traffic.adoc[]
 
+NOTE: The `GATEWAY_URL` can be obtained by returning to the xref:2deploy-microservices.html#_validate_ingress[Validate Ingress] section.
+
+Leave this command running while exploring the Grafana, Prometheus, and Jaeger dashboards.
+
+
+[#monitoring]
+== Monitoring with Grafana
+
+Grafana is an open-source tool for creating, exploring, and sharing dashboards for monitoring your infrastructure and applications. It allows you to query and visualize data from multiple sources, including Prometheus, Elasticsearch, and InfluxDB. Grafana is often used in combination with other monitoring tools to provide comprehensive visibility into the health and performance of your systems. Grafana was automatically deployed by the Istio installation. 
+
+=== Obtaining the Grafana URL
+
+The first step to using Grafana is obtaining the URL to access the web-based Grafana dashboard:
+
 ifndef::workshop[]
+
+[tabs, subs="attributes+,+macros"]	
+====
+Minikube::
++
+--
 
 In a new terminal window run:
 
@@ -23,6 +43,26 @@ istioctl dashboard grafana
 ----
 
 Navigate to `dashboard/db/istio-mesh-dashboard`.
+
+--
+OpenShift::
++
+--
+
+. Login to your OpenShift Web Console.
+. Select the *Administrator* perspective from the side-menu.
+. Expand *Networking* and select *Routes* in the side-menu.
+. Verify that `istio-system` is selected in the *Project* dropdown. The Grafana route will be displayed in the Routes list.
++
+image:grafana-openshift-route.png[OpenShift Routes in the Istio System Namespace]
+. Click the URL in the *Location* column for the `grafana` list item. This will open the Grafana dashboard in another browser window/tab.
+. You will be prompted to login using your OpenShift account. Click the *Log in with OpenShift* button and follow the onscreen prompts to access the Grafana dashboard.
++
+image:grafana-openshift-login.png[Grafana OpenShift SSO Page]
+
+--
+====
+
 endif::workshop[]
 
 ifdef::workshop[]
@@ -35,16 +75,36 @@ or
 `firefox http://grafana-istio-system.{appdomain}/dashboard/db/istio-mesh-dashboard`
 endif::workshop[]
 
-image:grafana1.png[Grafana 1]
+=== Viewing Istio Dashboards in Grafana
 
-to check the "Workload of the services"
+With access to Grafana it's possible to view metrics dashboards that have been  pre-configured by Istio:
 
-image:grafana2.png[Grafana 2]
+. Navigate to the `/dashboards` page. It should look similar to the image below.
++
+image:grafana-dashboards.png[Grafana Dashboards List]
+. Select the *Istio Mesh Dashboard*. It should display a metrics dashboard.
++
+image:grafana-istio-mesh-metrics.png[Grafana Istio Mesh Dashboard]
+. Click the `preference-v1.tutorial` under the *Workload* column to view granular metrics for the preference service.
+. Expand the *Outbound Services* section. This provides information related to outgoing traffic. For example, it's possible to see that the preference service sends data to Jaeger (`jaeger-collector.istio-system.svc.cluster.local`) and the recommendation service (`recommendation.tutorial.svc.cluster.local`).
+image:grafana-preference-outbound-metrics.png[Grafana Istio Mesh Dashboard / Preference]
 
 [#prometheus]
 == Prometheus
 
+Prometheus is an open-source metrics collector that is commonly used in cloud-native environments. It collects data from monitored targets by scraping exposed metrics HTTP endpoints on these targets (a *pull-based* model), and stores the collected data in a time-series database. Prometheus also includes a powerful query language and a built-in graphing and alerting functionality, making it easy to analyze and visualize the collected data, and to set up alerts based on this data. Prometheus is often used in conjunction with other tools, such as Grafana, to provide a complete monitoring and observability solution for cloud-native applications.
+
+image:prometheus-architecture.png[Prometheus Architecture]
+
+=== Accessing the Prometheus Dashboard
+
 ifndef::workshop[]
+
+[tabs, subs="attributes+,+macros"]	
+====
+Minikube::
++
+--
 
 In a new terminal window run:
 
@@ -53,9 +113,32 @@ In a new terminal window run:
 ----
 istioctl dashboard prometheus
 ----
+
+--
+OpenShift::
++
+--
+
+NOTE: You can obtain the Prometheus dashboard URL using the same steps you used to obtain the Grafana URL. The below instructions are provided to demonstrate an alternative CLI-based approach.
+
+. Run the following command:
++
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl get route prometheus -n istio-system
+----
+. Copy the URL printed in the *HOST/PORT* column from the output of the previous command.
+. Paste this into your web browser's address bar.
+. You will be prompted to login using your OpenShift account. Click the *Log in with OpenShift* button and follow the onscreen prompts to access the Prometheus dashboard.
+--
+====
+
 endif::workshop[]
 
-Explore Prometheus:
+The Prometheus dashboard should now be visible in your browser.
+
+image:prometheus-dashboard.png[Prometheus Dashboard]
 
 ifdef::workshop[]
 And open the next page in a browser:
@@ -69,63 +152,86 @@ endif::workshop[]
 
 // Custom Metrics removed from Workshop because it requires access to istio-system.
 ifndef::workshop[] 
+
 [#custommetrics]
-=== Custom Metrics
+=== Querying Prometheus
 
-Istio also allows you to specify custom metrics which can be seen inside of the Prometheus dashboard
+// Istio also allows you to query custom metrics which can be seen inside of the Prometheus dashboard
 
-Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then
+// Add the custom metric and rule. First make sure you are in the "istio-tutorial" directory and then
 
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-kubectl create -f link:{github-repo}/{istiofiles-dir}/recommendation_requestcount.yml[istiofiles/recommendation_requestcount.yml] -n istio-system
-----
+// [.console-input]
+// [source,bash,subs="+macros,+attributes"]
+// ----
+// kubectl create -f link:{github-repo}/{istiofiles-dir}/recommendation_requestcount.yml[istiofiles/recommendation_requestcount.yml] -n istio-system
+// ----
 
-Then run several requests through the system
+// Then run several requests through the system
 
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-while true; do curl $GATEWAY_URL/customer; sleep .5;  done
-----
+// [.console-input]
+// [source,bash,subs="+macros,+attributes"]
+// ----
+// while true; do curl $GATEWAY_URL/customer; sleep .5;  done
+// ----
 
-In the Prometheus dashboard, add the following
-
+. In the Prometheus dashboard, paste the following query into the input area.
++
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 istio_requests_total{destination_service="recommendation.tutorial.svc.cluster.local"}
 ----
+. Click the *Execute* button.
+. Change the graph from "line" to "stacked" mode using the toggle.
++ 
+image:prometheus-query.png[Prometheus Query Results]
 
-and select `Execute`
+NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) using the plus/minus icons above the graph.
 
-image:prometheus_custom_metric.png[alt text]
-
-NOTE: You may have to refresh the browser for the Prometheus graph to update. And you may wish to make the interval 5m (5 minutes) as seen in the screenshot above.
-endif::workshop[]
-
-
-[#containermemory]
-=== Containers memory
-
-Istio allows also to see the RSS memory consumed by the containers.
-
-In the Prometheus dashboard, add the following
+Notice that two series are displayed. This is because the Envoy proxy sidecar in the preference service Pod reports the outbound request, and the Envoy proxy sidecar in the recommendation service Pod also reports the inbound. This can be confirmed by correlating the *app* and *instance* labels of each series to the running preference and recommendation Pods using the following command:
 
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-container_memory_rss{namespace="tutorial",container=~"customer|preference|recommendation"}
+kubectl get pod -n tutorial -o wide
 ----
 
-and select `Execute`
+NOTE: The Pod IP addresses displayed in this tutorial will differ from what you see in your environment.
+
+For example, the screenshot above shows a series where `app=preference` and `instance=10.217.1.2`. This correlates with the preference Pod shown in the output of `kubectl get pod -n tutorial -o wide`:
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+NAME                                 READY   STATUS    RESTARTS      AGE   IP             NODE                 NOMINATED NODE   READINESS GATES
+customer-5f5d9f8767-dmc4f            2/2     Running   0             23h   10.217.0.157   crc-5nvrm-master-0   <none>           <none>
+preference-v1-5d474ff7bd-lf9gt       2/2     Running   1 (19h ago)   19h   10.217.1.2     crc-5nvrm-master-0   <none>           <none>
+recommendation-v1-6c75fc9857-d4npl   2/2     Running   0             19h   10.217.1.25    crc-5nvrm-master-0   <none>           <none>
+----
+endif::workshop[]
+
+
+
+[#containermemory]
+=== Querying Container Memory Usage
+
+Istio exposes the memory usage of the Envoy container to Prometheus.
+
+In the Prometheus dashboard, execute the following query:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+istio_agent_process_resident_memory_bytes{kubernetes_namespace="tutorial",app=~"customer|preference|recommendation"}
+----
+
+Switch the graph to stacked mode. The RSS memory usage of the Envoy sidecar processes is displayed:
 
 image:prometheus-memory.png[Prometheus memory]
 
 
 [#tracing]
-== Tracing
+== Tracing with Jaeger
 
 Distributed Tracing involves propagating the tracing context from service to service, usually done by sending certain incoming HTTP headers downstream to outbound requests. For services embedding a http://opentracing.io/[OpenTracing] framework instrumentations such as https://github.com/opentracing-contrib/java-spring-cloud[opentracing-spring-cloud], this might be transparent. For services that are not embedding OpenTracing libraries, this context propagation needs to be done manually.
 
@@ -135,7 +241,15 @@ Our `customer` and `preference` services are using the https://github.com/jaeger
 
 Let's open the Jaeger console, select `customer` from the list of services and click `Find Traces`
 
+=== Accessing the Jaeger Dashboard
+
 ifndef::workshop[]
+
+[tabs, subs="attributes+,+macros"]	
+====
+Minikube::
++
+--
 
 In a new terminal window run:
 
@@ -144,6 +258,22 @@ In a new terminal window run:
 ----
 istioctl dashboard jaeger
 ----
+
+--
+OpenShift::
++
+--
+
+. Login to your OpenShift Web Console.
+. Select the *Administrator* perspective from the side-menu.
+. Expand *Networking* and select *Routes* in the side-menu.
+. Verify that `istio-system` is selected in the *Project* dropdown. The Jaeger route will be displayed in the Routes list.
+. Click the URL in the *Location* column for the `jaeger` list item. This will open the Jaeger dashboard in another browser window/tab.
+. You will be prompted to login using your OpenShift account. Click the *Log in with OpenShift* button and follow the onscreen prompts to access the Jaeger dashboard.
+
+--
+====
+
 endif::workshop[]
 
 ifdef::workshop[]
@@ -157,4 +287,48 @@ or
 ----
 endif::workshop[]
 
+The Jaeger dashboard will look similar to the following screenshot.
+
 image:jaegerUI.png[Trace as seen in Jaeger]
+
+=== Viewing Traces
+
+NOTE: Jaeger's traces are based on traffic in the Istio mesh network. Make sure to follow the instructions in the xref:3monitoring-tracing.adoc[Simulate Traffic in the Mesh Network] section before proceeding.
+
+Perform a search to view traces:
+
+. Select the *Search* screen from the header in the Jaeger dashboard.
+. Choose `istio-ingressgateway.istio-system` in the *Service* dropdown from the *Search* pane.
+. Leave the other inputs at their default values and click *Find Traces*.
+
+A plot of traces corresponding to HTTP requests is displayed, along with a list of those items from the plot.
+
+image:jaeger-search.png[Jaeger Search Results]
+
+=== Viewing Detailed Trace Information
+
+View more trace details:
+
+. Click the first item returned in the list of traces. A more detailed view of the trace is displayed.
+. Select the `Trace Timeline` view from the dropdown in the top-right.
+. Expand the following trace segments by clicking their names:
+  * `istio-ingressgateway.istio-system`
+  * `customer.tutorial`
+  * `customer`
+
+These segments represent different stages of the request flow through the mesh and microservices in our application architecture.
+
+image:jaeger-trace-details.png[Jaeger Trace Details]
+
+The first segment represents when the request entered our mesh via the `istio-ingressgateway` in the `istio-system` namespace. Next, the request was routed to the `customer` service in the `tutorial` namespace. You can corelate both of the IP addresses listed in these segments with the running Pods in each namespace. The third segment represents the processing of the request in the `getCustomer` method of the customer Java application.
+
+=== Analysing Request Processing Times
+
+If there's a slowdown in request processing, the *Trace Flamegraph* could be used to identify candidates for closer inspection during a root cause analysis.
+
+. Select `Trace Flamegraph` from the top-right.
+. Set the view toggle to *Table* mode.
+
+image:jaeger-flamegraph.png[Jaeger Flamegraph]
+
+The segments are ordered from longest to shortest self processing time, by default. For the trace shown in the screenshot above, it's clear that there was a minor network delay at the recommendation service. Most of the network traffic segments show durations between 57ms and 74ms, but the recommendation segment is 1.63ms.
