@@ -595,7 +595,7 @@ recommendation request from recommendation-v1-6c75fc9857-d4npl: 1
 [#redeployingcode]
 == Updating & Redeploying 
 
-NOTE: This section is optional. Feel free to move on to the xref:3kiali.adoc[Observability section] of this guide.
+NOTE: This section is optional. Feel free to move on to the xref:3monitoring-tracing.adoc[Observability section] of this guide.
 
 When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:
 
