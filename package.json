@@ -1,0 +1,31 @@
+{
+  "name": "istio-tutorial",
+  "version": "1.0.0",
+  "private": true,
+  "description": "= Polyglot microservices (Java, Node, .NET) + Istio on Kubernetes/OpenShift This content is brought to you by http://developers.redhat.com - Register today! :toc: macro :toc-title: Table of Contents :toclevels: 3 :icons: font :data-uri: :source-highlighter: highlightjs",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "dev": "npm run build:dev && nodemon -e adoc -x \"npm run build:dev\"",
+    "build:dev": "npx @antora/cli@2.3 dev-site.yml",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redhat-scholars/istio-tutorial.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/redhat-scholars/istio-tutorial/issues"
+  },
+  "homepage": "https://github.com/redhat-scholars/istio-tutorial#readme",
+  "devDependencies": {
+    "@antora/cli": "~2.3",
+    "@antora/site-generator-default": "~3.1.2",
+    "nodemon": "~2.0.20"
+  }
+}

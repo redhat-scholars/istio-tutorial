@@ -31,12 +31,13 @@ dist/
 nbdist/
 .nb-gradle/
 
+# Ignores the download istio binaries
+istio-1.*
+
 .DS_Store
 .vscode
-istio-1.1.1
 firebase*
 yarn*
-package*
 node_modules
 .firebaserc
 .firebase

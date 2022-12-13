@@ -24,3 +24,23 @@ There are three different and super simple microservices in this system and they
 customer → preference → recommendation
 ```
 
+== Local Development
+
+Tested with Node.js v18.9.
+
+```bash
+# Clone the repository locally
+git clone git@github.com:redhat-scholars/istio-tutorial.git
+cd istio-tutorial
+
+# Install antora dependencies
+npm install
+
+# Performs an initial build, then watches adoc files
+# and rebuilds the site when they are modified
+npm run dev
+```
+
+Open the _gh-pages/index.html_ to see the site. You can refresh to see your
+changes if you modify _adoc_ files, since the `npm run dev` script will
+automatically rebuild the site when it detects changes.
