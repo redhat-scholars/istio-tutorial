@@ -54,19 +54,10 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="1setup.html">1. Setup</a>
+    <a class="nav-link" href="1setup.html">1. Setup &amp; Installation</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="1setup.html#prerequisite">Prerequisites</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="1setup.html#download-tutorial-sources">Download Tutorial</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="1setup.html#install-minikube">Install Minikube</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="1setup.html#start-kubernetes">Start Kubernetes</a>
+    <a class="nav-link" href="1setup.html#prerequisites">Prerequisites</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="1setup.html#istioinstallation">Install Istio</a>
@@ -78,16 +69,22 @@
     <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#deploycustomer">Deploy Customer</a>
+    <a class="nav-link" href="#deploycustomer">Deploy the Customer Service</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#deploypreference">Deploy Preference</a>
+    <a class="nav-link" href="#configureingress">Configure Ingress</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#deployrecommendation">Deploy Recommendation</a>
+    <a class="nav-link" href="#_validate_ingress">Validate Ingress</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#redeployingcode">Updating Redeploying Code</a>
+    <a class="nav-link" href="#deploypreference">Deploy the Preference Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#deployrecommendation">Deploy the Recommendation Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#redeployingcode">Updating &amp; Redeploying Code</a>
   </li>
 </ul>
   </li>
@@ -96,25 +93,50 @@
     <a class="nav-link" href="3monitoring-tracing.html">3. Observability</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring with Grafana</a>
+    <a class="nav-link" href="3monitoring-tracing.html#simulatetraffic">Simulate Traffic in the Mesh Network</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3monitoring-tracing.html#monitoring">Grafana</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_obtaining_the_grafana_url">Obtaining the Grafana URL</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-text"><a href="/istio-tutorial/1.9.x/3monitoring-tracing.html#_viewing_istio_dashboards_in_grafana" class="page">Viewing Istio Dashboards in Grafana
+</a></span>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="3monitoring-tracing.html#prometheus">Prometheus</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Custom metrics</a>
+    <a class="nav-link" href="3monitoring-tracing.html#_accessing_the_prometheus_dashboard">Accessing the Prometheus Dashboard</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#containermemory">Container memory</a>
+    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Querying Prometheus</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#applicationmetrics">Application metrics</a>
+    <a class="nav-link" href="3monitoring-tracing.html#containermemory">Querying Container Memory Usage</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3monitoring-tracing.html#tracing">Jaeger</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_accessing_the_jaeger_dashboard">Accessing the Jaeger Dashboard</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_viewing_traces">Viewing Traces</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_viewing_detailed_trace_information">Viewing Detailed Trace Information</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
@@ -448,9 +470,46 @@
   <div class="content">
 <article class="doc">
 <h1 class="page">Deploy Microservices</h1>
-<div class="sect1">
-<h2 id="deploycustomer"><a class="anchor" href="#deploycustomer"></a>Deploy customer</h2>
+<div id="preamble">
 <div class="sectionbody">
+<div class="paragraph">
+<p>This section guides you through the deployment of the three microservices used throughout the tutorial.</p>
+</div>
+<div class="paragraph">
+<p>Each of the microservice is will be deployed into the <code>tutorial</code> namespace, and is managed using a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> that is annotated with:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">sidecar.istio.io/inject: "true"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This annotation, combined with the fact that the <code>tutorial</code> namespace is part of the mesh (thanks to the <strong>ServiceMeshMemberRoll</strong> created in the Setup section) means that each microservice has an associated Istio "sidecar" to manage traffic as illustrated below. Read the Istio documentation to learn more about the <a href="https://istio.io/latest/docs/concepts/traffic-management/">traffic management and sidecar (Envoy-based) proxies</a>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/architecture-basic.png" alt="architecture basic"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verify_login_namespace_and_tutorial_files"><a class="anchor" href="#_verify_login_namespace_and_tutorial_files"></a>Verify Login, Namespace, and Tutorial Files</h2>
+<div class="sectionbody">
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset1_openshift-web-terminal"></a>OpenShift (Web Terminal)</p>
+</li>
+<li>
+<p><a id="tabset1_openshift-local-terminal"></a>OpenShift (Local Terminal)</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_minikube">
 <div class="paragraph">
 <p>Make sure you are logged in</p>
 </div>
@@ -473,9 +532,6 @@
 </div>
 </div>
 <div class="paragraph">
-<p>Start deploying the microservice projects, starting with customer</p>
-</div>
-<div class="paragraph">
 <p>Make sure <code>istioctl</code> is in your <code>PATH</code>:</p>
 </div>
 <div class="listingblock console-input">
@@ -490,20 +546,123 @@ control plane version: 1.9.4
 data plane version: 1.9.4 (2 proxies)</code></pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_deploy_customer"><a class="anchor" href="#_deploy_customer"></a>Deploy Customer</h3>
-<div class="admonitionblock note">
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_openshift-web-terminal">
+<div class="paragraph">
+<p>If you installed the OpenShift Web Terminal during the <a href="1setup.html#istioinstallation" class="page">Setup &amp; Installation</a>, refresh the OpenShift Web Console and start a Web Terminal using the terminal icon in the top-right.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/deploy-web-terminal.png" alt="OpenShift Web Terminal"></span></p>
+</div>
+<div class="paragraph">
+<p>The terminal session is pre-configured with a <code>~/.kube/config</code> file. This means <code>oc</code> and <code>kubectl</code> are already logged in. Confirm this by running:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command will print your username. You can use <code>kubectl</code> to verify this too:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl config current-context</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Execute the following command to create the <code>tutorial</code> namespace and set it as the current context:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project tutorial ; oc project tutorial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Before we start setting up the environment, let’s clone the tutorial sources and set the <code>TUTORIAL_HOME</code> environment variable to point to the root directory of the tutorial:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">git clone <a href="https://github.com/redhat-developer-demos/istio-tutorial" class="bare">https://github.com/redhat-developer-demos/istio-tutorial</a> istio-tutorial</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export TUTORIAL_HOME="$(pwd)/istio-tutorial"</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd $TUTORIAL_HOME</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-You will deploy docker images that were previously built for this tutorial. If you want to build customer using Quarkus visit: <a href="2build-microservices.html#buildcustomer" class="page">Build Customer</a>
+The OpenShift Web Terminal is not a persistent environment. The <code>istio-tutorial</code> folder, <code>TUTORIAL_HOME</code>, and set environment variables will be lost if the OpenShift Web Terminal is closed or idled after a few minutes of inactivity. Return to this section and run the <code>git clone</code>, <code>export</code>, and <code>cd</code> commands again if necessary to reconfigure a Web Terminal session.
 </td>
 </tr>
 </table>
 </div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_openshift-local-terminal">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download the OpenShift CLI (<code>oc</code>) from the help menu using (<strong>?</strong> icon) in the top-right of the OpenShift Web Console, and take note of the <strong>Copy login command</strong> link.</p>
+<div class="paragraph">
+<p><span class="image"><img src="_images/deploy-openshift-cli.png" alt="OpenShift Help and Login Command"></span></p>
+</div>
+</li>
+<li>
+<p>Unzip the CLI and add it to your <code>PATH</code>.</p>
+</li>
+<li>
+<p>Login via the CLI by pasting the value of the <strong>Copy login command</strong> into your terminal.</p>
+<div class="paragraph">
+<p><span class="image"><img src="_images/deploy-openshift-cli-local.png" alt="Using OpenShift CLI and kubectl locally"></span></p>
+</div>
+</li>
+<li>
+<p>Execute the following command to create the <code>tutorial</code> namespace and set it as the current context:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project tutorial ; oc project tutorial</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Before we start setting up the environment, let’s clone the tutorial sources and set the <code>TUTORIAL_HOME</code> environment variable to point to the root directory of the tutorial:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">git clone <a href="https://github.com/redhat-developer-demos/istio-tutorial" class="bare">https://github.com/redhat-developer-demos/istio-tutorial</a> istio-tutorial</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export TUTORIAL_HOME="$(pwd)/istio-tutorial"</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd $TUTORIAL_HOME</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploycustomer"><a class="anchor" href="#deploycustomer"></a>Deploy the Customer Service</h2>
+<div class="sectionbody">
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -511,14 +670,46 @@ You will deploy docker images that were previously built for this tutorial. If y
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You will deploy docker images that were previously built for this tutorial. If you want to build customer using Spring Boot visit: <a href="2build-microservices.html#buildcustomerspringboot" class="page">Build Customer Spring Boot</a>
+<div class="paragraph">
+<p>You will deploy container images that were previously built for this tutorial. It&#8217;s possible to deploy your own version of these images.</p>
+</div>
+<div class="paragraph">
+<p>If you want to build and deploy custom container images for this service <strong>using Quarkus</strong> <a href="2build-microservices.html#buildcustomer" class="page">click here</a>. If you&#8217;d prefer to <strong>use Spring Boot</strong> <a href="2build-microservices.html#buildcustomerspringboot" class="page">click here</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you choose to build custom versions of the container images, don&#8217;t forget to modify the <code>image</code> in the <strong>Deployment.yml</strong> files referenced in subsequent steps.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>If you <strong>have not built</strong> the images on your own then let&#8217;s deploy the customer pod with its sidecar using the already built images for this tutorial:</p>
+<p>Deploy the customer application using the YAML files provided in the <a href="https://github.com/redhat-developer-demos/istio-tutorial">tutorial content</a>:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset2_openshift"></a>OpenShift</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_minikube">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
@@ -529,45 +720,162 @@ You will deploy docker images that were previously built for this tutorial. If y
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -w -n tutorial</code></pre>
 </div>
-<div class="sect2">
-<h3 id="_expose_customer"><a class="anchor" href="#_expose_customer"></a>Expose customer</h3>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_openshift">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Deploy the customer application using the <strong>Deployment.yml</strong>. This Deployment has the <code>sidecar.istio.io/inject: "true"</code> annotation, which means Istio will inject a sidecar container to manage network traffic:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Service so the customer application Pods have a stable DNS entry on the cluster:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify that the customer application Pod has started and all containers are reporting <code>READY</code>:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -w -n tutorial</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
 <div class="paragraph">
-<p>Since the <code>customer</code> service is the one our users will interact with, let&#8217;s add a Gateway that exposes that endpoint.</p>
+<p>The output from the <code>get pods</code> command will eventually show that 2/2 containers are in the READY status like so:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                        READY   STATUS    RESTARTS   AGE
+customer-5f5d9f8767-dmc4f   2/2     Running   0          5m24s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Press Ctrl+C to exit the watch (-w) command when all containers are reporting READY.</p>
+</div>
+<div class="paragraph">
+<p>The <code>spec.replicas</code> for in the <strong>Deployment.yml</strong> is set to 1, so why is does the <code>get pods</code> command specify that 2 of 2 containers are ready? The reason is that Istio injected the sidecar container that will be used to manage network traffic!</p>
+</div>
+<div class="paragraph">
+<p>You can use <code>kubectl describe pods -n tutorial</code> to inspect the customer application&#8217;s Pod and see the Istio annotations and that a second container was automatically added to the Pod spec by the Istio operator.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configureingress"><a class="anchor" href="#configureingress"></a>Configure Ingress for the Customer Service</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Since the <code>customer</code> service is the one our users will interact with, let&#8217;s create a <a href="https://istio.io/latest/docs/reference/config/networking/gateway/">Gateway</a> and <a href="https://istio.io/latest/docs/reference/config/networking/virtual-service/">VirtualService</a> that will enable us to direct incoming traffic to the application.</p>
+</div>
+<div class="paragraph">
+<p>The Gateway resource configures a load balancer at the edge of the mesh to receive incoming TCP/HTTP traffic. The VirtualService will define traffic routing rules to send traffic matching specific URL patterns to the customer service.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/architecture-basic-gateway-virtualservice.png" alt="architecture basic gateway virtualservice"></span></p>
+</div>
+<div class="paragraph">
+<p>Deploy the Gateway and VirtualService using the following command:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Gateway.yml">customer/kubernetes/Gateway.yml</a> -n tutorial</code></pre>
 </div>
 </div>
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -w -n tutorial</code></pre>
-</div>
+<div class="paragraph">
+<p>The Gateway and VirtualService are logical constructs that are used to configure Istio traffic management. All traffic into the mesh will come via the <code>istio-ingressgateway</code> deployed in the <code>istio-system</code> namespace. Use the following command to confirm the <code>istio-ingressgateway</code> components are deployed:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get svc istio-ingressgateway -n istio-system</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get all -l app=istio-ingressgateway -n istio-system</code></pre>
 </div>
 </div>
-<div class="listingblock console-output">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istio-ingressgateway   LoadBalancer   10.101.82.250   &lt;pending&gt;     15020:31582/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:30818/TCP,15030:32542/TCP,15031:30106/TCP,15032:32284/TCP,15443:31080/TCP   19m</code></pre>
-</div>
+<div class="paragraph">
+<p>The output of the above command will differ slightly between Minikube and OpenShift:</p>
 </div>
 <div class="tabset is-loading">
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset1_minikube"></a>Minikube</p>
+<p><a id="tabset3_minikube"></a>Minikube</p>
 </li>
 <li>
-<p><a id="tabset1_openshift"></a>OpenShift</p>
+<p><a id="tabset3_openshift"></a>OpenShift</p>
 </li>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_minikube">
+<div class="tab-pane" aria-labelledby="tabset3_minikube">
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istio-ingressgateway   LoadBalancer   10.101.82.250   &lt;pending&gt;     15020:31582/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:30818/TCP,15030:32542/TCP,15031:30106/TCP,15032:32284/TCP,15443:31080/TCP   19m</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset3_openshift">
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                        READY   STATUS    RESTARTS   AGE
+pod/istio-ingressgateway-6f7f4b8778-7s7zg   1/1     Running   0          175m
+
+NAME                           TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                    AGE
+service/istio-ingressgateway   ClusterIP   10.217.4.72   &lt;none&gt;        15021/TCP,80/TCP,443/TCP   175m
+
+NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/istio-ingressgateway   1/1     1            1           175m
+
+NAME                                              DESIRED   CURRENT   READY   AGE
+replicaset.apps/istio-ingressgateway-6f7f4b8778   1         1         1       175m
+
+NAME                                            HOST/PORT                                            PATH   SERVICES               PORT   TERMINATION   WILDCARD
+route.route.openshift.io/istio-ingressgateway   istio-ingressgateway-istio-system.apps-crc.testing          istio-ingressgateway   8080                 None</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_validate_ingress"><a class="anchor" href="#_validate_ingress"></a>Validate Ingress</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Confirm that traffic ingress and routing using the VirtualService is working by making a HTTP request to the customer application.</p>
+</div>
+<div class="sect2">
+<h3 id="_get_the_ingress_url"><a class="anchor" href="#_get_the_ingress_url"></a>Get the Ingress URL</h3>
+<div class="paragraph">
+<p>Obtain the ingress URL and store it in a <code>GATEWAY_URL</code> variable in your terminal:</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset4_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset4_openshift"></a>OpenShift</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset4_minikube">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export INGRESS_HOST=$(minikube ip -p istio-devnation)
@@ -577,7 +885,7 @@ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT</code></pre>
 </div>
 </div>
 </div>
-<div class="tab-pane" aria-labelledby="tabset1_openshift">
+<div class="tab-pane" aria-labelledby="tabset4_openshift">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export GATEWAY_URL=$(kubectl get route istio-ingressgateway -n istio-system -o=jsonpath="{.spec.host}")</code></pre>
@@ -593,16 +901,16 @@ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT</code></pre>
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that your current terminal isn&#8217;t using the proper Docker Environment. See <a href="#setup-environment">Setup environment</a>.
+The <code>GATEWAY_URL</code> is used frequently throughout this guide. If you lose it, come back here to obtain it again. Use the command <code>echo $GATEWAY_URL</code> to print the URL.
 </td>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>Wait until the status is <code>Running</code> and there are <code>2/2</code> pods in the <code>Ready</code> column. To exit, press <code>Ctrl+C</code></p>
 </div>
+<div class="sect2">
+<h3 id="_test_the_ingress_using_curl"><a class="anchor" href="#_test_the_ingress_using_curl"></a>Test the Ingress using cURL</h3>
 <div class="paragraph">
-<p>Then test the customer endpoint</p>
+<p>Test the customer endpoint using cURL:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
@@ -610,31 +918,28 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 </div>
 </div>
 <div class="paragraph">
-<p>You should see the following error because the services <code>preference</code> and <code>recommendation</code> are not yet deployed.</p>
+<p>The following response should be returned. The <code>UnknownHostException</code> is included in the response because the <code>preference</code> and <code>recommendation</code> applications are not deployed yet.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock console-output">
 <div class="content">
-<pre>customer =&gt; UnknownHostException: preference</pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; UnknownHostException: preference</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_review_the_customer_application_logs"><a class="anchor" href="#_review_the_customer_application_logs"></a>Review the Customer Application Logs</h3>
 <div class="paragraph">
-<p>Also review the logs:</p>
+<p>This command returns logs from the <code>customer</code> container, but not the <code>istio-proxy</code> sidecar container in the Pod:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep customer|awk '{ print $1 }'|head -1) -c customer</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs \
+$(kubectl get pods -n tutorial |grep customer|awk '{ print $1 }'|head -1) \
+-c customer -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or</p>
-</div>
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern "customer-\w" -c customer</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You should see a stacktrace containing this cause:</p>
+<p>A stacktrace containing the <code>UnknownHostException</code> reported by the cURL command should be visible in the logs:</p>
 </div>
 <div class="listingblock console-output">
 <div class="content">
@@ -645,7 +950,7 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 </div>
 </div>
 <div class="sect1">
-<h2 id="deploypreference"><a class="anchor" href="#deploypreference"></a>Deploy Preference</h2>
+<h2 id="deploypreference"><a class="anchor" href="#deploypreference"></a>Deploy the Preference Service</h2>
 <div class="sectionbody">
 <div class="admonitionblock note">
 <table>
@@ -654,29 +959,48 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You will deploy docker images that were previously built for this tutorial. If you want to build preference with Quarkus visit: <a href="2build-microservices.html#buildpreference" class="page">Build Preference</a>
+<div class="paragraph">
+<p>You will deploy container images that were previously built for this tutorial. It&#8217;s possible to deploy your own version of these images.</p>
+</div>
+<div class="paragraph">
+<p>If you want to build and deploy custom container images for this service <strong>using Quarkus</strong> <a href="2build-microservices.html#buildpreference" class="page">click here</a>. If you&#8217;d prefer to <strong>use Spring Boot</strong> <a href="2build-microservices.html#buildpreferencespringboot" class="page">click here</a>.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
-<div class="admonitionblock note">
+<div class="admonitionblock important">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-You will deploy docker images that were previously built for this tutorial. If you want to build preference with Spring Boot visit: <a href="2build-microservices.html#buildpreferencespringboot" class="page">Build Preference Spring Boot</a>
+<div class="paragraph">
+<p>If you choose to build custom versions of the container images, don&#8217;t forget to modify the <code>image</code> in the <strong>Deployment.yml</strong> files referenced in subsequent steps.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>If you <strong>have not built</strong> the images on your own then let&#8217;s deploy the customer pod with its sidecar using the already built images for this tutorial:</p>
+<div class="sect2">
+<h3 id="_apply_the_preference_service_resources"><a class="anchor" href="#_apply_the_preference_service_resources"></a>Apply the Preference Service Resources</h3>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset5_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset5_openshift"></a>OpenShift</p>
+</li>
+</ul>
 </div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset5_minikube">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a>)  -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -684,15 +1008,47 @@ You will deploy docker images that were previously built for this tutorial. If y
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_wait_preference_to_be_deployed"><a class="anchor" href="#_wait_preference_to_be_deployed"></a>Wait preference to be deployed</h3>
+</div>
+<div class="tab-pane" aria-labelledby="tabset5_openshift">
+<div class="paragraph">
+<p>The deployment process for the preference application is the same as the deployment process for the customer application. The preference <strong>Deployment.yml</strong> is also annotated with <code>sidecar.istio.io/inject: "true"</code>.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Deploy the preference application using the <strong>Deployment.yml</strong>:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Service so the preference application has a stable DNS entry:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify that the preference application Pod has started. Press <code>Ctrl+C</code> to exit the watch (<code>-w</code>) command when all containers are reporting <code>READY</code>:</p>
+</div>
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_validate_preference_service_connectivity"><a class="anchor" href="#_validate_preference_service_connectivity"></a>Validate Preference Service Connectivity</h3>
 <div class="paragraph">
-<p>Wait until the status is <code>Running</code> and there are <code>2/2</code> pods in the <code>Ready</code> column. To exit, press <code>Ctrl+C</code></p>
+<p>Now that the preference service is deployed the customer service should return a different response to incoming HTTP requests. Verify this using cURL:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
@@ -700,45 +1056,27 @@ You will deploy docker images that were previously built for this tutorial. If y
 </div>
 </div>
 <div class="paragraph">
-<p>It will respond with an error since the service <code>recommendation</code> is not yet deployed.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-We could make this a bit more resilient in a future iteration of this tutorial
-</td>
-</tr>
-</table>
+<p>The response still reports an <code>UnknownHostException</code>, but this time it&#8217;s for the <code>recommendation</code> service. This is because the <code>recommendation</code> service is not yet deployed.</p>
 </div>
 <div class="listingblock console-output">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; Error: 503 - preference =&gt; UnknownHostException: recommendation</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>and check out the logs</p>
 </div>
+<div class="sect2">
+<h3 id="_review_the_preference_application_logs"><a class="anchor" href="#_review_the_preference_application_logs"></a>Review the Preference Application Logs</h3>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep preference|awk '{ print $1 }'|head -1) -c preference</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs \
+$(kubectl get pods -n tutorial |grep preference|awk '{ print $1 }'|head -1) \
+-c preference -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or</p>
+<p>A stacktrace containing the <code>UnknownHostException</code> reported by the cURL command should be visible in the logs:</p>
 </div>
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern "preference-\w" -c preference</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You should see a stacktrace containing this cause:</p>
-</div>
-<div class="listingblock console-outputput">
+<div class="listingblock console-output">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">preference-v1-898764bdb-hz7s6 preference Caused by: java.net.UnknownHostException: recommendation</code></pre>
 </div>
@@ -747,7 +1085,7 @@ We could make this a bit more resilient in a future iteration of this tutorial
 </div>
 </div>
 <div class="sect1">
-<h2 id="deployrecommendation"><a class="anchor" href="#deployrecommendation"></a>Deploy Recommendation</h2>
+<h2 id="deployrecommendation"><a class="anchor" href="#deployrecommendation"></a>Deploy the Recommendation Service</h2>
 <div class="sectionbody">
 <div class="admonitionblock note">
 <table>
@@ -756,26 +1094,45 @@ We could make this a bit more resilient in a future iteration of this tutorial
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You will deploy docker images that were previously built for this tutorial. If you want to build recommendation with Quarkus visit: <a href="2build-microservices.html#buildrecommendation" class="page">Build Recommendation</a>
+<div class="paragraph">
+<p>You will deploy container images that were previously built for this tutorial. It&#8217;s possible to deploy your own version of these images.</p>
+</div>
+<div class="paragraph">
+<p>If you want to build and deploy custom container images for this service <strong>using Quarkus</strong> <a href="2build-microservices.html#buildrecommendation" class="page">click here</a>. If you&#8217;d prefer to <strong>use Spring Boot</strong> <a href="2build-microservices.html#buildrecommendationspringboot" class="page">click here</a>.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
-<div class="admonitionblock note">
+<div class="admonitionblock important">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-You will deploy docker images that were previously built for this tutorial. If you want to build recommendation with Spring Boot visit: <a href="2build-microservices.html#buildrecommendationspringboot" class="page">Build Recommendation Spring Boot</a>
+<div class="paragraph">
+<p>If you choose to build custom versions of the container images, don&#8217;t forget to modify the <code>image</code> in the <strong>Deployment.yml</strong> files referenced in subsequent steps.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>If you <strong>have not built</strong> the images on your own then let&#8217;s deploy the customer pod with its sidecar using the already built images for this tutorial:</p>
+<div class="sect2">
+<h3 id="_apply_the_recommendation_service_resources"><a class="anchor" href="#_apply_the_recommendation_service_resources"></a>Apply the Recommendation Service Resources</h3>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset6_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset6_openshift"></a>OpenShift</p>
+</li>
+</ul>
 </div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset6_minikube">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
@@ -786,15 +1143,47 @@ You will deploy docker images that were previously built for this tutorial. If y
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset6_openshift">
+<div class="paragraph">
+<p>The deployment process for the recommendation application is the same as the deployment process for the customer application. The recommendation <strong>Deployment.yml</strong> is also annotated with <code>sidecar.istio.io/inject: "true"</code>.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Deploy the recommendation application using the <strong>Deployment.yml</strong>:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Service so the recommendation application has a stable DNS entry:</p>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify that the recommendation application Pod has started. Press <code>Ctrl+C</code> to exit the watch (<code>-w</code>) command when all containers are reporting <code>READY</code>:</p>
+</div>
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
+</div>
 <div class="sect2">
-<h3 id="_wait_recommendation_to_be_deployed"><a class="anchor" href="#_wait_recommendation_to_be_deployed"></a>Wait recommendation to be deployed</h3>
+<h3 id="_validate_recommendation_service_connectivity"><a class="anchor" href="#_validate_recommendation_service_connectivity"></a>Validate Recommendation Service Connectivity</h3>
 <div class="paragraph">
-<p>Wait until the status is <code>Running</code> and there are <code>2/2</code> pods in the <code>Ready</code> column. To exit, press <code>Ctrl+C</code></p>
+<p>Now that the recommendation service is deployed the customer service should return a different response to incoming HTTP requests. Verify this using cURL:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
@@ -802,35 +1191,49 @@ You will deploy docker images that were previously built for this tutorial. If y
 </div>
 </div>
 <div class="paragraph">
-<p>it should now return</p>
+<p>The response will contain no errors, since the end-to-end flow of services has been deployed.</p>
 </div>
 <div class="listingblock console-output">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">customer =&gt; preference =&gt; recommendation v1 from 'recommendation-v1-6cf5ff55d9-7zbj8': 1</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>and you can monitor the <code>recommendation</code> logs with</p>
 </div>
+<div class="sect2">
+<h3 id="_review_the_recommendation_application_logs"><a class="anchor" href="#_review_the_recommendation_application_logs"></a>Review the Recommendation Application Logs</h3>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern $(kubectl get pods|grep recommendation-v1|awk '{ print $1 }'|head -1) -c recommendation</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl logs \
+$(kubectl get pods -n tutorial |grep recommendation|awk '{ print $1 }'|head -1) \
+-c recommendation -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or</p>
+<p>No errors should be reported in the logs. Instead you will see an incrementing counter:</p>
 </div>
-<div class="listingblock console-input">
+<div class="listingblock console-output">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">stern "recommendation-v1-\w" -c recommendation-v1</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">recommendation request from recommendation-v1-6c75fc9857-d4npl: 1</code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="redeployingcode"><a class="anchor" href="#redeployingcode"></a>Updating Redeploying Code</h2>
+<h2 id="redeployingcode"><a class="anchor" href="#redeployingcode"></a>Updating &amp; Redeploying</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This section is optional. Feel free to move on to the <a href="3monitoring-tracing.html" class="page">Observability section</a> of this guide.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>When you wish to change code (e.g. editing the .java files) and wish to "redeploy", simply:</p>
 </div>

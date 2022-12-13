@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Setup :: Istio Tutorial Docs</title>
+    <title>Setup &amp; Installation :: Istio Tutorial Docs</title>
     <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.9.x/1setup.html">
     <meta name="generator" content="Antora 2.3.1">
     <link rel="stylesheet" href="../../_/css/site.css">
@@ -54,19 +54,10 @@
   </li>
   <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="1setup.html">1. Setup</a>
+    <a class="nav-link" href="1setup.html">1. Setup &amp; Installation</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#prerequisite">Prerequisites</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#download-tutorial-sources">Download Tutorial</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#install-minikube">Install Minikube</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#start-kubernetes">Start Kubernetes</a>
+    <a class="nav-link" href="#prerequisites">Prerequisites</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#istioinstallation">Install Istio</a>
@@ -78,16 +69,22 @@
     <a class="nav-link" href="2deploy-microservices.html">2. Deploy Microservices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy Customer</a>
+    <a class="nav-link" href="2deploy-microservices.html#deploycustomer">Deploy the Customer Service</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy Preference</a>
+    <a class="nav-link" href="2deploy-microservices.html#configureingress">Configure Ingress</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy Recommendation</a>
+    <a class="nav-link" href="2deploy-microservices.html#_validate_ingress">Validate Ingress</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating Redeploying Code</a>
+    <a class="nav-link" href="2deploy-microservices.html#deploypreference">Deploy the Preference Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#deployrecommendation">Deploy the Recommendation Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="2deploy-microservices.html#redeployingcode">Updating &amp; Redeploying Code</a>
   </li>
 </ul>
   </li>
@@ -96,25 +93,50 @@
     <a class="nav-link" href="3monitoring-tracing.html">3. Observability</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3monitoring-tracing.html#monitoring">Monitoring with Grafana</a>
+    <a class="nav-link" href="3monitoring-tracing.html#simulatetraffic">Simulate Traffic in the Mesh Network</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3monitoring-tracing.html#monitoring">Grafana</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_obtaining_the_grafana_url">Obtaining the Grafana URL</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-text"><a href="/istio-tutorial/1.9.x/3monitoring-tracing.html#_viewing_istio_dashboards_in_grafana" class="page">Viewing Istio Dashboards in Grafana
+</a></span>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="3monitoring-tracing.html#prometheus">Prometheus</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Custom metrics</a>
+    <a class="nav-link" href="3monitoring-tracing.html#_accessing_the_prometheus_dashboard">Accessing the Prometheus Dashboard</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#containermemory">Container memory</a>
+    <a class="nav-link" href="3monitoring-tracing.html#custommetrics">Querying Prometheus</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="3monitoring-tracing.html#applicationmetrics">Application metrics</a>
+    <a class="nav-link" href="3monitoring-tracing.html#containermemory">Querying Container Memory Usage</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3monitoring-tracing.html#tracing">Tracing</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3monitoring-tracing.html#tracing">Jaeger</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_accessing_the_jaeger_dashboard">Accessing the Jaeger Dashboard</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_viewing_traces">Viewing Traces</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="3monitoring-tracing.html#_viewing_detailed_trace_information">Viewing Detailed Trace Information</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
@@ -440,19 +462,35 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Istio Tutorial</a></li>
-    <li><a href="1setup.html">1. Setup</a></li>
+    <li><a href="1setup.html">1. Setup &amp; Installation</a></li>
   </ul>
 </nav>
   <div class="edit-this-page"><a href="https://github.com/redhat-scholars/istio-tutorial/edit/master/documentation/modules/ROOT/pages/1setup.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <article class="doc">
-<h1 class="page">Setup</h1>
-<div class="sect1">
-<h2 id="prerequisite"><a class="anchor" href="#prerequisite"></a>Prerequisite CLI tools</h2>
+<h1 class="page">Setup &amp; Installation</h1>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>You will need in this tutorial:</p>
+<p>You can complete this tutorial using a local Minikube environment, or you can use an OpenShift 4 cluster where you have administrator access. <a href="https://developers.redhat.com/products/openshift-local/overview">OpenShift Local</a> can provide access to a local OpenShift 4 cluster if you&#8217;d like to use OpenShift but don&#8217;t have access to a hosted environment.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Minikube Setup</h2>
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+If you&#8217;re using OpenShift instead of Minikube skip ahead to the <a href="#istioinstallation">Install Istio section</a> and select the OpenShift tab.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The following CLI tools are required for running the exercises in this tutorial.
@@ -493,22 +531,22 @@ Please have them installed and configured before you get started with any of the
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://download.virtualbox.org/virtualbox/6.1.6/VirtualBox-6.1.6-137129-Win.exe">Download</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://kubernetes.io/docs/tasks/tools/install-minikube">Minikube</a> v1.12.1</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.12.1/minikube-darwin-amd64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.12.1/minikube-linux-amd64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.12.1/minikube-windows-amd64.exe">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://kubernetes.io/docs/tasks/tools/install-minikube">Minikube</a> v1.25.1</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.25.1/minikube-darwin-amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.25.1/minikube-linux-amd64">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/kubernetes/minikube/releases/download/v1.25.1/minikube-windows-amd64.exe">Download</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><code>kubectl v1.18.6</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/darwin/amd64/kubectl">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/windows/amd64/kubectl.exe">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><code>kubectl v1.23.1</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/darwin/amd64/kubectl">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/linux/amd64/kubectl">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/windows/amd64/kubectl.exe">Download</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern">stern</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install stern</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/wercker/stern/releases/download/1.11.0/stern_windows_amd64.exe">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_linux_amd64.tar.gz">Download</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_windows_amd64.tar.gz">Download</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><code>Apache Maven 3.6.3</code></p></td>
@@ -524,72 +562,8 @@ Please have them installed and configured before you get started with any of the
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>The following CLI tools are optional for running the exercises in this tutorial.
-Although they are used in the tutorial, you could use others without any problem.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-center valign-top"><strong>Tool</strong></th>
-<th class="tableblock halign-center valign-top"><strong>macOS</strong></th>
-<th class="tableblock halign-center valign-top"><strong>Fedora</strong></th>
-<th class="tableblock halign-center valign-top"><strong>windows</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq">yq v2.4.1</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq/releases/download/2.4.1/yq_darwin_amd64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/mikefarah/yq/releases/download/2.4.1/yq_windows_amd64.exe">Download</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq">jq v1.6.0</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe">Download</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://httpie.org/">httpie</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install httpie</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><code>dnf install httpie</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://httpie.org/doc#windows-etc" class="bare">https://httpie.org/doc#windows-etc</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">watch</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install watch</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><code>dnf install procps-ng</code></p></td>
-<td class="tableblock halign-center valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">kubectx and kubens</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install kubectx</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/ahmetb/kubectx" class="bare">https://github.com/ahmetb/kubectx</a></p></td>
-<td class="tableblock halign-center valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://github.com/rakyll/hey">hey</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><code>brew install hey</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/jblabs/dist/hey_linux_v0.1.2">Download</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://storage.googleapis.com/jblabs/dist/hey_win_v0.1.2.exe">Download</a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="download-tutorial-sources"><a class="anchor" href="#download-tutorial-sources"></a>Download Tutorial Sources</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Before we start setting up the environment, let&#8217;s clone the tutorial sources and set the <code>TUTORIAL_HOME</code> environment variable to point to the root directory of the tutorial:</p>
-</div>
+<div class="sect2">
+<h3 id="_download_tutorial_sources"><a class="anchor" href="#_download_tutorial_sources"></a>Download Tutorial Sources</h3>
 <div class="paragraph">
 <p>Before we start setting up the environment, let’s clone the tutorial sources and set the <code>TUTORIAL_HOME</code> environment variable to point to the root directory of the tutorial:</p>
 </div>
@@ -608,8 +582,21 @@ Although they are used in the tutorial, you could use others without any problem
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd $TUTORIAL_HOME</code></pre>
 </div>
 </div>
+</div>
 <div class="sect2">
 <h3 id="install-minikube"><a class="anchor" href="#install-minikube"></a>Install Minikube</h3>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+If the <strong>bin/</strong> directory already exists in the <code>$TUTORIAL_HOME</code> location, replace the <code>mkdir bin &amp;&amp; cd bin</code> with <code>cd bin</code> in the steps below.
+</td>
+</tr>
+</table>
+</div>
 <div class="tabset is-loading">
 <div class="ulist tabs">
 <ul>
@@ -633,7 +620,7 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.12.1/minikube-darwin-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.12.1/minikube-darwin-amd64</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.25.1/minikube-darwin-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.25.1/minikube-darwin-amd64</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -643,7 +630,7 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/darwin/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/darwin/amd64/kubectl</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/darwin/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/darwin/amd64/kubectl</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -665,7 +652,7 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.12.1/minikube-linux-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.12.1/minikube-linux-amd64</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.25.1/minikube-linux-amd64" class="bare">https://storage.googleapis.com/minikube/releases/v1.25.1/minikube-linux-amd64</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -675,7 +662,7 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/linux/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/linux/amd64/kubectl</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -697,12 +684,12 @@ Although they are used in the tutorial, you could use others without any problem
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.12.1/minikube-windows-amd64.exe" class="bare">https://storage.googleapis.com/minikube/releases/v1.12.1/minikube-windows-amd64.exe</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -Lo minikube <a href="https://storage.googleapis.com/minikube/releases/v1.25.1/minikube-windows-amd64.exe" class="bare">https://storage.googleapis.com/minikube/releases/v1.25.1/minikube-windows-amd64.exe</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/windows/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/windows/amd64/kubectl</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -LO <a href="https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/windows/amd64/kubectl" class="bare">https://storage.googleapis.com/kubernetes-release/release/v1.23.1/bin/windows/amd64/kubectl</a></code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -752,7 +739,7 @@ set KUBE_EDITOR="code -w"</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="start-kubernetes"><a class="anchor" href="#start-kubernetes"></a>Start Kubernetes</h3>
+<h3 id="start-kubernetes"><a class="anchor" href="#start-kubernetes"></a>Start Minikube</h3>
 <div class="paragraph">
 <p>There are series of commands as steps that allows you get started with minikube. The following section shows how to start minikube with minimal and required configurations:</p>
 </div>
@@ -780,7 +767,7 @@ set KUBE_EDITOR="code -w"</code></pre>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.18.6 --vm-driver=virtualbox -p istio-devnation</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.23.1 --vm-driver=virtualbox -p istio-devnation</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -788,7 +775,7 @@ set KUBE_EDITOR="code -w"</code></pre>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.18.6 --vm-driver=kvm2 -p istio-devnation</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.23.1 --vm-driver=kvm2 -p istio-devnation</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -796,7 +783,7 @@ set KUBE_EDITOR="code -w"</code></pre>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.18.6 --vm-driver=hyperv -p istio-devnation</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">minikube start --memory=8192 --cpus=3 --kubernetes-version=v1.23.1 --vm-driver=hyperv -p istio-devnation</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -807,10 +794,10 @@ set KUBE_EDITOR="code -w"</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">😄  [istio-devnation] minikube v1.20.0 on Darwin 11.3
 ✅  Created a new profile : istio-devnation
 ✅  minikube profile was successfully set to istio-devnation
-😄  [default] minikube v1.12.1 on Darwin 11.3
+😄  [default] minikube v1.25.1 on Darwin 11.3
 ✨  Selecting 'virtualbox' driver from user configuration (alternates: [hyperkit])
 🔥  Creating virtualbox VM (CPUs=2, Memory=8192MB, Disk=50000MB) ...
-🐳  Preparing Kubernetes v1.18.6 on Docker '20.10.6' ...
+🐳  Preparing Kubernetes v1.23.1 on Docker '20.10.6' ...
     ▪ apiserver.enable-admission-plugins=LimitRanger,NamespaceExists,NamespaceLifecycle,ResourceQuota,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook
 🚜  Pulling images ...
 🚀  Launching Kubernetes ...
@@ -851,7 +838,7 @@ Once you have your cluster, you can download the latest OpenShift client(oc) fro
 <div class="listingblock console-output">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Client Version: 4.7.0-202102130115.p0-c66c03f
-Kubernetes Version: v1.18.6</code></pre>
+Kubernetes Version: v1.23.1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -864,7 +851,7 @@ Kubernetes Version: v1.18.6</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="upstreamistioinstallation"><a class="anchor" href="#upstreamistioinstallation"></a>Istio Installation</h2>
+<h2 id="istioinstallation"><a class="anchor" href="#istioinstallation"></a>Istio Installation</h2>
 <div class="sectionbody">
 <div class="tabset is-loading">
 <div class="ulist tabs">
@@ -894,8 +881,8 @@ curl -L <a href="https://github.com/istio/istio/releases/download/1.9.4/istio-1.
 
 # Both:
 cd istio-1.9.4
-export ISTIO_HOME=`pwd`
-export PATH=$ISTIO_HOME/bin:$PATH
+export ISTIO_HOME=$(pwd)
+export PATH="$ISTIO_HOME/bin:$PATH"
 cd $TUTORIAL_HOME</code></pre>
 </div>
 </div>
@@ -950,55 +937,117 @@ istiod-69bc87d9d4-kcfnf                1/1     Running   0          14m</code></
 </div>
 <div class="tab-pane" aria-labelledby="tabset4_openshift">
 <div class="paragraph">
-<p>Istio is supported in OpenShift by Red Hat OpenShift Service Mesh operator.</p>
+<p>Istio is supported in OpenShift by <a href="https://www.redhat.com/en/technologies/cloud-computing/openshift/what-is-openshift-service-mesh">Red Hat OpenShift Service Mesh</a> operator. This section assumes you have an OpenShift 4.9+ cluster and an account with administrator access.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The steps below provide a summary of the installation steps for Red Hat OpenShift Service Mesh. Detailed instructions can be found in the <a href="https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html/service_mesh/index">OpenShift Documentation</a>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>To install it, you can follow this tutorial or if you required full step by step instructions read: <a href="https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html/service_mesh/index" class="bare">https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html/service_mesh/index</a></p>
+<p>Using Istio on OpenShift requires the installation of four operators, configuring a <strong>Mesh Control Plane</strong>, and enrolling namespaces in the mesh using a <strong>Mesh Member Roll</strong>. The required operators are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenShift Elastic Search Operator</p>
+</li>
+<li>
+<p>OpenShift distributed tracing platform (based on <a href="https://www.jaegertracing.io/">Jaeger</a>)</p>
+</li>
+<li>
+<p>Kiali Operator</p>
+</li>
+<li>
+<p>OpenShift Service Mesh Operator</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>First of all, we need to install 4 operators (elasticsearch, jaeger, kiali and Red Hat Service Mesh).
-Go to OpenShift admin console and click on OperatorHub to start the installation.
-It&#8217;s important to note that you need to install the operators provided by Red Hat and not the community ones.</p>
+<p>Install the operators by following these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Login to your OpenShift cluster&#8217;s console as user with administrator permissions, e.g the <strong>kubeadmin</strong> account.</p>
+</li>
+<li>
+<p>Choose the <strong>Administrator</strong> perspective from the side-menu.</p>
+</li>
+<li>
+<p>Expand the <strong>Operators</strong> section and select <strong>Operator Hub</strong>.</p>
+</li>
+<li>
+<p>Check the <strong>Red Hat</strong> box under the <strong>Source</strong> section to filter out community operators.</p>
+</li>
+<li>
+<p>Search for and install the <strong>OpenShift Elastic Search Operator</strong>. Accept the default installation parameters when prompted.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/setup-operator-filter.png" alt="setup operator filter">
+</div>
+</div>
+</li>
+<li>
+<p>Repeat the previous steps to install the following operators:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenShift distributed tracing platform</p>
+</li>
+<li>
+<p>Kiali</p>
+</li>
+<li>
+<p>OpenShift Service Mesh</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+It&#8217;s recommended, but optional, to install the <strong>Web Terminal</strong> operator to simplify running commands later in this guide. You can use the OpenShift (<code>oc</code>) CLI and <code>kubectl</code> directly from your development machine if you prefer. The OpenShift CLI can be downloaded using the <strong>Command line tools</strong> link from the help icon in the top-right of the OpenShift console.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once complete select <strong>Installed Operators</strong> from the side-menu in the OpenShift console and verify the are listed as installed. Your list should be similar to the list shown in the following screenshot.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="_images/1.operatorhub.png" alt="1.operatorhub">
+<img src="_images/setup-all-operators.png" alt="setup all operators">
 </div>
 </div>
 <div class="paragraph">
-<p>Then install OpenShift Elasticsearch Operator with the default parameters:</p>
+<p>To configure Istio we need to create a namespace where the control plane components can be deployed. To create the <code>istio-system</code> namespace:</p>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/2.elasticsearch.png" alt="2.elasticsearch">
-</div>
-</div>
-<div class="paragraph">
-<p>Then install OpenShift Jaeger Operator:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/3.jaeger.png" alt="3.jaeger">
-</div>
-</div>
-<div class="paragraph">
-<p>Install Kiali Operator:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/4.kiali.png" alt="4.kiali">
-</div>
-</div>
-<div class="paragraph">
-<p>Finally, install Red Hat Service Meh operator:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/5.servicemesh.png" alt="5.servicemesh">
-</div>
-</div>
-<div class="paragraph">
-<p>We also need to create an OpenShift project named <code>istio-tutorial</code>:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Expand the <strong>Home</strong> section and select <strong>Projects</strong>.</p>
+</li>
+<li>
+<p>Click the <strong>Create Project</strong> button in the top-right of the screen. A modal will appear in the center of the screen.</p>
+</li>
+<li>
+<p>Enter <code>istio-system</code> in the <strong>Name</strong> and click <strong>Create</strong> in the modal.</p>
+</li>
+</ol>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1006,55 +1055,105 @@ It&#8217;s important to note that you need to install the operators provided by 
 </div>
 </div>
 <div class="paragraph">
-<p>Then let&#8217;s install and configure the Istio itslef.
-Click on <code>Installed Operators</code> menu, you should see the Red Hat Service Mesh Operator and in the <code>Provided API</code> column, click on <code>Istio Service Mesh Control Plane</code>:</p>
+<p>You can now configure and deploy Istio:</p>
 </div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Expand the <strong>Operators</strong> section and select <strong>Installed Operators</strong>.</p>
+</li>
+<li>
+<p>Click the <strong>Istio Service Mesh Control Plane</strong> item in the <strong>Provided APIs</strong> column next to the Red Hat Service Mesh Operator</p>
 <div class="imageblock">
 <div class="content">
 <img src="_images/7.installedoperators.png" alt="7.installedoperators">
 </div>
 </div>
-<div class="paragraph">
-<p>You can leave the Istio configuration parameters with the default values <strong>except</strong> <code>Proxy &gt; Networking &gt; Traffic Control &gt; Outbound &gt; Policy</code> which needs to be changed to <code>REGISTRY_ONLY</code> to avoid traffic can go outside of the mesh.
-And create the Istio Control Plane.</p>
-</div>
+</li>
+<li>
+<p>Click the <strong>Create ServiceMeshControlPlane</strong> button.</p>
+</li>
+<li>
+<p>Leave the Istio configuration parameters with the default values <strong>except</strong> <code>Proxy &gt; Networking &gt; Traffic Control &gt; Outbound &gt; Policy</code> which needs to be changed to <code>REGISTRY_ONLY</code> to prevent traffic going outside of the mesh.</p>
+</li>
+<li>
+<p>Scroll down and click <strong>Create</strong> to create the Istio Control Plane.</p>
+</li>
+<li>
+<p>Click on the newly listed <code>basic</code> item in the <strong>ServiceMeshControlPlane</strong> list.</p>
 <div class="imageblock">
 <div class="content">
 <img src="_images/8.smconf.png" alt="8.smconf">
 </div>
 </div>
-<div class="paragraph">
-<p>Then let&#8217;s wait until Istio is intalled.
-You can click on the Istio Control Plane <code>basic</code> to check how the installation is going on:</p>
-</div>
+</li>
+<li>
+<p>Wait until all Istio components are shown as ready.</p>
 <div class="imageblock">
 <div class="content">
 <img src="_images/9.bootup.png" alt="9.bootup">
 </div>
 </div>
-<div class="paragraph">
-<p>Go again to <code>Installed Operators</code> menu and select the <code>Istio Service Mesh Member Roll</code> option from <code>Provided API</code>.</p>
+</li>
+</ol>
 </div>
+<div class="paragraph">
+<p>Lastly, enroll services from a namespace in the Mesh using the <a href="https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-create-mesh.html"><strong>Istio Service Mesh Member Roll</strong></a>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Expand the <strong>Home</strong> section and select <strong>Projects</strong>.</p>
+</li>
+<li>
+<p>Click the <strong>Create Project</strong> button in the top-right of the screen. A modal will appear in the center of the screen.</p>
+</li>
+<li>
+<p>Enter <code>tutorial</code> in the <strong>Name</strong> and click <strong>Create</strong> in the modal.</p>
+</li>
+<li>
+<p>Select the <strong>Operators &gt; Installed Operators</strong> from the side-menu.</p>
+</li>
+<li>
+<p>Select the <strong>Istio Service Mesh Member Roll</strong> option from the <strong>Provided APIs</strong> column.</p>
 <div class="imageblock">
 <div class="content">
 <img src="_images/10.memberroll.png" alt="10.memberroll">
 </div>
 </div>
-<div class="paragraph">
-<p>And configure which namespaces can run Istio workloads.
-For this tutorial, <code>tutorial</code> namespace is used:</p>
-</div>
-<div class="imageblock">
+</li>
+<li>
+<p>Click the <strong>Create ServiceMeshMemberRoll</strong> button.</p>
+</li>
+<li>
+<p>Choose the <strong>YAML View</strong> and add the <code>tutorial</code> namespace to the <code>spec.members</code> list:</p>
+<div class="listingblock console-input">
 <div class="content">
-<img src="_images/11.memberrollconf.png" alt="11.memberrollconf">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  members:
+    - tutorial</code></pre>
 </div>
+</div>
+</li>
+<li>
+<p>Scroll down and click the <strong>Create</strong> button.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Congratulations! You&#8217;ve deployed Istio and enrolled services deployed in the <code>tutorial</code> project in the mesh.</p>
 </div>
 <div class="paragraph">
 <p>It is important that after you finish with the installation, all the required pods are deployed in <code>istio-system</code> namespace:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -w</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods -w -n istio-system</code></pre>
 </div>
 </div>
 <div class="listingblock console-output">
