@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/redhat-scholars/istio-tutorial#readme",
   "devDependencies": {
-    "@antora/cli": "~2.3",
+    "@antora/cli": "~3.1",
     "@antora/site-generator-default": "~3.1.2",
     "nodemon": "~2.0.20"
   }
