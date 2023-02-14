@@ -112,7 +112,7 @@ oc new-project tutorial ; oc project tutorial
 ----
 
 // Uses the tutorial-url and folder variables declared at the top of this file
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/download-sources.adoc[]
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/main/download-sources.adoc[]
 
 IMPORTANT: The OpenShift Web Terminal is not a persistent environment. The `istio-tutorial` folder, `TUTORIAL_HOME`, and set environment variables will be lost if the OpenShift Web Terminal is closed or idled after a few minutes of inactivity. Return to this section and run the `git clone`, `export`, and `cd` commands again if necessary to reconfigure a Web Terminal session.
 
@@ -137,7 +137,7 @@ oc new-project tutorial ; oc project tutorial
 ----
 
 // Uses the tutorial-url and folder variables declared at the top of this file
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/download-sources.adoc[]
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/main/download-sources.adoc[]
 
 --
 ====
