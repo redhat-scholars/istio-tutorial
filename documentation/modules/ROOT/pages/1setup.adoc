@@ -1,4 +1,4 @@
-:tutorial-url: https://github.com/redhat-developer-demos/istio-tutorial
+:tutorial-url: https://github.com/redhat-scholars/istio-tutorial
 :folder: istio-tutorial
 
 = Setup & Installation

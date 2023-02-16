@@ -7,7 +7,7 @@ ifdef::workshop[]
 ====
 - Ask an admin to link:http://bit.ly/OCPWorkshops[prepare the OpenShift instance].
 
-- Adjust the documentation by modifying these link:https://github.com/redhat-developer-demos/istio-tutorial/blob/master/site-workshop.yml#L16-L18[three variables]
+- Adjust the documentation by modifying these link:https://github.com/redhat-scholars/istio-tutorial/blob/master/site-workshop.yml#L16-L18[three variables]
 
 
 - Install of link:https://maistra.io/docs/getting_started/install/[Maistra 0.10] for Istio 1.1.7

@@ -1,4 +1,4 @@
-:tutorial-url: https://github.com/redhat-developer-demos/istio-tutorial
+:tutorial-url: https://github.com/redhat-scholars/istio-tutorial
 :folder: istio-tutorial
 
 = Deploy Microservices
@@ -157,7 +157,7 @@ If you want to build and deploy custom container images for this service *using 
 If you choose to build custom versions of the container images, don't forget to modify the `image` in the *Deployment.yml* files referenced in subsequent steps.
 ====
 
-Deploy the customer application using the YAML files provided in the https://github.com/redhat-developer-demos/istio-tutorial[tutorial content]:
+Deploy the customer application using the YAML files provided in the https://github.com/redhat-scholars/istio-tutorial[tutorial content]:
 
 [tabs, subs="attributes+,+macros"]	
 ====

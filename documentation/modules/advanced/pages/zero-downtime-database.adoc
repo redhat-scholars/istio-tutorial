@@ -164,7 +164,7 @@ kubectl create -f ../../kubernetes/Service.yml
 [source, bash]
 ----
 mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v4 --name=recommendation-v4 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v4.yml
+oc new-app -l app=recommendation,version=v4 --name=recommendation-v4 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  > recommendation-v4.yml
 oc apply -f <(istioctl kube-inject -f recommendation-v4.yml) -n tutorial
 oc cancel-build bc/recommendation-v4 -n tutorial
 oc delete svc/recommendation-v4 -n tutorial
@@ -317,7 +317,7 @@ kubectl get pods -w -n tutorial
 [source, bash]
 ----
 mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v5 --name=recommendation-v5 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v5.yml
+oc new-app -l app=recommendation,version=v5 --name=recommendation-v5 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  > recommendation-v5.yml
 oc apply -f <(istioctl kube-inject -f recommendation-v5.yml) -n tutorial
 oc cancel-build bc/recommendation-v5 -n tutorial
 oc delete svc/recommendation-v5 -n tutorial
@@ -484,7 +484,7 @@ kubectl get pods -w -n tutorial
 [source, bash]
 ----
 mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v6 --name=recommendation-v6 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v6.yml
+oc new-app -l app=recommendation,version=v6 --name=recommendation-v6 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  > recommendation-v6.yml
 oc apply -f <(istioctl kube-inject -f recommendation-v6.yml) -n tutorial
 oc cancel-build bc/recommendation-v6 -n tutorial
 oc delete svc/recommendation-v6 -n tutorial
@@ -632,7 +632,7 @@ kubectl get pods -w -n tutorial
 [source, bash]
 ----
 mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v7 --name=recommendation-v7 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > recommendation-v7.yml
+oc new-app -l app=recommendation,version=v7 --name=recommendation-v7 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  > recommendation-v7.yml
 oc apply -f <(istioctl kube-inject -f recommendation-v7.yml) -n tutorial
 oc cancel-build bc/recommendation-v7 -n tutorial
 oc delete svc/recommendation-v7 -n tutorial

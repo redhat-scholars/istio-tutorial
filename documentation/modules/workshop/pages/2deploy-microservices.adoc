@@ -46,7 +46,7 @@ Then clone the git repository
 
 [source,bash,subs="+macros,+attributes"]
 ----
-git clone https://github.com/redhat-developer-demos/istio-tutorial
+git clone https://github.com/redhat-scholars/istio-tutorial
 cd istio-tutorial
 ----
 

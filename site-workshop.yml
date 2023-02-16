@@ -2,7 +2,7 @@ runtime:
   cache_dir: ./.cache/antora
 site:
   title: Istio Workshop
-  url: https://redhat-developer-demos.github.io/istio-tutorial/workshop/
+  url: https://redhat-scholars.github.io/istio-tutorial/workshop/
   start_page: istio-tutorial::index.adoc
 
 content:

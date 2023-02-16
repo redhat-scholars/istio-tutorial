@@ -1,6 +1,6 @@
 :moduledir: ..
 :branch: master
-:github-repo: https://github.com/redhat-developer-demos/istio-tutorial/blob/{branch}
+:github-repo: https://github.com/redhat-scholars/istio-tutorial/blob/{branch}
 :customer-repo: customer
 :customer-java: java/springboot
 :preference-repo: preference

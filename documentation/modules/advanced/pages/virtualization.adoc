@@ -67,7 +67,7 @@ cd ../../..
 ----
 mvn clean package -f preference/java/springboot
 
-oc new-app -l app=preference,version=v2 --name=preference-v2 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  > preference-v2.yml
+oc new-app -l app=preference,version=v2 --name=preference-v2 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  > preference-v2.yml
 oc apply -f <(istioctl kube-inject -f preference-v2.yml) -n tutorial
 oc cancel-build bc/preference-v2
 oc delete svc/preference-v2
