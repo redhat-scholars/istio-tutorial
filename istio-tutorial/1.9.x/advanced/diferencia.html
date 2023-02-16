@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Diferencia and Detecting Regressions :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/diferencia.html">
+    <link rel="canonical" href="https://redhat-scholars.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/diferencia.html">
     <meta name="generator" content="Antora 2.3.1">
     <link rel="stylesheet" href="../../../_/css/site.css">
   </head>
@@ -13,7 +13,7 @@
   <nav class="navbar">
     <div class="navbar-brand">
       <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
-      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-developer-demos.github.io/istio-tutorial">Istio Tutorial Docs</a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io/istio-tutorial">Istio Tutorial Docs</a>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
         <span></span>
@@ -524,13 +524,13 @@ For this case, <strong>master</strong> is <code>recommendation:v1</code> and <st
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-master-svc.yml">diferencia/recommendation-master-svc.yml</a> -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-candidate-svc.yml">diferencia/recommendation-candidate-svc.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/recommendation-master-svc.yml">diferencia/recommendation-master-svc.yml</a> -n tutorial
+oc create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/recommendation-candidate-svc.yml">diferencia/recommendation-candidate-svc.yml</a> -n tutorial
 
 or
 
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-master-svc.yml">diferencia/recommendation-master-svc.yml</a> -n tutorial
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/recommendation-candidate-svc.yml">diferencia/recommendation-candidate-svc.yml</a> -n tutorial</code></pre>
+kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/recommendation-master-svc.yml">diferencia/recommendation-master-svc.yml</a> -n tutorial
+kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/recommendation-candidate-svc.yml">diferencia/recommendation-candidate-svc.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -541,12 +541,12 @@ kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutor
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment.yml">diferencia/Deployment.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/Deployment.yml">diferencia/Deployment.yml</a>) -n tutorial
 oc create -f diferencia/Service.yml -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment.yml">diferencia/Deployment.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/Deployment.yml">diferencia/Deployment.yml</a>) -n tutorial
 kubectl create -f diferencia/Service.yml -n tutorial</code></pre>
 </div>
 </div>
@@ -558,9 +558,9 @@ kubectl create -f diferencia/Service.yml -n tutorial</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2.yml">istiofiles/destination-rule-recommendation-v1-v2.yml</a> -n tutorial
 
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml">diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml</a> -n tutorial</code></pre>
+istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml">diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -712,12 +712,12 @@ istioctl delete -f diferencia/virtual-service-recommendation-v1-diferencia-mirro
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment-noise-detection.yml">diferencia/Deployment-noise-detection.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/Deployment-noise-detection.yml">diferencia/Deployment-noise-detection.yml</a>) -n tutorial
 oc create -f diferencia/Service.yml -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/Deployment-noise-detection.yml">diferencia/Deployment-noise-detection.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/Deployment-noise-detection.yml">diferencia/Deployment-noise-detection.yml</a>) -n tutorial
 kubectl create -f diferencia/Service.yml -n tutorial</code></pre>
 </div>
 </div>
@@ -726,7 +726,7 @@ kubectl create -f diferencia/Service.yml -n tutorial</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml">diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml">diferencia/virtual-service-recommendation-v1-diferencia-mirror-v2.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">

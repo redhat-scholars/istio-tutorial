@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Istio for Promoting Services (Feature Graduation) :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/promotion.html">
+    <link rel="canonical" href="https://redhat-scholars.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/promotion.html">
     <meta name="generator" content="Antora 2.3.1">
     <link rel="stylesheet" href="../../../_/css/site.css">
   </head>
@@ -13,7 +13,7 @@
   <nav class="navbar">
     <div class="navbar-brand">
       <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
-      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-developer-demos.github.io/istio-tutorial">Istio Tutorial Docs</a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io/istio-tutorial">Istio Tutorial Docs</a>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
         <span></span>
@@ -624,12 +624,12 @@ We have a 3rd Deployment to manage the v3 version of recommendation.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">../../kubernetes/Deployment-v3.yml</a>) -n tutorial
 kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
@@ -639,7 +639,7 @@ kubectl get pods -w -n tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v3 --name=recommendation-v3 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v3.yml
+oc new-app -l app=recommendation,version=v3 --name=recommendation-v3 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  &gt; recommendation-v3.yml
 oc apply -f &lt;(istioctl kube-inject -f recommendation-v3.yml) -n tutorial
 oc cancel-build bc/recommendation-v3 -n tutorial
 oc delete svc/recommendation-v3 -n tutorial
@@ -685,8 +685,8 @@ For example <em>experimental</em>, <em>beta</em> and <em>production</em>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2-v3.yml">istiofiles/destination-rule-recommendation-v1-v2-v3.yml</a> -n tutorial
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-promotion-v1-v2-v3.yml">istiofiles/virtual-service-promotion-v1-v2-v3.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2-v3.yml">istiofiles/destination-rule-recommendation-v1-v2-v3.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-promotion-v1-v2-v3.yml">istiofiles/virtual-service-promotion-v1-v2-v3.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -730,10 +730,10 @@ customer =&gt; preference =&gt; recommendation v1 from '9834514598-knc40': 10</c
 </div>
 </div>
 <div class="paragraph">
-<p>One interesting point here is that if you open <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-promotion-v1-v2-v3.yml">istiofiles/virtual-service-promotion-v1-v2-v3.yml</a> you&#8217;ll see that the header is set to <code>baggage-user-preference</code> meanwhile in <code>curl</code> it is set to <code>user-preference</code>.</p>
+<p>One interesting point here is that if you open <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-promotion-v1-v2-v3.yml">istiofiles/virtual-service-promotion-v1-v2-v3.yml</a> you&#8217;ll see that the header is set to <code>baggage-user-preference</code> meanwhile in <code>curl</code> it is set to <code>user-preference</code>.</p>
 </div>
 <div class="paragraph">
-<p>The reason is that in <em>customer</em> service (<a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/master/customer/java/springboot/src/main/java/com/redhat/developer/demos/customer/CustomerController.java#L35">CustomerController.java</a>), <code>io.opentracing.Tracer</code> class is used to set as baggage item the <code>user-preference</code> header.
+<p>The reason is that in <em>customer</em> service (<a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/master/customer/java/springboot/src/main/java/com/redhat/developer/demos/customer/CustomerController.java#L35">CustomerController.java</a>), <code>io.opentracing.Tracer</code> class is used to set as baggage item the <code>user-preference</code> header.
 In this way, the header is populated across all services without having to copy it manually in each service, since by default headers are not populated automatically.</p>
 </div>
 <div class="paragraph">
@@ -741,7 +741,7 @@ In this way, the header is populated across all services without having to copy 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-promoted-v3.yml">istiofiles/virtual-service-promoted-v3.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-promoted-v3.yml">istiofiles/virtual-service-promoted-v3.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">

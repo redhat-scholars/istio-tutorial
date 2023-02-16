@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Zero Downtime Migrations :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/zero-downtime-database.html">
+    <link rel="canonical" href="https://redhat-scholars.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/zero-downtime-database.html">
     <meta name="generator" content="Antora 2.3.1">
     <link rel="stylesheet" href="../../../_/css/site.css">
   </head>
@@ -13,7 +13,7 @@
   <nav class="navbar">
     <div class="navbar-brand">
       <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
-      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-developer-demos.github.io/istio-tutorial">Istio Tutorial Docs</a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io/istio-tutorial">Istio Tutorial Docs</a>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
         <span></span>
@@ -548,13 +548,13 @@ preference-243057078-8c5hz           2/2       Running   0          15m</code></
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx
 
-oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-deployment.yml">../../kubernetes/PostgreSQL-deployment.yml</a>) -n tutorial
+oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-deployment.yml">../../kubernetes/PostgreSQL-deployment.yml</a>) -n tutorial
 or
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-deployment.yml">../../kubernetes/PostgreSQL-deployment.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-deployment.yml">../../kubernetes/PostgreSQL-deployment.yml</a>) -n tutorial
 
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-service.yml">../../kubernetes/PostgreSQL-service.yml</a> -n tutorial
+oc create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-service.yml">../../kubernetes/PostgreSQL-service.yml</a> -n tutorial
 or
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-service.yml">../../kubernetes/PostgreSQL-service.yml</a> -n tutorial
+kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/PostgreSQL-service.yml">../../kubernetes/PostgreSQL-service.yml</a> -n tutorial
 
 # Wait until PotsgresSQL deployed
 
@@ -607,7 +607,7 @@ recommendation=# select * from recommendation;
 <div class="sect2">
 <h3 id="_create_recommendationv4"><a class="anchor" href="#_create_recommendationv4"></a>Create recommendation:v4</h3>
 <div class="paragraph">
-<p>To create <em>recommendation v4</em>, we need to change one line in <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/java/vertx/pom.xml">pom.xml</a>) of project, and change configuration part from <code>vertx-maven-plugin</code>:</p>
+<p>To create <em>recommendation v4</em>, we need to change one line in <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/java/vertx/pom.xml">pom.xml</a>) of project, and change configuration part from <code>vertx-maven-plugin</code>:</p>
 </div>
 <div class="paragraph">
 <p>Before:</p>
@@ -659,12 +659,12 @@ We have a 4th Deployment to manage the v4 version of recommendation.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v4.yml">../../kubernetes/Deployment-v4.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v4.yml">../../kubernetes/Deployment-v4.yml</a>) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v4.yml">../../kubernetes/Deployment-v4.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v4.yml">../../kubernetes/Deployment-v4.yml</a>) -n tutorial
 kubectl get pods -w -n tutorial
 
 oc create -f ../../kubernetes/Service.yml
@@ -678,7 +678,7 @@ kubectl create -f ../../kubernetes/Service.yml</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v4 --name=recommendation-v4 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v4.yml
+oc new-app -l app=recommendation,version=v4 --name=recommendation-v4 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  &gt; recommendation-v4.yml
 oc apply -f &lt;(istioctl kube-inject -f recommendation-v4.yml) -n tutorial
 oc cancel-build bc/recommendation-v4 -n tutorial
 oc delete svc/recommendation-v4 -n tutorial
@@ -833,7 +833,7 @@ To do it execute next command on a terminal:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/java/vertx/src/main/sql/V2__Add_movie_column_in_recommendation_table.sql">src/main/sql/V2__Add_movie_column_in_recommendation_table.sql</a> src/main/resources/db/migration/V2__Add_movie_column_in_recommendation_table.sql</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/java/vertx/src/main/sql/V2__Add_movie_column_in_recommendation_table.sql">src/main/sql/V2__Add_movie_column_in_recommendation_table.sql</a> src/main/resources/db/migration/V2__Add_movie_column_in_recommendation_table.sql</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -896,12 +896,12 @@ We have a 5th Deployment to manage the v4 version of recommendation.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v5.yml">../../kubernetes/Deployment-v5.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v5.yml">../../kubernetes/Deployment-v5.yml</a>) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v5.yml">../../kubernetes/Deployment-v5.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v5.yml">../../kubernetes/Deployment-v5.yml</a>) -n tutorial
 kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
@@ -911,7 +911,7 @@ kubectl get pods -w -n tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v5 --name=recommendation-v5 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v5.yml
+oc new-app -l app=recommendation,version=v5 --name=recommendation-v5 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  &gt; recommendation-v5.yml
 oc apply -f &lt;(istioctl kube-inject -f recommendation-v5.yml) -n tutorial
 oc cancel-build bc/recommendation-v5 -n tutorial
 oc delete svc/recommendation-v5 -n tutorial
@@ -942,8 +942,8 @@ Let&#8217;s redirect all traffic to v4.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v4-v5-v6-v7.yml">../../../istiofiles/destination-rule-recommendation-v4-v5-v6-v7.yml</a> -n tutorial
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v4.yml">../../../istiofiles/virtual-service-recommendation-v4.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v4-v5-v6-v7.yml">../../../istiofiles/destination-rule-recommendation-v4-v5-v6-v7.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v4.yml">../../../istiofiles/virtual-service-recommendation-v4.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -958,7 +958,7 @@ recommendation v4 [Star Wars: A New Hope,Star Trek: First Contact, Avengers: Inf
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v5.yml">../../../istiofiles/virtual-service-recommendation-v5.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v5.yml">../../../istiofiles/virtual-service-recommendation-v5.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -981,7 +981,7 @@ recommendation v5 [Star Wars: A New Hope,Star Trek: First Contact, Avengers: Inf
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v4.yml">istiofiles/virtual-service-recommendation-v4.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v4.yml">istiofiles/virtual-service-recommendation-v4.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1000,7 +1000,7 @@ Next step (executed by DB administrator) could be just removing the <strong>movi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v5.yml">istiofiles/virtual-service-recommendation-v5.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v5.yml">istiofiles/virtual-service-recommendation-v5.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1024,7 +1024,7 @@ To do it execute next command on a terminal:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/java/vertx/src/main/sql/V3__Update_recommendation_data.sql">src/main/sql/V3__Update_recommendation_data.sql</a> src/main/resources/db/migration/V3__Update_recommendation_data.sql</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/java/vertx/src/main/sql/V3__Update_recommendation_data.sql">src/main/sql/V3__Update_recommendation_data.sql</a> src/main/resources/db/migration/V3__Update_recommendation_data.sql</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1088,12 +1088,12 @@ We have a 6th Deployment to manage the v4 version of recommendation.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v6.yml">../../kubernetes/Deployment-v6.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v6.yml">../../kubernetes/Deployment-v6.yml</a>) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v6.yml">../../kubernetes/Deployment-v6.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v6.yml">../../kubernetes/Deployment-v6.yml</a>) -n tutorial
 kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
@@ -1103,7 +1103,7 @@ kubectl get pods -w -n tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v6 --name=recommendation-v6 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v6.yml
+oc new-app -l app=recommendation,version=v6 --name=recommendation-v6 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  &gt; recommendation-v6.yml
 oc apply -f &lt;(istioctl kube-inject -f recommendation-v6.yml) -n tutorial
 oc cancel-build bc/recommendation-v6 -n tutorial
 oc delete svc/recommendation-v6 -n tutorial
@@ -1133,7 +1133,7 @@ recommendation-v6-98b29894-64g45     2/2       Running   0          11m</code></
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v6.yml">istiofiles/virtual-service-recommendation-v6.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v6.yml">istiofiles/virtual-service-recommendation-v6.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1156,7 +1156,7 @@ recommendation v6 [Star Wars: A New Hope,Star Trek: First Contact, Avengers: Inf
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v5.yml">istiofiles/virtual-service-recommendation-v5.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v5.yml">istiofiles/virtual-service-recommendation-v5.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1174,7 +1174,7 @@ recommendation v5 [Star Wars: A New Hope,Star Trek: First Contact, Avengers: Inf
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v6.yml">istiofiles/virtual-service-recommendation-v6.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v6.yml">istiofiles/virtual-service-recommendation-v6.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1197,7 +1197,7 @@ Also, it implies removing the null constraint and add it to the new column.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/java/vertx/src/main/sql/V4__Update_movie_name_constraints.sql">src/main/sql/V4__Update_movie_name_constraints.sql</a> src/main/resources/db/migration/V4__Update_movie_name_constraints.sql</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/java/vertx/src/main/sql/V4__Update_movie_name_constraints.sql">src/main/sql/V4__Update_movie_name_constraints.sql</a> src/main/resources/db/migration/V4__Update_movie_name_constraints.sql</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1259,12 +1259,12 @@ We have a 7th Deployment to manage the v4 version of recommendation.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v7.yml">../../kubernetes/Deployment-v7.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v7.yml">../../kubernetes/Deployment-v7.yml</a>) -n tutorial
 oc get pods -w -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v7.yml">../../kubernetes/Deployment-v7.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v7.yml">../../kubernetes/Deployment-v7.yml</a>) -n tutorial
 kubectl get pods -w -n tutorial</code></pre>
 </div>
 </div>
@@ -1274,7 +1274,7 @@ kubectl get pods -w -n tutorial</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f recommendation/java/vertx
-oc new-app -l app=recommendation,version=v7 --name=recommendation-v7 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; recommendation-v7.yml
+oc new-app -l app=recommendation,version=v7 --name=recommendation-v7 --context-dir=recommendation/java/vertx -e JAEGER_SERVICE_NAME=recommendation JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  &gt; recommendation-v7.yml
 oc apply -f &lt;(istioctl kube-inject -f recommendation-v7.yml) -n tutorial
 oc cancel-build bc/recommendation-v7 -n tutorial
 oc delete svc/recommendation-v7 -n tutorial
@@ -1304,7 +1304,7 @@ recommendation-v7-bb452a56-45tg2     2/2       Running   0          10m</code></
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v7.yml">istiofiles/virtual-service-recommendation-v7.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v7.yml">istiofiles/virtual-service-recommendation-v7.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1327,7 +1327,7 @@ recommendation v7 [Star Wars: A New Hope,Star Trek: First Contact, Avengers: Inf
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v6.yml">istiofiles/virtual-service-recommendation-v6.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v6.yml">istiofiles/virtual-service-recommendation-v6.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1346,7 +1346,7 @@ curl -H "Content-type: text/plain" -X POST --data "The Pink Panther" customer-tu
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v7.yml">istiofiles/virtual-service-recommendation-v7.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl replace -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v7.yml">istiofiles/virtual-service-recommendation-v7.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1393,18 +1393,18 @@ istioctl create -f istiofiles/virtual-service-recommendation-v7.yml -n tutorial<
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd recommendation/java/vertx
 
-oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v1.yml">../../kubernetes/Deployment-v1.yml</a>) -n tutorial
+oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v1.yml">../../kubernetes/Deployment-v1.yml</a>) -n tutorial
 or
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v1.yml">../../kubernetes/Deployment-v1.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v1.yml">../../kubernetes/Deployment-v1.yml</a>) -n tutorial
 
-oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
+oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
 or
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
 
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
+oc create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
 oc get pods -w
 or
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
+kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">../../kubernetes/Service.yml</a>
 kubectl get pods -w</code></pre>
 </div>
 </div>

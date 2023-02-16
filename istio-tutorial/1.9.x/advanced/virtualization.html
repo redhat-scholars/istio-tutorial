@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Service Virtualization and Istio :: Istio Tutorial Docs</title>
-    <link rel="canonical" href="https://redhat-developer-demos.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/virtualization.html">
+    <link rel="canonical" href="https://redhat-scholars.github.io/istio-tutorial/istio-tutorial/1.9.x/advanced/virtualization.html">
     <meta name="generator" content="Antora 2.3.1">
     <link rel="stylesheet" href="../../../_/css/site.css">
   </head>
@@ -13,7 +13,7 @@
   <nav class="navbar">
     <div class="navbar-brand">
       <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
-      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-developer-demos.github.io/istio-tutorial">Istio Tutorial Docs</a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io/istio-tutorial">Istio Tutorial Docs</a>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
         <span></span>
@@ -554,7 +554,7 @@ We have a 2nd Deployment to manage the v2 version of preference.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Deployment-v2.yml">../../kubernetes/Deployment-v2.yml</a>) -n tutorial
 
 oc get pods -w
 
@@ -568,7 +568,7 @@ cd ../../..</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -f preference/java/springboot
 
-oc new-app -l app=preference,version=v2 --name=preference-v2 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-developer-demos/istio-tutorial -o yaml  &gt; preference-v2.yml
+oc new-app -l app=preference,version=v2 --name=preference-v2 --context-dir=preference/java/springboot -e JAEGER_SERVICE_NAME=preference JAEGER_ENDPOINT=http://jaeger-collector.istio-system.svc:14268/api/traces JAEGER_PROPAGATION=b3 JAEGER_SAMPLER_TYPE=const JAEGER_SAMPLER_PARAM=1 JAVA_OPTIONS='-Xms128m -Xmx256m -Djava.net.preferIPv4Stack=true' fabric8/s2i-java~https://github.com/redhat-scholars/istio-tutorial -o yaml  &gt; preference-v2.yml
 oc apply -f &lt;(istioctl kube-inject -f preference-v2.yml) -n tutorial
 oc cancel-build bc/preference-v2
 oc delete svc/preference-v2
@@ -640,7 +640,7 @@ customer =&gt; PREFERENCE =&gt; recommendation v2 from '1275713543-2bs5k': 3</pr
 docker build -t example/recommendation:virtualized .
 docker images | grep recommendation
 
-oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment-virtualized.yml">../../kubernetes/Deployment-virtualized.yml</a>) -n tutorial
+oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Deployment-virtualized.yml">../../kubernetes/Deployment-virtualized.yml</a>) -n tutorial
 oc get pods -w
 
 cd ../..</code></pre>
@@ -692,8 +692,8 @@ Let&#8217;s avoid this by just sending traffic that comes from preference v2 ser
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1.yml">istiofiles/destination-rule-recommendation-v1.yml</a> -n tutorial
-istioctl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-virtualized.yml">istiofiles/virtual-service-recommendation-virtualized.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1.yml">istiofiles/destination-rule-recommendation-v1.yml</a> -n tutorial
+istioctl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-virtualized.yml">istiofiles/virtual-service-recommendation-virtualized.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
