@@ -543,13 +543,13 @@ control plane version: 1.3.0</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.remote.yml">customer/kubernetes/Deployment.remote.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Deployment.remote.yml">customer/kubernetes/Deployment.remote.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.remote.yml">customer/kubernetes/Deployment.remote.yml</a>) -n tutorial
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Deployment.remote.yml">customer/kubernetes/Deployment.remote.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -612,13 +612,13 @@ If your pod fails with <code>ImagePullBackOff</code>, it&#8217;s possible that y
 <h3 id="_deploy_preference_using_existing_image"><a class="anchor" href="#_deploy_preference_using_existing_image"></a>Deploy Preference using existing image</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.remote.yml">preference/kubernetes/Deployment.remote.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Deployment.remote.yml">preference/kubernetes/Deployment.remote.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.remote.yml">preference/kubernetes/Deployment.remote.yml</a>) -n tutorial
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Deployment.remote.yml">preference/kubernetes/Deployment.remote.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -657,14 +657,14 @@ kubectl get pods -w</code></pre>
 <h3 id="_deploy_recommendation_using_existing_images"><a class="anchor" href="#_deploy_recommendation_using_existing_images"></a>Deploy Recommendation using existing images</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.remote.yml">recommendation/kubernetes/Deployment.remote.yml</a>) -n tutorial
-oc create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.remote.yml">recommendation/kubernetes/Deployment.remote.yml</a>) -n tutorial
+oc create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial
 oc get pods -w
 
 or
 
-kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.remote.yml">recommendation/kubernetes/Deployment.remote.yml</a>) -n tutorial
-kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial
+kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.remote.yml">recommendation/kubernetes/Deployment.remote.yml</a>) -n tutorial
+kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial
 kubectl get pods -w</code></pre>
 </div>
 </div>

@@ -541,7 +541,7 @@ You will deploy docker images that were previously built for this tutorial. If y
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">recommendation/kubernetes/Deployment-v3.yml</a>) -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment-v3.yml">recommendation/kubernetes/Deployment-v3.yml</a>) -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -583,12 +583,12 @@ recommendation-v3-7b445dd469-j6rkg   2/2       Running   0          2m</code></p
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2-v3.yml">istiofiles/destination-rule-recommendation-v1-v2-v3.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/destination-rule-recommendation-v1-v2-v3.yml">istiofiles/destination-rule-recommendation-v1-v2-v3.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v3.yml">istiofiles/virtual-service-recommendation-v3.yml</a></code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/virtual-service-recommendation-v3.yml">istiofiles/virtual-service-recommendation-v3.yml</a></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -621,7 +621,7 @@ Since no Egress service entry has been registered to access an external site, th
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/istiofiles/service-entry-egress-worldclockapi.yml">istiofiles/service-entry-egress-worldclockapi.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/istiofiles/service-entry-egress-worldclockapi.yml">istiofiles/service-entry-egress-worldclockapi.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">

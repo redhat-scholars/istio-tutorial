@@ -712,12 +712,12 @@ The OpenShift Web Terminal is not a persistent environment. The <code>istio-tuto
 <div class="tab-pane" aria-labelledby="tabset2_minikube">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
@@ -733,7 +733,7 @@ The OpenShift Web Terminal is not a persistent environment. The <code>istio-tuto
 <p>Deploy the customer application using the <strong>Deployment.yml</strong>. This Deployment has the <code>sidecar.istio.io/inject: "true"</code> annotation, which means Istio will inject a sidecar container to manage network traffic:</p>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Deployment.yml">customer/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </li>
@@ -741,7 +741,7 @@ The OpenShift Web Terminal is not a persistent environment. The <code>istio-tuto
 <p>Create a Service so the customer application Pods have a stable DNS entry on the cluster:</p>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Service.yml">customer/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </li>
@@ -795,7 +795,7 @@ customer-5f5d9f8767-dmc4f   2/2     Running   0          5m24s</code></pre>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/customer/kubernetes/Gateway.yml">customer/kubernetes/Gateway.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/customer/kubernetes/Gateway.yml">customer/kubernetes/Gateway.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1000,12 +1000,12 @@ $(kubectl get pods -n tutorial |grep customer|awk '{ print $1 }'|head -1) \
 <div class="tab-pane" aria-labelledby="tabset5_minikube">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -1019,7 +1019,7 @@ $(kubectl get pods -n tutorial |grep customer|awk '{ print $1 }'|head -1) \
 <p>Deploy the preference application using the <strong>Deployment.yml</strong>:</p>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Deployment.yml">preference/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </li>
@@ -1027,7 +1027,7 @@ $(kubectl get pods -n tutorial |grep customer|awk '{ print $1 }'|head -1) \
 <p>Create a Service so the preference application has a stable DNS entry:</p>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/preference/kubernetes/Service.yml">preference/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </li>
@@ -1135,12 +1135,12 @@ $(kubectl get pods -n tutorial |grep preference|awk '{ print $1 }'|head -1) \
 <div class="tab-pane" aria-labelledby="tabset6_minikube">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f &lt;(istioctl kube-inject -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a>) -n tutorial</code></pre>
 </div>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </div>
@@ -1154,7 +1154,7 @@ $(kubectl get pods -n tutorial |grep preference|awk '{ print $1 }'|head -1) \
 <p>Deploy the recommendation application using the <strong>Deployment.yml</strong>:</p>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Deployment.yml">recommendation/kubernetes/Deployment.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </li>
@@ -1162,7 +1162,7 @@ $(kubectl get pods -n tutorial |grep preference|awk '{ print $1 }'|head -1) \
 <p>Create a Service so the recommendation application has a stable DNS entry:</p>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-developer-demos/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create -f <a href="https://github.com/redhat-scholars/istio-tutorial/blob/master/recommendation/kubernetes/Service.yml">recommendation/kubernetes/Service.yml</a> -n tutorial</code></pre>
 </div>
 </div>
 </li>
