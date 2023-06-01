@@ -43,8 +43,8 @@ public class RecommendationResource {
         if (misbehave) {
             return doMisbehavior();
         }
-        return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
-        // return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
+        //return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+        return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
     }
 
     private void timeout() {
@@ -79,9 +79,9 @@ public class RecommendationResource {
 
     private String getNow() {
         final Client client = ClientBuilder.newClient();
-        final Response res = client.target("http://worldclockapi.com/api/json/cet/now").request().get();
+        final Response res = client.target("http://worldtimeapi.org/api/timezone/Europe/Madrid").request().get();
         final String jsonObject = res.readEntity(String.class);
-        return Json.createReader(new ByteArrayInputStream(jsonObject.getBytes())).readObject().getString("currentDateTime");
+        return Json.createReader(new ByteArrayInputStream(jsonObject.getBytes())).readObject().getString("datetime");
     }
 
 }

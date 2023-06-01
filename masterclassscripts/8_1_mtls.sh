@@ -4,6 +4,8 @@ istioctl experimental authz check $(kubectl get pods -n tutorial|grep customer|a
 
 kubectl get pod -o wide
 
+// preference IP
+
 kubectl sniff -i eth0 -o ./capture1.pcap customer-6948b8b959-zdlbz -f '((tcp) and (net 10.130.2.8))' -n tutorial -p -c istio-proxy
 
 curl $GATEWAY_URL/customer
