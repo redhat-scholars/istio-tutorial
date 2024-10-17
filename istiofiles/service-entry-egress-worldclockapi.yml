@@ -4,7 +4,7 @@ metadata:
   name: worldclockapi-egress-rule
 spec:
   hosts:
-  - worldclockapi.com
+  - worldtimeapi.org 
   ports:
   - name: http-80
     number: 80
