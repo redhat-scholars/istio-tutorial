@@ -11,7 +11,7 @@ You can complete this tutorial using a local Minikube environment, or you can us
 
 IMPORTANT: If you're using OpenShift instead of Minikube skip ahead to the link:#istioinstallation[Install Istio section] and select the OpenShift tab.
 
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/prerequisites-kubernetes.adoc[]
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/main/prerequisites-kubernetes.adoc[]
 
 | `istioctl`
 | https://github.com/istio/istio/releases/download/{istio-version}/istio-{istio-version}-osx.tar.gz[Download]
@@ -22,14 +22,14 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 === Download Tutorial Sources
 
 // Uses the tutorial-url and folder variables declared at the top of this file
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/download-sources.adoc[]
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/main/download-sources.adoc[]
 
 [#install-minikube]
 === Install Minikube
 
 IMPORTANT: If the *bin/* directory already exists in the `$TUTORIAL_HOME` location, replace the `mkdir bin && cd bin` with `cd bin` in the steps below.
 
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/install-minikube.adoc[]
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/main/install-minikube.adoc[]
 
 [#start-kubernetes]
 === Start Minikube
@@ -37,7 +37,7 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 There are series of commands as steps that allows you get started with minikube. The following section shows how to start minikube with minimal and required configurations:
 
 :profile: istio-devnation
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/kubernetes-setup.adoc[]
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/main/kubernetes-setup.adoc[]
 
 
 [#istioinstallation]
